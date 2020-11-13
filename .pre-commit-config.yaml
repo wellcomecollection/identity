@@ -2,7 +2,7 @@
   rev: v1.45.0
   hooks:
     - id: terraform_fmt
-    - id: terraform_validate
+    # - id: terraform_validate
 
 - repo: git://github.com/pre-commit/pre-commit-hooks
   rev: v3.3.0
