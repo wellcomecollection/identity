@@ -20,11 +20,12 @@ resource "aws_api_gateway_resource" "auth" {
 # [POST]
 
 resource "aws_api_gateway_method" "auth_post" {
-  rest_api_id      = aws_api_gateway_rest_api.identity.id
-  resource_id      = aws_api_gateway_resource.auth.id
-  http_method      = "POST"
-  authorization    = "NONE"
-  api_key_required = true
+  rest_api_id          = aws_api_gateway_rest_api.identity.id
+  resource_id          = aws_api_gateway_resource.auth.id
+  http_method          = "POST"
+  authorization        = "NONE"
+  api_key_required     = true
+  request_validator_id = aws_api_gateway_request_validator.full.id
 
   request_models = {
     "application/json" = aws_api_gateway_model.auth.name
@@ -68,12 +69,13 @@ resource "aws_api_gateway_resource" "users" {
 # [GET]
 
 resource "aws_api_gateway_method" "users_get" {
-  rest_api_id      = aws_api_gateway_rest_api.identity.id
-  resource_id      = aws_api_gateway_resource.users.id
-  http_method      = "GET"
-  authorization    = "CUSTOM"
-  authorizer_id    = aws_api_gateway_authorizer.token_authorizer.id
-  api_key_required = true
+  rest_api_id          = aws_api_gateway_rest_api.identity.id
+  resource_id          = aws_api_gateway_resource.users.id
+  http_method          = "GET"
+  authorization        = "CUSTOM"
+  authorizer_id        = aws_api_gateway_authorizer.token_authorizer.id
+  api_key_required     = true
+  request_validator_id = aws_api_gateway_request_validator.full.id
 
   request_parameters = {
     "method.request.querystring.page"     = true,
@@ -124,11 +126,12 @@ resource "aws_api_gateway_method_response" "users_get_403" {
 # [POST]
 
 resource "aws_api_gateway_method" "users_post" {
-  rest_api_id      = aws_api_gateway_rest_api.identity.id
-  resource_id      = aws_api_gateway_resource.users.id
-  http_method      = "POST"
-  authorization    = "NONE"
-  api_key_required = true
+  rest_api_id          = aws_api_gateway_rest_api.identity.id
+  resource_id          = aws_api_gateway_resource.users.id
+  http_method          = "POST"
+  authorization        = "NONE"
+  api_key_required     = true
+  request_validator_id = aws_api_gateway_request_validator.full.id
 
   request_models = {
     "application/json" = aws_api_gateway_model.user.name
@@ -159,12 +162,13 @@ resource "aws_api_gateway_resource" "users_userid" {
 # [GET]
 
 resource "aws_api_gateway_method" "users_userid_get" {
-  rest_api_id      = aws_api_gateway_rest_api.identity.id
-  resource_id      = aws_api_gateway_resource.users_userid.id
-  http_method      = "GET"
-  authorization    = "CUSTOM"
-  authorizer_id    = aws_api_gateway_authorizer.token_authorizer.id
-  api_key_required = true
+  rest_api_id          = aws_api_gateway_rest_api.identity.id
+  resource_id          = aws_api_gateway_resource.users_userid.id
+  http_method          = "GET"
+  authorization        = "CUSTOM"
+  authorizer_id        = aws_api_gateway_authorizer.token_authorizer.id
+  api_key_required     = true
+  request_validator_id = aws_api_gateway_request_validator.full.id
 
   request_parameters = {
     "method.request.path.userId" = true
@@ -200,12 +204,13 @@ resource "aws_api_gateway_method_response" "users_userid_get_404" {
 # [PUT]
 
 resource "aws_api_gateway_method" "users_userid_put" {
-  rest_api_id      = aws_api_gateway_rest_api.identity.id
-  resource_id      = aws_api_gateway_resource.users_userid.id
-  http_method      = "PUT"
-  authorization    = "CUSTOM"
-  authorizer_id    = aws_api_gateway_authorizer.token_authorizer.id
-  api_key_required = true
+  rest_api_id          = aws_api_gateway_rest_api.identity.id
+  resource_id          = aws_api_gateway_resource.users_userid.id
+  http_method          = "PUT"
+  authorization        = "CUSTOM"
+  authorizer_id        = aws_api_gateway_authorizer.token_authorizer.id
+  api_key_required     = true
+  request_validator_id = aws_api_gateway_request_validator.full.id
 
   request_models = {
     "application/json" = aws_api_gateway_model.user.name
@@ -245,12 +250,13 @@ resource "aws_api_gateway_method_response" "users_userid_put_404" {
 # [DELETE]
 
 resource "aws_api_gateway_method" "users_userid_delete" {
-  rest_api_id      = aws_api_gateway_rest_api.identity.id
-  resource_id      = aws_api_gateway_resource.users_userid.id
-  http_method      = "DELETE"
-  authorization    = "CUSTOM"
-  authorizer_id    = aws_api_gateway_authorizer.token_authorizer.id
-  api_key_required = true
+  rest_api_id          = aws_api_gateway_rest_api.identity.id
+  resource_id          = aws_api_gateway_resource.users_userid.id
+  http_method          = "DELETE"
+  authorization        = "CUSTOM"
+  authorizer_id        = aws_api_gateway_authorizer.token_authorizer.id
+  api_key_required     = true
+  request_validator_id = aws_api_gateway_request_validator.full.id
 
   request_parameters = {
     "method.request.path.userId" = true
@@ -294,12 +300,13 @@ resource "aws_api_gateway_resource" "users_userid_password" {
 # [PUT]
 
 resource "aws_api_gateway_method" "users_userid_password_put" {
-  rest_api_id      = aws_api_gateway_rest_api.identity.id
-  resource_id      = aws_api_gateway_resource.users_userid_password.id
-  http_method      = "PUT"
-  authorization    = "CUSTOM"
-  authorizer_id    = aws_api_gateway_authorizer.token_authorizer.id
-  api_key_required = true
+  rest_api_id          = aws_api_gateway_rest_api.identity.id
+  resource_id          = aws_api_gateway_resource.users_userid_password.id
+  http_method          = "PUT"
+  authorization        = "CUSTOM"
+  authorizer_id        = aws_api_gateway_authorizer.token_authorizer.id
+  api_key_required     = true
+  request_validator_id = aws_api_gateway_request_validator.full.id
 
   request_models = {
     "application/json" = aws_api_gateway_model.update-password.name
@@ -347,12 +354,13 @@ resource "aws_api_gateway_resource" "users_userid_reset-password" {
 # [PUT]
 
 resource "aws_api_gateway_method" "users_userid_reset-password_put" {
-  rest_api_id      = aws_api_gateway_rest_api.identity.id
-  resource_id      = aws_api_gateway_resource.users_userid_reset-password.id
-  http_method      = "PUT"
-  authorization    = "CUSTOM"
-  authorizer_id    = aws_api_gateway_authorizer.token_authorizer.id
-  api_key_required = true
+  rest_api_id          = aws_api_gateway_rest_api.identity.id
+  resource_id          = aws_api_gateway_resource.users_userid_reset-password.id
+  http_method          = "PUT"
+  authorization        = "CUSTOM"
+  authorizer_id        = aws_api_gateway_authorizer.token_authorizer.id
+  api_key_required     = true
+  request_validator_id = aws_api_gateway_request_validator.full.id
 
   request_parameters = {
     "method.request.path.userId" = true
@@ -396,12 +404,13 @@ resource "aws_api_gateway_resource" "users_userid_send-verification" {
 # [PUT]
 
 resource "aws_api_gateway_method" "users_userid_send-verification_put" {
-  rest_api_id      = aws_api_gateway_rest_api.identity.id
-  resource_id      = aws_api_gateway_resource.users_userid_send-verification.id
-  http_method      = "PUT"
-  authorization    = "CUSTOM"
-  authorizer_id    = aws_api_gateway_authorizer.token_authorizer.id
-  api_key_required = true
+  rest_api_id          = aws_api_gateway_rest_api.identity.id
+  resource_id          = aws_api_gateway_resource.users_userid_send-verification.id
+  http_method          = "PUT"
+  authorization        = "CUSTOM"
+  authorizer_id        = aws_api_gateway_authorizer.token_authorizer.id
+  api_key_required     = true
+  request_validator_id = aws_api_gateway_request_validator.full.id
 
   request_parameters = {
     "method.request.path.userId" = true
@@ -445,12 +454,13 @@ resource "aws_api_gateway_resource" "users_userid_lock" {
 # [PUT]
 
 resource "aws_api_gateway_method" "users_userid_lock_put" {
-  rest_api_id      = aws_api_gateway_rest_api.identity.id
-  resource_id      = aws_api_gateway_resource.users_userid_lock.id
-  http_method      = "PUT"
-  authorization    = "CUSTOM"
-  authorizer_id    = aws_api_gateway_authorizer.token_authorizer.id
-  api_key_required = true
+  rest_api_id          = aws_api_gateway_rest_api.identity.id
+  resource_id          = aws_api_gateway_resource.users_userid_lock.id
+  http_method          = "PUT"
+  authorization        = "CUSTOM"
+  authorizer_id        = aws_api_gateway_authorizer.token_authorizer.id
+  api_key_required     = true
+  request_validator_id = aws_api_gateway_request_validator.full.id
 
   request_parameters = {
     "method.request.path.userId" = true
@@ -494,12 +504,13 @@ resource "aws_api_gateway_resource" "users_userid_unlock" {
 # [PUT]
 
 resource "aws_api_gateway_method" "users_userid_unlock_put" {
-  rest_api_id      = aws_api_gateway_rest_api.identity.id
-  resource_id      = aws_api_gateway_resource.users_userid_unlock.id
-  http_method      = "PUT"
-  authorization    = "CUSTOM"
-  authorizer_id    = aws_api_gateway_authorizer.token_authorizer.id
-  api_key_required = true
+  rest_api_id          = aws_api_gateway_rest_api.identity.id
+  resource_id          = aws_api_gateway_resource.users_userid_unlock.id
+  http_method          = "PUT"
+  authorization        = "CUSTOM"
+  authorizer_id        = aws_api_gateway_authorizer.token_authorizer.id
+  api_key_required     = true
+  request_validator_id = aws_api_gateway_request_validator.full.id
 
   request_parameters = {
     "method.request.path.userId" = true
