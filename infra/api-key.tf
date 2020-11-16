@@ -12,7 +12,7 @@ resource "aws_api_gateway_usage_plan" "basic" {
   }
 }
 
-# Daniel Grant
+# Dummy
 
 resource "aws_api_gateway_api_key" "dummy" {
   name = "dummy"
