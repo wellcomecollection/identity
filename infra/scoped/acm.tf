@@ -14,9 +14,9 @@ resource "aws_acm_certificate" "identity_api_v1" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "name", local.identity_v1_hostname
-    )
+    {
+      "Name" = local.identity_v1_hostname
+    }
   )
 }
 

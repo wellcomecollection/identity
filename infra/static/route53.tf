@@ -3,8 +3,8 @@ resource "aws_route53_zone" "identity" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "name", "identity.wellcomecollection.org"
-    )
+    {
+      "Name" = "identity.wellcomecollection.org"
+    }
   )
 }

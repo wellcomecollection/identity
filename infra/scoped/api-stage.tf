@@ -15,9 +15,9 @@ resource "aws_api_gateway_domain_name" "identity_v1" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "name", local.identity_v1_hostname
-    )
+    {
+      "Name" = local.identity_v1_hostname
+    }
   )
 }
 
