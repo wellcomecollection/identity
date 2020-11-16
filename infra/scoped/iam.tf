@@ -18,8 +18,8 @@ EOF
 
   tags = merge(
     local.common_tags,
-    map(
-      "name", "identity-api-gateway-lambda-role-${terraform.workspace}"
-    )
+    {
+      "Name" = "identity-api-gateway-lambda-role-${terraform.workspace}"
+    }
   )
 }

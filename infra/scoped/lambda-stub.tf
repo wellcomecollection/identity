@@ -8,13 +8,14 @@ resource "aws_lambda_function" "stubs_authorizer" {
   runtime          = "nodejs12.x"
   source_code_hash = filebase64sha256("${path.module}/../../lambda/src/stubs/authorizer.js.zip")
 
-  depends_on = [data.archive_file.stubs_authorizer_zip]
+  depends_on = [
+  data.archive_file.stubs_authorizer_zip]
 
   tags = merge(
     local.common_tags,
-    map(
-      "name", "identity-stubs-authorizer-${terraform.workspace}"
-    )
+    {
+      "Name" = "identity-stubs-authorizer-${terraform.workspace}"
+    }
   )
 }
 
@@ -46,9 +47,9 @@ resource "aws_lambda_function" "stubs_empty-200" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "name", "identity-stubs-empty-200-${terraform.workspace}"
-    )
+    {
+      "Name" = "identity-stubs-empty-200-${terraform.workspace}"
+    }
   )
 }
 
@@ -80,9 +81,9 @@ resource "aws_lambda_function" "stubs_empty-201" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "name", "identity-stubs-empty-201-${terraform.workspace}"
-    )
+    {
+      "Name" = "identity-stubs-empty-201-${terraform.workspace}"
+    }
   )
 }
 
@@ -114,9 +115,9 @@ resource "aws_lambda_function" "stubs_empty-204" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "name", "identity-stubs-empty-204-${terraform.workspace}"
-    )
+    {
+      "Name" = "identity-stubs-empty-204-${terraform.workspace}"
+    }
   )
 }
 
@@ -148,9 +149,9 @@ resource "aws_lambda_function" "stubs_user" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "name", "identity-stubs-user-${terraform.workspace}"
-    )
+    {
+      "Name" = "identity-stubs-user-${terraform.workspace}"
+    }
   )
 }
 
@@ -182,9 +183,9 @@ resource "aws_lambda_function" "stubs_user-list" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "name", "identity-stubs-user-list-${terraform.workspace}"
-    )
+    {
+      "Name" = "identity-stubs-user-list-${terraform.workspace}"
+    }
   )
 }
 

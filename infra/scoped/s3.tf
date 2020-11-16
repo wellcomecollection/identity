@@ -4,9 +4,9 @@ resource "aws_s3_bucket" "assets" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "name", "identity-public-assets-${terraform.workspace}"
-    )
+    {
+      "Name" = "identity-public-assets-${terraform.workspace}"
+    }
   )
 }
 
@@ -19,8 +19,8 @@ resource "aws_s3_bucket_object" "assets_images_wellcomecollections-150x50-png" {
 
   tags = merge(
     local.common_tags,
-    map(
-      "name", "images/wellcomecollections-150x50.png"
-    )
+    {
+      "Name" = "images/wellcomecollections-150x50.png"
+    }
   )
 }
