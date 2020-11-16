@@ -1,6 +1,6 @@
-resource "aws_api_gateway_documentation_version" "v1" {
+resource "aws_api_gateway_documentation_version" "identity_v1" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  version     = "v1"
+  version     = local.identity_v1_hostname
 
   depends_on = [
     aws_api_gateway_documentation_part.api,
