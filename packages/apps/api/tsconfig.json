@@ -1,0 +1,17 @@
+{
+    "extends": "../../../tsconfig.settings.json",
+    "compilerOptions": {
+        "esModuleInterop": true,
+        "outDir": "lib",
+        "rootDir": "src",
+        "moduleResolution": "node",
+        "module": "none",
+        "noImplicitAny": true,
+        "target": "es2017"
+    },
+    "references": [
+        {
+            "path": "../../shared/sierra-client"
+        }
+    ]
+}
