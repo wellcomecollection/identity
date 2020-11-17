@@ -1,86 +1,95 @@
-import type {AxiosInstance} from 'axios';
 import axios from 'axios';
 
 export default class SierraClient {
 
-  static async instance(apiRoot: string, clientKey: string, clientSecret: string): Promise<SierraClient> {
-    const accessToken = await this.getAccessToken(apiRoot, clientKey, clientSecret);
-    const axiosInstance = this.createAxiosInstance(apiRoot, accessToken);
-    return new SierraClient(axiosInstance);
+  apiRoot: string;
+  clientKey: string;
+  clientSecret: string;
+
+  constructor(apiRoot: string, clientKey: string, clientSecret: string) {
+    this.apiRoot = apiRoot;
+    this.clientKey = clientKey;
+    this.clientSecret = clientSecret;
   }
 
-  private static async getAccessToken(apiRoot: string, clientKey: string, clientSecret: string): Promise<string> {
-    const response = await axios.post(apiRoot + '/token', {}, {
+  validateCredentials(barcode: string, pin: string): Promise<PatronRecord> {
+    return this.getAccessToken().then(accessToken => {
+      return axios.post(this.apiRoot + '/v6/patrons/validate', {
+        barcode: barcode,
+        pin: pin
+      }, {
+        headers: {
+          Authorization: 'Bearer ' + accessToken
+        },
+        validateStatus: status => status == 204
+      }).then(() => {
+        return this.getPatronRecordByBarcode(barcode);
+      });
+    });
+  }
+
+  getPatronRecordByRecordNumber(recordNumber: string): Promise<PatronRecord> {
+    return this.getAccessToken().then(accessToken => {
+      return axios.get(this.apiRoot + '/v6/patrons/' + recordNumber, {
+        params: {
+          fields: 'varFields'
+        },
+        headers: {
+          Authorization: 'Bearer ' + accessToken
+        },
+        validateStatus: status => status == 200
+      }).then(response => {
+        return this.toPatronRecord(response.data);
+      });
+    });
+  }
+
+  getPatronRecordByBarcode(barcode: string): Promise<PatronRecord> {
+    return this.getAccessToken().then(accessToken => {
+      return axios.get(this.apiRoot + '/v6/patrons/find', {
+        params: {
+          varFieldTag: 'b',
+          varFieldContent: barcode,
+          fields: 'varFields'
+        },
+        headers: {
+          Authorization: 'Bearer ' + accessToken
+        },
+        validateStatus: status => status == 200
+      }).then(response => {
+        return this.toPatronRecord(response.data);
+      });
+    });
+  }
+
+  getPatronRecordByEmail(email: string): Promise<PatronRecord> {
+    return this.getAccessToken().then(accessToken => {
+      return axios.get(this.apiRoot + '/v6/patrons/find', {
+        params: {
+          varFieldTag: 'z',
+          varFieldContent: email,
+          fields: 'varFields'
+        },
+        headers: {
+          Authorization: 'Bearer ' + accessToken
+        },
+        validateStatus: status => status == 200
+      }).then(response => {
+        return this.toPatronRecord(response.data);
+      });
+    });
+  }
+
+  getAccessToken(): Promise<string> {
+    return axios.post(this.apiRoot + '/token', {}, {
       auth: {
-        username: clientKey,
-        password: clientSecret
+        username: this.clientKey,
+        password: this.clientSecret
       },
       validateStatus: status => status == 200
+    }).then(response => {
+      return response.data.access_token
     });
-    return response.data.access_token;
-  }
-
-  private static createAxiosInstance(apiRoot: string, accessToken: string): AxiosInstance {
-    return axios.create({
-      baseURL: apiRoot,
-      headers: {
-        Authorization: 'Bearer ' + accessToken
-      }
-    });
-  }
-
-  axiosInstance: AxiosInstance;
-
-  private constructor(axiosInstance: AxiosInstance) {
-    this.axiosInstance = axiosInstance;
-  }
-
-  async validateCredentials(barcode: string, pin: string): Promise<PatronRecord> {
-    await axios.post('/v6/patrons/validate', {
-      barcode: barcode,
-      pin: pin
-    }, {
-      validateStatus: status => status == 204
-    });
-
-    return this.getPatronRecordByBarcode(barcode);
-  }
-
-  async getPatronRecordByRecordNumber(recordNumber: string): Promise<PatronRecord> {
-    const response = await axios.get('/v6/patrons/' + recordNumber, {
-      params: {
-        fields: 'varFields'
-      },
-      validateStatus: status => status == 200
-    });
-
-    return this.toPatronRecord(response.data);
-  }
-
-  async getPatronRecordByBarcode(barcode: string): Promise<PatronRecord> {
-    const response = await axios.get('/v6/patrons/find', {
-      params: {
-        varFieldTag: 'b',
-        varFieldContent: barcode,
-        fields: 'varFields'
-      },
-      validateStatus: status => status == 200
-    });
-
-    return this.toPatronRecord(response.data);
-  }
-
-  async getPatronRecordByEmail(email: string): Promise<PatronRecord> {
-    const response = await axios.get('/v6/patrons/find', {
-      params: {
-        varFieldTag: 'z',
-        varFieldContent: email,
-        fields: 'varFields'
-      },
-      validateStatus: status => status == 200
-    });
-
-    return this.toPatronRecord(response.data);
   }
 
   private toPatronRecord(data: any): PatronRecord {
