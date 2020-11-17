@@ -1,5 +1,28 @@
 data "aws_route53_zone" "identity" {
-  name = "identity.wellcomecollection.org"
+  name = var.hostname
+}
+
+# Identity Auth0
+
+locals {
+  identity_auth0_verification = flatten([
+    for verification in auth0_custom_domain.identity.verification : [
+      for method in verification.methods : {
+        record = method.record
+        type   = upper(method.name)
+      }
+    ]
+  ])
+}
+
+resource "aws_route53_record" "identity_auth0" {
+  count = length(local.identity_auth0_verification)
+
+  name    = auth0_custom_domain.identity.domain
+  records = [local.identity_auth0_verification[count.index].record]
+  ttl     = 60
+  type    = local.identity_auth0_verification[count.index].type
+  zone_id = data.aws_route53_zone.identity.id
 }
 
 # Identity API

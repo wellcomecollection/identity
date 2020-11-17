@@ -1,3 +1,3 @@
 # DNS
 
-api_hostname = "api.stage.identity.wellcomecollection.org"
+hostname_prefix = "stage"
