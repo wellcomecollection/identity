@@ -8,9 +8,13 @@ locals {
     "ManagedBy"   = var.tag_managed_by
   }
 
+  # DNS
+  auth0_hostname = "${var.hostname_prefix}.${var.hostname}"
+  api_hostname   = "api.${var.hostname_prefix}.${var.hostname}"
+
   # API versions
   identity_v1          = "v1"
-  identity_v1_hostname = "v1-${var.api_hostname}"
+  identity_v1_hostname = "v1-${local.api_hostname}"
 }
 
 # Tags
@@ -25,4 +29,8 @@ variable "tag_managed_by" {
 
 # DNS
 
-variable "api_hostname" {}
+variable "hostname" {
+  default = "identity.wellcomecollection.org"
+}
+
+variable "hostname_prefix" {}
