@@ -1,0 +1,10 @@
+{
+    "name": "@weco/identity-auth0-actions",
+    "version": "0.1.0",
+    "repository": "git@github.com:/wellcomecollection/identity.git",
+    "author": "Gary Tierney <gary.tierney@fastmail.com>",
+    "license": "MIT",
+    "dependencies": {
+        "@weco/sierra-client": "*"
+    }
+}

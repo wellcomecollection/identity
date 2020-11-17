@@ -1,0 +1,7 @@
+{
+
+    "references": [
+        "packages/apps/auth0-actions",
+        "packages/shared/sierra-api-client"
+    ]
+}

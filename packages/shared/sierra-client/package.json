@@ -1,0 +1,9 @@
+{
+    "name": "@weco/sierra-client",
+    "version": "0.1.0",
+    "description": "API client for Sierra services",
+    "main": "lib/index.js",
+    "repository": "git@github.com:/wellcomecollection/identity.git",
+    "author": "Gary Tierney <gary.tierney@fastmail.com>",
+    "license": "MIT"
+}
