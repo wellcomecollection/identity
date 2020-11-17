@@ -2,7 +2,11 @@
     "extends": "../../../tsconfig.settings.json",
     "compilerOptions": {
         "outDir": "lib",
-        "rootDir": "src"
+        "rootDir": "src",
+        "moduleResolution": "node",
+        "module": "none",
+        "noImplicitAny": true,
+        "target": "es2017"
     },
     "references": [
         {
