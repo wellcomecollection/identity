@@ -30,6 +30,7 @@ variable "tag_managed_by" {
 # DNS
 
 variable "hostname" {
+  # Assume that this hostname is available as a Route 53 zone within the same AWS account
   default = "identity.wellcomecollection.org"
 }
 
