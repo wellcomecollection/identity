@@ -1,7 +1,14 @@
 {
 
     "references": [
-        "packages/apps/auth0-actions",
-        "packages/shared/sierra-api-client"
+        {
+            "path": "packages/apps/api"
+        },
+        {
+            "path": "packages/apps/auth0-actions"
+        },
+        {
+            "path": "packages/shared/sierra-client"
+        }
     ]
 }
