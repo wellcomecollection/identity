@@ -6,6 +6,9 @@
     "repository": "git@github.com:/wellcomecollection/identity.git",
     "author": "Gary Tierney <gary.tierney@fastmail.com>",
     "license": "MIT",
+    "scripts": {
+        "build": "tsc"
+    },
     "devDependencies": {
         "axios": "^0.21.0"
     }
