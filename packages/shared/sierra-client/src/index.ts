@@ -1,3 +1,4 @@
+import type {AxiosInstance} from 'axios';
 import axios from 'axios';
 
 export default class SierraClient {
@@ -12,15 +13,12 @@ export default class SierraClient {
     this.clientSecret = clientSecret;
   }
 
-  validateCredentials(barcode: string, pin: string): Promise<PatronRecord> {
-    return this.getAccessToken().then(accessToken => {
-      return axios.post(this.apiRoot + '/v6/patrons/validate', {
+  async validateCredentials(barcode: string, pin: string): Promise<PatronRecord> {
+    return this.getInstance().then(instance => {
+      return instance.post('/v6/patrons/validate', {
         barcode: barcode,
         pin: pin
       }, {
-        headers: {
-          Authorization: 'Bearer ' + accessToken
-        },
         validateStatus: status => status == 204
       }).then(() => {
         return this.getPatronRecordByBarcode(barcode);
@@ -28,14 +26,11 @@ export default class SierraClient {
     });
   }
 
-  getPatronRecordByRecordNumber(recordNumber: string): Promise<PatronRecord> {
-    return this.getAccessToken().then(accessToken => {
-      return axios.get(this.apiRoot + '/v6/patrons/' + recordNumber, {
+  async getPatronRecordByRecordNumber(recordNumber: string): Promise<PatronRecord> {
+    return this.getInstance().then(instance => {
+      return instance.get('/v6/patrons/' + recordNumber, {
         params: {
           fields: 'varFields'
-        },
-        headers: {
-          Authorization: 'Bearer ' + accessToken
         },
         validateStatus: status => status == 200
       }).then(response => {
@@ -44,17 +39,14 @@ export default class SierraClient {
     });
   }
 
-  getPatronRecordByBarcode(barcode: string): Promise<PatronRecord> {
-    return this.getAccessToken().then(accessToken => {
-      return axios.get(this.apiRoot + '/v6/patrons/find', {
+  async getPatronRecordByBarcode(barcode: string): Promise<PatronRecord> {
+    return this.getInstance().then(instance => {
+      return instance.get('/v6/patrons/find', {
         params: {
           varFieldTag: 'b',
           varFieldContent: barcode,
           fields: 'varFields'
         },
-        headers: {
-          Authorization: 'Bearer ' + accessToken
-        },
         validateStatus: status => status == 200
       }).then(response => {
         return this.toPatronRecord(response.data);
@@ -62,17 +54,14 @@ export default class SierraClient {
     });
   }
 
-  getPatronRecordByEmail(email: string): Promise<PatronRecord> {
-    return this.getAccessToken().then(accessToken => {
-      return axios.get(this.apiRoot + '/v6/patrons/find', {
+  async getPatronRecordByEmail(email: string): Promise<PatronRecord> {
+    return this.getInstance().then(instance => {
+      return instance.get('/v6/patrons/find', {
         params: {
           varFieldTag: 'z',
           varFieldContent: email,
           fields: 'varFields'
         },
-        headers: {
-          Authorization: 'Bearer ' + accessToken
-        },
         validateStatus: status => status == 200
       }).then(response => {
         return this.toPatronRecord(response.data);
@@ -80,7 +69,7 @@ export default class SierraClient {
     });
   }
 
-  getAccessToken(): Promise<string> {
+  private async getInstance(): Promise<AxiosInstance> {
     return axios.post(this.apiRoot + '/token', {}, {
       auth: {
         username: this.clientKey,
@@ -88,7 +77,12 @@ export default class SierraClient {
       },
       validateStatus: status => status == 200
     }).then(response => {
-      return response.data.access_token
+      return axios.create({
+        baseURL: this.apiRoot,
+        headers: {
+          Authorization: 'Bearer ' + response.data.access_token
+        },
+      });
     });
   }
 
@@ -100,7 +94,7 @@ export default class SierraClient {
         barcode: this.extractVarField(data.varFields, 'b'),
         emailAddress: this.extractVarField(data.varFields, 'z')
       }
-    )
+    );
   }
 
   private extractVarField(varFields: VarField[], fieldTag: string) {
@@ -114,7 +108,7 @@ export default class SierraClient {
         title: '',
         firstName: '',
         lastName: ''
-      }
+      };
     }
 
     varField = varField.replace('100', '').replace('a|', '').replace('_', '');
@@ -140,7 +134,7 @@ export default class SierraClient {
       title: title.trim(),
       firstName: firstName.trim(),
       lastName: lastName.trim()
-    }
+    };
   }
 }
 
