@@ -19,7 +19,7 @@ export default class SierraClient {
         barcode: barcode,
         pin: pin
       }, {
-        validateStatus: status => status == 204
+        validateStatus: status => status === 204
       }).then(() => {
         return this.getPatronRecordByBarcode(barcode);
       });
@@ -32,7 +32,7 @@ export default class SierraClient {
         params: {
           fields: 'varFields'
         },
-        validateStatus: status => status == 200
+        validateStatus: status => status === 200
       }).then(response => {
         return this.toPatronRecord(response.data);
       });
@@ -47,7 +47,7 @@ export default class SierraClient {
           varFieldContent: barcode,
           fields: 'varFields'
         },
-        validateStatus: status => status == 200
+        validateStatus: status => status === 200
       }).then(response => {
         return this.toPatronRecord(response.data);
       });
@@ -62,7 +62,7 @@ export default class SierraClient {
           varFieldContent: email,
           fields: 'varFields'
         },
-        validateStatus: status => status == 200
+        validateStatus: status => status === 200
       }).then(response => {
         return this.toPatronRecord(response.data);
       });
@@ -75,7 +75,7 @@ export default class SierraClient {
         username: this.clientKey,
         password: this.clientSecret
       },
-      validateStatus: status => status == 200
+      validateStatus: status => status === 200
     }).then(response => {
       return axios.create({
         baseURL: this.apiRoot,
@@ -87,8 +87,8 @@ export default class SierraClient {
   }
 
   private toPatronRecord(data: any): PatronRecord {
-    let nameVarField = this.extractVarField(data.varFields, 'n');
-    let patronName = this.getPatronName(nameVarField);
+    const nameVarField = this.extractVarField(data.varFields, 'n');
+    const patronName = this.getPatronName(nameVarField);
     return Object.assign(patronName, {
         recordNumber: data.id,
         barcode: this.extractVarField(data.varFields, 'b'),
@@ -98,8 +98,8 @@ export default class SierraClient {
   }
 
   private extractVarField(varFields: VarField[], fieldTag: string) {
-    let varField = varFields.find(varField => varField.fieldTag == fieldTag);
-    return varField ? varField.content : '';
+    const found = varFields.find(varField => varField.fieldTag === fieldTag);
+    return found ? found.content : '';
   }
 
   private getPatronName(varField: string): PatronName {
@@ -113,17 +113,17 @@ export default class SierraClient {
 
     varField = varField.replace('100', '').replace('a|', '').replace('_', '');
 
-    let lastName: string = '';
+    let lastName = '';
     if (varField.includes(',')) {
       lastName = varField.substring(0, varField.indexOf(','));
     }
 
-    let title: string = '';
+    let title = '';
     if (varField.includes('|c')) {
       title = varField.substring(varField.indexOf('|c') + 2, varField.indexOf('|b'));
     }
 
-    let firstName: string = '';
+    let firstName = '';
     if (varField.includes('|b')) {
       firstName = varField.substring(varField.indexOf('|b') + 2, varField.length);
     } else {
