@@ -1,7 +1,5 @@
 const {resolve} = require('path')
 
-const isDevelopment = process.env.NODE_ENV !== 'production'
-
 const config = {
     target: 'node',
     entry: {
@@ -14,9 +12,6 @@ const config = {
         },
         login: resolve('./src/login.ts'),
     },
-    output: {
-        iife: false
-    },
     externalsType: 'amd-require',
     externals: {
         'got': 'commonjs2 got',
@@ -26,7 +21,11 @@ const config = {
             {
                 test: /\.tsx?$/,
                 loader: 'ts-loader',
-                exclude: /node_modules/
+                exclude: /node_modules/,
+                options: {
+                    context: __dirname,
+                    configFile: 'tsconfig.json'
+                }
             }
         ]
     },

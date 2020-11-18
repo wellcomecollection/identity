@@ -6,6 +6,8 @@
         "strict": true,
         "composite": true,
         "esModuleInterop": true,
-        "moduleResolution": "node"
+        "module": "none",
+        "noImplicitAny": true,
+        "target": "es2017"
     }
 }
