@@ -4,8 +4,7 @@
     "main": "index.js",
     "license": "MIT",
     "scripts": {
-        "build": "rm identity-authorizer.zip; tsc && cd lib && zip -r ../identity-authorizer.zip ./ && cd ../ && zip -ur identity-authorizer.zip node_modules",
-        "publish-artifact": "yarn build && aws s3 cp ./identity-authorizer.zip s3://identity-dist/lambdas/identity-authorizer-${PUBLISH_VERSION}.zip"
+        "build": "tsc"
     },
     "dependencies": {
         "aws-serverless-express": "^3.3.8",
