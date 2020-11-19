@@ -8,6 +8,7 @@
         "esModuleInterop": true,
         "module": "none",
         "noImplicitAny": true,
-        "target": "es2017"
+        "target": "es2017",
+        "moduleResolution": "node"
     }
 }

@@ -7,6 +7,10 @@
         "aws-serverless-express": "^3.3.8",
         "express": "^4.17.1"
     },
+    "scripts": {
+        "build": "rm identity-api.zip; tsc && cd lib && zip -r ../identity-api.zip ./ && cd ../ && zip -ur identity-api.zip node_modules",
+        "publish-artifact": "yarn build && aws s3 cp ./identity-api.zip s3://identity-dist/lambdas/identity-api-${PUBLISH_VERSION}.zip"
+    },
     "devDependencies": {
         "@types/aws-serverless-express": "^3.3.3",
         "@types/express": "^4.17.9",
