@@ -1,7 +1,21 @@
 {
-    "extends": "../../../tsconfig.settings.json",
     "compilerOptions": {
+        "composite": true,
+        "declaration": true,
+        "declarationMap": true,
+        "esModuleInterop": true,
+        "module": "CommonJS",
+        "moduleResolution": "node",
+        "noImplicitAny": true,
         "outDir": "lib",
-        "rootDir": "src"
-    }
+        "rootDir": "src",
+        "sourceMap": true,
+        "strict": true,
+        "target": "es2017"
+    },
+    "references": [
+        {
+            "path": "../../shared/auth0-client"
+        }
+    ]
 }

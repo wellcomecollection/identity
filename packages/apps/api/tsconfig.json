@@ -1,8 +1,17 @@
 {
-    "extends": "../../../tsconfig.settings.json",
     "compilerOptions": {
+        "composite": true,
+        "declaration": true,
+        "declarationMap": true,
         "esModuleInterop": true,
-        "outDir": "lib"
+        "module": "CommonJS",
+        "moduleResolution": "node",
+        "noImplicitAny": true,
+        "outDir": "lib",
+        "rootDir": "src",
+        "sourceMap": true,
+        "strict": true,
+        "target": "es2017"
     },
     "references": [
         {
