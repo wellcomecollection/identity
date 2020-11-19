@@ -4,7 +4,7 @@
 function __package_lambda() {
   local package_path="$1"
   local bundle_name="$2"
-  local zip_file ="$bundle_name-${BUILDKITE_BRANCH/\//-}.zip"
+  local zip_file="$bundle_name-${BUILDKITE_BRANCH/\//-}.zip"
 
   {
     rm "$package_path/$zip_file"
