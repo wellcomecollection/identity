@@ -15,15 +15,6 @@ steps:
           run: app
           config: .buildkite/docker-compose.yml
 
-  - name: "build"
-    command:
-      - "yarn install"
-      - "yarn run -- lerna run build"
-    plugins:
-      - docker-compose#v3.7.0:
-          run: app
-          config: .buildkite/docker-compose.yml
-
   - wait
 
   - name: "auth0-script-packaging"
@@ -43,6 +34,8 @@ steps:
 
   - name: "aws-lambda-packaging"
     command:
+      - "yarn install"
+      - "yarn run -- lerna run build"
       - ".buildkite/scripts/aws-lambda-packaging.sh"
     plugins:
       - wellcomecollection/aws-assume-role#v0.2.2:
