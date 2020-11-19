@@ -5,5 +5,5 @@ services:
     build:
       dockerfile: Dockerfile
       context: .
-  nodejs:
-    image: nodejs:12-buster
+    volumes:
+      - ../:/app
