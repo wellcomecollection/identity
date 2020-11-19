@@ -5,3 +5,11 @@ steps:
     plugins:
       - docker-compose#v3.7.0:
           run: app
+
+  - name: "build"
+    command:
+      - "yarn install"
+      - "yarn run -- lerna run build"
+    plugins:
+      - docker-compose#v3.7.0:
+          run: nodejs
