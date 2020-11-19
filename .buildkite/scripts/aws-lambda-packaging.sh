@@ -19,3 +19,7 @@ function __package_lambda() {
 
   aws s3 cp "$package_path/.zip" "s3://identity-dist/${zip_file}"
 }
+
+
+__package_lambda "packages/apps/api" "identity-api"
+__package_lambda "packages/apps/api-authorizer" "identity-authorizer"
