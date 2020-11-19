@@ -6,6 +6,12 @@ const app: Application = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.post('/forgot-password', function() {
 
+});
+
+app.get('/users', function (e) {
+
+});
 
 export default app;

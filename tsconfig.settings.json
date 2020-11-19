@@ -6,9 +6,9 @@
         "strict": true,
         "composite": true,
         "esModuleInterop": true,
-        "module": "none",
         "noImplicitAny": true,
         "target": "es2017",
-        "moduleResolution": "node"
+        "moduleResolution": "node",
+        "module": "CommonJS"
     }
 }
