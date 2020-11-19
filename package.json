@@ -7,10 +7,15 @@
     "author": "Gary Tierney <gary.tierney@fastmail.com>",
     "private": true,
     "license": "MIT",
-    "workspaces": [
-        "packages/apps/**",
-        "packages/shared/**"
-    ],
+    "workspaces": {
+        "packages": [
+            "packages/apps/**",
+            "packages/shared/**"
+        ],
+        "nohoist": [
+            "**"
+        ]
+    },
     "devDependencies": {
         "lerna": "^3.22.1",
         "ts-loader": "^8.0.11",
