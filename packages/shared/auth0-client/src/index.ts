@@ -5,15 +5,9 @@ export default class Auth0Client {
   private static readonly USER_ID_PREFIX: string = "auth0|p";
 
   private readonly apiRoot: string;
-  private readonly apiAudience: string;
-  private readonly clientId: string;
-  private readonly clientSecret: string;
 
-  constructor(apiRoot: string, clientId: string, apiAudience: string, clientSecret: string) {
+  constructor(apiRoot: string) {
     this.apiRoot = apiRoot;
-    this.apiAudience = apiAudience;
-    this.clientId = clientId;
-    this.clientSecret = clientSecret;
   }
 
   async validateAccessToken(accessToken: string): Promise<Auth0Profile> {
@@ -42,7 +36,7 @@ export default class Auth0Client {
   }
 }
 
-interface Auth0Profile {
+export interface Auth0Profile {
   userId: string;
   email: string;
 }

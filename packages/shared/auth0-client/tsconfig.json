@@ -4,7 +4,7 @@
         "declaration": true,
         "declarationMap": true,
         "esModuleInterop": true,
-        "module": "none",
+        "module": "CommonJS",
         "moduleResolution": "node",
         "noImplicitAny": true,
         "outDir": "lib",

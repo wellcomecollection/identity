@@ -6,6 +6,12 @@ resource "aws_lambda_function" "authorizer" {
   role          = aws_iam_role.identity_api_gateway_lambda_role.arn
   runtime       = "nodejs12.x"
 
+  environment {
+    variables = {
+      AUTH0_API_ROOT = local.api_hostname
+    }
+  }
+
   tags = merge(
     local.common_tags,
     {
