@@ -13,8 +13,6 @@ function __package_lambda() {
   echo "$zip_file"
 
   {
-    rm "$package_path/$zip_file"
-
     cd "$package_path/lib" || return
     zip -r "../$zip_file" ./
     cd ../
