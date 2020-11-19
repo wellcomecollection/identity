@@ -1,0 +1,22 @@
+{
+    "name": "@weco/sierra-client",
+    "version": "0.1.0",
+    "description": "API client for Sierra services",
+    "main": "lib/index.js",
+    "repository": "git@github.com:/wellcomecollection/identity.git",
+    "author": "Gary Tierney <gary.tierney@fastmail.com>",
+    "license": "MIT",
+    "scripts": {
+        "build": "tsc"
+    },
+    "devDependencies": {
+        "@types/chai": "^4.2.14",
+        "@types/mocha": "^8.0.4",
+        "axios": "^0.21.0",
+        "chai": "^4.2.0",
+        "mocha": "^8.2.1",
+        "nyc": "^15.1.0",
+        "ts-node": "^9.0.0",
+        "typescript": "^4.0.5"
+    }
+}

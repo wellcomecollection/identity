@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "composite": true,
+        "declaration": true,
+        "declarationMap": true,
+        "esModuleInterop": true,
+        "module": "none",
+        "moduleResolution": "node",
+        "noImplicitAny": true,
+        "outDir": "lib",
+        "rootDir": "src",
+        "sourceMap": true,
+        "strict": true,
+        "target": "es2017"
+    }
+}
