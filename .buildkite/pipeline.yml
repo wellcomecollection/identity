@@ -15,6 +15,15 @@ steps:
           run: app
           config: .buildkite/docker-compose.yml
 
+  - name: "build"
+    command:
+      - "yarn install"
+      - "yarn run -- lerna run build"
+    plugins:
+      - docker-compose#v3.7.0:
+          run: app
+          config: .buildkite/docker-compose.yml
+
   - wait
 
   - name: "auth0-script-packaging"
@@ -31,15 +40,6 @@ steps:
             - AWS_ACCESS_KEY_ID
             - AWS_SECRET_ACCESS_KEY
             - AWS_SESSION_TOKEN
-
-  - name: "build"
-    command:
-      - "yarn install"
-      - "yarn run -- lerna run build"
-    plugins:
-      - docker-compose#v3.7.0:
-          run: app
-          config: .buildkite/docker-compose.yml
 
   - name: "aws-lambda-packaging"
     command:

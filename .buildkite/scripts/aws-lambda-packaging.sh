@@ -7,7 +7,7 @@ function __package_lambda() {
   local zip_file="$bundle_name-${BUILDKITE_BRANCH/\//-}.zip"
 
   echo "Packaging lambdas"
-  # shellcheck disable=SC2086
+
   echo $package_path
   echo "$bundle_name"
   echo "$zip_file"
@@ -15,7 +15,7 @@ function __package_lambda() {
   {
     rm "$package_path/$zip_file"
 
-    cd "$package_path/lib"
+    cd "$package_path/lib" || return
     zip -r "../$zip_file" ./
     cd ../
     zip -ur "$zip_file" node_modules
