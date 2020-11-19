@@ -12,12 +12,12 @@ function __package_lambda() {
   echo "$bundle_name"
   echo "$zip_file"
 
-  {
+  (
     cd "$package_path/lib" || return
     zip -r "../$zip_file" ./
     cd ../
     zip -ur "$zip_file" node_modules
-  }
+  )
 
   aws s3 cp "$package_path/$zip_file" "s3://identity-dist/${zip_file}"
 }
