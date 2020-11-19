@@ -1,7 +1,29 @@
 steps:
+  - name: "build image"
+    plugins:
+      - docker-compose#v3.7.0:
+          build: app
+          config: .buildkite/docker-compose.yml
+
   - name: "linting"
     command:
-      - "pre-commit run --all-files --verbose"
+      - ".buildkite/scripts/linting.sh"
     plugins:
       - docker-compose#v3.7.0:
           run: app
+          config: .buildkite/docker-compose.yml
+
+  - name: "auth0-script-packaging"
+    command:
+      - ".buildkite/scripts/auth0-script-packaging.sh"
+    plugins:
+      - wellcomecollection/aws-assume-role#v0.2.2:
+          role: "arn:aws:iam::770700576653:role/identity-ci"
+      - docker-compose#v3.7.0:
+          run: app
+          config: .buildkite/docker-compose.yml
+          env:
+            - BUILDKITE_BRANCH
+            - AWS_ACCESS_KEY_ID
+            - AWS_SECRET_ACCESS_KEY
+            - AWS_SESSION_TOKEN
