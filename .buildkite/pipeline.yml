@@ -36,6 +36,7 @@ steps:
     command:
       - "yarn install"
       - "yarn run -- lerna run build"
+      - ".buildkite/scripts/aws-lambda-packaging.sh"
     plugins:
       - docker-compose#v3.7.0:
           run: app
