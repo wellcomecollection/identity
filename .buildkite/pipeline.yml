@@ -48,3 +48,22 @@ steps:
             - AWS_ACCESS_KEY_ID
             - AWS_SECRET_ACCESS_KEY
             - AWS_SESSION_TOKEN
+
+  - wait
+
+  - name: "deploy"
+    if: build.branch == "master" || build.tag != null
+    command:
+      - ".buildkite/aws-lambda-deploy identity-api stage"
+      - ".buildkite/aws-lambda-deploy identity-authorizer stage"
+    plugins:
+      - wellcomecollection/aws-assume-role#v0.2.2:
+          role: "arn:aws:iam::770700576653:role/identity-ci"
+      - docker-compose#v3.7.0:
+          run: app
+          config: .buildkite/docker-compose.yml
+          env:
+            - BUILDKITE_BRANCH
+            - AWS_ACCESS_KEY_ID
+            - AWS_SECRET_ACCESS_KEY
+            - AWS_SESSION_TOKEN
