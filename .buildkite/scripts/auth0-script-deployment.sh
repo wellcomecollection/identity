@@ -9,7 +9,7 @@ set -o errexit
 __retrieve_artifacts() {
   mkdir -p /app/.buildkite/build
   aws s3 cp "s3://identity-dist/auth0-${NORMALIZED_BRANCH_NAME}.zip" "/app/.buildkite/build/auth0-${NORMALIZED_BRANCH_NAME}.zip"
-  unzip -v "/app/.buildkite/build/auth0-${NORMALIZED_BRANCH_NAME}.zip" -d "/app/.buildkite/build/"
+  unzip "/app/.buildkite/build/auth0-${NORMALIZED_BRANCH_NAME}.zip" -d "/app/.buildkite/build/"
 }
 
 __do_deployment() {
