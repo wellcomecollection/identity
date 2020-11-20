@@ -35,3 +35,7 @@ variable "hostname" {
 }
 
 variable "hostname_prefix" {}
+
+# Auth0
+
+variable "auth0_domain" {}

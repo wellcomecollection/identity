@@ -1,0 +1,6 @@
+steps:
+  - label: "auth0-script-deployment"
+    command: "scripts/auth0-script-deployment.sh"
+    if: build.branch == "main"
+    concurrency: 1
+    concurrency_group: identity/deployment

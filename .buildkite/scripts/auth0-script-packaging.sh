@@ -1,7 +1,8 @@
 #!/bin/bash
 
-export ZIP_NAME=auth0-${BUILDKITE_BRANCH/\//-}.zip
+export zip_file="auth0-${BUILDKITE_BRANCH/\//-}.zip"
 
-mkdir -p dist/
-zip -v -j "dist/${ZIP_NAME}.zip" "packages/apps/auth0-actions/src/get-user.js" "packages/apps/auth0-actions/src/login.js"
-aws s3 cp "dist/${ZIP_NAME}.zip" "s3://identity-dist/${ZIP_NAME}"
+echo "Packaging Auth0 scripts..."
+
+zip -vj "${zip_file}.zip" "packages/apps/auth0-actions/src/get_user.js" "packages/apps/auth0-actions/src/login.js"
+aws s3 cp "${zip_file}.zip" "s3://identity-dist/${zip_file}"

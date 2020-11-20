@@ -8,8 +8,14 @@ resource "aws_lambda_function" "authorizer" {
 
   environment {
     variables = {
-      AUTH0_API_ROOT = local.api_hostname
+      AUTH0_API_ROOT = local.auth0_hostname
     }
+  }
+
+  lifecycle {
+    ignore_changes = [
+      filename
+    ]
   }
 
   tags = merge(
@@ -35,6 +41,12 @@ resource "aws_lambda_function" "api" {
   handler       = "server-lambda.lambdaHandler"
   role          = aws_iam_role.identity_api_gateway_lambda_role.arn
   runtime       = "nodejs12.x"
+
+  lifecycle {
+    ignore_changes = [
+      filename
+    ]
+  }
 
   tags = merge(
     local.common_tags,
