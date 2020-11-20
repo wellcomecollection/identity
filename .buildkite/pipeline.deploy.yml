@@ -1,5 +1,25 @@
 steps:
-  - label: "auth0-script-deployment"
+  - name: "deployment-parameters"
+    prompt: "Fill in the deployment parameters"
+    fields:
+      - select: "Environment"
+        key: "deploy-environment"
+        default: "stage"
+        hint: "The target environment to deploy to, e.g. 'stage', 'prod'"
+        options:
+          - "label": "Staging"
+            "key": "stage"
+          - "label": "Production"
+            "key": "prod"
+      - select: "API Gateway Stage"
+        key: "deploy-api-gateway-stage"
+        default: "v1"
+        hint: "The target API Gateway stage to deploy to, e.g. 'v1', 'v2'"
+        options:
+          - "label": "V1",
+            "key": "v1"
+
+  - name: "auth0-script-deployment"
     command: "scripts/auth0-script-deployment.sh"
     if: build.branch == "main"
     concurrency: 1
