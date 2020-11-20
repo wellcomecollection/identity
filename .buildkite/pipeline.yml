@@ -20,15 +20,6 @@ steps:
 
   - wait
 
-  # Create the '/app/.buildkite/build' directory.
-  - name: "create build directory"
-    command:
-      - "mkdir -p /app/.buildkite/build"
-    plugins:
-      - docker-compose#v3.7.0:
-          run: app
-          config: .buildkite/docker-compose.yml
-
   # Package and persist the Auth0 scripts.
   - name: "auth0-script-packaging"
     command:
@@ -64,17 +55,6 @@ steps:
             - AWS_ACCESS_KEY_ID
             - AWS_SECRET_ACCESS_KEY
             - AWS_SESSION_TOKEN
-
-  - wait
-
-  # Clean up the '/app/.buildkite/build' directory.
-  - name: "clean build dir"
-    command:
-      - "mkdir -p /app/.buildkite/build"
-    plugins:
-      - docker-compose#v3.7.0:
-          run: app
-          config: .buildkite/docker-compose.yml
 
   - wait
 

@@ -22,6 +22,7 @@ function __process_buildkite_metadata() {
 
 function __init_terraform_env_vars() {
   cd /app/infra/scoped && terraform init && terraform workspace select stage
+  mkdir -p /app/.buildkite/build
   terraform output -json -no-color | jq -r .ci_environment_variables.value[] >/app/.buildkite/build/env.sh
   chmod +x /app/.buildkite/build/env.sh && source /app/.buildkite/build/env.sh && rm /app/.buildkite/build/env.sh
 }
