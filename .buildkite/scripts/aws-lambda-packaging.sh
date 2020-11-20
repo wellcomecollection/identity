@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 function __package_lambda() {
   local package_path="$1"
   local bundle_name="$2"
@@ -13,13 +14,13 @@ function __package_lambda() {
 
   (
     cd "$package_path/lib" || return
-    zip -vr "../$zip_file" ./
+    zip -r "/app/.buildkite/build/$zip_file" ./
     cd ../
-    zip -vur "$zip_file" node_modules
+    zip -ur "/app/.buildkite/build/$zip_file" node_modules
   )
 
-  aws s3 cp "$package_path/$zip_file" "s3://identity-dist/${zip_file}"
+  aws s3 cp "/app/.buildkite/build/$zip_file" "s3://identity-dist/${zip_file}"
 }
 
-__package_lambda "packages/apps/api" "identity-api"
-__package_lambda "packages/apps/api-authorizer" "identity-authorizer"
+__package_lambda "/app/packages/apps/api" "identity-api"
+__package_lambda "/app/packages/apps/api-authorizer" "identity-authorizer"
