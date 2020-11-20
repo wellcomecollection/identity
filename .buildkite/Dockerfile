@@ -3,8 +3,7 @@ LABEL maintainer="Daniel Grant <daniel.grant@digirati.com>"
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-RUN sh -c 'echo -e "[buildkite-agent]\nname = Buildkite Pty Ltd\nbaseurl = https://yum.buildkite.com/buildkite-agent/stable/x86_64/\nenabled=1\ngpgcheck=0\npriority=1" > /etc/yum.repos.d/buildkite-agent.repo' \
-    && microdnf install git zip unzip findutils python3 python3-pip npm buildkite-agent \
+RUN microdnf install git zip unzip findutils python3 python3-pip npm \
     && pip3 install pre-commit awscli \
     && npm install --global auth0-deploy-cli yarn
 

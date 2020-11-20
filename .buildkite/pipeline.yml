@@ -52,7 +52,12 @@ steps:
   - wait
 
   - name: "deploy"
+    branches: "main"
     trigger: "identity-deployment"
-    if: build.branch == "main"
     build:
-      commit: "$BUILDKITE_COMMIT"
+      message: "${BUILDKITE_MESSAGE}"
+      commit: "${BUILDKITE_COMMIT}"
+      branch: "${BUILDKITE_BRANCH}"
+      env:
+        DEPLOY_ENVIRONMENT: "stage" # Default for CD
+        DEPLOY_API_GATEWAY_STAGE: "v1" # Default for CD

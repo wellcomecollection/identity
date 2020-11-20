@@ -1,26 +1,33 @@
 steps:
-  - name: "deployment-parameters"
-    prompt: "Fill in the deployment parameters"
+  - block: "deployment-parameters"
+    if: "build.source == ui"
     fields:
       - select: "Environment"
         key: "deploy-environment"
         default: "stage"
-        hint: "The target environment to deploy to, e.g. 'stage', 'prod'"
         options:
-          - "label": "Staging"
-            "key": "stage"
-          - "label": "Production"
-            "key": "prod"
+          - label: "Staging"
+            value: "stage"
+          - label: "Production"
+            value: "prod"
       - select: "API Gateway Stage"
         key: "deploy-api-gateway-stage"
         default: "v1"
-        hint: "The target API Gateway stage to deploy to, e.g. 'v1', 'v2'"
         options:
-          - "label": "V1",
-            "key": "v1"
+          - label: "V1"
+            value: "v1"
 
   - name: "auth0-script-deployment"
-    command: "scripts/auth0-script-deployment.sh"
-    if: build.branch == "main"
-    concurrency: 1
-    concurrency_group: identity/deployment
+    if: "build.source != webhook"
+    command:
+      - ".buildkite/scripts/init-environment.sh"
+      - ".buildkite/scripts/auth0-script-deployment.sh"
+    plugins:
+      - docker-compose#v3.7.0:
+          run: app
+          config: .buildkite/docker-compose.yml
+          mount-buildkite-agent: true
+          env:
+            - BUILDKITE_BRANCH
+            - DEPLOY_ENVIRONMENT
+            - DEPLOY_API_GATEWAY_STAGE
