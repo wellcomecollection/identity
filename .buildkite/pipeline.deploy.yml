@@ -1,6 +1,6 @@
 steps:
   - block: "deployment-parameters"
-    if: "build.source == ui"
+    if: build.source == "ui"
     fields:
       - select: "Environment"
         key: "deploy-environment"
@@ -18,7 +18,7 @@ steps:
             value: "v1"
 
   - name: "auth0-script-deployment"
-    if: "build.source != webhook"
+    if: build.source != "webhook"
     command:
       - ".buildkite/scripts/init-environment.sh"
       - ".buildkite/scripts/auth0-script-deployment.sh"
