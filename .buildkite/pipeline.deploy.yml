@@ -25,10 +25,10 @@ steps:
     # Deploy the Auth0 scripts to Auth0. We don't want to execute the deployment every time there's
     # a push to revision control. We're only interested in doing a deployment if e.g. it was
     # manually invoked via the web UI, or a downstream job triggered the build.
-  - name: "auth0 script deploymentauth0 script deployment"
+  - name: "auth0 script deployment"
     if: build.source != "webhook"
     command:
-      - ".buildkite/scripts/init-environment.sh"
+      - ". .buildkite/scripts/init-environment.sh"
       - ".buildkite/scripts/auth0-script-deployment.sh"
     plugins:
       - wellcomecollection/aws-assume-role#v0.2.2:
@@ -39,5 +39,8 @@ steps:
           mount-buildkite-agent: true
           env:
             - BUILDKITE_BRANCH
+            - AWS_ACCESS_KEY_ID
+            - AWS_SECRET_ACCESS_KEY
+            - AWS_SESSION_TOKEN
             - DEPLOY_ENVIRONMENT
             - DEPLOY_API_GATEWAY_STAGE
