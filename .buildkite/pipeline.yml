@@ -23,6 +23,7 @@ steps:
   # Package and persist the Auth0 scripts.
   - name: "auth0-script-packaging"
     command:
+      - ".buildkite/scripts/init-environment.sh"
       - ".buildkite/scripts/auth0-script-packaging.sh"
     plugins:
       - wellcomecollection/aws-assume-role#v0.2.2:
@@ -39,6 +40,7 @@ steps:
   # Package and persist the AWS Lambda Functions.
   - name: "aws-lambda-packaging"
     command:
+      - ".buildkite/scripts/init-environment.sh"
       - "yarn install"
       - "yarn run -- lerna run build"
       - ".buildkite/scripts/aws-lambda-packaging.sh"
