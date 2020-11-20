@@ -1,7 +1,7 @@
 # stubs/authorizer.js
 
 resource "aws_lambda_function" "authorizer" {
-  function_name = "identity-stubs-authorizer-${terraform.workspace}"
+  function_name = "identity-authorizer-${terraform.workspace}"
   handler       = "index.lambdaHandler"
   role          = aws_iam_role.identity_api_gateway_lambda_role.arn
   runtime       = "nodejs12.x"
