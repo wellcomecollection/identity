@@ -7,6 +7,15 @@ steps:
           build: app
           config: .buildkite/docker-compose.yml
 
+  # Create the '/app/.buildkite/build' directory.
+  - name: "create build directory"
+    command:
+      - "mkdir -p /app/.buildkite/build"
+    plugins:
+      - docker-compose#v3.7.0:
+          run: app
+          config: .buildkite/docker-compose.yml
+
     # Only prompt for deployment parameters if the build was triggered via the Web UI. All other
     # methods of invoking the build should provide these are environment variables to the build.
   - block: "provide deployment parameters"
@@ -41,3 +50,12 @@ steps:
             - BUILDKITE_BRANCH
             - DEPLOY_ENVIRONMENT
             - DEPLOY_API_GATEWAY_STAGE
+
+  # Clean up the '/app/.buildkite/build' directory.
+  - name: "clean build dir"
+    command:
+      - "mkdir -p /app/.buildkite/build"
+    plugins:
+      - docker-compose#v3.7.0:
+          run: app
+          config: .buildkite/docker-compose.yml

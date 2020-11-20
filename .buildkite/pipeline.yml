@@ -12,7 +12,7 @@ steps:
   # Carry out some basic linting across the codebase.
   - name: "linting"
     command:
-      - ".buildkite/scripts/linting.sh"
+      - "/app/.buildkite/scripts/linting.sh"
     plugins:
       - docker-compose#v3.7.0:
           run: app
@@ -20,11 +20,20 @@ steps:
 
   - wait
 
+  # Create the '/app/.buildkite/build' directory.
+  - name: "create build directory"
+    command:
+      - "mkdir -p /app/.buildkite/build"
+    plugins:
+      - docker-compose#v3.7.0:
+          run: app
+          config: .buildkite/docker-compose.yml
+
   # Package and persist the Auth0 scripts.
   - name: "auth0-script-packaging"
     command:
-      - ".buildkite/scripts/init-environment.sh"
-      - ".buildkite/scripts/auth0-script-packaging.sh"
+      - ". /app/.buildkite/scripts/init-environment.sh"
+      - "/app/.buildkite/scripts/auth0-script-packaging.sh"
     plugins:
       - wellcomecollection/aws-assume-role#v0.2.2:
           role: "arn:aws:iam::770700576653:role/identity-ci"
@@ -40,10 +49,10 @@ steps:
   # Package and persist the AWS Lambda Functions.
   - name: "aws-lambda-packaging"
     command:
-      - ".buildkite/scripts/init-environment.sh"
+      - ". /app/.buildkite/scripts/init-environment.sh"
       - "yarn install"
       - "yarn run -- lerna run build"
-      - ".buildkite/scripts/aws-lambda-packaging.sh"
+      - "/app/.buildkite/scripts/aws-lambda-packaging.sh"
     plugins:
       - wellcomecollection/aws-assume-role#v0.2.2:
           role: "arn:aws:iam::770700576653:role/identity-ci"
@@ -55,6 +64,17 @@ steps:
             - AWS_ACCESS_KEY_ID
             - AWS_SECRET_ACCESS_KEY
             - AWS_SESSION_TOKEN
+
+  - wait
+
+  # Clean up the '/app/.buildkite/build' directory.
+  - name: "clean build dir"
+    command:
+      - "mkdir -p /app/.buildkite/build"
+    plugins:
+      - docker-compose#v3.7.0:
+          run: app
+          config: .buildkite/docker-compose.yml
 
   - wait
 
