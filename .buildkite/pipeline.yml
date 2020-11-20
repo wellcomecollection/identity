@@ -1,4 +1,6 @@
 steps:
+
+  # Build the build image.
   - name: "build image"
     plugins:
       - docker-compose#v3.7.0:
@@ -7,6 +9,7 @@ steps:
 
   - wait
 
+  # Carry out some basic linting across the codebase.
   - name: "linting"
     command:
       - ".buildkite/scripts/linting.sh"
@@ -17,6 +20,7 @@ steps:
 
   - wait
 
+  # Package and persist the Auth0 scripts.
   - name: "auth0-script-packaging"
     command:
       - ".buildkite/scripts/auth0-script-packaging.sh"
@@ -32,6 +36,7 @@ steps:
             - AWS_SECRET_ACCESS_KEY
             - AWS_SESSION_TOKEN
 
+  # Package and persist the AWS Lambda Functions.
   - name: "aws-lambda-packaging"
     command:
       - "yarn install"
@@ -51,6 +56,9 @@ steps:
 
   - wait
 
+  # Trigger a CD of the codebase using the 'identity-deployment' pipeline.. We only want to do this
+  # for the 'main' branch, and we default to the 'stage' environment and the 'v1' stage of the API
+  # Gateway.
   - name: "deploy"
     branches: "main"
     trigger: "identity-deployment"

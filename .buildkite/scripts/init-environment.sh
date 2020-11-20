@@ -1,10 +1,31 @@
 #!/bin/bash
+########################################################
+# Script name : init-environment.sh
+# Author      : Daniel Grant <daniel.grant@digirati.com>
+########################################################
 
-if [ "$BUILDKITE_SOURCE" == "ui" ]; then
-  export DEPLOY_ENVIRONMENT=$(buildkite-agent meta-data get deploy-environment)
-  export DEPLOY_API_GATEWAY_STAGE=$(buildkite-agent meta-data get deploy-api-gateway-stage)
-fi
+set -o errexit
 
-cd infra/scoped && terraform init && terraform workspace select stage
-terraform output -json -no-color | jq -r .ci_environment_variables.value[] > env.sh
-chmod +x env.sh && source env.sh && rm env.sh
+function __process_environment_variables() {
+  export NORMALIZED_BRANCH_NAME="${BUILDKITE_BRANCH/\//-}"
+}
+
+function __process_buildkite_metadata() {
+  if [ "${BUILDKITE_SOURCE}" == "ui" ]; then
+    DEPLOY_ENVIRONMENT=$(buildkite-agent meta-data get deploy-environment)
+    export DEPLOY_ENVIRONMENT
+
+    DEPLOY_API_GATEWAY_STAGE=$(buildkite-agent meta-data get deploy-api-gateway-stage)
+    export DEPLOY_API_GATEWAY_STAGE
+  fi
+}
+
+function __init_terraform_env_vars() {
+  cd infra/scoped && terraform init && terraform workspace select stage
+  terraform output -json -no-color | jq -r .ci_environment_variables.value[] >env.sh
+  chmod +x env.sh && source env.sh && rm env.sh
+}
+
+__process_environment_variables
+__process_buildkite_metadata
+__init_terraform_env_vars

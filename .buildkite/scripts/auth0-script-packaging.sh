@@ -1,8 +1,18 @@
 #!/bin/bash
+########################################################
+# Script name : init-environment.sh
+# Author      : Daniel Grant <daniel.grant@digirati.com>
+########################################################
 
-export zip_file="auth0-${BUILDKITE_BRANCH/\//-}.zip"
+set -o errexit
 
-echo "Packaging Auth0 scripts..."
+__package_auth0_scripts() {
+  zip -vj "auth0-${NORMALIZED_BRANCH_NAME}.zip" "packages/apps/auth0-actions/src/get_user.js" "packages/apps/auth0-actions/src/login.js"
+}
 
-zip -vj "${zip_file}.zip" "packages/apps/auth0-actions/src/get_user.js" "packages/apps/auth0-actions/src/login.js"
-aws s3 cp "${zip_file}.zip" "s3://identity-dist/${zip_file}"
+__store_auth0_scripts() {
+  aws s3 cp "auth0-${NORMALIZED_BRANCH_NAME}.zip" "s3://identity-dist/auth0-${NORMALIZED_BRANCH_NAME}.zip"
+}
+
+__package_auth0_scripts
+__store_auth0_scripts

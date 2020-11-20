@@ -35,6 +35,7 @@ output "ci_environment_variables" {
   value = [
     "export AUTH0_DOMAIN=${var.auth0_domain}",
     "export AUTH0_CLIENT_ID=${auth0_client.buildkite.client_id}",
-    "export AUTH0_CLIENT_SECRET=${auth0_client.buildkite.client_secret}"
+    "export AUTH0_CLIENT_SECRET=${auth0_client.buildkite.client_secret}",
+    "export AUTH0_CONNECTION_NAME=${auth0_connection.sierra.name}"
   ]
 }
