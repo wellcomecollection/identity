@@ -39,3 +39,13 @@ variable "hostname_prefix" {}
 # Auth0
 
 variable "auth0_domain" {}
+
+# Cloudwatch
+
+variable cloudwatch_retention {}
+
+# API Gateway
+
+variable "api_gateway_log_format" {
+  default = "$context.identity.sourceIp $context.identity.caller  $context.identity.user [$context.requestTime] $context.httpMethod $context.resourcePath $context.protocol $context.status $context.responseLength $context.requestId"
+}
