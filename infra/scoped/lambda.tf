@@ -6,6 +6,22 @@ resource "aws_lambda_function" "authorizer" {
   role          = aws_iam_role.identity_api_gateway_lambda_role.arn
   runtime       = "nodejs12.x"
 
+  environment {
+    variables = {
+      AUTH0_API_ROOT = "https://${local.auth0_hostname}"
+    }
+  }
+
+  depends_on = [
+    aws_cloudwatch_log_group.lambda_authorizer
+  ]
+
+  lifecycle {
+    ignore_changes = [
+      filename
+    ]
+  }
+
   tags = merge(
     local.common_tags,
     {
@@ -29,6 +45,16 @@ resource "aws_lambda_function" "api" {
   handler       = "server-lambda.lambdaHandler"
   role          = aws_iam_role.identity_api_gateway_lambda_role.arn
   runtime       = "nodejs12.x"
+
+  depends_on = [
+    aws_cloudwatch_log_group.lambda_api
+  ]
+
+  lifecycle {
+    ignore_changes = [
+      filename
+    ]
+  }
 
   tags = merge(
     local.common_tags,

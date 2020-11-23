@@ -1,0 +1,46 @@
+steps:
+
+  # Build the build image.
+  - name: "build image"
+    plugins:
+      - docker-compose#v3.7.0:
+          build: app
+          config: .buildkite/docker-compose.yml
+
+    # Only prompt for deployment parameters if the build was triggered via the Web UI. All other
+    # methods of invoking the build should provide these are environment variables to the build.
+  - block: "provide deployment parameters"
+    prompt: "Provide deployment parameters"
+    if: build.source == "ui"
+    fields:
+      - text: "Deployment Environment"
+        hint: "The environment to deploy to, e.g. 'stage' or 'prod'"
+        required: true
+        key: "deployment-environment"
+      - text: "Deployment API Gateway Stage"
+        hint: "The API Gateway stage to deploy to, e.g. 'v1' or 'v2'"
+        required: true
+        key: "deployment-api-gateway-stage"
+
+    # Deploy the Auth0 scripts to Auth0. We don't want to execute the deployment every time there's
+    # a push to revision control. We're only interested in doing a deployment if e.g. it was
+    # manually invoked via the web UI, or a downstream job triggered the build.
+  - name: "auth0 script deployment"
+    if: build.source != "webhook"
+    command:
+      - ". /app/.buildkite/scripts/init-environment.sh"
+      - "/app/.buildkite/scripts/auth0-script-deployment.sh"
+    plugins:
+      - wellcomecollection/aws-assume-role#v0.2.2:
+          role: "arn:aws:iam::770700576653:role/identity-ci"
+      - docker-compose#v3.7.0:
+          run: app
+          config: .buildkite/docker-compose.yml
+          mount-buildkite-agent: true
+          env:
+            - BUILDKITE_BRANCH
+            - AWS_ACCESS_KEY_ID
+            - AWS_SECRET_ACCESS_KEY
+            - AWS_SESSION_TOKEN
+            - DEPLOY_ENVIRONMENT
+            - DEPLOY_API_GATEWAY_STAGE

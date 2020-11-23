@@ -1,14 +1,16 @@
 {
     "name": "api",
-    "version": "1.0.0",
+    "version": "0.1.0",
     "main": "index.js",
+    "repository": "git@github.com:/wellcomecollection/identity.git",
+    "author": "Daniel Grant <daniel.grant@digirati.com>",
     "license": "MIT",
+    "scripts": {
+        "build": "tsc"
+    },
     "dependencies": {
         "aws-serverless-express": "^3.3.8",
         "express": "^4.17.1"
-    },
-    "scripts": {
-        "build": "tsc"
     },
     "devDependencies": {
         "@types/aws-serverless-express": "^3.3.3",

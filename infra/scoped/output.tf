@@ -20,3 +20,22 @@ Client ID: ${auth0_client.dummy_test.client_id}
 Client Secret: ${auth0_client.dummy_test.client_secret}"
 EOF
 }
+
+output "auth0_client_buildkite" {
+  value = <<EOF
+Client Name: ${auth0_client.buildkite.name}
+Client ID: ${auth0_client.buildkite.client_id}
+Client Secret: ${auth0_client.buildkite.client_secret}
+EOF
+}
+
+# Environment variables
+
+output "ci_environment_variables" {
+  value = [
+    "export AUTH0_DOMAIN=${var.auth0_domain}",
+    "export AUTH0_CLIENT_ID=${auth0_client.buildkite.client_id}",
+    "export AUTH0_CLIENT_SECRET=${auth0_client.buildkite.client_secret}",
+    "export AUTH0_CONNECTION_NAME=${auth0_connection.sierra.name}"
+  ]
+}
