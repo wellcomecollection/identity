@@ -30,7 +30,7 @@ steps:
     command:
       - ". /app/.buildkite/scripts/init-environment.sh"
       - "/app/.buildkite/scripts/auth0-script-deployment.sh"
-      - "/app/.buildkite/aws-lambda-deploy.sh"
+      - "/app/.buildkite/scripts/aws-lambda-deploy.sh"
     plugins:
       - wellcomecollection/aws-assume-role#v0.2.2:
           role: "arn:aws:iam::770700576653:role/identity-ci"
