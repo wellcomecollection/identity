@@ -34,7 +34,7 @@ while true; do
     id=$(jq -r --arg index $index '.items[$index|tonumber] | .id')
 
     while read -r method; do
-      aws apigateway update-integration \
+      aws apigateway put-integration \
         --rest-api-id "$API_GATEWAY_ID" \
         --resource-id "$id" \
         --integration-http-method "$method" \
@@ -47,7 +47,7 @@ while true; do
   [[ "$pagination_token" != "null" ]] || break
 done
 
-aws apigateway put-authorizer \
+aws apigateway update-authorizer \
   --rest-api-id "$API_GATEWAY_ID" \
   --authorizer-id "$API_GATEWAY_AUTHORIZER_ID" \
   --patch-operations=op=replace,path="/authorizerUri",value="$api_auth_lambda_arn"
