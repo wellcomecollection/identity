@@ -1,24 +1,55 @@
 #!/bin/bash
 
-bundle_name="$1"
-environment="$2"
-version=${BUILDKITE_BRANCH/\//-}
-zip_file="$bundle_name-$version.zip"
+set -o errexit
+# TODO: if this fails at any point a lot of things could be left in a bad state.
 
-#  this is the id of the API gateway for stage, how can we better plug this together? use `terraform output`?
-apigw_id="m7u12kxh7k"
-
-lambda_version=$(aws lambda update-function-code \
-    --function-name "$bundle_name-$environment" \
+function __create_alias_for_bundle() {
+  local bundle_name="$1"
+  local zip_file="$bundle_name-$NORMALIZED_BRANCH_NAME.zip"
+  local lambda_version=$(aws lambda update-function-code \
+    --function-name "$bundle_name-$DEPLOY_ENVIRONMENT" \
     --s3-bucket identity-dist --s3-key "$zip_file" | jq .Version)
 
-aws lambda create-alias --function-name "$bundle_name-$environment" \
- --description "$version" --function-version "$lambda_version" --name "$version"
+  aws lambda create-alias --function-name "$bundle_name-$DEPLOY_ENVIRONMENT" \
+    --description "$NORMALIZED_BRANCH_NAME" \
+    --function-version "$lambda_version" \
+    --name "$NORMALIZED_BRANCH_NAME" | jq -r '.AliasArn'
+}
 
-for resource in "users_userid_delete" "users_userid_put"; do
-  # hm, we need _all_ of the info in a put? we can't patch it?
-  # todo: this doesn't work
-  aws apigateway put-integration --rest-api-id "$apigw_id" --resource-id "$resource" --http-method POST --type AWS_PROXY --integration-http-method POST --uri arn:aws:apigateway:$AWS_REGION:lambda:path/2015-03-31/functions/$functionArn:$GIT_SHA/invocations
+api_lambda_arn=$(__create_alias_for_bundle 'identity-api')
+api_auth_lambda_arn=$(__create_alias_for_bundle 'identity-authorizer')
+
+while true; do
+  args=(apigateway get-resources --max-items 100 --rest-api-id "$API_GATEWAY_ID")
+
+  if [ -v NEXT_TOKEN ]; then
+    args+=(--starting-token "$pagination_token")
+  fi
+
+  output=$(aws "${args[@]}")
+  pagination_token=$(jq -r ".NextToken" <<<"$output")
+
+  # https://xkcd.com/1319/
+  while read -r index; do
+    id=$(jq -r --arg index $index '.items[$index|tonumber] | .id')
+
+    while read -r method; do
+      aws apigateway update-integration \
+        --rest-api-id "$API_GATEWAY_ID" \
+        --resource-id "$id" \
+        --integration-http-method "$method" \
+        --http-method "$method" \
+        --type AWS_PROXY \
+        --uri "$api_lambda_arn"
+    done < <(jq -r --arg index $index '.items[$index|tonumber] | .resourceMethods | keys | .[]' <<<"$output")
+  done < <(jq -r '.items | to_entries | .[].key' <<<"$output")
+
+  [[ "$pagination_token" != "null" ]] || break
 done
 
-aws apigateway create-deployment --rest-api-id "$apigw_id" --stage-name v1
+aws apigateway put-authorizer \
+  --rest-api-id "$API_GATEWAY_ID" \
+  --authorizer-id "$API_GATEWAY_AUTHORIZER_ID" \
+  --patch-operations=op=replace,path="/authorizerUri",value="$api_auth_lambda_arn"
+
+aws apigateway create-deployment --rest-api-id "$API_GATEWAY_ID" --stage-name "$DEPLOY_API_GATEWAY_STAGE"
