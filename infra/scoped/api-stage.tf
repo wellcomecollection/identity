@@ -1,6 +1,6 @@
 resource "aws_api_gateway_deployment" "identity_deployment" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  description = timestamp()
+  description = "<empty>"
 }
 
 resource "aws_api_gateway_stage" "identity_v1" {

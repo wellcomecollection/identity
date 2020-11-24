@@ -15,7 +15,7 @@ app.post('/auth', (req, res) => authHandler(sierraClient, req, res));
 
 app.get('/users', function (req: Request, res: Response) {
   console.log('Processing [GET /users]...');
-  res.status(200).json([user_one, user_two])
+  res.status(200).json([user_one, user_two]);
 });
 
 app.post('/users', function (req: Request, res: Response) {
@@ -35,32 +35,32 @@ app.put('/users/:user_id', function (req: Request, res: Response) {
 
 app.delete('/users/:user_id', function (req: Request, res: Response) {
   console.log('Processing [DELETE /users/:user_id]...');
-  res.status(204).json();
+  res.status(204).end();
 });
 
 app.put('/users/:user_id/password', function (req: Request, res: Response) {
   console.log('Processing [PUT /users/:user_id/password]...');
-  res.status(200).json();
+  res.status(200).end();
 });
 
 app.put('/users/:user_id/reset-password', function (req: Request, res: Response) {
   console.log('Processing [PUT /users/:user_id/reset-password]...');
-  res.status(200).json();
+  res.status(200).end();
 });
 
 app.put('/users/:user_id/send-verification', function (req: Request, res: Response) {
   console.log('Processing [PUT /users/:user_id/send-verification]...');
-  res.status(200).json();
+  res.status(200).end();
 });
 
 app.put('/users/:user_id/lock', function (req: Request, res: Response) {
   console.log('Processing [PUT /users/:user_id/lock]...');
-  res.status(200).json();
+  res.status(200).end();
 });
 
 app.put('/users/:user_id/unlock', function (req: Request, res: Response) {
   console.log('Processing [PUT /users/:user_id/unlock]...');
-  res.status(200).json();
+  res.status(200).end();
 });
 
 export default app;
