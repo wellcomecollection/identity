@@ -19,7 +19,7 @@ export default class SierraClient {
         barcode: barcode,
         pin: pin
       }, {
-        validateStatus: status => status === 204 || status == 400
+        validateStatus: status => status === 204 || status === 400
       }).then(response => {
         switch (response.status) {
           case 204:
@@ -83,7 +83,7 @@ export default class SierraClient {
           varFieldContent: email,
           fields: 'varFields'
         },
-        validateStatus: status => status === 200 || status == 404
+        validateStatus: status => status === 200 || status === 404
       }).then(response => {
         switch (response.status) {
           case 200:
