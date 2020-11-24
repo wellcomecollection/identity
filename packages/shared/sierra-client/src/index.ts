@@ -1,4 +1,4 @@
-import type {AxiosInstance, AxiosResponse} from 'axios';
+import type {AxiosError, AxiosInstance} from 'axios';
 import axios from 'axios';
 
 export default class SierraClient {
@@ -19,15 +19,15 @@ export default class SierraClient {
         barcode: barcode,
         pin: pin
       }, {
-        validateStatus: status => status === 204 || status === 400
-      }).then(response => {
-        switch (response.status) {
-          case 204:
-            return this.success({});
+        validateStatus: status => status === 204
+      }).then(() => {
+        return this.success({});
+      }).catch(error => {
+        switch (error.response.status) {
           case 400:
             return this.error('Invalid credentials for barcode [' + barcode + ']', SierraStatus.InvalidCredentials);
           default:
-            return this.unhandledError(response);
+            return this.unhandledError(error);
         }
       });
     });
@@ -41,13 +41,13 @@ export default class SierraClient {
         },
         validateStatus: status => status === 200 || status === 404
       }).then(response => {
-        switch (response.status) {
-          case 200:
-            return this.success(this.toPatronRecord(response.data));
+        return this.success(this.toPatronRecord(response.data));
+      }).catch(error => {
+        switch (error.response.status) {
           case 404:
             return this.error('Record with record number [' + recordNumber + '] not found', SierraStatus.NotFound);
           default:
-            return this.unhandledError(response);
+            return this.unhandledError(error);
         }
       });
     });
@@ -63,13 +63,13 @@ export default class SierraClient {
         },
         validateStatus: status => status === 200 || status === 404
       }).then(response => {
-        switch (response.status) {
-          case 200:
-            return this.success(this.toPatronRecord(response.data));
+        return this.success(this.toPatronRecord(response.data));
+      }).catch(error => {
+        switch (error.response.status) {
           case 404:
             return this.error('Record with barcode [' + barcode + '] not found', SierraStatus.NotFound);
           default:
-            return this.unhandledError(response);
+            return this.unhandledError(error);
         }
       });
     });
@@ -85,13 +85,13 @@ export default class SierraClient {
         },
         validateStatus: status => status === 200 || status === 404
       }).then(response => {
-        switch (response.status) {
-          case 200:
-            return this.success(this.toPatronRecord(response.data));
+        return this.success(this.toPatronRecord(response.data));
+      }).catch(error => {
+        switch (error.response.status) {
           case 404:
             return this.error('Record with email address [' + email + '] not found', SierraStatus.NotFound);
           default:
-            return this.unhandledError(response);
+            return this.unhandledError(error);
         }
       });
     });
@@ -105,14 +105,12 @@ export default class SierraClient {
       },
       validateStatus: status => status === 200
     }).then(response => {
-      const instance = axios.create({
+      return axios.create({
         baseURL: this.apiRoot,
         headers: {
           Authorization: 'Bearer ' + response.data.access_token
         }
       });
-      instance.interceptors.response.use(response => response, error => this.unhandledError(error));
-      return instance;
     });
   }
 
@@ -206,9 +204,9 @@ export default class SierraClient {
     }
   }
 
-  private unhandledError(response: AxiosResponse): ErrorResponse {
+  private unhandledError(error: AxiosError): ErrorResponse {
     return {
-      message: '[' + response.status + ' ' + response.statusText + "] " + response.data,
+      message: 'Unexpected Sierra response: [' + error.message + ']',
       status: SierraStatus.UnknownError
     }
   }
