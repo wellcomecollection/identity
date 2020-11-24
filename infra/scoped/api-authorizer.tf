@@ -4,6 +4,6 @@ resource "aws_api_gateway_authorizer" "token_authorizer" {
 
   authorizer_uri                   = aws_lambda_function.authorizer.invoke_arn
   identity_source                  = "method.request.header.Authorization"
-  type                             = "TOKEN"
+  type                             = "REQUEST"
   authorizer_result_ttl_in_seconds = 0
 }
