@@ -1,4 +1,4 @@
-import type {AxiosInstance} from 'axios';
+import type {AxiosInstance, AxiosResponse} from 'axios';
 import axios from 'axios';
 
 export default class SierraClient {
@@ -27,7 +27,7 @@ export default class SierraClient {
           case 400:
             return this.error('Invalid credentials for barcode [' + barcode + ']', SierraStatus.InvalidCredentials);
           default:
-            throw Error(); // TODO This should never happen
+            return this.unhandledError(response);
         }
       });
     });
@@ -47,7 +47,7 @@ export default class SierraClient {
           case 404:
             return this.error('Record with record number [' + recordNumber + '] not found', SierraStatus.NotFound);
           default:
-            throw Error(); // TODO This should never happen
+            return this.unhandledError(response);
         }
       });
     });
@@ -69,7 +69,7 @@ export default class SierraClient {
           case 404:
             return this.error('Record with barcode [' + barcode + '] not found', SierraStatus.NotFound);
           default:
-            throw Error(); // TODO This should never happen
+            return this.unhandledError(response);
         }
       });
     });
@@ -91,7 +91,7 @@ export default class SierraClient {
           case 404:
             return this.error('Record with email address [' + email + '] not found', SierraStatus.NotFound);
           default:
-            throw new Error(); // TODO This should never happen
+            return this.unhandledError(response);
         }
       });
     });
@@ -111,12 +111,7 @@ export default class SierraClient {
           Authorization: 'Bearer ' + response.data.access_token
         }
       });
-      instance.interceptors.response.use(response => response, error => {
-        return {
-          message: '[' + error.response.status + ' ' + error.response.statusText + "] " + error.response.data,
-          status: SierraStatus.UnknownError
-        };
-      });
+      instance.interceptors.response.use(response => response, error => this.unhandledError(error));
       return instance;
     });
   }
@@ -208,6 +203,13 @@ export default class SierraClient {
     return {
       message: message,
       status: status
+    }
+  }
+
+  private unhandledError(response: AxiosResponse): ErrorResponse {
+    return {
+      message: '[' + response.status + ' ' + response.statusText + "] " + response.data,
+      status: SierraStatus.UnknownError
     }
   }
 }
