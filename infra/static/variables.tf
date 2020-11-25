@@ -16,3 +16,9 @@ variable "tag_project" {
 variable "tag_managed_by" {
   default = "Terraform"
 }
+
+# AWS SES
+
+variable "ses_domain" {
+  default = "wellcomecollection.org"
+}

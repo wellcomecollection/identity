@@ -3,6 +3,8 @@ resource "auth0_client" "dummy_test" {
   app_type       = "regular_web"
   is_first_party = true
 
+  custom_login_page_on = false
+
   callbacks = [
     "https://${local.auth0_hostname}/login/callback"
   ]
@@ -11,6 +13,8 @@ resource "auth0_client" "dummy_test" {
 resource "auth0_client" "buildkite" {
   name     = "Buildkite"
   app_type = "non_interactive"
+
+  custom_login_page_on = false
 }
 
 resource "auth0_client_grant" "buildkite" {

@@ -40,6 +40,16 @@ variable "hostname_prefix" {}
 
 variable "auth0_domain" {}
 
+variable "auth0_email_from_domain" {
+  default = "wellcomecollection.org"
+}
+
+variable "auth0_email_from_name" {}
+
+variable "auth0_email_from_user" {
+  default = "library"
+}
+
 # Cloudwatch
 
 variable cloudwatch_retention {}
