@@ -35,3 +35,27 @@ variable "hostname" {
 }
 
 variable "hostname_prefix" {}
+
+# Auth0
+
+variable "auth0_domain" {}
+
+variable "auth0_email_from_domain" {
+  default = "wellcomecollection.org"
+}
+
+variable "auth0_email_from_name" {
+  default = "Wellcome Collection"
+}
+
+variable "auth0_email_from_user" {}
+
+# Cloudwatch
+
+variable cloudwatch_retention {}
+
+# API Gateway
+
+variable "api_gateway_log_format" {
+  default = "$context.identity.sourceIp $context.identity.caller  $context.identity.user [$context.requestTime] $context.httpMethod $context.resourcePath $context.protocol $context.status $context.responseLength $context.requestId"
+}

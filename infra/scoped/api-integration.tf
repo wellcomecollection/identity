@@ -7,7 +7,7 @@ resource "aws_api_gateway_integration" "auth_post" {
 
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.stubs_empty-200.invoke_arn
+  uri                     = aws_lambda_function.api.invoke_arn
 }
 
 # [GET] /users
@@ -19,7 +19,7 @@ resource "aws_api_gateway_integration" "users_get" {
 
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.stubs_user-list.invoke_arn
+  uri                     = aws_lambda_function.api.invoke_arn
 
   request_parameters = {
     "integration.request.path.userId"   = "method.request.querystring.page",
@@ -37,7 +37,7 @@ resource "aws_api_gateway_integration" "users_post" {
 
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.stubs_empty-201.invoke_arn
+  uri                     = aws_lambda_function.api.invoke_arn
 }
 
 # [GET] /users/:user_id
@@ -49,7 +49,7 @@ resource "aws_api_gateway_integration" "users_userid_get" {
 
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.stubs_user.invoke_arn
+  uri                     = aws_lambda_function.api.invoke_arn
 
   request_parameters = {
     "integration.request.path.userId" = "method.request.path.userId"
@@ -65,7 +65,7 @@ resource "aws_api_gateway_integration" "users_userid_put" {
 
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.stubs_empty-200.invoke_arn
+  uri                     = aws_lambda_function.api.invoke_arn
 
   request_parameters = {
     "integration.request.path.userId" = "method.request.path.userId"
@@ -81,7 +81,7 @@ resource "aws_api_gateway_integration" "users_userid_delete" {
 
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.stubs_empty-204.invoke_arn
+  uri                     = aws_lambda_function.api.invoke_arn
 
   request_parameters = {
     "integration.request.path.userId" = "method.request.path.userId"
@@ -97,7 +97,7 @@ resource "aws_api_gateway_integration" "users_userid_password_put" {
 
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.stubs_empty-200.invoke_arn
+  uri                     = aws_lambda_function.api.invoke_arn
 
   request_parameters = {
     "integration.request.path.userId" = "method.request.path.userId"
@@ -113,7 +113,7 @@ resource "aws_api_gateway_integration" "users_userid_reset-password_put" {
 
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.stubs_empty-200.invoke_arn
+  uri                     = aws_lambda_function.api.invoke_arn
 
   request_parameters = {
     "integration.request.path.userId" = "method.request.path.userId"
@@ -129,7 +129,7 @@ resource "aws_api_gateway_integration" "users_userid_send-verification_put" {
 
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.stubs_empty-200.invoke_arn
+  uri                     = aws_lambda_function.api.invoke_arn
 
   request_parameters = {
     "integration.request.path.userId" = "method.request.path.userId"
@@ -145,7 +145,7 @@ resource "aws_api_gateway_integration" "users_userid_lock_put" {
 
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.stubs_empty-200.invoke_arn
+  uri                     = aws_lambda_function.api.invoke_arn
 
   request_parameters = {
     "integration.request.path.userId" = "method.request.path.userId"
@@ -161,7 +161,7 @@ resource "aws_api_gateway_integration" "users_userid_unlock_put" {
 
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.stubs_empty-200.invoke_arn
+  uri                     = aws_lambda_function.api.invoke_arn
 
   request_parameters = {
     "integration.request.path.userId" = "method.request.path.userId"
