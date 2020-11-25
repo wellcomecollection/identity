@@ -1,15 +1,17 @@
 import express, {Application, Request, Response} from 'express';
 import bodyParser from 'body-parser';
+import SierraClient from "@weco/sierra-client";
+import authHandler from "./handlers/authHandler";
 
 const app: Application = express();
+const sierraClient: SierraClient = new SierraClient(
+  process.env.SIERRA_API_ROOT!, process.env.SIERRA_CLIENT_KEY!, process.env.SIERRA_CLIENT_SECRET!
+);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-app.post('/auth', function (req: Request, res: Response) {
-  console.log('Processing [POST /auth]...');
-  res.status(200).end();
-});
+app.post('/auth', (req, res) => authHandler(sierraClient, req, res));
 
 app.get('/users', function (req: Request, res: Response) {
   console.log('Processing [GET /users]...');
@@ -61,6 +63,14 @@ app.put('/users/:user_id/unlock', function (req: Request, res: Response) {
   res.status(200).end();
 });
 
+export default app;
+
+export function error(reason: string) {
+  return {
+    message: reason
+  }
+}
+
 const user_one = {
   patronId: "123456",
   barcode: "654321",
@@ -90,5 +100,3 @@ const user_two = {
   lastLoginIp: "192.168.0.1",
   totalLogins: 240
 };
-
-export default app;
