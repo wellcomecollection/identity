@@ -1,5 +1,6 @@
 import type {AxiosError, AxiosInstance} from 'axios';
 import axios from 'axios';
+import toPatronRecord, {PatronRecord} from "./patron";
 
 export default class SierraClient {
 
@@ -41,7 +42,7 @@ export default class SierraClient {
         },
         validateStatus: status => status === 200 || status === 404
       }).then(response => {
-        return this.success(this.toPatronRecord(response.data));
+        return this.success(toPatronRecord(response.data));
       }).catch(error => {
         switch (error.response.status) {
           case 404:
@@ -63,7 +64,7 @@ export default class SierraClient {
         },
         validateStatus: status => status === 200 || status === 404
       }).then(response => {
-        return this.success(this.toPatronRecord(response.data));
+        return this.success(toPatronRecord(response.data));
       }).catch(error => {
         switch (error.response.status) {
           case 404:
@@ -85,7 +86,7 @@ export default class SierraClient {
         },
         validateStatus: status => status === 200 || status === 404
       }).then(response => {
-        return this.success(this.toPatronRecord(response.data));
+        return this.success(toPatronRecord(response.data));
       }).catch(error => {
         switch (error.response.status) {
           case 404:
@@ -114,82 +115,6 @@ export default class SierraClient {
     });
   }
 
-  private toPatronRecord(data: any): PatronRecord {
-    const patronName = this.getPatronName(data.varFields);
-    return Object.assign(patronName, {
-        recordNumber: data.id,
-        barcode: this.extractVarFieldContent(data.varFields, 'b'),
-        emailAddress: this.extractVarFieldContent(data.varFields, 'z')
-      }
-    );
-  }
-
-  private extractVarFieldContent(varFields: VarField[], fieldTag: string) {
-    const found = varFields.find(varField => varField.fieldTag === fieldTag);
-    return found ? found.content : '';
-  }
-
-  private getPatronName(varFields: VarField[]) {
-    const found = varFields.find(varField => varField.fieldTag === 'n');
-    if (found && found.content) {
-      return this.getPatronNameNonMarc(found.content);
-    } else if (found && found.subFields) {
-      return this.getPatronNameMarc(found.subFields);
-    } else {
-      return {
-        title: '',
-        firstName: '',
-        lastName: ''
-      }
-    }
-  }
-
-  private getPatronNameMarc(subFields: VarSubField[]): PatronName {
-    const title = subFields.find(subField => subField.tag === 'c')
-    const firstName = subFields.find(subField => subField.tag === 'b')
-    const lastName = subFields.find(subField => subField.tag === 'a')
-    return {
-      title: title ? title.content.trim() : '',
-      firstName: firstName ? firstName.content.trim() : '',
-      lastName: lastName ? lastName.content.trim() : ''
-    }
-  }
-
-  private getPatronNameNonMarc(content: string): PatronName {
-    if (!content.trim()) {
-      return {
-        title: '',
-        firstName: '',
-        lastName: ''
-      };
-    }
-
-    content = content.replace('100', '').replace('a|', '').replace('_', '');
-
-    let lastName = '';
-    if (content.includes(',')) {
-      lastName = content.substring(0, content.indexOf(','));
-    }
-
-    let title = '';
-    if (content.includes('|c')) {
-      title = content.substring(content.indexOf('|c') + 2, content.indexOf('|b'));
-    }
-
-    let firstName = '';
-    if (content.includes('|b')) {
-      firstName = content.substring(content.indexOf('|b') + 2, content.length);
-    } else {
-      firstName = content.substring(content.indexOf(',') + 1, content.length);
-    }
-
-    return {
-      title: title.trim(),
-      firstName: firstName.trim(),
-      lastName: lastName.trim()
-    };
-  }
-
   private success<T>(result: T): SuccessResponse<T> {
     return {
       result: result,
@@ -210,29 +135,6 @@ export default class SierraClient {
       status: SierraStatus.UnknownError
     }
   }
-}
-
-interface VarField {
-  fieldTag: string,
-  content: string,
-  subFields: VarSubField[]
-}
-
-interface VarSubField {
-  tag: string,
-  content: string
-}
-
-interface PatronName {
-  title: string;
-  firstName: string;
-  lastName: string;
-}
-
-interface PatronRecord extends PatronName {
-  recordNumber: string;
-  barcode: string;
-  emailAddress: string;
 }
 
 export enum SierraStatus {
