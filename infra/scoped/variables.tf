@@ -44,11 +44,11 @@ variable "auth0_email_from_domain" {
   default = "wellcomecollection.org"
 }
 
-variable "auth0_email_from_name" {
-  default = "Wellcome Collection"
-}
+variable "auth0_email_from_name" {}
 
-variable "auth0_email_from_user" {}
+variable "auth0_email_from_user" {
+  default = "library"
+}
 
 # Cloudwatch
 
