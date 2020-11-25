@@ -19,10 +19,10 @@ resource "aws_iam_role" "identity_api_gateway_lambda_role" {
 EOF
 
   tags = merge(
-  local.common_tags,
-  {
-    "Name" = "identity-api-gateway-lambda-role-${terraform.workspace}"
-  }
+    local.common_tags,
+    {
+      "Name" = "identity-api-gateway-lambda-role-${terraform.workspace}"
+    }
   )
 }
 
@@ -55,10 +55,10 @@ resource "aws_iam_role_policy_attachment" "identity_api_gateway_lambda_policy" {
 resource "aws_iam_user" "auth0_email" {
   name = "auth0-email-${terraform.workspace}"
   tags = merge(
-  local.common_tags,
-  {
-    "Name" = "auth0-email-${terraform.workspace}"
-  }
+    local.common_tags,
+    {
+      "Name" = "auth0-email-${terraform.workspace}"
+    }
   )
 }
 
