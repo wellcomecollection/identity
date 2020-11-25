@@ -1,0 +1,15 @@
+{
+    "name": "@weco/auth0-client",
+    "version": "0.1.0",
+    "description": "API client for Auth0 services",
+    "main": "lib/index.js",
+    "repository": "git@github.com:/wellcomecollection/identity.git",
+    "author": "Daniel Grant <daniel.grant@digirati.com>",
+    "license": "MIT",
+    "scripts": {
+        "build": "tsc"
+    },
+    "devDependencies": {
+        "axios": "^0.21.0"
+    }
+}

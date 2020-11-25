@@ -1,12 +1,37 @@
 resource "aws_api_gateway_deployment" "identity_deployment" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  description = timestamp()
+  description = "<empty>"
 }
 
 resource "aws_api_gateway_stage" "identity_v1" {
   rest_api_id   = aws_api_gateway_rest_api.identity.id
   deployment_id = aws_api_gateway_deployment.identity_deployment.id
   stage_name    = local.identity_v1
+
+  access_log_settings {
+    destination_arn = aws_cloudwatch_log_group.identity_api_gateway_v1_access_log.arn
+    format          = var.api_gateway_log_format
+  }
+
+  depends_on = [
+    aws_cloudwatch_log_group.identity_api_gateway_v1_access_log
+  ]
+}
+
+resource "aws_api_gateway_method_settings" "identity_v1" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  stage_name  = aws_api_gateway_stage.identity_v1.stage_name
+  method_path = "*/*" # Applies this logging configuration to all methods automatically
+
+  settings {
+    metrics_enabled    = true
+    logging_level      = "INFO"
+    data_trace_enabled = true
+  }
+
+  depends_on = [
+    aws_cloudwatch_log_group.identity_api_gateway_v1_execution_log
+  ]
 }
 
 resource "aws_api_gateway_domain_name" "identity_v1" {
