@@ -11,7 +11,8 @@ output "wellcomecollection_org_ses_vertification_token" {
     name = "_amazonses.${aws_ses_domain_identity.wellcomecollection_org.id}"
     type = "TXT"
     records = [
-    aws_ses_domain_identity.wellcomecollection_org.verification_token]
+      aws_ses_domain_identity.wellcomecollection_org.verification_token
+    ]
   }
 }
 
@@ -22,7 +23,8 @@ output "wellcomecollection_org_ses_dkim_tokens" {
       name = "${token}._domainkey.${var.ses_domain}"
       type = "CNAME"
       records = [
-      "${token}.dkim.amazonses.com"]
+        "${token}.dkim.amazonses.com"
+      ]
     }
   ]
 }
