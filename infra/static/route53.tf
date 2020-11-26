@@ -1,10 +1,10 @@
-resource "aws_route53_zone" "identity" {
-  name = "identity.wellcomecollection.org"
+resource "aws_route53_zone" "account" {
+  name = "account.wellcomecollection.org"
 
   tags = merge(
     local.common_tags,
     {
-      "Name" = "identity.wellcomecollection.org"
+      "Name" = "account.wellcomecollection.org"
     }
   )
 }
