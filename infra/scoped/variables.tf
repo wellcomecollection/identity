@@ -31,7 +31,7 @@ variable "tag_managed_by" {
 
 variable "hostname" {
   # Assume that this hostname is available as a Route 53 zone within the same AWS account
-  default = "identity.wellcomecollection.org"
+  default = "account.wellcomecollection.org"
 }
 
 variable "hostname_prefix" {}

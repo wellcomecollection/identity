@@ -6,7 +6,7 @@ hostname_prefix = "stage"
 
 auth0_domain = "wellcomecollection-stage.eu.auth0.com"
 
-auth0_email_from_name = "Wellcome Library (stage)"
+auth0_email_from_name = "Library Enquiries (stage)"
 
 # Cloudwatch
 
