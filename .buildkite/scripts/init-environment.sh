@@ -11,22 +11,13 @@ function __process_environment_variables() {
 }
 
 function __process_buildkite_metadata() {
-  echo "Buildkite source = ${BUILDKITE_SOURCE}"
-
   if [ "${BUILDKITE_SOURCE}" == "ui" ]; then
-    echo "UI build detected, fetching job parameters from Buildkite metadata..."
-
     DEPLOY_ENVIRONMENT=$(buildkite-agent meta-data get deploy-environment)
     export DEPLOY_ENVIRONMENT
 
     DEPLOY_API_GATEWAY_STAGE=$(buildkite-agent meta-data get deploy-api-gateway-stage)
     export DEPLOY_API_GATEWAY_STAGE
-  else
-    echo "Automatic build detected, fetching job parameters from environment variables..."
   fi
-
-  echo "Got [DEPLOY_ENVIRONMENT=${DEPLOY_ENVIRONMENT}]"
-  echo "Got [DEPLOY_API_GATEWAY_STAGE=${DEPLOY_API_GATEWAY_STAGE}]"
 }
 
 function __init_terraform_env_vars() {
