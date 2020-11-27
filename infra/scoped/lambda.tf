@@ -9,7 +9,13 @@ resource "aws_lambda_function" "authorizer" {
 
   environment {
     variables = {
-      AUTH0_API_ROOT = "https://${local.auth0_hostname}"
+      SIERRA_API_ROOT      = var.sierra_api_hostname,
+      SIERRA_CLIENT_KEY    = data.external.sierra_api_credentials.result.SierraAPIKey
+      SIERRA_CLIENT_SECRET = data.external.sierra_api_credentials.result.SierraAPISecret
+      AUTH0_API_ROOT       = "https://${local.auth0_hostname}"
+      AUTH0_API_AUDIENCE   = auth0_client_grant.api_gateway_identity.audience,
+      AUTH0_CLIENT_ID      = auth0_client.api_gateway_identity.client_id,
+      AUTH0_CLIENT_SECRET  = auth0_client.api_gateway_identity.client_secret
     }
   }
 
@@ -47,6 +53,18 @@ resource "aws_lambda_function" "api" {
   role          = aws_iam_role.identity_api_gateway_lambda_role.arn
   runtime       = "nodejs12.x"
   filename      = "data/empty.zip"
+
+  environment {
+    variables = {
+      SIERRA_API_ROOT      = var.sierra_api_hostname,
+      SIERRA_CLIENT_KEY    = data.external.sierra_api_credentials.result.SierraAPIKey
+      SIERRA_CLIENT_SECRET = data.external.sierra_api_credentials.result.SierraAPISecret
+      AUTH0_API_ROOT       = "https://${local.auth0_hostname}"
+      AUTH0_API_AUDIENCE   = auth0_client_grant.api_gateway_identity.audience,
+      AUTH0_CLIENT_ID      = auth0_client.api_gateway_identity.client_id,
+      AUTH0_CLIENT_SECRET  = auth0_client.api_gateway_identity.client_secret
+    }
+  }
 
   depends_on = [
     aws_cloudwatch_log_group.lambda_api

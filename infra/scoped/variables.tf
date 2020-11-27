@@ -36,6 +36,10 @@ variable "hostname" {
 
 variable "hostname_prefix" {}
 
+# Sierra
+
+variable "sierra_api_hostname" {}
+
 # Auth0
 
 variable "auth0_domain" {}

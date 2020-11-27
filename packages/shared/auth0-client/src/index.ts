@@ -21,7 +21,14 @@ export default class Auth0Client {
       validateStatus: status => status === 200
     }).then(response =>
       successResponse(toUserInfo(response))
-    );
+    ).catch(error => {
+      switch (error.response.status) {
+        case 401:
+          return errorResponse('Access token [' + accessToken + '] not valid', ResponseStatus.InvalidCredentials);
+        default:
+          return unhandledError(error);
+      }
+    });
   }
 
   async getProfile(userId: string): Promise<APIResponse<Auth0Profile>> {

@@ -28,6 +28,14 @@ function __create_alias_for_bundle() {
     alias_operation=create
   fi
 
+  aws lambda add-permission \
+    --function-name "${function_name}" \
+    --statement-id "AllowAPIGatewayInvoke" \
+    --action "lambda:InvokeFunction" \
+    --principal "apigateway.amazonaws.com" \
+    --source-arn "arn:aws:execute-api:${AWS_DEFAULT_REGION}:${AWS_ACCOUNT_ID}:${API_GATEWAY_ID}/*/*" \
+    --qualifier "${NORMALIZED_BRANCH_NAME}" >&2
+
   aws lambda ${alias_operation}-alias \
     --function-name "${function_name}" \
     --description "${NORMALIZED_BRANCH_NAME}" \
