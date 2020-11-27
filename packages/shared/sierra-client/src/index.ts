@@ -42,7 +42,7 @@ export default class SierraClient {
         params: {
           fields: 'varFields'
         },
-        validateStatus: status => status === 200 || status === 404
+        validateStatus: status => status === 200
       }).then(response => {
         return successResponse(toPatronRecord(response.data));
       }).catch(error => {
@@ -65,7 +65,7 @@ export default class SierraClient {
           varFieldContent: barcode,
           fields: 'varFields'
         },
-        validateStatus: status => status === 200 || status === 404
+        validateStatus: status => status === 200
       }).then(response => {
         return successResponse(toPatronRecord(response.data));
       }).catch(error => {
@@ -88,7 +88,7 @@ export default class SierraClient {
           varFieldContent: email,
           fields: 'varFields'
         },
-        validateStatus: status => status === 200 || status === 404
+        validateStatus: status => status === 200
       }).then(response => {
         return successResponse(toPatronRecord(response.data));
       }).catch(error => {
