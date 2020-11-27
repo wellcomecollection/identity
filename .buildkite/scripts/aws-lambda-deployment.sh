@@ -1,4 +1,8 @@
 #!/bin/bash
+########################################################
+# Script name : aws-lambda-deployment.sh
+# Author      : Gary Tierney <gary.tierney@digirati.com>
+########################################################
 
 set -o errexit
 # TODO: if this fails at any point a lot of things could be left in a bad state.

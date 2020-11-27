@@ -1,6 +1,6 @@
 #!/bin/bash
 ########################################################
-# Script name : init-environment.sh
+# Script name : auth0-script-deployment.sh
 # Author      : Daniel Grant <daniel.grant@digirati.com>
 ########################################################
 

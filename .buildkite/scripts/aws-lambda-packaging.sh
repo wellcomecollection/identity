@@ -1,5 +1,10 @@
 #!/bin/bash
+########################################################
+# Script name : aws-lambda-packaging.sh
+# Author      : Gary Tierney <gary.tierney@digirati.com>
+########################################################
 
+set -o errexit
 
 function __package_lambda() {
   local package_path="$1"
