@@ -11,6 +11,8 @@ function __process_environment_variables() {
 }
 
 function __process_buildkite_metadata() {
+  echo "Buildkite source = ${BUILDKITE_SOURCE}"
+
   if [ "${BUILDKITE_SOURCE}" == "ui" ]; then
     echo "UI build detected, fetching job parameters from Buildkite metadata..."
 
