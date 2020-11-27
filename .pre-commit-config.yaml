@@ -16,3 +16,10 @@
     - id: trailing-whitespace
     - id: check-json
     - id: check-yaml
+
+- repo: https://github.com/detailyang/pre-commit-shell.git
+  rev: v1.0.6
+  hooks:
+    - id: shell-lint
+      args: [--format=json]
+      exclude: ^gradlew$
