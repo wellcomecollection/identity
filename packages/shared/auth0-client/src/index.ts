@@ -9,11 +9,11 @@ export default class Auth0Client {
   private readonly clientId: string;
   private readonly clientSecret: string;
 
-  constructor(apiRoot: string, clientId: string, clientSecret: string, apiAudience: string) {
+  constructor(apiRoot: string, apiAudience: string, clientId: string, clientSecret: string) {
     this.apiRoot = apiRoot;
+    this.apiAudience = apiAudience;
     this.clientId = clientId;
     this.clientSecret = clientSecret;
-    this.apiAudience = apiAudience;
   }
 
   async validateAccessToken(accessToken: string): Promise<APIResponse<Auth0UserInfo>> {
