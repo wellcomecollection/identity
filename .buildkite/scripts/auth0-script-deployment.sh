@@ -20,5 +20,5 @@ __do_deployment() {
   a0deploy import --input_file "/app/.buildkite/build/auth0-export/"
 }
 
-__retrieve_artifacts "${DEPLOY_WORKSPACE}"
-__do_deployment "${DEPLOY_WORKSPACE}"
+__retrieve_artifacts
+__do_deployment
