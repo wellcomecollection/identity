@@ -16,11 +16,11 @@ steps:
       - text: "Deployment Environment"
         hint: "The environment to deploy to, e.g. 'stage' or 'prod'"
         required: true
-        key: "deployment-environment"
+        key: "deploy-environment"
       - text: "Deployment API Gateway Stage"
         hint: "The API Gateway stage to deploy to, e.g. 'v1' or 'v2'"
         required: true
-        key: "deployment-api-gateway-stage"
+        key: "deploy-api-gateway-stage"
 
     # Deploy the Auth0 scripts to Auth0. We don't want to execute the deployment every time there's
     # a push to revision control. We're only interested in doing a deployment if e.g. it was
