@@ -60,7 +60,7 @@ export default class Auth0Client {
       validateStatus: status => status === 200
     }).then(response => {
       return axios.create({
-        baseURL: this.apiRoot + '/v2/api',
+        baseURL: this.apiRoot + '/api/v2',
         headers: {
           Authorization: 'Bearer ' + response.data.access_token
         }
