@@ -22,12 +22,13 @@ export default class Auth0Client {
     }).then(response =>
       successResponse(toUserInfo(response))
     ).catch(error => {
-      switch (error.response.status) {
-        case 401:
-          return errorResponse('Access token [' + accessToken + '] not valid', ResponseStatus.InvalidCredentials);
-        default:
-          return unhandledError(error);
+      if (error.response) {
+        switch (error.response.status) {
+          case 401:
+            return errorResponse('Access token [' + accessToken + '] not valid', ResponseStatus.InvalidCredentials);
+        }
       }
+      return unhandledError(error);
     });
   }
 
@@ -38,12 +39,13 @@ export default class Auth0Client {
       }).then(response =>
         successResponse(toUserProfile(response))
       ).catch(error => {
-        switch (error.response.status) {
-          case 404:
-            return errorResponse('User with ID [' + userId + '] not found', ResponseStatus.NotFound);
-          default:
-            return unhandledError(error);
+        if (error.response) {
+          switch (error.response.status) {
+            case 404:
+              return errorResponse('User with ID [' + userId + '] not found', ResponseStatus.NotFound);
+          }
         }
+        return unhandledError(error);
       });
     });
   }

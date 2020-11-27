@@ -25,12 +25,13 @@ export default class SierraClient {
       }).then(() => {
         return successResponse({});
       }).catch(error => {
-        switch (error.response.status) {
-          case 400:
-            return errorResponse('Invalid credentials for barcode [' + barcode + ']', ResponseStatus.InvalidCredentials);
-          default:
-            return unhandledError(error);
+        if (error.response) {
+          switch (error.response.status) {
+            case 400:
+              return errorResponse('Invalid credentials for barcode [' + barcode + ']', ResponseStatus.InvalidCredentials);
+          }
         }
+        return unhandledError(error);
       });
     });
   }
@@ -45,12 +46,13 @@ export default class SierraClient {
       }).then(response => {
         return successResponse(toPatronRecord(response.data));
       }).catch(error => {
-        switch (error.response.status) {
-          case 404:
-            return errorResponse('Record with record number [' + recordNumber + '] not found', ResponseStatus.NotFound);
-          default:
-            return unhandledError(error);
+        if (error.response) {
+          switch (error.response.status) {
+            case 404:
+              return errorResponse('Record with record number [' + recordNumber + '] not found', ResponseStatus.NotFound);
+          }
         }
+        return unhandledError(error);
       });
     });
   }
@@ -67,12 +69,13 @@ export default class SierraClient {
       }).then(response => {
         return successResponse(toPatronRecord(response.data));
       }).catch(error => {
-        switch (error.response.status) {
-          case 404:
-            return errorResponse('Record with barcode [' + barcode + '] not found', ResponseStatus.NotFound);
-          default:
-            return unhandledError(error);
+        if (error.response) {
+          switch (error.response.status) {
+            case 404:
+              return errorResponse('Record with barcode [' + barcode + '] not found', ResponseStatus.NotFound);
+          }
         }
+        return unhandledError(error);
       });
     });
   }
@@ -89,12 +92,13 @@ export default class SierraClient {
       }).then(response => {
         return successResponse(toPatronRecord(response.data));
       }).catch(error => {
-        switch (error.response.status) {
-          case 404:
-            return errorResponse('Record with email address [' + email + '] not found', ResponseStatus.NotFound);
-          default:
-            return unhandledError(error);
+        if (error.response) {
+          switch (error.response.status) {
+            case 404:
+              return errorResponse('Record with email address [' + email + '] not found', ResponseStatus.NotFound);
+          }
         }
+        return unhandledError(error);
       });
     });
   }
