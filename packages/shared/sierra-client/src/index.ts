@@ -1,6 +1,7 @@
-import type {AxiosError, AxiosInstance} from 'axios';
+import type {AxiosInstance} from 'axios';
 import axios from 'axios';
 import toPatronRecord, {PatronRecord} from "./patron";
+import {APIResponse, errorResponse, ResponseStatus, successResponse, unhandledError} from "@weco/identity-common";
 
 export default class SierraClient {
 
@@ -14,7 +15,7 @@ export default class SierraClient {
     this.clientSecret = clientSecret;
   }
 
-  async validateCredentials(barcode: string, pin: string): Promise<SierraResponse<{}>> {
+  async validateCredentials(barcode: string, pin: string): Promise<APIResponse<{}>> {
     return this.getInstance().then(instance => {
       return instance.post('/v6/patrons/validate', {
         barcode: barcode,
@@ -22,19 +23,19 @@ export default class SierraClient {
       }, {
         validateStatus: status => status === 204
       }).then(() => {
-        return this.success({});
+        return successResponse({});
       }).catch(error => {
         switch (error.response.status) {
           case 400:
-            return this.error('Invalid credentials for barcode [' + barcode + ']', SierraStatus.InvalidCredentials);
+            return errorResponse('Invalid credentials for barcode [' + barcode + ']', ResponseStatus.InvalidCredentials);
           default:
-            return this.unhandledError(error);
+            return unhandledError(error);
         }
       });
     });
   }
 
-  async getPatronRecordByRecordNumber(recordNumber: string): Promise<SierraResponse<PatronRecord>> {
+  async getPatronRecordByRecordNumber(recordNumber: string): Promise<APIResponse<PatronRecord>> {
     return this.getInstance().then(instance => {
       return instance.get('/v6/patrons/' + recordNumber, {
         params: {
@@ -42,19 +43,19 @@ export default class SierraClient {
         },
         validateStatus: status => status === 200 || status === 404
       }).then(response => {
-        return this.success(toPatronRecord(response.data));
+        return successResponse(toPatronRecord(response.data));
       }).catch(error => {
         switch (error.response.status) {
           case 404:
-            return this.error('Record with record number [' + recordNumber + '] not found', SierraStatus.NotFound);
+            return errorResponse('Record with record number [' + recordNumber + '] not found', ResponseStatus.NotFound);
           default:
-            return this.unhandledError(error);
+            return unhandledError(error);
         }
       });
     });
   }
 
-  async getPatronRecordByBarcode(barcode: string): Promise<SierraResponse<PatronRecord>> {
+  async getPatronRecordByBarcode(barcode: string): Promise<APIResponse<PatronRecord>> {
     return this.getInstance().then(instance => {
       return instance.get('/v6/patrons/find', {
         params: {
@@ -64,19 +65,19 @@ export default class SierraClient {
         },
         validateStatus: status => status === 200 || status === 404
       }).then(response => {
-        return this.success(toPatronRecord(response.data));
+        return successResponse(toPatronRecord(response.data));
       }).catch(error => {
         switch (error.response.status) {
           case 404:
-            return this.error('Record with barcode [' + barcode + '] not found', SierraStatus.NotFound);
+            return errorResponse('Record with barcode [' + barcode + '] not found', ResponseStatus.NotFound);
           default:
-            return this.unhandledError(error);
+            return unhandledError(error);
         }
       });
     });
   }
 
-  async getPatronRecordByEmail(email: string): Promise<SierraResponse<PatronRecord>> {
+  async getPatronRecordByEmail(email: string): Promise<APIResponse<PatronRecord>> {
     return this.getInstance().then(instance => {
       return instance.get('/v6/patrons/find', {
         params: {
@@ -86,13 +87,13 @@ export default class SierraClient {
         },
         validateStatus: status => status === 200 || status === 404
       }).then(response => {
-        return this.success(toPatronRecord(response.data));
+        return successResponse(toPatronRecord(response.data));
       }).catch(error => {
         switch (error.response.status) {
           case 404:
-            return this.error('Record with email address [' + email + '] not found', SierraStatus.NotFound);
+            return errorResponse('Record with email address [' + email + '] not found', ResponseStatus.NotFound);
           default:
-            return this.unhandledError(error);
+            return unhandledError(error);
         }
       });
     });
@@ -114,44 +115,4 @@ export default class SierraClient {
       });
     });
   }
-
-  private success<T>(result: T): SuccessResponse<T> {
-    return {
-      result: result,
-      status: SierraStatus.Success
-    }
-  }
-
-  private error(message: string, status: SierraStatus.NotFound | SierraStatus.InvalidCredentials): ErrorResponse {
-    return {
-      message: message,
-      status: status
-    }
-  }
-
-  private unhandledError(error: AxiosError): ErrorResponse {
-    return {
-      message: 'Unexpected Sierra response: [' + error.message + ']',
-      status: SierraStatus.UnknownError
-    }
-  }
 }
-
-export enum SierraStatus {
-  Success,
-  NotFound,
-  InvalidCredentials,
-  UnknownError
-}
-
-type SuccessResponse<T> = {
-  result: T,
-  status: SierraStatus.Success
-}
-
-type ErrorResponse = {
-  message: string,
-  status: SierraStatus.NotFound | SierraStatus.InvalidCredentials | SierraStatus.UnknownError
-}
-
-type SierraResponse<T> = SuccessResponse<T> | ErrorResponse;

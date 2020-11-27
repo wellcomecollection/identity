@@ -10,6 +10,7 @@
         "build": "tsc"
     },
     "devDependencies": {
-        "axios": "^0.21.0"
+        "axios": "^0.21.0",
+        "@weco/identity-common": "*"
     }
 }
