@@ -1,6 +1,6 @@
 #!/bin/bash
 ########################################################
-# Script name : init-environment.sh
+# Script name : linting.sh
 # Author      : Daniel Grant <daniel.grant@digirati.com>
 ########################################################
 
