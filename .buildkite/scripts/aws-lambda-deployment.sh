@@ -14,7 +14,7 @@ function __create_alias_for_bundle() {
   local zip_file="$bundle_name-$NORMALIZED_BRANCH_NAME.zip"
   local lambda_version=$(aws lambda update-function-code \
     --function-name "$bundle_name-$DEPLOY_ENVIRONMENT" \
-    --s3-bucket identity-dist --s3-key "$zip_file" | jq .Version)
+    --s3-bucket identity-dist --s3-key "$zip_file" | jq -r .Version)
 
   aws lambda create-alias --function-name "$bundle_name-$DEPLOY_ENVIRONMENT" \
     --description "$NORMALIZED_BRANCH_NAME" \
