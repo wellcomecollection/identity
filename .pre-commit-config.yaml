@@ -22,4 +22,3 @@
   hooks:
     - id: shell-lint
       args: [--format=json]
-      exclude: ^gradlew$

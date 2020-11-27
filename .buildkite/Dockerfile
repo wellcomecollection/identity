@@ -3,7 +3,7 @@ LABEL maintainer="Daniel Grant <daniel.grant@digirati.com>"
 
 SHELL ["/bin/bash", "-ox", "pipefail", "-c"]
 
-RUN microdnf install git zip unzip findutils python3 python3-pip npm jq tar xz \
+RUN microdnf install git zip unzip findutils python3 python3-pip npm jq tar xz which \
     && pip3 install pre-commit awscli \
     && npm install --global auth0-deploy-cli yarn
 
