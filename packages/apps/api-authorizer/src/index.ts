@@ -12,9 +12,6 @@ export async function lambdaHandler(event: APIGatewayRequestAuthorizerEvent): Pr
 
   const auth0Client = new Auth0Client(AUTH0_API_ROOT, AUTH0_API_AUDIENCE, AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET);
 
-  console.log("Processing headers [" + JSON.stringify(event.headers) + "]");
-  console.log("Processing path parameters [" + JSON.stringify(event.pathParameters) + "]");
-
   if (event.headers && event.headers.Authorization) {
 
     const authorizationHeader = event.headers.Authorization;
@@ -27,11 +24,11 @@ export async function lambdaHandler(event: APIGatewayRequestAuthorizerEvent): Pr
 
     return auth0Client.validateAccessToken(accessToken).then(response => {
       if (response.status === ResponseStatus.Success) {
-        if (event.pathParameters && event.pathParameters.user_id) {
+        if (event.pathParameters && event.pathParameters.userId) {
           if (validateRequest(response.result, event.pathParameters, event.resource, event.httpMethod)) {
             return buildAuthorizerResult(response.result.userId, 'Allow', event.methodArn);
           } else {
-            console.log("Access token [" + accessToken + "] for user [" + JSON.stringify(response.result) + "] cannot operate on ID [" + event.pathParameters.user_id + "]");
+            console.log("Access token [" + accessToken + "] for user [" + JSON.stringify(response.result) + "] cannot operate on ID [" + event.pathParameters.userId + "]");
             return buildAuthorizerResult(response.result.userId, 'Deny', event.methodArn);
           }
         } else {
@@ -62,12 +59,9 @@ function validateRequest(auth0UserInfo: Auth0UserInfo, pathParameters: { [name: 
   const userId: string = auth0UserInfo.userId.toString();
   const targetUserId: string = pathParameters.userId;
 
-  console.log("Got user ID [" + userId + "] operating against [" + targetUserId + "]");
-
   if (resource === "/users" && method === "GET") {
     return false; // TODO Only accessible to administrators
   } else if (resource === "/users/{userId}" && (method === "GET" || method === "PUT" || method === "DELETE")) {
-    console.log("Evaluation: [" + userId == targetUserId + "]")
     return userId === targetUserId; // TODO Accessible to both users and administrators
   } else if (resource === "/users/{userId}/password" && method === "PUT") {
     return userId === targetUserId; // TODO Accessible to both users and administrators
