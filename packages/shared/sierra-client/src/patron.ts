@@ -92,7 +92,7 @@ interface PatronName {
 }
 
 export interface PatronRecord extends PatronName {
-  recordNumber: string;
+  recordNumber: number;
   barcode: string;
   emailAddress: string;
 }

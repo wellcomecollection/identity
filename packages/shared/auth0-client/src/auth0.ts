@@ -28,7 +28,7 @@ export function toUserProfile(response: AxiosResponse): Auth0Profile {
 }
 
 export interface Auth0UserInfo {
-  userId: string;
+  userId: number;
   email: string;
 }
 
