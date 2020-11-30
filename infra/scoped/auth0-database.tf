@@ -12,11 +12,10 @@ resource "auth0_connection" "sierra" {
     disable_signup                 = true
     requires_username              = false
     brute_force_protection         = true
-    password_policy                = "excellent"
+    password_policy                = "fair"
 
     password_history {
-      enable = true
-      size   = 24
+      enable = false
     }
 
     password_no_personal_info {
@@ -24,11 +23,12 @@ resource "auth0_connection" "sierra" {
     }
 
     password_dictionary {
-      enable = true
+      enable     = true
+      dictionary = ["wellcome"]
     }
 
     password_complexity_options {
-      min_length = 12
+      min_length = 8
     }
   }
 }
