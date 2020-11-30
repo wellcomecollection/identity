@@ -21,7 +21,7 @@ export async function lambdaHandler(event: APIGatewayRequestAuthorizerEvent): Pr
     const accessToken = extractAccessToken(authorizationHeader);
 
     if (!accessToken) {
-      console.log("Authorization header [" + authorizationHeader + "] is not a valid Bearer token");
+      console.log("Authorization header [" + authorizationHeader + "] is not a valid bearer token");
       return buildAuthorizerResult(authorizationHeader, 'Deny', event.methodArn);
     }
 
@@ -59,15 +59,18 @@ function validateRequest(auth0UserInfo: Auth0UserInfo, pathParameters: { [name: 
   // TODO Can we do this better? We need to be able to determine if the resource and method that is being operated on is
   // accessible to the user for whom the request is being made on behalf of. Hardcoding the resource and methods like
   // this doesn't seem very good...
-  const userId = auth0UserInfo.userId;
-  const targetUserId = pathParameters.userId;
+  const userId: string = auth0UserInfo.userId.toString();
+  const targetUserId: string = pathParameters.userId;
+
+  console.log("Got user ID [" + userId + "] operating against [" + targetUserId + "]");
 
   if (resource === "/users" && method === "GET") {
     return false; // TODO Only accessible to administrators
   } else if (resource === "/users/{userId}" && (method === "GET" || method === "PUT" || method === "DELETE")) {
-    return userId == targetUserId; // TODO Accessible to both users and administrators
+    console.log("Evaluation: [" + userId == targetUserId + "]")
+    return userId === targetUserId; // TODO Accessible to both users and administrators
   } else if (resource === "/users/{userId}/password" && method === "PUT") {
-    return userId == targetUserId; // TODO Accessible to both users and administrators
+    return userId === targetUserId; // TODO Accessible to both users and administrators
   } else if (resource === "/users/{userId}/send-verification" && method === "PUT") {
     return false; // TODO Only accessible to administrators
   } else if (resource === "/users/{userId}/lock" && method === "PUT") {
@@ -79,9 +82,9 @@ function validateRequest(auth0UserInfo: Auth0UserInfo, pathParameters: { [name: 
   return false;
 }
 
-function buildAuthorizerResult(principal: string, effect: string, methodArn: string): APIGatewayAuthorizerResult {
+function buildAuthorizerResult(principal: string | number, effect: string, methodArn: string): APIGatewayAuthorizerResult {
   return {
-    principalId: principal,
+    principalId: principal.toString(),
     policyDocument: {
       Version: '2012-10-17',
       Statement: [
