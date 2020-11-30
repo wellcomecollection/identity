@@ -16,10 +16,11 @@ function __create_alias_for_bundle() {
 
   local lambda_version
   lambda_version=$(aws lambda update-function-code \
-    --function-name "${function_name}" \
-    --s3-bucket "identity-dist" \
-    --s3-key "${zip_file}" \
-    --publish | jq -r '.Version')
+      --function-name "${function_name}" \
+      --s3-bucket "identity-dist" \
+      --s3-key "${zip_file}" \
+      --publish \
+    | jq -r '.Version')
 
   local alias_operation
   if aws lambda get-alias --function-name "${function_name}" --name "${NORMALIZED_BRANCH_NAME}" >&2; then
@@ -32,7 +33,23 @@ function __create_alias_for_bundle() {
     --function-name "${function_name}" \
     --description "${NORMALIZED_BRANCH_NAME}" \
     --function-version "${lambda_version}" \
-    --name "${NORMALIZED_BRANCH_NAME}" | jq -r '.AliasArn'
+    --name "${NORMALIZED_BRANCH_NAME}" \
+    | jq -r '.AliasArn'
+
+  if aws lambda get-policy --function-name "${function_name}" --qualifier "${NORMALIZED_BRANCH_NAME}" >&2; then
+    aws lambda remove-permission \
+      --function-name "${function_name}" \
+      --statement-id "AllowAPIGatewayInvoke" \
+      --qualifier "${NORMALIZED_BRANCH_NAME}"
+  fi
+
+  aws lambda add-permission \
+    --function-name "${function_name}" \
+    --statement-id "AllowAPIGatewayInvoke" \
+    --action "lambda:InvokeFunction" \
+    --principal "apigateway.amazonaws.com" \
+    --source-arn "arn:aws:execute-api:${AWS_DEFAULT_REGION}:${AWS_ACCOUNT_ID}:${API_GATEWAY_ID}/*/*" \
+    --qualifier "${NORMALIZED_BRANCH_NAME}" >&2
 }
 
 api_lambda_arn=$(__create_alias_for_bundle 'identity-api')
@@ -53,13 +70,22 @@ while true; do
     id=$(jq -r --arg index "$index" '.items[$index|tonumber] | .id' <<<"${output}")
 
     while read -r method; do
+
+      request_params=$(aws apigateway get-integration \
+          --rest-api-id "${API_GATEWAY_ID}" \
+          --resource-id "${id}" \
+          --http-method="${method}" \
+        | jq -r '.requestParameters // {}')
+
       aws apigateway put-integration \
         --rest-api-id "${API_GATEWAY_ID}" \
         --resource-id "${id}" \
         --integration-http-method "POST" \
         --http-method "${method}" \
+        --request-parameters="${request_params}" \
         --type "AWS_PROXY" \
         --uri "arn:aws:apigateway:${AWS_DEFAULT_REGION}:lambda:path/2015-03-31/functions/${api_lambda_arn}/invocations"
+
     done < <(jq -r --arg index "${index}" '.items[$index|tonumber] | .resourceMethods | keys | .[]' <<<"${output}")
   done < <(jq -r '.items | to_entries | .[].key' <<<"${output}")
 

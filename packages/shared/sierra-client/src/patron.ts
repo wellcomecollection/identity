@@ -17,8 +17,8 @@ function getPatronName(varFields: VarField[]) {
   const found = varFields.find(varField => varField.fieldTag === 'n');
   if (found && found.content) {
     return getPatronNameNonMarc(found.content);
-  } else if (found && found.subFields) {
-    return getPatronNameMarc(found.subFields);
+  } else if (found && found.subfields) {
+    return getPatronNameMarc(found.subfields);
   } else {
     return {
       title: '',
@@ -77,7 +77,7 @@ function getPatronNameNonMarc(content: string): PatronName {
 interface VarField {
   fieldTag: string,
   content: string,
-  subFields: VarSubField[]
+  subfields: VarSubField[]
 }
 
 interface VarSubField {
@@ -92,7 +92,7 @@ interface PatronName {
 }
 
 export interface PatronRecord extends PatronName {
-  recordNumber: string;
+  recordNumber: number;
   barcode: string;
   emailAddress: string;
 }
