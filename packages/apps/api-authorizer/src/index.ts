@@ -42,6 +42,8 @@ export async function lambdaHandler(event: APIGatewayRequestAuthorizerEvent): Pr
         return buildAuthorizerResult(accessToken, 'Deny', event.methodArn);
       }
     });
+  } else {
+    return buildAuthorizerResult("user", 'Deny', event.methodArn);
   }
 }
 
