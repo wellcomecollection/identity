@@ -4,7 +4,7 @@
   "type": "object",
   "properties": {
     "patronId": {
-      "type": "string"
+      "type": "number"
     },
     "barcode": {
       "type": "string"

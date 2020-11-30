@@ -12,13 +12,5 @@
         "sourceMap": true,
         "strict": true,
         "target": "es2017"
-    },
-    "references": [
-        {
-            "path": "../../shared/sierra-client"
-        },
-        {
-            "path": "../../shared/auth0-client"
-        }
-    ]
+    }
 }

@@ -8,6 +8,12 @@ resource "aws_api_gateway_integration" "auth_post" {
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
   uri                     = aws_lambda_function.api.invoke_arn
+
+  lifecycle {
+    ignore_changes = [
+      uri
+    ]
+  }
 }
 
 # [GET] /users
@@ -26,6 +32,12 @@ resource "aws_api_gateway_integration" "users_get" {
     "integration.request.path.pageSize" = "method.request.querystring.pageSize",
     "integration.request.path.query"    = "method.request.querystring.query"
   }
+
+  lifecycle {
+    ignore_changes = [
+      uri
+    ]
+  }
 }
 
 # [POST] /users
@@ -38,6 +50,12 @@ resource "aws_api_gateway_integration" "users_post" {
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
   uri                     = aws_lambda_function.api.invoke_arn
+
+  lifecycle {
+    ignore_changes = [
+      uri
+    ]
+  }
 }
 
 # [GET] /users/:user_id
@@ -53,6 +71,12 @@ resource "aws_api_gateway_integration" "users_userid_get" {
 
   request_parameters = {
     "integration.request.path.userId" = "method.request.path.userId"
+  }
+
+  lifecycle {
+    ignore_changes = [
+      uri
+    ]
   }
 }
 
@@ -70,6 +94,12 @@ resource "aws_api_gateway_integration" "users_userid_put" {
   request_parameters = {
     "integration.request.path.userId" = "method.request.path.userId"
   }
+
+  lifecycle {
+    ignore_changes = [
+      uri
+    ]
+  }
 }
 
 # [DELETE] /users/:user_id
@@ -85,6 +115,12 @@ resource "aws_api_gateway_integration" "users_userid_delete" {
 
   request_parameters = {
     "integration.request.path.userId" = "method.request.path.userId"
+  }
+
+  lifecycle {
+    ignore_changes = [
+      uri
+    ]
   }
 }
 
@@ -102,6 +138,12 @@ resource "aws_api_gateway_integration" "users_userid_password_put" {
   request_parameters = {
     "integration.request.path.userId" = "method.request.path.userId"
   }
+
+  lifecycle {
+    ignore_changes = [
+      uri
+    ]
+  }
 }
 
 # [PUT] /users/:user_id/reset-password
@@ -117,6 +159,12 @@ resource "aws_api_gateway_integration" "users_userid_reset-password_put" {
 
   request_parameters = {
     "integration.request.path.userId" = "method.request.path.userId"
+  }
+
+  lifecycle {
+    ignore_changes = [
+      uri
+    ]
   }
 }
 
@@ -134,6 +182,12 @@ resource "aws_api_gateway_integration" "users_userid_send-verification_put" {
   request_parameters = {
     "integration.request.path.userId" = "method.request.path.userId"
   }
+
+  lifecycle {
+    ignore_changes = [
+      uri
+    ]
+  }
 }
 
 # [PUT] /users/:user_id/lock
@@ -150,6 +204,12 @@ resource "aws_api_gateway_integration" "users_userid_lock_put" {
   request_parameters = {
     "integration.request.path.userId" = "method.request.path.userId"
   }
+
+  lifecycle {
+    ignore_changes = [
+      uri
+    ]
+  }
 }
 
 # [PUT] /users/:user_id/unlock
@@ -165,5 +225,11 @@ resource "aws_api_gateway_integration" "users_userid_unlock_put" {
 
   request_parameters = {
     "integration.request.path.userId" = "method.request.path.userId"
+  }
+
+  lifecycle {
+    ignore_changes = [
+      uri
+    ]
   }
 }

@@ -16,6 +16,12 @@ resource "aws_api_gateway_stage" "identity_v1" {
   depends_on = [
     aws_cloudwatch_log_group.identity_api_gateway_v1_access_log
   ]
+
+  lifecycle {
+    ignore_changes = [
+      deployment_id
+    ]
+  }
 }
 
 resource "aws_api_gateway_method_settings" "identity_v1" {

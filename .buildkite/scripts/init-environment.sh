@@ -20,6 +20,7 @@ function __process_buildkite_metadata() {
   fi
 }
 
+# shellcheck disable=SC1091
 function __init_terraform_env_vars() {
   cd /app/infra/scoped && terraform init && terraform workspace select stage
   mkdir -p /app/.buildkite/build

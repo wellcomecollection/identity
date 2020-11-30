@@ -1,36 +1,39 @@
 import express, {Application, Request, Response} from 'express';
 import bodyParser from 'body-parser';
 import SierraClient from "@weco/sierra-client";
-import authHandler from "./handlers/authHandler";
+import {validateCredentials} from "./handlers/auth";
+import {DummyUserOne, DummyUserTwo} from "./models/user";
+import {getUser} from "./handlers/user";
+import Auth0Client from "@weco/auth0-client";
 
 const app: Application = express();
 const sierraClient: SierraClient = new SierraClient(
   process.env.SIERRA_API_ROOT!, process.env.SIERRA_CLIENT_KEY!, process.env.SIERRA_CLIENT_SECRET!
 );
+const auth0Client: Auth0Client = new Auth0Client(
+  process.env.AUTH0_API_ROOT!, process.env.AUTH0_API_AUDIENCE!, process.env.AUTH0_CLIENT_ID!, process.env.AUTH0_CLIENT_SECRET!
+);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-app.post('/auth', (req, res) => authHandler(sierraClient, req, res));
+app.post('/auth', (req, res) => validateCredentials(sierraClient, req, res));
 
 app.get('/users', function (req: Request, res: Response) {
   console.log('Processing [GET /users]...');
-  res.status(200).json([user_one, user_two]);
+  res.status(200).json([DummyUserOne, DummyUserTwo]);
 });
 
 app.post('/users', function (req: Request, res: Response) {
   console.log('Processing [POST /users]...');
-  res.status(201).json(user_one);
+  res.status(201).json(DummyUserOne);
 });
 
-app.get('/users/:user_id', function (req: Request, res: Response) {
-  console.log('Processing [GET /users/:user_id]...');
-  res.status(200).json(user_one);
-});
+app.get('/users/:user_id', (req, res) => getUser(sierraClient, auth0Client, req, res));
 
 app.put('/users/:user_id', function (req: Request, res: Response) {
   console.log('Processing [PUT /users/:user_id]...');
-  res.status(200).json(user_one);
+  res.status(200).json(DummyUserOne);
 });
 
 app.delete('/users/:user_id', function (req: Request, res: Response) {
@@ -64,39 +67,3 @@ app.put('/users/:user_id/unlock', function (req: Request, res: Response) {
 });
 
 export default app;
-
-export function error(reason: string) {
-  return {
-    message: reason
-  }
-}
-
-const user_one = {
-  patronId: "123456",
-  barcode: "654321",
-  title: "Mr",
-  firstName: "John",
-  lastName: "Doe",
-  email: "john.doe@example.com",
-  emailValidated: true,
-  locked: false,
-  creationDate: "2020-11-01 00:00:00",
-  lastLogin: "2020-11-01 12:00:00",
-  lastLoginIp: "127.0.0.1",
-  totalLogins: 120
-};
-
-const user_two = {
-  patronId: "654321",
-  barcode: "123456",
-  title: "Mrs",
-  firstName: "Jane",
-  lastName: "Doe",
-  email: "jane.doe@example.com",
-  emailValidated: true,
-  locked: false,
-  creationDate: "2020-11-11 00:00:00",
-  lastLogin: "2020-11-11 12:00:00",
-  lastLoginIp: "192.168.0.1",
-  totalLogins: 240
-};

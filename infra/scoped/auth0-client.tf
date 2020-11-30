@@ -77,3 +77,19 @@ resource "auth0_client_grant" "buildkite" {
     "update:branding"
   ]
 }
+
+resource "auth0_client" "api_gateway_identity" {
+  name     = "Identity API Gateway ${terraform.workspace}"
+  app_type = "non_interactive"
+
+  custom_login_page_on = false
+}
+
+resource "auth0_client_grant" "api_gateway_identity" {
+  client_id = auth0_client.api_gateway_identity.id
+  audience  = "https://${var.auth0_domain}/api/v2/"
+  scope = [
+    "read:users",
+    "read:user_idp_tokens"
+  ]
+}

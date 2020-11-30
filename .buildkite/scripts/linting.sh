@@ -6,7 +6,7 @@
 
 set -o errexit
 
-__run_pre_commit() {
+function __run_pre_commit() {
   pre-commit run --all-files --verbose
 }
 

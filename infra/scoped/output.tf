@@ -29,6 +29,14 @@ Client Secret: ${auth0_client.buildkite.client_secret}
 EOF
 }
 
+output "auth0_client_api_gateway_identity" {
+  value = <<EOF
+Client Name: ${auth0_client.api_gateway_identity.name}
+Client ID: ${auth0_client.api_gateway_identity.client_id}
+Client Secret: ${auth0_client.api_gateway_identity.client_secret}
+EOF
+}
+
 # Environment variables
 
 output "ci_environment_variables" {
@@ -38,6 +46,7 @@ output "ci_environment_variables" {
     "export AUTH0_CLIENT_SECRET=${auth0_client.buildkite.client_secret}",
     "export AUTH0_CONNECTION_NAME=${auth0_connection.sierra.name}",
     "export API_GATEWAY_ID=${aws_api_gateway_rest_api.identity.id}",
-    "export API_GATEWAY_AUTHORIZER_ID=${aws_api_gateway_authorizer.token_authorizer.id}"
+    "export API_GATEWAY_AUTHORIZER_ID=${aws_api_gateway_authorizer.token_authorizer.id}",
+    "export AWS_ACCOUNT_ID=${data.aws_caller_identity.current.account_id}"
   ]
 }
