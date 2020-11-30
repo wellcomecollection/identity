@@ -28,6 +28,19 @@ function __create_alias_for_bundle() {
     alias_operation=create
   fi
 
+  aws lambda ${alias_operation}-alias \
+    --function-name "${function_name}" \
+    --description "${NORMALIZED_BRANCH_NAME}" \
+    --function-version "${lambda_version}" \
+    --name "${NORMALIZED_BRANCH_NAME}" | jq -r '.AliasArn'
+
+  if aws lambda get-policy --function-name "${function_name}" --qualifier "${NORMALIZED_BRANCH_NAME}" >&2; then
+    aws lambda remove-permission \
+      --function-name "${function_name}" \
+      --statement-id "AllowAPIGatewayInvoke" \
+      --qualifier "${NORMALIZED_BRANCH_NAME}"
+  fi
+
   aws lambda add-permission \
     --function-name "${function_name}" \
     --statement-id "AllowAPIGatewayInvoke" \
@@ -35,12 +48,6 @@ function __create_alias_for_bundle() {
     --principal "apigateway.amazonaws.com" \
     --source-arn "arn:aws:execute-api:${AWS_DEFAULT_REGION}:${AWS_ACCOUNT_ID}:${API_GATEWAY_ID}/*/*" \
     --qualifier "${NORMALIZED_BRANCH_NAME}" >&2
-
-  aws lambda ${alias_operation}-alias \
-    --function-name "${function_name}" \
-    --description "${NORMALIZED_BRANCH_NAME}" \
-    --function-version "${lambda_version}" \
-    --name "${NORMALIZED_BRANCH_NAME}" | jq -r '.AliasArn'
 }
 
 api_lambda_arn=$(__create_alias_for_bundle 'identity-api')
