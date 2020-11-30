@@ -1,6 +1,7 @@
 import {APIGatewayAuthorizerResult, APIGatewayRequestAuthorizerEvent} from 'aws-lambda';
 import Auth0Client from '@weco/auth0-client';
 import {ResponseStatus} from "@weco/identity-common";
+import {Auth0UserInfo} from "@weco/auth0-client/lib/auth0";
 
 export async function lambdaHandler(event: APIGatewayRequestAuthorizerEvent): Promise<APIGatewayAuthorizerResult> {
 
@@ -11,20 +12,66 @@ export async function lambdaHandler(event: APIGatewayRequestAuthorizerEvent): Pr
 
   const auth0Client = new Auth0Client(AUTH0_API_ROOT, AUTH0_API_AUDIENCE, AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET);
 
-  const validateAccessTokenResponse = await auth0Client.validateAccessToken(extractAccessToken(event.headers!.Authorization));
-  if (validateAccessTokenResponse.status === ResponseStatus.Success) {
-    return buildAuthorizerResult(validateAccessTokenResponse.result.userId, 'Allow', event.methodArn);
-  } else {
-    return buildAuthorizerResult('user', 'Deny', event.methodArn);
+  if (event.headers && event.headers.Authorization) {
+
+    const authorizationHeader = event.headers.Authorization;
+    const accessToken = extractAccessToken(authorizationHeader);
+
+    if (!accessToken) {
+      console.log("Authorization header [" + authorizationHeader + "] is not a valid Bearer token");
+      return buildAuthorizerResult(authorizationHeader, 'Deny', event.methodArn);
+    }
+
+    return auth0Client.validateAccessToken(accessToken).then(response => {
+      if (response.status === ResponseStatus.Success) {
+        if (event.pathParameters && event.pathParameters.user_id) {
+          if (validateRequest(response.result, event.pathParameters, event.resource, event.httpMethod)) {
+            return buildAuthorizerResult(response.result.userId, 'Allow', event.methodArn);
+          } else {
+            console.log("Access token [" + accessToken + "] for user [" + JSON.stringify(response.result) + "] cannot operate on ID [" + event.pathParameters.user_id + "]");
+            return buildAuthorizerResult(response.result.userId, 'Deny', event.methodArn);
+          }
+        } else {
+          return buildAuthorizerResult(response.result.userId, 'Allow', event.methodArn);
+        }
+      } else if (response.status == ResponseStatus.InvalidCredentials) {
+        console.log("Access token token [" + accessToken + "] rejected by Auth0: " + response.message);
+        return buildAuthorizerResult(accessToken, 'Deny', event.methodArn);
+      } else {
+        console.log("Unknown error processing access token [" + accessToken + "]: " + response.message);
+        return buildAuthorizerResult(accessToken, 'Deny', event.methodArn);
+      }
+    });
   }
 }
 
-function extractAccessToken(tokenString: string): string {
+function extractAccessToken(tokenString: string): null | string {
   const match = tokenString.match(/^Bearer (.*)$/);
-  if (!match || match.length < 2) {
-    throw new Error('Invalid Authorization token [' + tokenString + '] does not match [Bearer .*]');
+  return !match || match.length < 2 ? null : match[1];
+}
+
+function validateRequest(auth0UserInfo: Auth0UserInfo, pathParameters: { [name: string]: string }, resource: string, method: string): boolean {
+  // TODO Can we do this better? We need to be able to determine if the resource and method that is being operated on is
+  // accessible to the user for whom the request is being made on behalf of. Hardcoding the resource and methods like
+  // this doesn't seem very good...
+  const userId = auth0UserInfo.userId;
+  const targetUserId = pathParameters.userId;
+
+  if (resource === "/users" && method === "GET") {
+    return false; // TODO Only accessible to administrators
+  } else if (resource === "/users/{userId}" && (method === "GET" || method === "PUT" || method === "DELETE")) {
+    return userId == targetUserId; // TODO Accessible to both users and administrators
+  } else if (resource === "/users/{userId}/password" && method === "PUT") {
+    return userId == targetUserId; // TODO Accessible to both users and administrators
+  } else if (resource === "/users/{userId}/send-verification" && method === "PUT") {
+    return false; // TODO Only accessible to administrators
+  } else if (resource === "/users/{userId}/lock" && method === "PUT") {
+    return false; // TODO Only accessible to administrators
+  } else if (resource === "/users/{userId}/unlock" && method === "PUT") {
+    return false; // TODO Only accessible to administrators
   }
-  return match[1];
+
+  return false;
 }
 
 function buildAuthorizerResult(principal: string, effect: string, methodArn: string): APIGatewayAuthorizerResult {
