@@ -6,7 +6,7 @@
 
 set -o errexit
 
-function __package_lambda() {
+function package_lambda() {
   local package_path="$1"
   local bundle_name="$2"
   local zip_file="$bundle_name-${BUILDKITE_BRANCH/\//-}.zip"

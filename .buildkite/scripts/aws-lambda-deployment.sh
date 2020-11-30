@@ -4,7 +4,7 @@
 # Author      : Gary Tierney <gary.tierney@digirati.com>
 ########################################################
 
-set -ox errexit
+set -o errexit
 # TODO: if this fails at any point a lot of things could be left in a bad state.
 
 export AWS_DEFAULT_REGION=eu-west-1
@@ -16,10 +16,11 @@ function __create_alias_for_bundle() {
 
   local lambda_version
   lambda_version=$(aws lambda update-function-code \
-    --function-name "${function_name}" \
-    --s3-bucket "identity-dist" \
-    --s3-key "${zip_file}" \
-    --publish | jq -r '.Version')
+      --function-name "${function_name}" \
+      --s3-bucket "identity-dist" \
+      --s3-key "${zip_file}" \
+      --publish \
+    | jq -r '.Version')
 
   local alias_operation
   if aws lambda get-alias --function-name "${function_name}" --name "${NORMALIZED_BRANCH_NAME}" >&2; then
@@ -32,7 +33,8 @@ function __create_alias_for_bundle() {
     --function-name "${function_name}" \
     --description "${NORMALIZED_BRANCH_NAME}" \
     --function-version "${lambda_version}" \
-    --name "${NORMALIZED_BRANCH_NAME}" | jq -r '.AliasArn'
+    --name "${NORMALIZED_BRANCH_NAME}" \
+    | jq -r '.AliasArn'
 
   if aws lambda get-policy --function-name "${function_name}" --qualifier "${NORMALIZED_BRANCH_NAME}" >&2; then
     aws lambda remove-permission \
@@ -70,9 +72,10 @@ while true; do
     while read -r method; do
 
       request_params=$(aws apigateway get-integration \
-        --rest-api-id "${API_GATEWAY_ID}" \
-        --resource-id "${id}" \
-        --http-method="${method}" | jq -r '.requestParameters // {}')
+          --rest-api-id "${API_GATEWAY_ID}" \
+          --resource-id "${id}" \
+          --http-method="${method}" \
+        | jq -r '.requestParameters // {}')
 
       aws apigateway put-integration \
         --rest-api-id "${API_GATEWAY_ID}" \
