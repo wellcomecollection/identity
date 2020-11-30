@@ -50,6 +50,12 @@ resource "aws_api_gateway_integration" "users_post" {
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
   uri                     = aws_lambda_function.api.invoke_arn
+
+  lifecycle {
+    ignore_changes = [
+      uri
+    ]
+  }
 }
 
 # [GET] /users/:user_id
