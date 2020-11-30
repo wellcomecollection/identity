@@ -4,7 +4,7 @@
 # Author      : Gary Tierney <gary.tierney@digirati.com>
 ########################################################
 
-set -o errexit
+set -ox errexit
 # TODO: if this fails at any point a lot of things could be left in a bad state.
 
 export AWS_DEFAULT_REGION=eu-west-1
@@ -68,13 +68,21 @@ while true; do
     id=$(jq -r --arg index "$index" '.items[$index|tonumber] | .id' <<<"${output}")
 
     while read -r method; do
+
+      request_params=$(aws apigateway get-integration \
+        --rest-api-id "${API_GATEWAY_ID}" \
+        --resource-id "${id}" \
+        --http-method="${method}" | jq -r '.requestParameters // {}')
+
       aws apigateway put-integration \
         --rest-api-id "${API_GATEWAY_ID}" \
         --resource-id "${id}" \
         --integration-http-method "POST" \
         --http-method "${method}" \
+        --request-parameters="${request_params}" \
         --type "AWS_PROXY" \
         --uri "arn:aws:apigateway:${AWS_DEFAULT_REGION}:lambda:path/2015-03-31/functions/${api_lambda_arn}/invocations"
+
     done < <(jq -r --arg index "${index}" '.items[$index|tonumber] | .resourceMethods | keys | .[]' <<<"${output}")
   done < <(jq -r '.items | to_entries | .[].key' <<<"${output}")
 
