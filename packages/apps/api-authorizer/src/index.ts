@@ -12,6 +12,9 @@ export async function lambdaHandler(event: APIGatewayRequestAuthorizerEvent): Pr
 
   const auth0Client = new Auth0Client(AUTH0_API_ROOT, AUTH0_API_AUDIENCE, AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET);
 
+  console.log("Processing headers [" + JSON.stringify(event.headers) + "]");
+  console.log("Processing path parameters [" + JSON.stringify(event.pathParameters) + "]");
+
   if (event.headers && event.headers.Authorization) {
 
     const authorizationHeader = event.headers.Authorization;
