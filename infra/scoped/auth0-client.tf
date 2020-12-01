@@ -19,7 +19,7 @@ resource "auth0_client" "buildkite" {
 
 resource "auth0_client_grant" "buildkite" {
   client_id = auth0_client.buildkite.id
-  audience  = "https://${var.auth0_domain}/api/v2/"
+  audience  = "https://${aws_ssm_parameter.auth0_domain.value}/api/v2/"
   scope = [ # https://github.com/auth0/auth0-deploy-cli#pre-requisites
     "read:client_grants",
     "create:client_grants",
@@ -87,7 +87,7 @@ resource "auth0_client" "api_gateway_identity" {
 
 resource "auth0_client_grant" "api_gateway_identity" {
   client_id = auth0_client.api_gateway_identity.id
-  audience  = "https://${var.auth0_domain}/api/v2/"
+  audience  = "https://${aws_ssm_parameter.auth0_domain.value}/api/v2/"
   scope = [
     "read:users",
     "read:user_idp_tokens"

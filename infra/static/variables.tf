@@ -17,8 +17,8 @@ variable "tag_managed_by" {
   default = "Terraform"
 }
 
-# AWS SES
+# SSM Parameters
 
-variable "ses_domain" {
-  default = "wellcomecollection.org"
+variable "ssm_parameter_placeholder" {
+  default = "unset"
 }

@@ -16,6 +16,7 @@ resource "auth0_connection" "sierra" {
 
     password_history {
       enable = false
+      size   = 0
     }
 
     password_no_personal_info {

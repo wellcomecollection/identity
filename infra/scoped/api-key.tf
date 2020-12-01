@@ -10,12 +10,26 @@ resource "aws_api_gateway_usage_plan" "basic" {
     rate_limit  = 10
     burst_limit = 5
   }
+
+  tags = merge(
+    local.common_tags,
+    {
+      "Name" = "Basic"
+    }
+  )
 }
 
 # Dummy
 
 resource "aws_api_gateway_api_key" "dummy" {
   name = "dummy"
+
+  tags = merge(
+    local.common_tags,
+    {
+      "Name" = "dummy"
+    }
+  )
 }
 
 resource "aws_api_gateway_usage_plan_key" "dummy" {

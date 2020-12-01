@@ -1,5 +1,5 @@
 data "aws_route53_zone" "identity" {
-  name = var.hostname
+  name = data.aws_ssm_parameter.hostname.value
 }
 
 # Identity Auth0

@@ -54,6 +54,7 @@ resource "aws_iam_role_policy_attachment" "identity_api_gateway_lambda_policy" {
 
 resource "aws_iam_user" "auth0_email" {
   name = "auth0-email-${terraform.workspace}"
+
   tags = merge(
     local.common_tags,
     {

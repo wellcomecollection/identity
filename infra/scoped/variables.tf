@@ -9,8 +9,8 @@ locals {
   }
 
   # DNS
-  auth0_hostname = "${var.hostname_prefix}.${var.hostname}"
-  api_hostname   = "api.${var.hostname_prefix}.${var.hostname}"
+  auth0_hostname = "${aws_ssm_parameter.hostname_prefix.value}.${data.aws_ssm_parameter.hostname.value}"
+  api_hostname   = "api.${aws_ssm_parameter.hostname_prefix.value}.${data.aws_ssm_parameter.hostname.value}"
 
   # API versions
   identity_v1          = "v1"
@@ -27,39 +27,8 @@ variable "tag_managed_by" {
   default = "Terraform"
 }
 
-# DNS
+# SSM Parameters
 
-variable "hostname" {
-  # Assume that this hostname is available as a Route 53 zone within the same AWS account
-  default = "account.wellcomecollection.org"
-}
-
-variable "hostname_prefix" {}
-
-# Sierra
-
-variable "sierra_api_hostname" {}
-
-# Auth0
-
-variable "auth0_domain" {}
-
-variable "auth0_email_from_domain" {
-  default = "wellcomecollection.org"
-}
-
-variable "auth0_email_from_name" {}
-
-variable "auth0_email_from_user" {
-  default = "library"
-}
-
-# Cloudwatch
-
-variable cloudwatch_retention {}
-
-# API Gateway
-
-variable "api_gateway_log_format" {
-  default = "$context.identity.sourceIp $context.identity.caller  $context.identity.user [$context.requestTime] $context.httpMethod $context.resourcePath $context.protocol $context.status $context.responseLength $context.requestId"
+variable "ssm_parameter_placeholder" {
+  default = "unset"
 }
