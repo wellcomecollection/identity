@@ -1,5 +1,5 @@
 {
-  "description": "Deletes a user record",
+  "summary": "Deletes a user",
   "tags": [
     "User"
   ]

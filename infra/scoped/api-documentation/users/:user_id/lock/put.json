@@ -1,5 +1,5 @@
 {
-  "description": "Locks a user record",
+  "summary": "Locks a user",
   "tags": [
     "User"
   ]

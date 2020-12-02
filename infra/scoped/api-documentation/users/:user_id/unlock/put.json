@@ -1,5 +1,5 @@
 {
-  "description": "Unlocks a user record",
+  "summary": "Unlocks a user",
   "tags": [
     "User"
   ]

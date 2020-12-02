@@ -1,5 +1,5 @@
 {
-  "description": "Checks email and password credentials",
+  "summary": "Validates user credentials",
   "tags": [
     "Authentication"
   ]

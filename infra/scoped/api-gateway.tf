@@ -41,7 +41,7 @@ resource "aws_api_gateway_method_response" "auth_post_200" {
   status_code = "200"
 
   response_models = {
-    "application/json" = aws_api_gateway_model.user.name
+    "application/json" = "Empty"
   }
 }
 

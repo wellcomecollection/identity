@@ -1,5 +1,5 @@
 {
-  "description": "Updates a user records' password",
+  "summary": "Updates a password",
   "tags": [
     "User"
   ]
