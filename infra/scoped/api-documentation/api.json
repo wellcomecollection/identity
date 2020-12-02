@@ -1,9 +1,26 @@
 {
   "info": {
-    "description": "",
+    "title": "Wellcome Collection Identity Services",
+    "description": "This API supports the Wellcome Collection's Identity services, providing identity and access control to clients of the Wellcome Collection.",
     "contact": {
       "name": "Daniel Grant",
       "email": "daniel.grant@digirati.com"
+    },
+    "license": "MIT",
+    "url": "https://github.com/wellcomecollection/identity/blob/main/LICENSE"
+  },
+  "externalDocs": {
+    "description": "Wellcome Collection",
+    "url": "https://wellcomecollection.org/"
+  },
+  "tags": [
+    {
+      "name": "auth",
+      "description": "Operations about authentication"
+    },
+    {
+      "name": "user",
+      "description": "Operations about users"
     }
-  }
+  ]
 }

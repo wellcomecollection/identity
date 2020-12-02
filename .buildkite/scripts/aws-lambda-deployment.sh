@@ -103,6 +103,11 @@ aws apigateway create-deployment \
   --stage-name "${DEPLOY_API_GATEWAY_STAGE}"
 
 if aws apigateway get-documentation-version --rest-api-id "${API_GATEWAY_ID}" --documentation-version "${DEPLOY_API_GATEWAY_STAGE}" >&2; then
+  aws apigateway update-stage \
+    --rest-api-id "${API_GATEWAY_ID}" \
+    --stage-name "${DEPLOY_API_GATEWAY_STAGE}" \
+    --patch-operations op=replace,path=/documentationVersion,value=""
+
   aws apigateway delete-documentation-version \
     --rest-api-id "${API_GATEWAY_ID}" \
     --documentation-version "${DEPLOY_API_GATEWAY_STAGE}"
