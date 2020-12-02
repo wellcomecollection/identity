@@ -101,3 +101,14 @@ aws apigateway update-authorizer \
 aws apigateway create-deployment \
   --rest-api-id "${API_GATEWAY_ID}" \
   --stage-name "${DEPLOY_API_GATEWAY_STAGE}"
+
+if aws apigateway get-documentation-version --rest-api-id "${API_GATEWAY_ID}" --documentation-version "${DEPLOY_API_GATEWAY_STAGE}" >&2; then
+  aws apigateway delete-documentation-version \
+    --rest-api-id "${API_GATEWAY_ID}" \
+    --documentation-version "${DEPLOY_API_GATEWAY_STAGE}"
+fi
+
+aws apigateway create-documentation-version \
+  --rest-api-id "${API_GATEWAY_ID}" \
+  --documentation-version "${DEPLOY_API_GATEWAY_STAGE}" \
+  --stage-name "${DEPLOY_API_GATEWAY_STAGE}"

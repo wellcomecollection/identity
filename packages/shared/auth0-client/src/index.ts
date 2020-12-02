@@ -32,7 +32,7 @@ export default class Auth0Client {
     });
   }
 
-  async getProfile(userId: string): Promise<APIResponse<Auth0Profile>> {
+  async getProfile(userId: number): Promise<APIResponse<Auth0Profile>> {
     return this.getMachineToMachineInstance().then(instance => {
       return instance.get('/users/' + toAuth0UserId(userId), {
         validateStatus: status => status === 200

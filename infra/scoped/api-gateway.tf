@@ -58,6 +58,19 @@ resource "aws_api_gateway_method_response" "auth_post_401" {
   }
 }
 
+# 403 Forbidden
+
+resource "aws_api_gateway_method_response" "auth_post_403" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.auth.id
+  http_method = aws_api_gateway_method.auth_post.http_method
+  status_code = "403"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+}
+
 # /users
 
 resource "aws_api_gateway_resource" "users" {
@@ -94,19 +107,6 @@ resource "aws_api_gateway_method_response" "users_get_200" {
 
   response_models = {
     "application/json" = aws_api_gateway_model.user-list.name
-  }
-}
-
-# 401 Unauthorized
-
-resource "aws_api_gateway_method_response" "users_get_401" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users.id
-  http_method = aws_api_gateway_method.users_get.http_method
-  status_code = "401"
-
-  response_models = {
-    "application/json" = "Error"
   }
 }
 
@@ -151,6 +151,45 @@ resource "aws_api_gateway_method_response" "users_post_201" {
   }
 }
 
+# 400 Bad Request
+
+resource "aws_api_gateway_method_response" "users_post_400" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users.id
+  http_method = aws_api_gateway_method.users_post.http_method
+  status_code = "400"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+}
+
+# 403 Forbidden
+
+resource "aws_api_gateway_method_response" "users_post_403" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users.id
+  http_method = aws_api_gateway_method.users_post.http_method
+  status_code = "403"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+}
+
+# 409 Conflict
+
+resource "aws_api_gateway_method_response" "users_post_409" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users.id
+  http_method = aws_api_gateway_method.users_post.http_method
+  status_code = "409"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+}
+
 # /users/:user_id
 
 resource "aws_api_gateway_resource" "users_userid" {
@@ -185,6 +224,19 @@ resource "aws_api_gateway_method_response" "users_userid_get_200" {
 
   response_models = {
     "application/json" = aws_api_gateway_model.user.name
+  }
+}
+
+# 403 Forbidden
+
+resource "aws_api_gateway_method_response" "users_userid_get_403" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid.id
+  http_method = aws_api_gateway_method.users_userid_get.http_method
+  status_code = "403"
+
+  response_models = {
+    "application/json" = "Error"
   }
 }
 
@@ -234,6 +286,32 @@ resource "aws_api_gateway_method_response" "users_userid_put_200" {
   }
 }
 
+# 400 Bad Request
+
+resource "aws_api_gateway_method_response" "users_userid_put_400" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid.id
+  http_method = aws_api_gateway_method.users_userid_put.http_method
+  status_code = "400"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+}
+
+# 403 Forbidden
+
+resource "aws_api_gateway_method_response" "users_userid_put_403" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid.id
+  http_method = aws_api_gateway_method.users_userid_put.http_method
+  status_code = "403"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+}
+
 # 404 Not Found
 
 resource "aws_api_gateway_method_response" "users_userid_put_404" {
@@ -241,6 +319,19 @@ resource "aws_api_gateway_method_response" "users_userid_put_404" {
   resource_id = aws_api_gateway_resource.users_userid.id
   http_method = aws_api_gateway_method.users_userid_put.http_method
   status_code = "404"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+}
+
+# 409 Conflict
+
+resource "aws_api_gateway_method_response" "users_userid_put_409" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid.id
+  http_method = aws_api_gateway_method.users_userid_put.http_method
+  status_code = "409"
 
   response_models = {
     "application/json" = "Error"
@@ -273,6 +364,19 @@ resource "aws_api_gateway_method_response" "users_userid_delete_204" {
 
   response_models = {
     "application/json" = "Empty"
+  }
+}
+
+# 403 Forbidden
+
+resource "aws_api_gateway_method_response" "users_userid_delete_403" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid.id
+  http_method = aws_api_gateway_method.users_userid_delete.http_method
+  status_code = "403"
+
+  response_models = {
+    "application/json" = "Error"
   }
 }
 
@@ -330,6 +434,32 @@ resource "aws_api_gateway_method_response" "users_userid_password_put_200" {
   }
 }
 
+# 400 Bad Request
+
+resource "aws_api_gateway_method_response" "users_userid_password_put_400" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_password.id
+  http_method = aws_api_gateway_method.users_userid_password_put.http_method
+  status_code = "400"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+}
+
+# 403 Forbidden
+
+resource "aws_api_gateway_method_response" "users_userid_password_put_403" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_password.id
+  http_method = aws_api_gateway_method.users_userid_password_put.http_method
+  status_code = "403"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+}
+
 # 404 Not Found
 
 resource "aws_api_gateway_method_response" "users_userid_password_put_404" {
@@ -377,6 +507,19 @@ resource "aws_api_gateway_method_response" "users_userid_reset-password_put_200"
 
   response_models = {
     "application/json" = "Empty"
+  }
+}
+
+# 403 Forbidden
+
+resource "aws_api_gateway_method_response" "users_userid_reset-password_put_403" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_reset-password.id
+  http_method = aws_api_gateway_method.users_userid_reset-password_put.http_method
+  status_code = "403"
+
+  response_models = {
+    "application/json" = "Error"
   }
 }
 
@@ -430,6 +573,19 @@ resource "aws_api_gateway_method_response" "users_userid_send-verification_put_2
   }
 }
 
+# 403 Forbidden
+
+resource "aws_api_gateway_method_response" "users_userid_send-verification_put_403" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_send-verification.id
+  http_method = aws_api_gateway_method.users_userid_send-verification_put.http_method
+  status_code = "403"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+}
+
 # 404 Not Found
 
 resource "aws_api_gateway_method_response" "users_userid_send-verification_put_404" {
@@ -480,6 +636,19 @@ resource "aws_api_gateway_method_response" "users_userid_lock_put_200" {
   }
 }
 
+# 403 Forbidden
+
+resource "aws_api_gateway_method_response" "users_userid_lock_put_403" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_lock.id
+  http_method = aws_api_gateway_method.users_userid_lock_put.http_method
+  status_code = "403"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+}
+
 # 404 Not Found
 
 resource "aws_api_gateway_method_response" "users_userid_lock_put_404" {
@@ -527,6 +696,19 @@ resource "aws_api_gateway_method_response" "users_userid_unlock_put_200" {
 
   response_models = {
     "application/json" = "Empty"
+  }
+}
+
+# 403 Forbidden
+
+resource "aws_api_gateway_method_response" "users_userid_unlock_put_403" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_unlock.id
+  http_method = aws_api_gateway_method.users_userid_unlock_put.http_method
+  status_code = "403"
+
+  response_models = {
+    "application/json" = "Error"
   }
 }
 

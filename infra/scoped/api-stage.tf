@@ -19,7 +19,8 @@ resource "aws_api_gateway_stage" "identity_v1" {
 
   lifecycle {
     ignore_changes = [
-      deployment_id
+      deployment_id,
+      documentation_version
     ]
   }
 
