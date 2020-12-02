@@ -1,3 +1,6 @@
 {
-  "description": ""
+  "description": "Re-sends a verification email for a user record",
+  "tags": [
+    "User"
+  ]
 }

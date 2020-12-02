@@ -1,3 +1,6 @@
 {
-  "description": ""
+  "description": "Searches for user records",
+  "tags": [
+    "User"
+  ]
 }

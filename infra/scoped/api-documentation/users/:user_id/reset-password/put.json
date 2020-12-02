@@ -1,3 +1,6 @@
 {
-  "description": ""
+  "description": "Triggers a password reset for a user record",
+  "tags": [
+    "User"
+  ]
 }

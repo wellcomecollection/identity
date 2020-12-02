@@ -1,3 +1,6 @@
 {
-  "description": ""
+  "description": "Checks email and password credentials",
+  "tags": [
+    "Authentication"
+  ]
 }

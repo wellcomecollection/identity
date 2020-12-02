@@ -1,3 +1,6 @@
 {
-  "description": ""
+  "description": "Unlocks a user record",
+  "tags": [
+    "User"
+  ]
 }

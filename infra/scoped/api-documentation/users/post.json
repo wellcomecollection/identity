@@ -1,3 +1,6 @@
 {
-  "description": ""
+  "description": "Creates a user record",
+  "tags": [
+    "User"
+  ]
 }
