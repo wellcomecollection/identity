@@ -6,6 +6,7 @@ This log lists the architectural decisions for Identity.
 
 - [ADR-0000](0000-use-markdown-architectural-decision-records.md) - Use Markdown Architectural Decision Records
 - [ADR-0001](0001-selection-of-identity-management-platform.md) - Selection of Identity Management Platform
+- [ADR-0002](0002-logging-approach.md) - Logging Approach
 
 <!-- adrlogstop -->
 
