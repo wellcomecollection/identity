@@ -9,7 +9,7 @@ resource "aws_lambda_function" "authorizer" {
 
   environment {
     variables = {
-      SIERRA_API_ROOT      = var.sierra_api_hostname,
+      SIERRA_API_ROOT      = aws_ssm_parameter.sierra_api_hostname.value,
       SIERRA_CLIENT_KEY    = data.external.sierra_api_credentials.result.SierraAPIKey
       SIERRA_CLIENT_SECRET = data.external.sierra_api_credentials.result.SierraAPISecret
       AUTH0_API_ROOT       = "https://${local.auth0_hostname}"
@@ -56,7 +56,7 @@ resource "aws_lambda_function" "api" {
 
   environment {
     variables = {
-      SIERRA_API_ROOT      = var.sierra_api_hostname,
+      SIERRA_API_ROOT      = aws_ssm_parameter.sierra_api_hostname.value,
       SIERRA_CLIENT_KEY    = data.external.sierra_api_credentials.result.SierraAPIKey
       SIERRA_CLIENT_SECRET = data.external.sierra_api_credentials.result.SierraAPISecret
       AUTH0_API_ROOT       = "https://${local.auth0_hostname}"

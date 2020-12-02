@@ -10,7 +10,7 @@ resource "aws_api_gateway_stage" "identity_v1" {
 
   access_log_settings {
     destination_arn = aws_cloudwatch_log_group.identity_api_gateway_v1_access_log.arn
-    format          = var.api_gateway_log_format
+    format          = data.aws_ssm_parameter.api_gateway_log_format.value
   }
 
   depends_on = [
@@ -22,6 +22,13 @@ resource "aws_api_gateway_stage" "identity_v1" {
       deployment_id
     ]
   }
+
+  tags = merge(
+    local.common_tags,
+    {
+      "Name" = local.identity_v1
+    }
+  )
 }
 
 resource "aws_api_gateway_method_settings" "identity_v1" {
