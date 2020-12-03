@@ -7,7 +7,7 @@ import {toMessage} from "../models/common";
 
 export async function getUser(sierraClient: SierraClient, auth0Client: Auth0Client, req: Request, res: Response): Promise<void> {
   const userId: number = Number(req.params.user_id);
-  if (!isNaN(userId)) {
+  if (isNaN(userId)) {
     res.status(400).json(toMessage('User ID is invalid'));
   } else {
     return sierraClient.getPatronRecordByRecordNumber(req.params.user_id).then(sierraResponse => {
