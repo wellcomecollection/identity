@@ -1,21 +1,3 @@
-# [OPTIONS] /
-
-resource "aws_api_gateway_integration" "__options" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_rest_api.identity.root_resource_id
-  http_method = aws_api_gateway_method.__options.http_method
-
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.api.invoke_arn
-
-  lifecycle {
-    ignore_changes = [
-      uri
-    ]
-  }
-}
-
 # [OPTIONS] /auth
 
 resource "aws_api_gateway_integration" "auth_options" {
