@@ -1,5 +1,6 @@
 {
   "summary": "Validates user credentials",
+  "description": "The provided email address and password will be checked against Wellcome Collection's Sierra platform for validity.",
   "tags": [
     "Authentication"
   ]

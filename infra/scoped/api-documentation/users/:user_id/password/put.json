@@ -1,5 +1,6 @@
 {
   "summary": "Updates a password",
+  "description": "Updates the password associated with the user defined by the `userId` parameter.",
   "tags": [
     "User"
   ]

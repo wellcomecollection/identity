@@ -1,5 +1,6 @@
 {
   "summary": "Locks a user",
+  "description": "Locks the user defined by the `userId` path parameter.",
   "tags": [
     "User"
   ]

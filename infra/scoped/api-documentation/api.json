@@ -1,7 +1,7 @@
 {
   "info": {
     "title": "Wellcome Collection Identity Services",
-    "description": "This API supports the Wellcome Collection's Identity services, providing identity and access control to clients of the Wellcome Collection.",
+    "description": "This API is part of the Wellcome Collection's Identity platform, providing services which expose operations over user accounts. Clients of the API require an API key provided in the `X-API-Key` header, a number of operations require a `Bearer` token in the `Authorization` header.",
     "contact": {
       "email": "info@wellcomecollection.org"
     },
