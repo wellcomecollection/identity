@@ -5,6 +5,7 @@ import {validateCredentials} from "./handlers/auth";
 import {DummyUserOne, DummyUserTwo} from "./models/user";
 import {getUser} from "./handlers/user";
 import Auth0Client from "@weco/auth0-client";
+import cors from 'cors';
 
 const app: Application = express();
 const sierraClient: SierraClient = new SierraClient(
@@ -14,6 +15,17 @@ const auth0Client: Auth0Client = new Auth0Client(
   process.env.AUTH0_API_ROOT!, process.env.AUTH0_API_AUDIENCE!, process.env.AUTH0_CLIENT_ID!, process.env.AUTH0_CLIENT_SECRET!
 );
 
+const options: cors.CorsOptions = {
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+    'X-API-Key'
+  ],
+  methods: 'HEAD,GET,PUT,POST,DELETE',
+  origin: '*'
+};
+
+app.use(cors(options));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
