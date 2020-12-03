@@ -52,6 +52,59 @@ function __create_alias_for_bundle() {
     --qualifier "${NORMALIZED_BRANCH_NAME}" >&2
 }
 
+function __deploy_api_documentation() {
+  # Check if a documentation version already exists and, if it does, detach it from the stage and delete it.
+  if aws apigateway get-documentation-version --rest-api-id "${API_GATEWAY_ID}" --documentation-version "${DEPLOY_API_GATEWAY_STAGE}" >&2; then
+    aws apigateway update-stage \
+      --rest-api-id "${API_GATEWAY_ID}" \
+      --stage-name "${DEPLOY_API_GATEWAY_STAGE}" \
+      --patch-operations op=replace,path=/documentationVersion,value=""
+
+    aws apigateway delete-documentation-version \
+      --rest-api-id "${API_GATEWAY_ID}" \
+      --documentation-version "${DEPLOY_API_GATEWAY_STAGE}"
+  fi
+
+  # Create a new documentation version.
+  aws apigateway create-documentation-version \
+    --rest-api-id "${API_GATEWAY_ID}" \
+    --documentation-version "${DEPLOY_API_GATEWAY_STAGE}" \
+    --stage-name "${DEPLOY_API_GATEWAY_STAGE}"
+
+  # Generate a Swagger YAML export from the API Gateway documentation.
+  aws apigateway get-export \
+    --rest-api-id "${API_GATEWAY_ID}" \
+    --stage-name "${DEPLOY_API_GATEWAY_STAGE}" \
+    --export-type "swagger" \
+    --accept "application/yaml" \
+    "/tmp/identity.yaml"
+
+  # Upload the Swagger YAML export into the S3 bucket which serves the Swagger UI.
+  aws s3 cp \
+    "/tmp/identity.yaml" \
+    "s3://identity-public-swagger-ui-${DEPLOY_API_GATEWAY_STAGE}-${DEPLOY_ENVIRONMENT}/"
+
+  # Invalidate the CloudFront distribution that sits in front of the Swagger UI S3 bucket, so that changes are rendered
+  # ASAP.
+  aws cloudfront create-invalidation \
+    --distribution-id "${CLOUDFRONT_SWAGGER_UI_DISTRIBUTION_ID}" \
+    --paths "/*"
+}
+
+function __deploy_lambda_authorizer() {
+  # shellcheck disable=SC2140
+  aws apigateway update-authorizer \
+    --rest-api-id "${API_GATEWAY_ID}" \
+    --authorizer-id "${API_GATEWAY_AUTHORIZER_ID}" \
+    --patch-operations=op=replace,path="/authorizerUri",value="arn:aws:apigateway:${AWS_DEFAULT_REGION}:lambda:path/2015-03-31/functions/${api_auth_lambda_arn}/invocations"
+}
+
+function __deploy_api_gateway() {
+  aws apigateway create-deployment \
+    --rest-api-id "${API_GATEWAY_ID}" \
+    --stage-name "${DEPLOY_API_GATEWAY_STAGE}"
+}
+
 api_lambda_arn=$(__create_alias_for_bundle 'identity-api')
 api_auth_lambda_arn=$(__create_alias_for_bundle 'identity-authorizer')
 
@@ -92,28 +145,6 @@ while true; do
   [[ "${pagination_token}" != "null" ]] || break
 done
 
-# shellcheck disable=SC2140
-aws apigateway update-authorizer \
-  --rest-api-id "${API_GATEWAY_ID}" \
-  --authorizer-id "${API_GATEWAY_AUTHORIZER_ID}" \
-  --patch-operations=op=replace,path="/authorizerUri",value="arn:aws:apigateway:${AWS_DEFAULT_REGION}:lambda:path/2015-03-31/functions/${api_auth_lambda_arn}/invocations"
-
-aws apigateway create-deployment \
-  --rest-api-id "${API_GATEWAY_ID}" \
-  --stage-name "${DEPLOY_API_GATEWAY_STAGE}"
-
-if aws apigateway get-documentation-version --rest-api-id "${API_GATEWAY_ID}" --documentation-version "${DEPLOY_API_GATEWAY_STAGE}" >&2; then
-  aws apigateway update-stage \
-    --rest-api-id "${API_GATEWAY_ID}" \
-    --stage-name "${DEPLOY_API_GATEWAY_STAGE}" \
-    --patch-operations op=replace,path=/documentationVersion,value=""
-  \
-    aws apigateway delete-documentation-version \
-    --rest-api-id "${API_GATEWAY_ID}" \
-    --documentation-version "${DEPLOY_API_GATEWAY_STAGE}"
-fi
-
-aws apigateway create-documentation-version \
-  --rest-api-id "${API_GATEWAY_ID}" \
-  --documentation-version "${DEPLOY_API_GATEWAY_STAGE}" \
-  --stage-name "${DEPLOY_API_GATEWAY_STAGE}"
+__deploy_lambda_authorizer
+__deploy_api_gateway
+__deploy_api_documentation

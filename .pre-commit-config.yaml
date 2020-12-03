@@ -2,18 +2,20 @@
   rev: v1.45.0
   hooks:
     - id: terraform_fmt
-    # - id: terraform_validate
 
 - repo: git://github.com/pre-commit/pre-commit-hooks
   rev: v3.3.0
   hooks:
     - id: check-added-large-files
+      exclude: ^infra/scoped/assets/swagger-ui
     - id: check-case-conflict
     - id: check-merge-conflict
     - id: check-symlinks
     - id: detect-private-key
     - id: end-of-file-fixer
+      exclude: ^infra/scoped/assets/swagger-ui
     - id: trailing-whitespace
+      exclude: ^infra/scoped/assets/swagger-ui
     - id: check-json
     - id: check-yaml
 
