@@ -15,6 +15,9 @@ locals {
   # API versions
   identity_v1          = "v1"
   identity_v1_hostname = "v1-${local.api_hostname}"
+
+  # API CORS origins
+  identity_v1_origins = local.identity_v1_hostname
 }
 
 # Tags
