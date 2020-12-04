@@ -38,7 +38,7 @@ function createApplication(): Application {
 function registerAuthResource(app: Application): void {
   const corsOptions: cors.CorsOptions = {
     allowedHeaders: ['Content-Type', 'X-API-Key'],
-    methods: 'POST',
+    methods: 'OPTIONS,POST',
     origin: process.env.API_ALLOWED_ORIGINS
   }
   app.options('/auth', cors(corsOptions));
@@ -48,7 +48,7 @@ function registerAuthResource(app: Application): void {
 function registerUsersResource(app: Application): void {
   const corsOptions: cors.CorsOptions = {
     allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
-    methods: 'GET,POST',
+    methods: 'OPTIONS,GET,POST',
     origin: process.env.API_ALLOWED_ORIGINS
   }
   app.options('/users', cors(corsOptions));
@@ -59,7 +59,7 @@ function registerUsersResource(app: Application): void {
 function registerUsersUserIdResource(app: Application): void {
   const corsOptions: cors.CorsOptions = {
     allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
-    methods: 'GET,PUT,DELETE',
+    methods: 'OPTIONS,GET,PUT,DELETE',
     origin: process.env.API_ALLOWED_ORIGINS
   }
   app.options('/users/:user_id', cors(corsOptions));
@@ -71,7 +71,7 @@ function registerUsersUserIdResource(app: Application): void {
 function registerUsersUserIdPasswordResource(app: Application): void {
   const corsOptions: cors.CorsOptions = {
     allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
-    methods: 'PUT',
+    methods: 'OPTIONS,PUT',
     origin: process.env.API_ALLOWED_ORIGINS
   }
   app.options('/users/:user_id/password', cors(corsOptions));
@@ -81,7 +81,7 @@ function registerUsersUserIdPasswordResource(app: Application): void {
 function registerUsersUserIdResetPasswordResource(app: Application): void {
   const corsOptions: cors.CorsOptions = {
     allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
-    methods: 'PUT',
+    methods: 'OPTIONS,PUT',
     origin: process.env.API_ALLOWED_ORIGINS
   }
   app.options('/users/:user_id/reset-password', cors(corsOptions));
@@ -91,7 +91,7 @@ function registerUsersUserIdResetPasswordResource(app: Application): void {
 function registerUsersUserIdSendVerificationResource(app: Application): void {
   const corsOptions: cors.CorsOptions = {
     allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
-    methods: 'PUT',
+    methods: 'OPTIONS,PUT',
     origin: process.env.API_ALLOWED_ORIGINS
   }
   app.options('/users/:user_id/send-verification', cors(corsOptions));
@@ -101,7 +101,7 @@ function registerUsersUserIdSendVerificationResource(app: Application): void {
 function registerUsersUserIdLockResource(app: Application): void {
   const corsOptions: cors.CorsOptions = {
     allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
-    methods: 'PUT',
+    methods: 'OPTIONS,PUT',
     origin: process.env.API_ALLOWED_ORIGINS
   }
   app.options('/users/:user_id/lock', cors(corsOptions));
@@ -111,7 +111,7 @@ function registerUsersUserIdLockResource(app: Application): void {
 function registerUsersUserIdUnlockResource(app: Application): void {
   const corsOptions: cors.CorsOptions = {
     allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
-    methods: 'PUT',
+    methods: 'OPTIONS,PUT',
     origin: process.env.API_ALLOWED_ORIGINS
   }
   app.options('/users/:user_id/unlock', cors(corsOptions));
