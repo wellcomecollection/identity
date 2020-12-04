@@ -111,6 +111,40 @@ resource "aws_api_gateway_method_response" "auth_post_403" {
   }
 }
 
+# 404 Not Found
+
+resource "aws_api_gateway_method_response" "auth_post_404" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.auth.id
+  http_method = aws_api_gateway_method.auth_post.http_method
+  status_code = "404"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# 500 Internal Server Error
+
+resource "aws_api_gateway_method_response" "auth_post_500" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.auth.id
+  http_method = aws_api_gateway_method.auth_post.http_method
+  status_code = "500"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
 # /users
 
 resource "aws_api_gateway_resource" "users" {
@@ -182,6 +216,23 @@ resource "aws_api_gateway_method_response" "users_get_200" {
   }
 }
 
+# 400 Bad Request
+
+resource "aws_api_gateway_method_response" "users_get_400" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users.id
+  http_method = aws_api_gateway_method.users_get.http_method
+  status_code = "400"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
 # 403 Forbidden
 
 resource "aws_api_gateway_method_response" "users_get_403" {
@@ -189,6 +240,23 @@ resource "aws_api_gateway_method_response" "users_get_403" {
   resource_id = aws_api_gateway_resource.users.id
   http_method = aws_api_gateway_method.users_get.http_method
   status_code = "403"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# 500 Internal Server Error
+
+resource "aws_api_gateway_method_response" "users_get_500" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users.id
+  http_method = aws_api_gateway_method.users_get.http_method
+  status_code = "500"
 
   response_models = {
     "application/json" = "Error"
@@ -272,6 +340,23 @@ resource "aws_api_gateway_method_response" "users_post_409" {
   resource_id = aws_api_gateway_resource.users.id
   http_method = aws_api_gateway_method.users_post.http_method
   status_code = "409"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# 500 Internal Server Error
+
+resource "aws_api_gateway_method_response" "users_post_500" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users.id
+  http_method = aws_api_gateway_method.users_post.http_method
+  status_code = "500"
 
   response_models = {
     "application/json" = "Error"
@@ -375,6 +460,23 @@ resource "aws_api_gateway_method_response" "users_userid_get_404" {
   resource_id = aws_api_gateway_resource.users_userid.id
   http_method = aws_api_gateway_method.users_userid_get.http_method
   status_code = "404"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# 500 Internal Server Error
+
+resource "aws_api_gateway_method_response" "users_userid_get_500" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid.id
+  http_method = aws_api_gateway_method.users_userid_get.http_method
+  status_code = "500"
 
   response_models = {
     "application/json" = "Error"
@@ -490,6 +592,23 @@ resource "aws_api_gateway_method_response" "users_userid_put_409" {
   }
 }
 
+# 500 Internal Server Error
+
+resource "aws_api_gateway_method_response" "users_userid_put_500" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid.id
+  http_method = aws_api_gateway_method.users_userid_put.http_method
+  status_code = "500"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
 # [DELETE]
 
 resource "aws_api_gateway_method" "users_userid_delete" {
@@ -547,6 +666,23 @@ resource "aws_api_gateway_method_response" "users_userid_delete_404" {
   resource_id = aws_api_gateway_resource.users_userid.id
   http_method = aws_api_gateway_method.users_userid_delete.http_method
   status_code = "404"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# 500 Internal Server Error
+
+resource "aws_api_gateway_method_response" "users_userid_delete_500" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid.id
+  http_method = aws_api_gateway_method.users_userid_delete.http_method
+  status_code = "500"
 
   response_models = {
     "application/json" = "Error"
@@ -681,6 +817,23 @@ resource "aws_api_gateway_method_response" "users_userid_password_put_404" {
   }
 }
 
+# 500 Internal Server Error
+
+resource "aws_api_gateway_method_response" "users_userid_password_put_500" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_password.id
+  http_method = aws_api_gateway_method.users_userid_password_put.http_method
+  status_code = "500"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
 # /users/:user_id/reset-password
 
 resource "aws_api_gateway_resource" "users_userid_reset-password" {
@@ -774,6 +927,23 @@ resource "aws_api_gateway_method_response" "users_userid_reset-password_put_404"
   resource_id = aws_api_gateway_resource.users_userid_reset-password.id
   http_method = aws_api_gateway_method.users_userid_reset-password_put.http_method
   status_code = "404"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# 500 Internal Server Error
+
+resource "aws_api_gateway_method_response" "users_userid_reset-password_put_500" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_reset-password.id
+  http_method = aws_api_gateway_method.users_userid_reset-password_put.http_method
+  status_code = "500"
 
   response_models = {
     "application/json" = "Error"
@@ -887,6 +1057,23 @@ resource "aws_api_gateway_method_response" "users_userid_send-verification_put_4
   }
 }
 
+# 500 Internal Server Error
+
+resource "aws_api_gateway_method_response" "users_userid_send-verification_put_500" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_send-verification.id
+  http_method = aws_api_gateway_method.users_userid_send-verification_put.http_method
+  status_code = "500"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
 # /users/:user_id/lock
 
 resource "aws_api_gateway_resource" "users_userid_lock" {
@@ -990,6 +1177,23 @@ resource "aws_api_gateway_method_response" "users_userid_lock_put_404" {
   }
 }
 
+# 500 Internal Server Error
+
+resource "aws_api_gateway_method_response" "users_userid_lock_put_500" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_lock.id
+  http_method = aws_api_gateway_method.users_userid_lock_put.http_method
+  status_code = "500"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
 # /users/:user_id/unlock
 
 resource "aws_api_gateway_resource" "users_userid_unlock" {
@@ -1083,6 +1287,23 @@ resource "aws_api_gateway_method_response" "users_userid_unlock_put_404" {
   resource_id = aws_api_gateway_resource.users_userid_unlock.id
   http_method = aws_api_gateway_method.users_userid_unlock_put.http_method
   status_code = "404"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# 500 Internal Server Error
+
+resource "aws_api_gateway_method_response" "users_userid_unlock_put_500" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_unlock.id
+  http_method = aws_api_gateway_method.users_userid_unlock_put.http_method
+  status_code = "500"
 
   response_models = {
     "application/json" = "Error"
