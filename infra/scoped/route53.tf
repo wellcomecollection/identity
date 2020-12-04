@@ -59,7 +59,7 @@ resource "aws_route53_record" "identity_api_validation" {
 # S3 Swagger UI
 
 resource "aws_route53_record" "swagger_ui_v1" {
-  name    = "docs.${local.identity_v1_hostname}"
+  name    = local.identity_v1_docs_hostname
   type    = "A"
   zone_id = data.aws_route53_zone.identity.id
 

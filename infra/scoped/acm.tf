@@ -32,7 +32,7 @@ resource "aws_acm_certificate_validation" "identity_api_v1" {
 # Swagger UI
 
 resource "aws_acm_certificate" "swagger_ui_v1" {
-  domain_name       = "docs.${local.identity_v1_hostname}"
+  domain_name       = local.identity_v1_docs_hostname
   validation_method = "DNS"
 
   lifecycle {
@@ -46,7 +46,7 @@ resource "aws_acm_certificate" "swagger_ui_v1" {
   tags = merge(
     local.common_tags,
     {
-      "Name" = "docs.${local.identity_v1_hostname}"
+      "Name" = local.identity_v1_docs_hostname
     }
   )
 }

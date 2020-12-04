@@ -3,7 +3,7 @@ resource "aws_cloudfront_distribution" "swagger_ui_v1" {
   is_ipv6_enabled = true
 
   aliases = [
-    "docs.${local.identity_v1_hostname}"
+    local.identity_v1_docs_hostname
   ]
 
   origin {
@@ -57,7 +57,7 @@ resource "aws_cloudfront_distribution" "swagger_ui_v1" {
   tags = merge(
     local.common_tags,
     {
-      "Name" = "docs.${local.identity_v1_hostname}"
+      "Name" = local.identity_v1_docs_hostname
     }
   )
 }

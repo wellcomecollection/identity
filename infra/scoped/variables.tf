@@ -13,11 +13,12 @@ locals {
   api_hostname   = "api.${aws_ssm_parameter.hostname_prefix.value}.${data.aws_ssm_parameter.hostname.value}"
 
   # API versions
-  identity_v1          = "v1"
-  identity_v1_hostname = "v1-${local.api_hostname}"
+  identity_v1               = "v1"
+  identity_v1_hostname      = "v1-${local.api_hostname}"
+  identity_v1_docs_hostname = "docs.${local.identity_v1_hostname}"
 
   # API CORS origins
-  identity_v1_origins = local.identity_v1_hostname
+  identity_v1_origins = "https://${local.identity_v1_docs_hostname}"
 }
 
 # Tags
