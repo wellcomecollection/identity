@@ -278,7 +278,7 @@ resource "aws_api_gateway_method" "users_post" {
   request_validator_id = aws_api_gateway_request_validator.full.id
 
   request_models = {
-    "application/json" = aws_api_gateway_model.user.name
+    "application/json" = aws_api_gateway_model.create-user.name
   }
 }
 
@@ -499,7 +499,7 @@ resource "aws_api_gateway_method" "users_userid_put" {
   request_validator_id = aws_api_gateway_request_validator.full.id
 
   request_models = {
-    "application/json" = aws_api_gateway_model.user.name
+    "application/json" = aws_api_gateway_model.update-user.name
   }
 
   request_parameters = {
