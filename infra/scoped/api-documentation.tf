@@ -21,6 +21,33 @@ resource "aws_api_gateway_documentation_part" "auth" {
   }
 }
 
+# [OPTIONS]
+
+resource "aws_api_gateway_documentation_part" "auth_options" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/auth/options.json")
+
+  location {
+    type   = "METHOD"
+    path   = aws_api_gateway_resource.auth.path
+    method = aws_api_gateway_method.auth_options.http_method
+  }
+}
+
+# 200 OK
+
+resource "aws_api_gateway_documentation_part" "auth_options_200" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/auth/options-200.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.auth.path
+    method      = aws_api_gateway_method.auth_options.http_method
+    status_code = "200"
+  }
+}
+
 # [POST]
 
 resource "aws_api_gateway_documentation_part" "auth_post" {
@@ -113,6 +140,33 @@ resource "aws_api_gateway_documentation_part" "users" {
   location {
     type = "RESOURCE"
     path = aws_api_gateway_resource.users.path
+  }
+}
+
+# [OPTIONS]
+
+resource "aws_api_gateway_documentation_part" "users_options" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/options.json")
+
+  location {
+    type   = "METHOD"
+    path   = aws_api_gateway_resource.users.path
+    method = aws_api_gateway_method.users_options.http_method
+  }
+}
+
+# 200 OK
+
+resource "aws_api_gateway_documentation_part" "users_options_200" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/options-200.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users.path
+    method      = aws_api_gateway_method.users_options.http_method
+    status_code = "200"
   }
 }
 
@@ -277,6 +331,33 @@ resource "aws_api_gateway_documentation_part" "users_userid" {
   location {
     type = "RESOURCE"
     path = aws_api_gateway_resource.users_userid.path
+  }
+}
+
+# [OPTIONS]
+
+resource "aws_api_gateway_documentation_part" "users_userid_options" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/options.json")
+
+  location {
+    type   = "METHOD"
+    path   = aws_api_gateway_resource.users_userid.path
+    method = aws_api_gateway_method.users_userid_options.http_method
+  }
+}
+
+# 200 OK
+
+resource "aws_api_gateway_documentation_part" "users_userid_options_200" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/options-200.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid.path
+    method      = aws_api_gateway_method.users_userid_options.http_method
+    status_code = "200"
   }
 }
 
@@ -527,6 +608,33 @@ resource "aws_api_gateway_documentation_part" "users_userid_password" {
   }
 }
 
+# [OPTIONS]
+
+resource "aws_api_gateway_documentation_part" "users_userid_password_options" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/password/options.json")
+
+  location {
+    type   = "METHOD"
+    path   = aws_api_gateway_resource.users_userid_password.path
+    method = aws_api_gateway_method.users_userid_password_options.http_method
+  }
+}
+
+# 200 OK
+
+resource "aws_api_gateway_documentation_part" "users_userid_password_options_200" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/password/options-200.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_password.path
+    method      = aws_api_gateway_method.users_userid_password_options.http_method
+    status_code = "200"
+  }
+}
+
 # [PUT]
 
 resource "aws_api_gateway_documentation_part" "users_userid_password_put" {
@@ -622,6 +730,33 @@ resource "aws_api_gateway_documentation_part" "users_userid_reset-password" {
   }
 }
 
+# [OPTIONS]
+
+resource "aws_api_gateway_documentation_part" "users_userid_reset-password_options" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/reset-password/options.json")
+
+  location {
+    type   = "METHOD"
+    path   = aws_api_gateway_resource.users_userid_reset-password.path
+    method = aws_api_gateway_method.users_userid_reset-password_options.http_method
+  }
+}
+
+# 200 OK
+
+resource "aws_api_gateway_documentation_part" "users_userid_reset-password_options_200" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/reset-password/options-200.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_reset-password.path
+    method      = aws_api_gateway_method.users_userid_reset-password_options.http_method
+    status_code = "200"
+  }
+}
+
 # [PUT]
 
 resource "aws_api_gateway_documentation_part" "users_userid_reset-password_put" {
@@ -700,6 +835,33 @@ resource "aws_api_gateway_documentation_part" "users_userid_send-verification" {
   location {
     type = "RESOURCE"
     path = aws_api_gateway_resource.users_userid_send-verification.path
+  }
+}
+
+# [OPTIONS]
+
+resource "aws_api_gateway_documentation_part" "users_userid_send-verification_options" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/send-verification/options.json")
+
+  location {
+    type   = "METHOD"
+    path   = aws_api_gateway_resource.users_userid_send-verification.path
+    method = aws_api_gateway_method.users_userid_send-verification_options.http_method
+  }
+}
+
+# 200 OK
+
+resource "aws_api_gateway_documentation_part" "users_userid_send-verification_options_200" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/send-verification/options-200.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_send-verification.path
+    method      = aws_api_gateway_method.users_userid_send-verification_options.http_method
+    status_code = "200"
   }
 }
 
@@ -784,6 +946,33 @@ resource "aws_api_gateway_documentation_part" "users_userid_lock" {
   }
 }
 
+# [OPTIONS]
+
+resource "aws_api_gateway_documentation_part" "users_userid_lock_options" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/lock/options.json")
+
+  location {
+    type   = "METHOD"
+    path   = aws_api_gateway_resource.users_userid_lock.path
+    method = aws_api_gateway_method.users_userid_lock_options.http_method
+  }
+}
+
+# 200 OK
+
+resource "aws_api_gateway_documentation_part" "users_userid_lock_options_200" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/lock/options-200.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_lock.path
+    method      = aws_api_gateway_method.users_userid_lock_options.http_method
+    status_code = "200"
+  }
+}
+
 # [PUT]
 
 resource "aws_api_gateway_documentation_part" "users_userid_lock_put" {
@@ -862,6 +1051,33 @@ resource "aws_api_gateway_documentation_part" "users_userid_unlock" {
   location {
     type = "RESOURCE"
     path = aws_api_gateway_resource.users_userid_unlock.path
+  }
+}
+
+# [OPTIONS]
+
+resource "aws_api_gateway_documentation_part" "users_userid_unlock_options" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/unlock/options.json")
+
+  location {
+    type   = "METHOD"
+    path   = aws_api_gateway_resource.users_userid_unlock.path
+    method = aws_api_gateway_method.users_userid_unlock_options.http_method
+  }
+}
+
+# 200 OK
+
+resource "aws_api_gateway_documentation_part" "users_userid_unlock_options_200" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/unlock/options-200.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_unlock.path
+    method      = aws_api_gateway_method.users_userid_unlock_options.http_method
+    status_code = "200"
   }
 }
 
