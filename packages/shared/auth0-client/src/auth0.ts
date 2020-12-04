@@ -1,6 +1,6 @@
-import {AxiosResponse} from "axios";
+import { AxiosResponse } from 'axios';
 
-const USER_ID_PREFIX: string = "auth0|p";
+const USER_ID_PREFIX: string = 'auth0|p';
 
 export function toAuth0UserId(userId: string): string {
   return USER_ID_PREFIX + userId;

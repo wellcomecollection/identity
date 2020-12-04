@@ -1,9 +1,9 @@
-import SierraClient from "@weco/sierra-client";
-import {Request, Response} from "express";
-import {ResponseStatus} from "@weco/identity-common";
-import {toUser} from "../models/user";
-import Auth0Client from "@weco/auth0-client";
-import {toMessage} from "../models/common";
+import Auth0Client from '@weco/auth0-client';
+import { ResponseStatus } from '@weco/identity-common';
+import SierraClient from '@weco/sierra-client';
+import { Request, Response } from 'express';
+import { toMessage } from '../models/common';
+import { toUser } from '../models/user';
 
 export async function getUser(sierraClient: SierraClient, auth0Client: Auth0Client, req: Request, res: Response): Promise<void> {
   return sierraClient.getPatronRecordByRecordNumber(req.params.user_id).then(sierraResponse => {

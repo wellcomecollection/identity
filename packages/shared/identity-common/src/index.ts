@@ -1,4 +1,4 @@
-import {AxiosError} from "axios";
+import { AxiosError } from 'axios';
 
 export function successResponse<T>(result: T): SuccessResponse<T> {
   return {
