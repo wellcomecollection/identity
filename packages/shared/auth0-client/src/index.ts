@@ -25,7 +25,7 @@ export default class Auth0Client {
       if (error.response) {
         switch (error.response.status) {
           case 401:
-            return errorResponse(error, 'Auth0 access token [' + accessToken + '] not valid', ResponseStatus.InvalidCredentials);
+            return errorResponse('Auth0 access token [' + accessToken + '] not valid', ResponseStatus.InvalidCredentials, error);
         }
       }
       return unhandledError(error);
@@ -37,12 +37,12 @@ export default class Auth0Client {
       return instance.get('/users/' + toAuth0UserId(Number(userId)), {
         validateStatus: status => status === 200
       }).then(response =>
-        successResponse(toUserProfile(response))
+        successResponse(toUserProfile(response.data))
       ).catch(error => {
         if (error.response) {
           switch (error.response.status) {
             case 404:
-              return errorResponse(error,'Auth0 user with ID [' + userId + '] not found', ResponseStatus.NotFound);
+              return errorResponse('Auth0 user with ID [' + userId + '] not found', ResponseStatus.NotFound, error);
           }
         }
         return unhandledError(error);
@@ -57,15 +57,13 @@ export default class Auth0Client {
           email: email.toLowerCase()
         },
         validateStatus: status => status === 200
-      }).then(response =>
-        successResponse(toUserProfile(response))
-      ).catch(error => {
-        if (error.response) {
-          switch (error.response.status) {
-            case 404:
-              return errorResponse(error, 'Auth0 user with email [' + email + '] not found', ResponseStatus.NotFound);
-          }
+      }).then(response => {
+        if (response.data.length === 0) {
+          return errorResponse('Auth0 user with email [' + email + '] not found', ResponseStatus.NotFound);
+        } else {
+          return successResponse(toUserProfile(response.data[0]))
         }
+      }).catch(error => {
         return unhandledError(error);
       });
     });
@@ -82,14 +80,14 @@ export default class Auth0Client {
       }, {
         validateStatus: status => status === 201
       }).then(response =>
-        successResponse(toUserProfile(response))
+        successResponse(toUserProfile(response.data))
       ).catch(error => {
         if (error.response) {
           switch (error.response.status) {
             case 400:
-              return errorResponse(error, 'Malformed or invalid Auth0 user creation request', ResponseStatus.MalformedRequest);
+              return errorResponse('Malformed or invalid Auth0 user creation request', ResponseStatus.MalformedRequest, error);
             case 409:
-              return errorResponse(error, 'AUth0 user with email [' + email + '] already exists', ResponseStatus.UserAlreadyExists);
+              return errorResponse('AUth0 user with email [' + email + '] already exists', ResponseStatus.UserAlreadyExists, error);
           }
         }
         return unhandledError(error);

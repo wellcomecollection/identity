@@ -14,16 +14,16 @@ export function toUserInfo(response: AxiosResponse): Auth0UserInfo {
   }
 }
 
-export function toUserProfile(response: AxiosResponse): Auth0Profile {
+export function toUserProfile(data: any): Auth0Profile {
   return {
-    userId: response.data.user_id,
-    email: response.data.email,
-    emailValidated: response.data.email_verified,
-    locked: response.data.blocked ? response.data.blocked : false,
-    creationDate: response.data.created_at,
-    lastLogin: response.data.last_login,
-    lastLoginIp: response.data.last_ip,
-    totalLogins: response.data.logins_count
+    userId: data.user_id,
+    email: data.email,
+    emailValidated: data.email_verified,
+    locked: data.blocked ? data.blocked : false,
+    creationDate: data.created_at,
+    lastLogin: data.last_login,
+    lastLoginIp: data.last_ip,
+    totalLogins: data.logins_count
   }
 }
 

@@ -7,8 +7,8 @@ export function successResponse<T>(result: T): SuccessResponse<T> {
   }
 }
 
-export function errorResponse(error: AxiosError, message: string, status: ResponseStatus.NotFound | ResponseStatus.InvalidCredentials | ResponseStatus.UserAlreadyExists | ResponseStatus.MalformedRequest | ResponseStatus.UnknownError): ErrorResponse {
-  const cause = error.response ? error.response.data : error.message;
+export function errorResponse(message: string, status: ResponseStatus.NotFound | ResponseStatus.InvalidCredentials | ResponseStatus.UserAlreadyExists | ResponseStatus.MalformedRequest | ResponseStatus.UnknownError, error?: AxiosError): ErrorResponse {
+  const cause = error ? (error.response ? error.response.data : error.message) : '';
   return {
     message: message + ' (cause: [' + cause + '])',
     status: status
@@ -16,7 +16,7 @@ export function errorResponse(error: AxiosError, message: string, status: Respon
 }
 
 export function unhandledError(error: AxiosError): ErrorResponse {
-  return errorResponse(error, 'Unhandled API response [' + error.message + ']', ResponseStatus.UnknownError);
+  return errorResponse('Unhandled API response [' + error.message + ']', ResponseStatus.UnknownError, error);
 }
 
 export type SuccessResponse<T> = {
