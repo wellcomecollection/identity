@@ -112,7 +112,7 @@ export default class SierraClient {
         return instance.put('/v6/patrons/' + recordNumber, {
           barcodes: [recordNumber.toString()]
         },{
-          validateStatus: status => status === 200
+          validateStatus: status => status === 204
         }).then(() =>
           this.getPatronRecordByRecordNumber(recordNumber)
         ).catch(error => {
