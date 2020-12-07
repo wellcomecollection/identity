@@ -106,15 +106,15 @@ export default class SierraClient {
   async createPatronRecord(title: string, firstName: string, lastName: string, email: string, pin: string): Promise<APIResponse<PatronRecord>> {
     return this.getInstance().then(instance => {
       return instance.post('/v6/patrons', toCreatePatron(title, firstName, lastName, email, pin), {
-        validateStatus: status => status === 201
+        validateStatus: status => status === 200
       }).then(response => {
-        const recordNumber = extractRecordNumberFromCreate(response.data.link).toString();
+        const recordNumber = extractRecordNumberFromCreate(response.data.link);
         return instance.put('/v6/patrons/' + recordNumber, {
-          barcodes: [recordNumber]
+          barcodes: [recordNumber.toString()]
         },{
           validateStatus: status => status === 200
         }).then(() =>
-          this.getPatronRecordByBarcode(recordNumber)
+          this.getPatronRecordByRecordNumber(recordNumber)
         ).catch(error => {
           if (error.response) {
             switch (error.response.status) {
