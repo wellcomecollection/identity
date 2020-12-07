@@ -26,9 +26,11 @@ export async function getUser(sierraClient: SierraClient, auth0Client: Auth0Clie
 }
 
 export async function createUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
-  return sierraClient.getPatronRecordByEmail(request.body.email).then(sierraResponse => {
+  const sierraCheck = sierraClient.getPatronRecordByEmail(request.body.email);
+  const auth0Check = auth0Client.getProfileByEmail(request.body.email);
+  sierraCheck.then(sierraResponse => {
     if (sierraResponse.status === ResponseStatus.NotFound) {
-      auth0Client.getProfileByEmail(request.body.email).then(auth0Response => {
+      auth0Check.then(auth0Response => {
         if (auth0Response.status === ResponseStatus.NotFound) {
           return sierraClient.createPatronRecord(request.body.title, request.body.firstName, request.body.lastName, request.body.password).then(sierraResponse => {
             if (sierraResponse.status === ResponseStatus.Success) {
