@@ -1,15 +1,9 @@
 import { AxiosResponse } from 'axios';
 
-const USER_ID_PREFIX: string = 'auth0|p';
-
-export function toAuth0UserId(userId: number): string {
-  return USER_ID_PREFIX + userId;
-}
-
 export function toUserInfo(response: AxiosResponse): Auth0UserInfo {
   const sub = response.data.sub;
   return {
-    userId: sub.slice(sub.indexOf(USER_ID_PREFIX) + USER_ID_PREFIX.length),
+    userId: sub.slice(sub.indexOf('auth0|p') + 'auth0|p'.length),
     email: response.data.email
   }
 }

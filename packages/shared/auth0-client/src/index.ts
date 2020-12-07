@@ -1,6 +1,6 @@
 import { APIResponse, errorResponse, ResponseStatus, successResponse, unhandledError } from '@weco/identity-common';
 import axios, { AxiosInstance } from 'axios';
-import { Auth0Profile, Auth0UserInfo, toAuth0UserId, toUserInfo, toUserProfile } from './auth0';
+import { Auth0Profile, Auth0UserInfo, toUserInfo, toUserProfile } from './auth0';
 
 export default class Auth0Client {
 
@@ -34,7 +34,7 @@ export default class Auth0Client {
 
   async getProfileByUserId(userId: string): Promise<APIResponse<Auth0Profile>> {
     return this.getMachineToMachineInstance().then(instance => {
-      return instance.get('/users/' + toAuth0UserId(Number(userId)), {
+      return instance.get('/users/auth0|p' + userId, {
         validateStatus: status => status === 200
       }).then(response =>
         successResponse(toUserProfile(response.data))
