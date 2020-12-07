@@ -25,7 +25,7 @@ export default class Auth0Client {
       if (error.response) {
         switch (error.response.status) {
           case 401:
-            return errorResponse('Auth0 access token [' + accessToken + '] not valid', ResponseStatus.InvalidCredentials);
+            return errorResponse(error, 'Auth0 access token [' + accessToken + '] not valid', ResponseStatus.InvalidCredentials);
         }
       }
       return unhandledError(error);
@@ -42,7 +42,7 @@ export default class Auth0Client {
         if (error.response) {
           switch (error.response.status) {
             case 404:
-              return errorResponse('Auth0 user with ID [' + userId + '] not found', ResponseStatus.NotFound);
+              return errorResponse(error,'Auth0 user with ID [' + userId + '] not found', ResponseStatus.NotFound);
           }
         }
         return unhandledError(error);
@@ -63,7 +63,7 @@ export default class Auth0Client {
         if (error.response) {
           switch (error.response.status) {
             case 404:
-              return errorResponse('Auth0 user with email [' + email + '] not found', ResponseStatus.NotFound);
+              return errorResponse(error, 'Auth0 user with email [' + email + '] not found', ResponseStatus.NotFound);
           }
         }
         return unhandledError(error);
@@ -86,8 +86,10 @@ export default class Auth0Client {
       ).catch(error => {
         if (error.response) {
           switch (error.response.status) {
+            case 400:
+              return errorResponse(error, 'Malformed or invalid Auth0 user creation request', ResponseStatus.MalformedRequest);
             case 409:
-              return errorResponse('AUth0 user with email [' + email + '] already exists', ResponseStatus.UserAlreadyExists)
+              return errorResponse(error, 'AUth0 user with email [' + email + '] already exists', ResponseStatus.UserAlreadyExists);
           }
         }
         return unhandledError(error);

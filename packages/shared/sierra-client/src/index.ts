@@ -1,7 +1,7 @@
-import {APIResponse, errorResponse, ResponseStatus, successResponse, unhandledError} from '@weco/identity-common';
-import type {AxiosInstance} from 'axios';
+import { APIResponse, errorResponse, ResponseStatus, successResponse, unhandledError } from '@weco/identity-common';
+import type { AxiosInstance } from 'axios';
 import axios from 'axios';
-import {extractRecordNumberFromCreate, PatronRecord, toCreatePatron, toPatronRecord} from './patron';
+import { extractRecordNumberFromCreate, PatronRecord, toCreatePatron, toPatronRecord } from './patron';
 
 export default class SierraClient {
 
@@ -28,7 +28,7 @@ export default class SierraClient {
         if (error.response) {
           switch (error.response.status) {
             case 400:
-              return errorResponse('Invalid Patron credentials for barcode [' + barcode + ']', ResponseStatus.InvalidCredentials);
+              return errorResponse(error, 'Invalid Patron credentials for barcode [' + barcode + ']', ResponseStatus.InvalidCredentials);
           }
         }
         return unhandledError(error);
@@ -49,7 +49,7 @@ export default class SierraClient {
         if (error.response) {
           switch (error.response.status) {
             case 404:
-              return errorResponse('Patron record with record number [' + recordNumber + '] not found', ResponseStatus.NotFound);
+              return errorResponse(error, 'Patron record with record number [' + recordNumber + '] not found', ResponseStatus.NotFound);
           }
         }
         return unhandledError(error);
@@ -72,7 +72,7 @@ export default class SierraClient {
         if (error.response) {
           switch (error.response.status) {
             case 404:
-              return errorResponse('Patron record with barcode [' + barcode + '] not found', ResponseStatus.NotFound);
+              return errorResponse(error, 'Patron record with barcode [' + barcode + '] not found', ResponseStatus.NotFound);
           }
         }
         return unhandledError(error);
@@ -95,7 +95,7 @@ export default class SierraClient {
         if (error.response) {
           switch (error.response.status) {
             case 404:
-              return errorResponse('Patron record with email address [' + email + '] not found', ResponseStatus.NotFound);
+              return errorResponse(error, 'Patron record with email address [' + email + '] not found', ResponseStatus.NotFound);
           }
         }
         return unhandledError(error);
@@ -117,7 +117,7 @@ export default class SierraClient {
           if (error.response) {
             switch (error.response.status) {
               case 400:
-                return errorResponse('Malformed or invalid Patron barcode update request', ResponseStatus.MalformedRequest);
+                return errorResponse(error, 'Malformed or invalid Patron barcode update request', ResponseStatus.MalformedRequest);
             }
           }
           return unhandledError(error);
@@ -126,7 +126,7 @@ export default class SierraClient {
         if (error.response) {
           switch (error.response.status) {
             case 400:
-              return errorResponse('Malformed or invalid Patron creation request', ResponseStatus.MalformedRequest);
+              return errorResponse(error, 'Malformed or invalid Patron record creation request', ResponseStatus.MalformedRequest);
           }
         }
         return unhandledError(error);
