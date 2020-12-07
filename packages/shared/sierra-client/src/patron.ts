@@ -85,7 +85,27 @@ export function toCreatePatron(title: string, firstName: string, lastName: strin
         label: "USER CAT.",
         value: "13"
       },
-    }
+    },
+    varFields: [
+      {
+        fieldTag: "n",
+        marcTag: "100",
+        subfields: [
+          {
+            tag: "a",
+            content: lastName
+          },
+          {
+            tag: "c",
+            content: title
+          },
+          {
+            tag: "b",
+            content: firstName
+          }
+        ]
+      }
+    ]
   }
 }
 
@@ -117,7 +137,15 @@ export interface PatronCreate {
       label: string,
       value: string
     }
-  }
+  },
+  varFields: {
+    fieldTag: string,
+    marcTag: string,
+    subfields: {
+      tag: string,
+      content: string
+    }[]
+  }[]
 }
 
 interface VarField {

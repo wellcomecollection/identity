@@ -121,7 +121,7 @@ export default class SierraClient {
     });
   }
 
-  async updatePatronRecord(recordNumber: number, email: string): Promise<APIResponse<PatronRecord>> {
+  async addPostCreationFields(recordNumber: number, email: string): Promise<APIResponse<PatronRecord>> {
     return this.getInstance().then(instance => {
       return instance.put('/v6/patrons/' + recordNumber, {
         emails: [email],

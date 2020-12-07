@@ -32,9 +32,9 @@ export async function createUser(sierraClient: SierraClient, auth0Client: Auth0C
         if (auth0Response.status === ResponseStatus.NotFound) {
           return sierraClient.createPatronRecord(request.body.title, request.body.firstName, request.body.lastName, request.body.password).then(sierraResponse => {
             if (sierraResponse.status === ResponseStatus.Success) {
-              return auth0Client.createAccount(sierraResponse.result, request.body.email, request.body.password).then(auth0Response => {
+              return auth0Client.createUser(sierraResponse.result, request.body.email, request.body.password).then(auth0Response => {
                 if (auth0Response.status === ResponseStatus.Success) {
-                  return sierraClient.updatePatronRecord(sierraResponse.result, request.body.email).then(sierraResponse => {
+                  return sierraClient.addPostCreationFields(sierraResponse.result, request.body.email).then(sierraResponse => {
                     if (sierraResponse.status === ResponseStatus.Success) {
                       response.status(201).json(toUser(sierraResponse.result, auth0Response.result));
                     } else if (sierraResponse.status === ResponseStatus.MalformedRequest) {
