@@ -77,7 +77,6 @@ export default class Auth0Client {
         email: email,
         password: password,
         email_verified: false,
-        verify_email: true,
         connection: 'Sierra-Connection'
       }, {
         validateStatus: status => status === 201
