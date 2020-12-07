@@ -7,18 +7,16 @@ export function successResponse<T>(result: T): SuccessResponse<T> {
   }
 }
 
-export function errorResponse(error: AxiosError, message: string, status: ResponseStatus.NotFound | ResponseStatus.InvalidCredentials | ResponseStatus.UserAlreadyExists | ResponseStatus.MalformedRequest): ErrorResponse {
+export function errorResponse(error: AxiosError, message: string, status: ResponseStatus.NotFound | ResponseStatus.InvalidCredentials | ResponseStatus.UserAlreadyExists | ResponseStatus.MalformedRequest | ResponseStatus.UnknownError): ErrorResponse {
+  const cause = error.response ? error.response.data : error.message;
   return {
-    message: message + '(cause: [' + JSON.stringify(error) + '])',
+    message: message + ' (cause: [' + cause + '])',
     status: status
   }
 }
 
 export function unhandledError(error: AxiosError): ErrorResponse {
-  return {
-    message: 'Unhandled API response [' + JSON.stringify(error)+ ']',
-    status: ResponseStatus.UnknownError
-  }
+  return errorResponse(error, 'Unhandled API response [' + error.message + ']', ResponseStatus.UnknownError);
 }
 
 export type SuccessResponse<T> = {
