@@ -8,7 +8,7 @@ export function successResponse<T>(result: T): SuccessResponse<T> {
 }
 
 export function errorResponse(message: string, status: ResponseStatus.NotFound | ResponseStatus.InvalidCredentials | ResponseStatus.UserAlreadyExists | ResponseStatus.MalformedRequest | ResponseStatus.UnknownError, error?: AxiosError): ErrorResponse {
-  const cause = error ? (error.response ? error.response.data : error.message) : '';
+  const cause = error ? (error.response ? JSON.stringify(error.response.data) : error.message) : '';
   return {
     message: message + ' (cause: [' + cause + '])',
     status: status

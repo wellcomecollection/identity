@@ -78,7 +78,7 @@ export default class Auth0Client {
         verify_email: true,
         connection: 'Sierra-Connection'
       }, {
-        validateStatus: status => status === 201
+        validateStatus: status => status === 200
       }).then(response =>
         successResponse(toUserProfile(response.data))
       ).catch(error => {
