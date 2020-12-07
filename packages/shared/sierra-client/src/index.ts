@@ -1,7 +1,7 @@
-import { APIResponse, errorResponse, ResponseStatus, successResponse, unhandledError } from '@weco/identity-common';
+import {APIResponse, errorResponse, ResponseStatus, successResponse, unhandledError} from '@weco/identity-common';
 import type {AxiosInstance} from 'axios';
 import axios from 'axios';
-import { extractRecordNumberFromCreate, PatronRecord, toCreatePatron, toPatronRecord } from './patron';
+import {extractRecordNumberFromCreate, PatronRecord, toCreatePatron, toPatronRecord} from './patron';
 
 export default class SierraClient {
 
@@ -103,28 +103,13 @@ export default class SierraClient {
     });
   }
 
-  async createPatronRecord(title: string, firstName: string, lastName: string, email: string, pin: string): Promise<APIResponse<PatronRecord>> {
+  async createPatronRecord(title: string, firstName: string, lastName: string, pin: string): Promise<APIResponse<number>> {
     return this.getInstance().then(instance => {
-      return instance.post('/v6/patrons', toCreatePatron(title, firstName, lastName, email, pin), {
+      return instance.post('/v6/patrons', toCreatePatron(title, firstName, lastName, pin), {
         validateStatus: status => status === 200
-      }).then(response => {
-        const recordNumber = extractRecordNumberFromCreate(response.data.link);
-        return instance.put('/v6/patrons/' + recordNumber, {
-          barcodes: [recordNumber.toString()]
-        },{
-          validateStatus: status => status === 204
-        }).then(() =>
-          this.getPatronRecordByRecordNumber(recordNumber)
-        ).catch(error => {
-          if (error.response) {
-            switch (error.response.status) {
-              case 400:
-                return errorResponse('Malformed or invalid Patron barcode update request', ResponseStatus.MalformedRequest, error);
-            }
-          }
-          return unhandledError(error);
-        });
-      }).catch(error => {
+      }).then(response =>
+        successResponse(extractRecordNumberFromCreate(response.data.link))
+      ).catch(error => {
         if (error.response) {
           switch (error.response.status) {
             case 400:
@@ -134,6 +119,27 @@ export default class SierraClient {
         return unhandledError(error);
       });
     });
+  }
+
+  async updatePatronRecord(recordNumber: number, email: string): Promise<APIResponse<PatronRecord>> {
+    return this.getInstance().then(instance => {
+      return instance.put('/v6/patrons/' + recordNumber, {
+        emails: [email],
+        barcodes: [recordNumber.toString()]
+      }, {
+        validateStatus: status => status === 204
+      }).then(() =>
+        this.getPatronRecordByRecordNumber(recordNumber)
+      ).catch(error => {
+        if (error.response) {
+          switch (error.response.status) {
+            case 400:
+              return errorResponse('Malformed or invalid Patron barcode update request', ResponseStatus.MalformedRequest, error);
+          }
+        }
+        return unhandledError(error);
+      });
+    })
   }
 
   private async getInstance(): Promise<AxiosInstance> {

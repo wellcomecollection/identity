@@ -1,6 +1,7 @@
 import { APIResponse, errorResponse, ResponseStatus, successResponse, unhandledError } from '@weco/identity-common';
 import axios, { AxiosInstance } from 'axios';
 import { Auth0Profile, Auth0UserInfo, toAuth0UserId, toUserInfo, toUserProfile } from './auth0';
+import {toPatronRecord} from "@weco/sierra-client/lib/patron";
 
 export default class Auth0Client {
 
@@ -69,9 +70,10 @@ export default class Auth0Client {
     });
   }
 
-  async createAccount(email: string, password: string): Promise<APIResponse<Auth0Profile>> {
+  async createAccount(userId: number, email: string, password: string): Promise<APIResponse<Auth0Profile>> {
     return this.getMachineToMachineInstance().then(instance => {
       return instance.post('/users', {
+        user_id: toAuth0UserId(userId),
         email: email,
         password: password,
         email_verified: false,

@@ -12,11 +12,11 @@ function login(email, password, callback) {
                 user_id: 'p' + patronRecord.recordNumber,
                 email: patronRecord.email
             });
-        }).catch(reason => {
-            callback(reason)
+        }).catch(error => {
+            callback(error)
         });
-    }).catch(reason => {
-        callback(reason);
+    }).catch(error => {
+        callback(error);
     });
 
     async function validateCredentials(barcode, pin) {

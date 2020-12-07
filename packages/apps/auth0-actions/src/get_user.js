@@ -11,8 +11,12 @@ function getUser(email, callback) {
             user_id: 'p' + patronRecord.recordNumber,
             email: patronRecord.email
         });
-    }).catch(reason => {
-        callback(reason);
+    }).catch(error => {
+        if(error.response && error.response.status === 404) {
+            callback(null);
+        } else {
+            callback(error);
+        }
     });
 
     async function getPatronRecordByEmail(email) {
