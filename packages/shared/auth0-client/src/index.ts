@@ -72,7 +72,7 @@ export default class Auth0Client {
   async createUser(userId: number, email: string, password: string): Promise<APIResponse<Auth0Profile>> {
     return this.getMachineToMachineInstance().then(instance => {
       return instance.post('/users', {
-        user_id: userId,
+        user_id: userId.toString(),
         email: email,
         password: password,
         email_verified: false,
