@@ -75,7 +75,6 @@ function getPatronNameNonMarc(content: string): { title: string, firstName: stri
 
 export function toCreatePatron(title: string, firstName: string, lastName: string, pin: string): PatronCreate {
   return {
-    names: [lastName + ',' + ' ' + title + ' ' + firstName],
     pin: pin,
     pMessage: 's',
     homeLibraryCode: 'sreg',
@@ -127,7 +126,6 @@ export interface PatronRecord {
 }
 
 export interface PatronCreate {
-  names: string[],
   pin: string,
   pMessage: string,
   homeLibraryCode: string,
