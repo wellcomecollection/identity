@@ -1,9 +1,9 @@
 import Auth0Client from '@weco/auth0-client';
-import { ResponseStatus } from '@weco/identity-common';
+import {ResponseStatus} from '@weco/identity-common';
 import SierraClient from '@weco/sierra-client';
-import { Request, Response } from 'express';
-import { toMessage } from '../models/common';
-import { toUser } from '../models/user';
+import {Request, Response} from 'express';
+import {toMessage} from '../models/common';
+import {toUser} from '../models/user';
 
 export async function getUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
   return sierraClient.getPatronRecordByRecordNumber(Number(request.params.user_id)).then(sierraResponse => {
@@ -35,12 +35,16 @@ export async function createUser(sierraClient: SierraClient, auth0Client: Auth0C
               response.status(201).json(toUser(sierraResponse.result, auth0Response.result));
             } else if (sierraResponse.status === ResponseStatus.UserAlreadyExists) {
               response.status(409).json(toMessage(sierraResponse.message));
+            } else if (sierraResponse.status === ResponseStatus.MalformedRequest) {
+              response.status(400).json(toMessage(sierraResponse.message));
             } else {
               response.status(500).json(toMessage(sierraResponse.message));
             }
           });
         } else if (auth0Response.status === ResponseStatus.UserAlreadyExists) {
           response.status(409).json(toMessage(auth0Response.message));
+        } else if (auth0Response.status === ResponseStatus.MalformedRequest) {
+          response.status(400).json(toMessage(auth0Response.message));
         } else {
           response.status(500).json(toMessage(auth0Response.message));
         }

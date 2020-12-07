@@ -113,12 +113,24 @@ export default class SierraClient {
           barcodes: [recordNumber.toString()]
         }).then(() =>
           this.getPatronRecordByBarcode(recordNumber.toString())
-        ).catch(error =>
-          unhandledError(error)
-        );
-      }).catch(error =>
-        unhandledError(error)
-      );
+        ).catch(error => {
+          if (error.response) {
+            switch (error.response.status) {
+              case 400:
+                return errorResponse('Malformed or invalid Patron barcode update request', ResponseStatus.MalformedRequest);
+            }
+          }
+          return unhandledError(error);
+        });
+      }).catch(error => {
+        if (error.response) {
+          switch (error.response.status) {
+            case 400:
+              return errorResponse('Malformed or invalid Patron creation request', ResponseStatus.MalformedRequest);
+          }
+        }
+        return unhandledError(error);
+      });
     });
   }
 
