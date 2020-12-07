@@ -108,11 +108,13 @@ export default class SierraClient {
       return instance.post('/v6/patrons', toCreatePatron(title, firstName, lastName, email, pin), {
         validateStatus: status => status === 201
       }).then(response => {
-        const recordNumber = extractRecordNumberFromCreate(response.data.link);
+        const recordNumber = extractRecordNumberFromCreate(response.data.link).toString();
         return instance.put('/v6/patrons/' + recordNumber, {
-          barcodes: [recordNumber.toString()]
+          barcodes: [recordNumber]
+        },{
+          validateStatus: status => status === 200
         }).then(() =>
-          this.getPatronRecordByBarcode(recordNumber.toString())
+          this.getPatronRecordByBarcode(recordNumber)
         ).catch(error => {
           if (error.response) {
             switch (error.response.status) {
