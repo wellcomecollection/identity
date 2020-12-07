@@ -9,7 +9,7 @@ function getUser(email, callback) {
     getPatronRecordByEmail(email).then(patronRecord => {
         callback(null, {
             user_id: 'p' + patronRecord.recordNumber,
-            email: patronRecord.emailAddress
+            email: patronRecord.email
         });
     }).catch(reason => {
         callback(reason);
@@ -53,7 +53,7 @@ function getUser(email, callback) {
         return Object.assign(patronName, {
             recordNumber: data.id,
             barcode: extractVarField(data.varFields, 'b'),
-            emailAddress: extractVarField(data.varFields, 'z')
+            email: extractVarField(data.varFields, 'z')
         }
         );
     }

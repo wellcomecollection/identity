@@ -7,7 +7,7 @@ export function successResponse<T>(result: T): SuccessResponse<T> {
   }
 }
 
-export function errorResponse(message: string, status: ResponseStatus.NotFound | ResponseStatus.InvalidCredentials): ErrorResponse {
+export function errorResponse(message: string, status: ResponseStatus.NotFound | ResponseStatus.InvalidCredentials | ResponseStatus.UserAlreadyExists): ErrorResponse {
   return {
     message: message,
     status: status
@@ -28,13 +28,14 @@ export type SuccessResponse<T> = {
 
 export type ErrorResponse = {
   message: string,
-  status: ResponseStatus.NotFound | ResponseStatus.InvalidCredentials | ResponseStatus.UnknownError
+  status: ResponseStatus.NotFound | ResponseStatus.InvalidCredentials | ResponseStatus.UserAlreadyExists | ResponseStatus.UnknownError
 }
 
 export enum ResponseStatus {
   Success,
   NotFound,
   InvalidCredentials,
+  UserAlreadyExists,
   UnknownError
 }
 

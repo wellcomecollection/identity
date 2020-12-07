@@ -76,7 +76,7 @@ function validateRequest(auth0UserInfo: Auth0UserInfo, pathParameters: { [name: 
   return false;
 }
 
-function buildAuthorizerResult(principal: string | number, effect: string, methodArn: string): APIGatewayAuthorizerResult {
+function buildAuthorizerResult(principal: string | bigint, effect: string, methodArn: string): APIGatewayAuthorizerResult {
   return {
     principalId: principal.toString(),
     policyDocument: {

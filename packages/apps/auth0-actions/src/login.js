@@ -10,7 +10,7 @@ function login(email, password, callback) {
         validateCredentials(patronRecord.barcode, password).then(() => {
             callback(null, {
                 user_id: 'p' + patronRecord.recordNumber,
-                email: patronRecord.emailAddress
+                email: patronRecord.email
             });
         }).catch(reason => {
             callback(reason)
@@ -85,7 +85,7 @@ function login(email, password, callback) {
         return Object.assign(patronName, {
             recordNumber: data.id,
             barcode: extractVarField(data.varFields, 'b'),
-            emailAddress: extractVarField(data.varFields, 'z')
+            email: extractVarField(data.varFields, 'z')
         }
         );
     }

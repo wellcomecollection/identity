@@ -25,14 +25,14 @@ export default class Auth0Client {
       if (error.response) {
         switch (error.response.status) {
           case 401:
-            return errorResponse('Access token [' + accessToken + '] not valid', ResponseStatus.InvalidCredentials);
+            return errorResponse('Auth0 access token [' + accessToken + '] not valid', ResponseStatus.InvalidCredentials);
         }
       }
       return unhandledError(error);
     });
   }
 
-  async getProfile(userId: string): Promise<APIResponse<Auth0Profile>> {
+  async getProfileByUserId(userId: string): Promise<APIResponse<Auth0Profile>> {
     return this.getMachineToMachineInstance().then(instance => {
       return instance.get('/users/' + toAuth0UserId(userId), {
         validateStatus: status => status === 200
@@ -42,7 +42,52 @@ export default class Auth0Client {
         if (error.response) {
           switch (error.response.status) {
             case 404:
-              return errorResponse('User with ID [' + userId + '] not found', ResponseStatus.NotFound);
+              return errorResponse('Auth0 user with ID [' + userId + '] not found', ResponseStatus.NotFound);
+          }
+        }
+        return unhandledError(error);
+      });
+    });
+  }
+
+  async getProfileByEmail(email: string): Promise<APIResponse<Auth0Profile>> {
+    return this.getMachineToMachineInstance().then(instance => {
+      return instance.get('/users-by-email', {
+        params: {
+          email: email.toLowerCase()
+        },
+        validateStatus: status => status === 200
+      }).then(response =>
+        successResponse(toUserProfile(response))
+      ).catch(error => {
+        if (error.response) {
+          switch (error.response.status) {
+            case 404:
+              return errorResponse('Auth0 user with email [' + email + '] not found', ResponseStatus.NotFound);
+          }
+        }
+        return unhandledError(error);
+      });
+    });
+  }
+
+  async createAccount(email: string, password: string): Promise<APIResponse<Auth0Profile>> {
+    return this.getMachineToMachineInstance().then(instance => {
+      return instance.post('/users', {
+        email: email,
+        password: password,
+        email_verified: false,
+        verify_email: true,
+        connection: 'Sierra-Connection'
+      }, {
+        validateStatus: status => status === 201
+      }).then(response =>
+        successResponse(toUserProfile(response))
+      ).catch(error => {
+        if (error.response) {
+          switch (error.response.status) {
+            case 409:
+              return errorResponse('AUth0 user with email [' + email + '] already exists', ResponseStatus.UserAlreadyExists)
           }
         }
         return unhandledError(error);

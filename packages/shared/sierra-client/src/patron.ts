@@ -1,19 +1,18 @@
-export default function toPatronRecord(data: any): PatronRecord {
+export function toPatronRecord(data: any): PatronRecord {
   const patronName = getPatronName(data.varFields);
   return Object.assign(patronName, {
     recordNumber: data.id,
     barcode: getVarFieldContent(data.varFields, 'b'),
-    emailAddress: getVarFieldContent(data.varFields, 'z')
-  }
-  );
+    email: getVarFieldContent(data.varFields, 'z')
+  });
 }
 
-function getVarFieldContent(varFields: VarField[], fieldTag: string) {
+function getVarFieldContent(varFields: VarField[], fieldTag: string): string {
   const found = varFields.find(varField => varField.fieldTag === fieldTag);
-  return found ? found.content : '';
+  return found ? found.content || '' : '';
 }
 
-function getPatronName(varFields: VarField[]) {
+function getPatronName(varFields: VarField[]): { title: string, firstName: string, lastName: string } {
   const found = varFields.find(varField => varField.fieldTag === 'n');
   if (found && found.content) {
     return getPatronNameNonMarc(found.content);
@@ -28,7 +27,7 @@ function getPatronName(varFields: VarField[]) {
   }
 }
 
-function getPatronNameMarc(subFields: VarSubField[]): PatronName {
+function getPatronNameMarc(subFields: SubField[]): { title: string, firstName: string, lastName: string } {
   const title = subFields.find(subField => subField.tag === 'c')
   const firstName = subFields.find(subField => subField.tag === 'b')
   const lastName = subFields.find(subField => subField.tag === 'a')
@@ -39,7 +38,7 @@ function getPatronNameMarc(subFields: VarSubField[]): PatronName {
   }
 }
 
-function getPatronNameNonMarc(content: string): PatronName {
+function getPatronNameNonMarc(content: string): { title: string, firstName: string, lastName: string } {
   if (!content.trim()) {
     return {
       title: '',
@@ -74,25 +73,62 @@ function getPatronNameNonMarc(content: string): PatronName {
   };
 }
 
-interface VarField {
-  fieldTag: string,
-  content: string,
-  subfields: VarSubField[]
+export function toCreatePatron(title: string, firstName: string, lastName: string, email: string, pin: string): PatronCreate {
+  return {
+    emails: [email],
+    names: [lastName + ',' + ' ' + title + ' ' + firstName],
+    pin: pin,
+    pMessage: 's',
+    homeLibraryCode: 'sreg',
+    patronType: BigInt(29),
+    fixedFields: {
+      46: {
+        label: "USER CAT.",
+        value: "13"
+      },
+    }
+  }
 }
 
-interface VarSubField {
-  tag: string,
-  content: string
+export function extractRecordNumberFromCreate(link: string): bigint {
+  const match = link.match(/^https:\/\/.+?\/v6\/patrons\/(\d+)$/);
+  if (!match || match.length < 2) {
+    throw new Error('Patron creation link [' + link + '] not in expected format');
+  }
+  return BigInt(match[1]);
 }
 
-interface PatronName {
+export interface PatronRecord {
+  recordNumber: bigint;
+  barcode: string;
   title: string;
   firstName: string;
   lastName: string;
+  email: string;
 }
 
-export interface PatronRecord extends PatronName {
-  recordNumber: number;
-  barcode: string;
-  emailAddress: string;
+export interface PatronCreate {
+  emails: string[],
+  names: string[],
+  pin: string,
+  pMessage: string,
+  homeLibraryCode: string,
+  patronType: bigint,
+  fixedFields: {
+    46: {
+      label: string,
+      value: string
+    }
+  }
+}
+
+interface VarField {
+  fieldTag: string,
+  content?: string,
+  subfields?: SubField[]
+}
+
+interface SubField {
+  tag: string,
+  content: string
 }
