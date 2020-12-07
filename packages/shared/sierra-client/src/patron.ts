@@ -80,7 +80,7 @@ export function toCreatePatron(title: string, firstName: string, lastName: strin
     pin: pin,
     pMessage: 's',
     homeLibraryCode: 'sreg',
-    patronType: BigInt(29),
+    patronType: 29,
     fixedFields: {
       46: {
         label: "USER CAT.",
@@ -90,16 +90,16 @@ export function toCreatePatron(title: string, firstName: string, lastName: strin
   }
 }
 
-export function extractRecordNumberFromCreate(link: string): bigint {
+export function extractRecordNumberFromCreate(link: string): number {
   const match = link.match(/^https:\/\/.+?\/v6\/patrons\/(\d+)$/);
   if (!match || match.length < 2) {
     throw new Error('Patron creation link [' + link + '] not in expected format');
   }
-  return BigInt(match[1]);
+  return Number(match[1]);
 }
 
 export interface PatronRecord {
-  recordNumber: bigint;
+  recordNumber: number;
   barcode: string;
   title: string;
   firstName: string;
@@ -113,7 +113,7 @@ export interface PatronCreate {
   pin: string,
   pMessage: string,
   homeLibraryCode: string,
-  patronType: bigint,
+  patronType: number,
   fixedFields: {
     46: {
       label: string,

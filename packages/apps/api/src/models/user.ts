@@ -19,7 +19,7 @@ export function toUser(patronRecord: PatronRecord, auth0User: Auth0Profile): Use
 }
 
 interface User {
-  patronId: bigint,
+  patronId: number,
   barcode: string,
   title: string,
   firstName: string,
@@ -30,7 +30,7 @@ interface User {
   creationDate: string,
   lastLogin: string,
   lastLoginIp: string,
-  totalLogins: bigint
+  totalLogins: number
 }
 
 

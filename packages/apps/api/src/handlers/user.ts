@@ -6,7 +6,7 @@ import { toMessage } from '../models/common';
 import { toUser } from '../models/user';
 
 export async function getUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
-  return sierraClient.getPatronRecordByRecordNumber(BigInt(request.params.user_id)).then(sierraResponse => {
+  return sierraClient.getPatronRecordByRecordNumber(Number(request.params.user_id)).then(sierraResponse => {
     if (sierraResponse.status === ResponseStatus.Success) {
       return auth0Client.getProfileByUserId(request.params.user_id).then(auth0Response => {
         if (auth0Response.status === ResponseStatus.Success) {

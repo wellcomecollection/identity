@@ -36,7 +36,7 @@ export default class SierraClient {
     });
   }
 
-  async getPatronRecordByRecordNumber(recordNumber: bigint): Promise<APIResponse<PatronRecord>> {
+  async getPatronRecordByRecordNumber(recordNumber: number): Promise<APIResponse<PatronRecord>> {
     return this.getInstance().then(instance => {
       return instance.get('/v6/patrons/' + recordNumber, {
         params: {
