@@ -79,7 +79,7 @@ resource "auth0_client_grant" "buildkite" {
 }
 
 resource "auth0_client" "api_gateway_identity" {
-  name     = "Identity API Gateway ${terraform.workspace}"
+  name     = "Identity Lambda API (${terraform.workspace})"
   app_type = "non_interactive"
 
   custom_login_page_on = false
