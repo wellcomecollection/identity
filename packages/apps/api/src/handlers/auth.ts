@@ -13,9 +13,9 @@ export async function validateCredentials(sierraClient: SierraClient, request: R
     response.status(400).json(toMessage("All fields must be provided and non-blank"));
   }
 
-  const sierraGet: APIResponse<PatronRecord> = await sierraClient.getPatronRecordByEmail(request.body.email);
+  const sierraGet: APIResponse<PatronRecord> = await sierraClient.getPatronRecordByEmail(email);
   if (sierraGet.status === ResponseStatus.Success) {
-    const sierraValidate: APIResponse<{}> = await sierraClient.validateCredentials(sierraGet.result.barcode, request.body.password);
+    const sierraValidate: APIResponse<{}> = await sierraClient.validateCredentials(sierraGet.result.barcode, password);
     if (sierraValidate.status === ResponseStatus.Success) {
       response.status(200).end();
     } else if (sierraValidate.status === ResponseStatus.InvalidCredentials) {

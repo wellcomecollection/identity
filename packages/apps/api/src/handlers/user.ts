@@ -44,9 +44,9 @@ export async function createUser(sierraClient: SierraClient, auth0Client: Auth0C
     response.status(400).json(toMessage("All fields must be provided and non-blank"));
   }
 
-  const sierraGet: APIResponse<PatronRecord> = await sierraClient.getPatronRecordByEmail(request.body.email);
+  const sierraGet: APIResponse<PatronRecord> = await sierraClient.getPatronRecordByEmail(email);
   if (sierraGet.status === ResponseStatus.NotFound) {
-    const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByEmail(request.body.email);
+    const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByEmail(email);
     if (auth0Get.status === ResponseStatus.NotFound) {
       const sierraCreate: APIResponse<number> = await sierraClient.createPatronRecord(title, firstName, lastName, password);
       if (sierraCreate.status === ResponseStatus.Success) {
@@ -73,12 +73,12 @@ export async function createUser(sierraClient: SierraClient, auth0Client: Auth0C
         response.status(500).json(toMessage(sierraCreate.message));
       }
     } else if (auth0Get.status === ResponseStatus.Success) {
-      response.status(409).json(toMessage('Auth0 user with email [' + request.body.email + '] already exists'));
+      response.status(409).json(toMessage('Auth0 user with email [' + email + '] already exists'));
     } else {
       response.status(500).json(toMessage(auth0Get.message));
     }
   } else if (sierraGet.status === ResponseStatus.Success) {
-    response.status(409).json(toMessage('Patron record with email [' + request.body.email + '] already exists'));
+    response.status(409).json(toMessage('Patron record with email [' + email + '] already exists'));
   } else {
     response.status(500).json(toMessage(sierraGet.message));
   }
