@@ -52,23 +52,47 @@ function getUser(email, callback) {
     }
 
     function toPatronRecord(data) {
-        const nameVarField = extractVarField(data.varFields, 'n');
-        const patronName = getPatronName(nameVarField);
+        const patronName = getPatronName(data.varFields);
         return Object.assign(patronName, {
             recordNumber: data.id,
-            barcode: extractVarField(data.varFields, 'b'),
-            email: extractVarField(data.varFields, 'z')
-        }
-        );
+            barcode: getVarFieldContent(data.varFields, 'b'),
+            email: getVarFieldContent(data.varFields, 'z')
+        });
     }
 
-    function extractVarField(varFields, fieldTag) {
+    function getVarFieldContent(varFields, fieldTag) {
         const found = varFields.find(varField => varField.fieldTag === fieldTag);
-        return found ? found.content : '';
+        return found ? found.content || '' : '';
     }
 
-    function getPatronName(varField) {
-        if (!varField.trim()) {
+    function getPatronName(varFields) {
+        const found = varFields.find(varField => varField.fieldTag === 'n');
+        if (found && found.content) {
+            return getPatronNameNonMarc(found.content);
+        } else if (found && found.subfields) {
+            return getPatronNameMarc(found.subfields);
+        } else {
+            return {
+                title: '',
+                firstName: '',
+                lastName: ''
+            }
+        }
+    }
+
+    function getPatronNameMarc(subFields) {
+        const title = subFields.find(subField => subField.tag === 'c')
+        const firstName = subFields.find(subField => subField.tag === 'b')
+        const lastName = subFields.find(subField => subField.tag === 'a')
+        return {
+            title: title ? title.content.trim() : '',
+            firstName: firstName ? firstName.content.trim() : '',
+            lastName: lastName ? lastName.content.trim() : ''
+        }
+    }
+
+    function getPatronNameNonMarc(content) {
+        if (!content.trim()) {
             return {
                 title: '',
                 firstName: '',
@@ -76,23 +100,23 @@ function getUser(email, callback) {
             };
         }
 
-        varField = varField.replace('100', '').replace('a|', '').replace('_', '');
+        content = content.replace('100', '').replace('a|', '').replace('_', '');
 
         let lastName = '';
-        if (varField.includes(',')) {
-            lastName = varField.substring(0, varField.indexOf(','));
+        if (content.includes(',')) {
+            lastName = content.substring(0, content.indexOf(','));
         }
 
         let title = '';
-        if (varField.includes('|c')) {
-            title = varField.substring(varField.indexOf('|c') + 2, varField.indexOf('|b'));
+        if (content.includes('|c')) {
+            title = content.substring(content.indexOf('|c') + 2, content.indexOf('|b'));
         }
 
         let firstName = '';
-        if (varField.includes('|b')) {
-            firstName = varField.substring(varField.indexOf('|b') + 2, varField.length);
+        if (content.includes('|b')) {
+            firstName = content.substring(content.indexOf('|b') + 2, content.length);
         } else {
-            firstName = varField.substring(varField.indexOf(',') + 1, varField.length);
+            firstName = content.substring(content.indexOf(',') + 1, content.length);
         }
 
         return {
