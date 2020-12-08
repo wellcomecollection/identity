@@ -3,12 +3,13 @@
     "collectCoverage": true,
     "coverageReporters": ["lcov", "json"],
     "collectCoverageFrom": [
-        "**/src/**"
+        "src/**/*.{js,jsx,ts,tsx}",
+        "!<rootDir>/node_modules/"
     ],
     "transform": {
-        "^.+\\.tsx?$": "ts-jest"
+        "^.+\\.ts?$": "ts-jest"
     },
-    "testRegex": "(/tests/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "testRegex": "/tests/.*\\.test\\.ts$",
     "moduleFileExtensions": [
         "ts",
         "tsx",
@@ -16,5 +17,8 @@
         "jsx",
         "json",
         "node"
-    ]
+    ],
+    "moduleNameMapper": {
+        "@weco/(.+)$": "<rootDir>packages/shared/$1/src"
+    }
 }
