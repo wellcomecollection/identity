@@ -7,8 +7,15 @@ export function successResponse<T>(result: T): SuccessResponse<T> {
   }
 }
 
-export function errorResponse(message: string, status: ResponseStatus.NotFound | ResponseStatus.InvalidCredentials | ResponseStatus.UserAlreadyExists | ResponseStatus.MalformedRequest | ResponseStatus.UnknownError, error?: AxiosError): ErrorResponse {
-  const cause = error ? (error.response ? JSON.stringify(error.response.data) : error.message) : '';
+export function errorResponse(
+  message: string,
+  status: ResponseStatus.NotFound
+    | ResponseStatus.InvalidCredentials
+    | ResponseStatus.UserAlreadyExists
+    | ResponseStatus.MalformedRequest
+    | ResponseStatus.UnknownError,
+  error?: AxiosError): ErrorResponse {
+  const cause = error ? (error.response ? JSON.stringify(error.response.data) : error.message) : 'unknown';
   return {
     message: message + ' (cause: [' + cause + '])',
     status: status
@@ -26,7 +33,11 @@ export type SuccessResponse<T> = {
 
 export type ErrorResponse = {
   message: string,
-  status: ResponseStatus.NotFound | ResponseStatus.InvalidCredentials | ResponseStatus.UserAlreadyExists | ResponseStatus.MalformedRequest | ResponseStatus.UnknownError
+  status: ResponseStatus.NotFound
+  | ResponseStatus.InvalidCredentials
+  | ResponseStatus.UserAlreadyExists
+  | ResponseStatus.MalformedRequest
+  | ResponseStatus.UnknownError
 }
 
 export enum ResponseStatus {

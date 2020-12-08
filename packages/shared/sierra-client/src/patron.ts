@@ -1,9 +1,9 @@
-export function toPatronRecord(data: any): PatronRecord {
-  const patronName = getPatronName(data.varFields);
+export function toPatronRecord(patronRecord: any): PatronRecord {
+  const patronName = getPatronName(patronRecord.varFields);
   return Object.assign(patronName, {
-    recordNumber: data.id,
-    barcode: getVarFieldContent(data.varFields, 'b'),
-    email: getVarFieldContent(data.varFields, 'z')
+    recordNumber: patronRecord.id,
+    barcode: getVarFieldContent(patronRecord.varFields, 'b'),
+    email: getVarFieldContent(patronRecord.varFields, 'z')
   });
 }
 
@@ -12,6 +12,9 @@ function getVarFieldContent(varFields: VarField[], fieldTag: string): string {
   return found ? found.content || '' : '';
 }
 
+// Sierra stores the names of Patron records in two formats: MARC and non-MARC. In the former, names are represented as
+// a JSON object, where each part of the name (title, first name, last name) is represented as a sub-object on its own.
+// In the case of non-MARC, it's a single string value with various prefixes.
 function getPatronName(varFields: VarField[]): { title: string, firstName: string, lastName: string } {
   const found = varFields.find(varField => varField.fieldTag === 'n');
   if (found && found.content) {
@@ -73,6 +76,8 @@ function getPatronNameNonMarc(content: string): { title: string, firstName: stri
   };
 }
 
+// There's a bunch of hardcoded fields in here. This is intentional, these are static and don't change and mostly
+// indicate that the user has self-registered. I don't think we need to extract them out into configuration.
 export function toCreatePatron(title: string, firstName: string, lastName: string, pin: string): PatronCreate {
   return {
     pin: pin,
@@ -108,7 +113,9 @@ export function toCreatePatron(title: string, firstName: string, lastName: strin
   }
 }
 
-export function extractRecordNumberFromCreate(link: string): number {
+// The Patron record creation endpoint returns in response to a successful record creation the full URL to the API
+// endpoint to query that new record. We're not interested in that, just give us the Patron record number.
+export function extractRecordNumberFromLink(link: string): number {
   const match = link.match(/^https:\/\/.+?\/v6\/patrons\/(\d+)$/);
   if (!match || match.length < 2) {
     throw new Error('Patron creation link [' + link + '] not in expected format');
@@ -125,6 +132,8 @@ export interface PatronRecord {
   email: string;
 }
 
+// This represents the data required to create a Patron record in Sierra. The 'fixedFields' a bit odd, as the keys of
+// the embedded objects appear to be array indices of some description, but 'fixedFields' itself isn't an array...?
 export interface PatronCreate {
   pin: string,
   pMessage: string,

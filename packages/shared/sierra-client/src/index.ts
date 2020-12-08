@@ -1,13 +1,13 @@
-import {APIResponse, errorResponse, ResponseStatus, successResponse, unhandledError} from '@weco/identity-common';
-import type {AxiosInstance} from 'axios';
+import { APIResponse, errorResponse, ResponseStatus, successResponse, unhandledError } from '@weco/identity-common';
+import type { AxiosInstance } from 'axios';
 import axios from 'axios';
-import {extractRecordNumberFromCreate, PatronRecord, toCreatePatron, toPatronRecord} from './patron';
+import { extractRecordNumberFromLink, PatronRecord, toCreatePatron, toPatronRecord } from './patron';
 
 export default class SierraClient {
 
-  apiRoot: string;
-  clientKey: string;
-  clientSecret: string;
+  private readonly apiRoot: string;
+  private readonly clientKey: string;
+  private readonly clientSecret: string;
 
   constructor(apiRoot: string, clientKey: string, clientSecret: string) {
     this.apiRoot = apiRoot;
@@ -17,7 +17,7 @@ export default class SierraClient {
 
   async validateCredentials(barcode: string, pin: string): Promise<APIResponse<{}>> {
     return this.getInstance().then(instance => {
-      return instance.post('/v6/patrons/validate', {
+      return instance.post('/patrons/validate', {
         barcode: barcode,
         pin: pin
       }, {
@@ -38,7 +38,7 @@ export default class SierraClient {
 
   async getPatronRecordByRecordNumber(recordNumber: number): Promise<APIResponse<PatronRecord>> {
     return this.getInstance().then(instance => {
-      return instance.get('/v6/patrons/' + recordNumber, {
+      return instance.get('/patrons/' + recordNumber, {
         params: {
           fields: 'varFields'
         },
@@ -59,7 +59,7 @@ export default class SierraClient {
 
   async getPatronRecordByBarcode(barcode: string): Promise<APIResponse<PatronRecord>> {
     return this.getInstance().then(instance => {
-      return instance.get('/v6/patrons/find', {
+      return instance.get('/patrons/find', {
         params: {
           varFieldTag: 'b',
           varFieldContent: barcode,
@@ -82,7 +82,7 @@ export default class SierraClient {
 
   async getPatronRecordByEmail(email: string): Promise<APIResponse<PatronRecord>> {
     return this.getInstance().then(instance => {
-      return instance.get('/v6/patrons/find', {
+      return instance.get('/patrons/find', {
         params: {
           varFieldTag: 'z',
           varFieldContent: email.toLowerCase(),
@@ -105,10 +105,10 @@ export default class SierraClient {
 
   async createPatronRecord(title: string, firstName: string, lastName: string, pin: string): Promise<APIResponse<number>> {
     return this.getInstance().then(instance => {
-      return instance.post('/v6/patrons', toCreatePatron(title, firstName, lastName, pin), {
+      return instance.post('/patrons', toCreatePatron(title, firstName, lastName, pin), {
         validateStatus: status => status === 200
       }).then(response =>
-        successResponse(extractRecordNumberFromCreate(response.data.link))
+        successResponse(extractRecordNumberFromLink(response.data.link))
       ).catch(error => {
         if (error.response) {
           switch (error.response.status) {
@@ -121,9 +121,9 @@ export default class SierraClient {
     });
   }
 
-  async addPostCreationFields(recordNumber: number, email: string): Promise<APIResponse<PatronRecord>> {
+  async updatePatronPostCreationFields(recordNumber: number, email: string): Promise<APIResponse<PatronRecord>> {
     return this.getInstance().then(instance => {
-      return instance.put('/v6/patrons/' + recordNumber, {
+      return instance.put('/patrons/' + recordNumber, {
         emails: [email],
         barcodes: [recordNumber.toString()]
       }, {
@@ -151,7 +151,7 @@ export default class SierraClient {
       validateStatus: status => status === 200
     }).then(response => {
       return axios.create({
-        baseURL: this.apiRoot,
+        baseURL: this.apiRoot + '/v6',
         headers: {
           Authorization: 'Bearer ' + response.data.access_token
         }

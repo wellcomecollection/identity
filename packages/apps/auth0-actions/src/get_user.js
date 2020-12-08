@@ -12,7 +12,7 @@ function getUser(email, callback) {
             email: patronRecord.email
         });
     }).catch(error => {
-        if(error.response && error.response.status === 404) {
+        if (error.response && error.response.status === 404) {
             callback(null);
         } else {
             callback(error);

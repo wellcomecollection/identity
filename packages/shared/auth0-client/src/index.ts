@@ -1,6 +1,6 @@
 import { APIResponse, errorResponse, ResponseStatus, successResponse, unhandledError } from '@weco/identity-common';
 import axios, { AxiosInstance } from 'axios';
-import { Auth0Profile, Auth0UserInfo, toUserInfo, toUserProfile } from './auth0';
+import { Auth0Profile, Auth0UserInfo, toAuth0Profile, toAuth0UserInfo } from './auth0';
 
 export default class Auth0Client {
 
@@ -20,7 +20,7 @@ export default class Auth0Client {
     return this.getInstanceOnBehalfOf(accessToken).get('/userinfo', {
       validateStatus: status => status === 200
     }).then(response =>
-      successResponse(toUserInfo(response))
+      successResponse(toAuth0UserInfo(response.data))
     ).catch(error => {
       if (error.response) {
         switch (error.response.status) {
@@ -32,12 +32,12 @@ export default class Auth0Client {
     });
   }
 
-  async getProfileByUserId(userId: string): Promise<APIResponse<Auth0Profile>> {
+  async getUserByUserId(userId: number): Promise<APIResponse<Auth0Profile>> {
     return this.getMachineToMachineInstance().then(instance => {
-      return instance.get('/users/auth0|p' + userId, {
+      return instance.get('/users/auth0|p' + userId, { // Automatically append the mandatory Auth0 prefix to the given user ID.
         validateStatus: status => status === 200
       }).then(response =>
-        successResponse(toUserProfile(response.data))
+        successResponse(toAuth0Profile(response.data))
       ).catch(error => {
         if (error.response) {
           switch (error.response.status) {
@@ -50,7 +50,7 @@ export default class Auth0Client {
     });
   }
 
-  async getProfileByEmail(email: string): Promise<APIResponse<Auth0Profile>> {
+  async getUserByEmail(email: string): Promise<APIResponse<Auth0Profile>> {
     return this.getMachineToMachineInstance().then(instance => {
       return instance.get('/users-by-email', {
         params: {
@@ -58,10 +58,12 @@ export default class Auth0Client {
         },
         validateStatus: status => status === 200
       }).then(response => {
+        // Even though email addresses are unique in Auth0, this endpoint will return a 200 and an empty JSON array if
+        // there's no match. If there is a match, we still get the JSON array, with a single JSON object inside it.
         if (response.data.length === 0) {
           return errorResponse('Auth0 user with email [' + email + '] not found', ResponseStatus.NotFound);
         } else {
-          return successResponse(toUserProfile(response.data[0]))
+          return successResponse(toAuth0Profile(response.data[0]))
         }
       }).catch(error => {
         return unhandledError(error);
@@ -72,7 +74,7 @@ export default class Auth0Client {
   async createUser(userId: number, email: string, password: string): Promise<APIResponse<Auth0Profile>> {
     return this.getMachineToMachineInstance().then(instance => {
       return instance.post('/users', {
-        user_id: 'p' + userId,
+        user_id: 'p' + userId, // When creating an Auth0 user, don't provide the 'auth0|' prefix, just prefix the 'p' - Auth0 will do the rest.
         email: email,
         password: password,
         email_verified: false,
@@ -80,7 +82,7 @@ export default class Auth0Client {
       }, {
         validateStatus: status => status === 201
       }).then(response =>
-        successResponse(toUserProfile(response.data))
+        successResponse(toAuth0Profile(response.data))
       ).catch(error => {
         if (error.response) {
           switch (error.response.status) {
@@ -115,7 +117,7 @@ export default class Auth0Client {
 
   private getInstanceOnBehalfOf(accessToken: string): AxiosInstance {
     return axios.create({
-      baseURL: this.apiRoot,
+      baseURL: this.apiRoot + '/api/v2',
       headers: {
         Authorization: 'Bearer ' + accessToken
       },
