@@ -1,10 +1,9 @@
 import Auth0Client from '@weco/auth0-client';
 import { Auth0Profile } from "@weco/auth0-client/lib/auth0";
-import { APIResponse, ResponseStatus } from '@weco/identity-common';
+import { APIResponse, isNonBlank, ResponseStatus } from '@weco/identity-common';
 import SierraClient from '@weco/sierra-client';
 import { PatronRecord } from "@weco/sierra-client/lib/patron";
 import { Request, Response } from 'express';
-import { isNonBlank } from "../../../../shared/identity-common/src";
 import { toMessage } from '../models/common';
 import { toUser } from '../models/user';
 
