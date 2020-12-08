@@ -1,5 +1,9 @@
 import { AxiosError } from 'axios';
 
+export function isNonBlank(str: string): boolean {
+  return !!(str && /\S/.test(str));
+}
+
 export function successResponse<T>(result: T): SuccessResponse<T> {
   return {
     result: result,

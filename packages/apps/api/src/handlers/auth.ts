@@ -1,15 +1,15 @@
-import {APIResponse, ResponseStatus} from '@weco/identity-common';
+import { APIResponse, isNonBlank, ResponseStatus } from '@weco/identity-common';
 import SierraClient from '@weco/sierra-client';
-import {Request, Response} from 'express';
-import {toMessage} from '../models/common';
-import {PatronRecord} from "@weco/sierra-client/lib/patron";
+import { PatronRecord } from "@weco/sierra-client/lib/patron";
+import { Request, Response } from 'express';
+import { toMessage } from '../models/common';
 
 export async function validateCredentials(sierraClient: SierraClient, request: Request, response: Response): Promise<void> {
 
   const email = request.body.email;
   const password = request.body.password;
 
-  if (!email || !password) {
+  if (!isNonBlank(email) || !isNonBlank(password)) {
     response.status(400).json(toMessage("All fields must be provided and non-blank"));
   }
 

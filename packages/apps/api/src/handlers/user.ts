@@ -1,11 +1,12 @@
 import Auth0Client from '@weco/auth0-client';
-import {APIResponse, ResponseStatus} from '@weco/identity-common';
+import { Auth0Profile } from "@weco/auth0-client/lib/auth0";
+import { APIResponse, ResponseStatus } from '@weco/identity-common';
 import SierraClient from '@weco/sierra-client';
-import {Request, Response} from 'express';
-import {toMessage} from '../models/common';
-import {toUser} from '../models/user';
-import {PatronRecord} from "@weco/sierra-client/lib/patron";
-import {Auth0Profile} from "@weco/auth0-client/lib/auth0";
+import { PatronRecord } from "@weco/sierra-client/lib/patron";
+import { Request, Response } from 'express';
+import { isNonBlank } from "../../../../shared/identity-common/src";
+import { toMessage } from '../models/common';
+import { toUser } from '../models/user';
 
 export async function getUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
 
@@ -39,7 +40,7 @@ export async function createUser(sierraClient: SierraClient, auth0Client: Auth0C
   const email: string = request.body.email;
   const password: string = request.body.password;
 
-  if (!title || !firstName || !lastName || !email || !password) {
+  if (!isNonBlank(title) || !isNonBlank(firstName) || !isNonBlank(lastName) || !isNonBlank(email) || !isNonBlank(password)) {
     response.status(400).json(toMessage("All fields must be provided and non-blank"));
   }
 
