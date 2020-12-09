@@ -12,8 +12,8 @@ export function toAuth0Profile(auth0User: any): Auth0Profile {
     userId: auth0User.user_id,
     email: auth0User.email,
     emailValidated: auth0User.email_verified,
-    locked: auth0User.blocked ? auth0User.blocked : false, // Auth0 quirk - this attribute doesn't appear on Auth0 responses until it's been toggled off and on at least once.
     creationDate: auth0User.created_at,
+    locked: !!(auth0User.blocked), // Auth0 quirk - this attribute doesn't appear on Auth0 responses until it's been toggled off and on at least once.
     lastLogin: auth0User.last_login,
     lastLoginIp: auth0User.last_ip,
     totalLogins: auth0User.logins_count
