@@ -16,6 +16,7 @@ if (isProduction) {
 export const port = process.env.SERVER_PORT || 3000;
 
 // Any config derived from env here.
+
 export const config = {
   // Random values used for signing cookies used for the session. Can be comma separated list.
   sessionKeys: process.env.KOA_SESSION_KEYS ? process.env.KOA_SESSION_KEYS.split(',') : ['local_value'],
