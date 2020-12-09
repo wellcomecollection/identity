@@ -17,7 +17,7 @@ export const indexPage: RouteMiddleware = (context) => {
       </head>
       <body>
         <div id="root"></div>
-        
+
         <script type="application/javascript" src="${bundle}"></script>
       </body>
     </html>

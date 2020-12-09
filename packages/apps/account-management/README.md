@@ -1,6 +1,6 @@
 # Account management
-The chosen Node library for this API is the [Koa framework](https://koajs.com/). It is a battle-tested Node framework 
-with a similar api to Express. The code base is written in Typescript and runs using [pm2](https://pm2.keymetrics.io/) 
+The chosen Node library for this API is the [Koa framework](https://koajs.com/). It is a battle-tested Node framework
+with a similar api to Express. The code base is written in Typescript and runs using [pm2](https://pm2.keymetrics.io/)
 process manager and built into a Docker image.
 
 ## 3rd Party components
@@ -99,15 +99,15 @@ AUTH0_CALLBACK_URL=http://localhost:3000/callback
 ```
 
 You need to set up an Auth0 application and set the login, callback to allow localhost:3000. By default, there is a
-shim that uses a static login/password (test:test). 
+shim that uses a static login/password (test:test).
 
 There is more configuration for session management in `src/config.ts` and should all be typed if we need to expand.
 
-These are the same environment variables expected in a production environment. In a production environment the `AUTH0_*` environment variables must be set or else the application will not start. 
+These are the same environment variables expected in a production environment. In a production environment the `AUTH0_*` environment variables must be set or else the application will not start.
 
 ### Session keys
 
-In addition to the Auth0 environment variables, there is a `KOA_SESSION_KEYS` environment variable that should be a 
+In addition to the Auth0 environment variables, there is a `KOA_SESSION_KEYS` environment variable that should be a
 comma-separated list of random strings. These are used to sign cookies. The application will not run if you do not
 have at least one session key.
 
@@ -123,7 +123,7 @@ To facilitate rapid development, a few custom components have been created.
 
 ## Creating new routes
 Before thinking about the URL structure of an endpoint, it's useful to think about the data you need. The code that
-serves the routes is found in `./src/routes`. 
+serves the routes is found in `./src/routes`.
 
 Here is a basic route:
 
@@ -159,7 +159,7 @@ export const updateUser: RouteMiddleware<{ user_id: string }, UserModel> = (cont
 };
 ```
 If you would like runtime validation of this body type, then you can add it to `./types/schemas/` folder and it
-will create a JSON schema. 
+will create a JSON schema.
 
 You can let the router know it should validate against that type using the JSON Schema (`./src/router.ts`)
 
@@ -191,13 +191,13 @@ With the Auth0 integration, there is a `context.state.user` variable set that co
 This includes a token that can be used to make authenticated calls to other APIs.
 
 If you are making requests, I would recommend using `node-fetch` to keep the APIs used in the browser and in Node the
-same. 
+same.
 
 ```ts
 const response = await fetch(
-  `http:// ... /api/endpoint`, 
-  { 
-    method: 'PUT', 
+  `http:// ... /api/endpoint`,
+  {
+    method: 'PUT',
     body: JSON.stringify({ ... }),
     headers: {
       'Content-Type': 'application/json',
@@ -231,13 +231,13 @@ The following routes are configured for Auth0 in the router:
 - Logout (`/logout`) - this will remove the current session, but not remove the Auth0 session
 - Callback (`/callback`) - this will accept the token from Auth0's callback
 
-All of this is handled by Passport.js and their Auth0 provider. 
+All of this is handled by Passport.js and their Auth0 provider.
 
 ## Frontend code
 All the frontend code should live inside `./src/frontend`. At the moment it is just a plain file rendering some JSX.
 
 A simple router can be added. Any route that does not match an API will render the React frontend, so we do not need
-to use a hash router for this. 
+to use a hash router for this.
 
 The route that renders the HTML for before the React component can be found at `./routes/index.ts`. This is a very
 minimal HTML document with a link to the webpack bundle. This is intended to be a starting point.
