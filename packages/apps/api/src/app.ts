@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import express, { Application, Request, Response } from 'express';
 import { validateCredentials } from './handlers/auth';
-import { getUser } from './handlers/user';
+import { createUser, getUser } from './handlers/user';
 import { DummyUserOne, DummyUserTwo } from './models/user';
 
 export default createApplication();
@@ -53,7 +53,7 @@ function registerUsersResource(app: Application): void {
   }
   app.options('/users', cors(corsOptions));
   app.get('/users', cors(corsOptions), (request: Request, response: Response) => response.status(200).json([DummyUserOne, DummyUserTwo]));
-  app.post('/users', cors(corsOptions), (request: Request, response: Response) => response.status(201).json(DummyUserOne));
+  app.post('/users', cors(corsOptions), (request: Request, response: Response) => createUser(sierraClient, auth0Client, request, response));
 }
 
 function registerUsersUserIdResource(app: Application): void {

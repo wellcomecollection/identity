@@ -1,5 +1,9 @@
 import { AxiosError } from 'axios';
 
+export function isNonBlank(str: string): boolean {
+  return !!(str && /\S/.test(str));
+}
+
 export function successResponse<T>(result: T): SuccessResponse<T> {
   return {
     result: result,
@@ -7,18 +11,23 @@ export function successResponse<T>(result: T): SuccessResponse<T> {
   }
 }
 
-export function errorResponse(message: string, status: ResponseStatus.NotFound | ResponseStatus.InvalidCredentials): ErrorResponse {
+export function errorResponse(
+  message: string,
+  status: ResponseStatus.NotFound
+    | ResponseStatus.InvalidCredentials
+    | ResponseStatus.UserAlreadyExists
+    | ResponseStatus.MalformedRequest
+    | ResponseStatus.UnknownError,
+  error?: AxiosError): ErrorResponse {
+  const cause = error ? (error.response ? JSON.stringify(error.response.data) : error.message) : 'unknown';
   return {
-    message: message,
+    message: message + ' (cause: [' + cause + '])',
     status: status
   }
 }
 
 export function unhandledError(error: AxiosError): ErrorResponse {
-  return {
-    message: 'Unexpected API response: [' + error.message + ']',
-    status: ResponseStatus.UnknownError
-  }
+  return errorResponse('Unhandled API response [' + error.message + ']', ResponseStatus.UnknownError, error);
 }
 
 export type SuccessResponse<T> = {
@@ -28,13 +37,19 @@ export type SuccessResponse<T> = {
 
 export type ErrorResponse = {
   message: string,
-  status: ResponseStatus.NotFound | ResponseStatus.InvalidCredentials | ResponseStatus.UnknownError
+  status: ResponseStatus.NotFound
+  | ResponseStatus.InvalidCredentials
+  | ResponseStatus.UserAlreadyExists
+  | ResponseStatus.MalformedRequest
+  | ResponseStatus.UnknownError
 }
 
 export enum ResponseStatus {
   Success,
   NotFound,
   InvalidCredentials,
+  UserAlreadyExists,
+  MalformedRequest,
   UnknownError
 }
 

@@ -1,13 +1,13 @@
 import { APIResponse, errorResponse, ResponseStatus, successResponse, unhandledError } from '@weco/identity-common';
 import type { AxiosInstance } from 'axios';
 import axios from 'axios';
-import toPatronRecord, { PatronRecord } from './patron';
+import { extractRecordNumberFromLink, PatronRecord, toCreatePatron, toPatronRecord } from './patron';
 
 export default class SierraClient {
 
-  apiRoot: string;
-  clientKey: string;
-  clientSecret: string;
+  private readonly apiRoot: string;
+  private readonly clientKey: string;
+  private readonly clientSecret: string;
 
   constructor(apiRoot: string, clientKey: string, clientSecret: string) {
     this.apiRoot = apiRoot;
@@ -17,18 +17,18 @@ export default class SierraClient {
 
   async validateCredentials(barcode: string, pin: string): Promise<APIResponse<{}>> {
     return this.getInstance().then(instance => {
-      return instance.post('/v6/patrons/validate', {
+      return instance.post('/patrons/validate', {
         barcode: barcode,
         pin: pin
       }, {
         validateStatus: status => status === 204
-      }).then(() => {
-        return successResponse({});
-      }).catch(error => {
+      }).then(() =>
+        successResponse({})
+      ).catch(error => {
         if (error.response) {
           switch (error.response.status) {
             case 400:
-              return errorResponse('Invalid credentials for barcode [' + barcode + ']', ResponseStatus.InvalidCredentials);
+              return errorResponse('Invalid Patron credentials for barcode [' + barcode + ']', ResponseStatus.InvalidCredentials, error);
           }
         }
         return unhandledError(error);
@@ -36,20 +36,20 @@ export default class SierraClient {
     });
   }
 
-  async getPatronRecordByRecordNumber(recordNumber: string): Promise<APIResponse<PatronRecord>> {
+  async getPatronRecordByRecordNumber(recordNumber: number): Promise<APIResponse<PatronRecord>> {
     return this.getInstance().then(instance => {
-      return instance.get('/v6/patrons/' + recordNumber, {
+      return instance.get('/patrons/' + recordNumber, {
         params: {
           fields: 'varFields'
         },
         validateStatus: status => status === 200
-      }).then(response => {
-        return successResponse(toPatronRecord(response.data));
-      }).catch(error => {
+      }).then(response =>
+        successResponse(toPatronRecord(response.data))
+      ).catch(error => {
         if (error.response) {
           switch (error.response.status) {
             case 404:
-              return errorResponse('Record with record number [' + recordNumber + '] not found', ResponseStatus.NotFound);
+              return errorResponse('Patron record with record number [' + recordNumber + '] not found', ResponseStatus.NotFound, error);
           }
         }
         return unhandledError(error);
@@ -59,20 +59,20 @@ export default class SierraClient {
 
   async getPatronRecordByBarcode(barcode: string): Promise<APIResponse<PatronRecord>> {
     return this.getInstance().then(instance => {
-      return instance.get('/v6/patrons/find', {
+      return instance.get('/patrons/find', {
         params: {
           varFieldTag: 'b',
           varFieldContent: barcode,
           fields: 'varFields'
         },
         validateStatus: status => status === 200
-      }).then(response => {
-        return successResponse(toPatronRecord(response.data));
-      }).catch(error => {
+      }).then(response =>
+        successResponse(toPatronRecord(response.data))
+      ).catch(error => {
         if (error.response) {
           switch (error.response.status) {
             case 404:
-              return errorResponse('Record with barcode [' + barcode + '] not found', ResponseStatus.NotFound);
+              return errorResponse('Patron record with barcode [' + barcode + '] not found', ResponseStatus.NotFound, error);
           }
         }
         return unhandledError(error);
@@ -82,25 +82,64 @@ export default class SierraClient {
 
   async getPatronRecordByEmail(email: string): Promise<APIResponse<PatronRecord>> {
     return this.getInstance().then(instance => {
-      return instance.get('/v6/patrons/find', {
+      return instance.get('/patrons/find', {
         params: {
           varFieldTag: 'z',
-          varFieldContent: email,
+          varFieldContent: email.toLowerCase(),
           fields: 'varFields'
         },
         validateStatus: status => status === 200
-      }).then(response => {
-        return successResponse(toPatronRecord(response.data));
-      }).catch(error => {
+      }).then(response =>
+        successResponse(toPatronRecord(response.data))
+      ).catch(error => {
         if (error.response) {
           switch (error.response.status) {
             case 404:
-              return errorResponse('Record with email address [' + email + '] not found', ResponseStatus.NotFound);
+              return errorResponse('Patron record with email address [' + email + '] not found', ResponseStatus.NotFound, error);
           }
         }
         return unhandledError(error);
       });
     });
+  }
+
+  async createPatronRecord(title: string, firstName: string, lastName: string, pin: string): Promise<APIResponse<number>> {
+    return this.getInstance().then(instance => {
+      return instance.post('/patrons', toCreatePatron(title, firstName, lastName, pin), {
+        validateStatus: status => status === 200
+      }).then(response =>
+        successResponse(extractRecordNumberFromLink(response.data.link))
+      ).catch(error => {
+        if (error.response) {
+          switch (error.response.status) {
+            case 400:
+              return errorResponse('Malformed or invalid Patron record creation request', ResponseStatus.MalformedRequest, error);
+          }
+        }
+        return unhandledError(error);
+      });
+    });
+  }
+
+  async updatePatronPostCreationFields(recordNumber: number, email: string): Promise<APIResponse<PatronRecord>> {
+    return this.getInstance().then(instance => {
+      return instance.put('/patrons/' + recordNumber, {
+        emails: [email],
+        barcodes: [recordNumber.toString()]
+      }, {
+        validateStatus: status => status === 204
+      }).then(() =>
+        this.getPatronRecordByRecordNumber(recordNumber)
+      ).catch(error => {
+        if (error.response) {
+          switch (error.response.status) {
+            case 400:
+              return errorResponse('Malformed or invalid Patron barcode update request', ResponseStatus.MalformedRequest, error);
+          }
+        }
+        return unhandledError(error);
+      });
+    })
   }
 
   private async getInstance(): Promise<AxiosInstance> {
@@ -112,7 +151,7 @@ export default class SierraClient {
       validateStatus: status => status === 200
     }).then(response => {
       return axios.create({
-        baseURL: this.apiRoot,
+        baseURL: this.apiRoot + '/v6',
         headers: {
           Authorization: 'Bearer ' + response.data.access_token
         }
