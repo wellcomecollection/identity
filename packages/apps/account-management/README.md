@@ -56,7 +56,7 @@ The following tools are used in development.
 - [Prettier](https://prettier.io/) - Code style
 
 Prettier is run through eslint. Enabling eslint in your IDE should pick up the configuration automatically after
-running `yarn install` for the first time.
+running `yarn install && yarn build` for the first time.
 
 To get started with an environment:
 ```
