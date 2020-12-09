@@ -1,7 +1,7 @@
-import type {AxiosInstance} from 'axios';
+import { APIResponse, errorResponse, ResponseStatus, successResponse, unhandledError } from '@weco/identity-common';
+import type { AxiosInstance } from 'axios';
 import axios from 'axios';
-import toPatronRecord, {PatronRecord} from "./patron";
-import {APIResponse, errorResponse, ResponseStatus, successResponse, unhandledError} from "@weco/identity-common";
+import toPatronRecord, { PatronRecord } from './patron';
 
 export default class SierraClient {
 

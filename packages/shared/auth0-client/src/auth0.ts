@@ -1,6 +1,6 @@
-import {AxiosResponse} from "axios";
+import { AxiosResponse } from 'axios';
 
-const USER_ID_PREFIX: string = "auth0|p";
+const USER_ID_PREFIX: string = 'auth0|p';
 
 export function toAuth0UserId(userId: string): string {
   return USER_ID_PREFIX + userId;
@@ -19,7 +19,7 @@ export function toUserProfile(response: AxiosResponse): Auth0Profile {
     userId: response.data.user_id,
     email: response.data.email,
     emailValidated: response.data.email_verified,
-    locked: response.data.blocked,
+    locked: response.data.blocked ? response.data.blocked : false,
     creationDate: response.data.created_at,
     lastLogin: response.data.last_login,
     lastLoginIp: response.data.last_ip,

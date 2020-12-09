@@ -84,3 +84,20 @@ resource "aws_iam_user_policy" "auth0_email-ses_email_sending_policy" {
 }
 EOF
 }
+
+# S3
+
+data "aws_iam_policy_document" "s3_swagger_ui_policy_v1" {
+  statement {
+    actions = [
+      "s3:GetObject"
+    ]
+    principals {
+      identifiers = ["*"]
+      type        = "AWS"
+    }
+    resources = [
+      "arn:aws:s3:::identity-public-swagger-ui-${local.identity_v1}-${terraform.workspace}/*"
+    ]
+  }
+}

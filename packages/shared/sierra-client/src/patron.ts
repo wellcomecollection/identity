@@ -1,10 +1,10 @@
 export default function toPatronRecord(data: any): PatronRecord {
   const patronName = getPatronName(data.varFields);
   return Object.assign(patronName, {
-      recordNumber: data.id,
-      barcode: getVarFieldContent(data.varFields, 'b'),
-      emailAddress: getVarFieldContent(data.varFields, 'z')
-    }
+    recordNumber: data.id,
+    barcode: getVarFieldContent(data.varFields, 'b'),
+    emailAddress: getVarFieldContent(data.varFields, 'z')
+  }
   );
 }
 

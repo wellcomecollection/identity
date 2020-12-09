@@ -62,7 +62,8 @@ resource "aws_lambda_function" "api" {
       AUTH0_API_ROOT       = "https://${local.auth0_hostname}"
       AUTH0_API_AUDIENCE   = auth0_client_grant.api_gateway_identity.audience,
       AUTH0_CLIENT_ID      = auth0_client.api_gateway_identity.client_id,
-      AUTH0_CLIENT_SECRET  = auth0_client.api_gateway_identity.client_secret
+      AUTH0_CLIENT_SECRET  = auth0_client.api_gateway_identity.client_secret,
+      API_ALLOWED_ORIGINS  = local.identity_v1_origins
     }
   }
 

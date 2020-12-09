@@ -1,31 +1,3 @@
-resource "aws_api_gateway_documentation_version" "identity_v1" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  version     = local.identity_v1_hostname
-
-  depends_on = [
-    aws_api_gateway_documentation_part.api,
-    aws_api_gateway_documentation_part.auth,
-    aws_api_gateway_documentation_part.auth_post,
-    aws_api_gateway_documentation_part.users,
-    aws_api_gateway_documentation_part.users_get,
-    aws_api_gateway_documentation_part.users_post,
-    aws_api_gateway_documentation_part.users_userid,
-    aws_api_gateway_documentation_part.users_userid_get,
-    aws_api_gateway_documentation_part.users_userid_put,
-    aws_api_gateway_documentation_part.users_userid_delete,
-    aws_api_gateway_documentation_part.users_userid_password,
-    aws_api_gateway_documentation_part.users_userid_password_put,
-    aws_api_gateway_documentation_part.users_userid_reset-password,
-    aws_api_gateway_documentation_part.users_userid_reset-password_put,
-    aws_api_gateway_documentation_part.users_userid_send-verification,
-    aws_api_gateway_documentation_part.users_userid_send-verification_put,
-    aws_api_gateway_documentation_part.users_userid_lock,
-    aws_api_gateway_documentation_part.users_userid_lock_put,
-    aws_api_gateway_documentation_part.users_userid_unlock,
-    aws_api_gateway_documentation_part.users_userid_unlock_put
-  ]
-}
-
 # API
 
 resource "aws_api_gateway_documentation_part" "api" {
@@ -46,6 +18,33 @@ resource "aws_api_gateway_documentation_part" "auth" {
   location {
     type = "RESOURCE"
     path = aws_api_gateway_resource.auth.path
+  }
+}
+
+# [OPTIONS]
+
+resource "aws_api_gateway_documentation_part" "auth_options" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/auth/options.json")
+
+  location {
+    type   = "METHOD"
+    path   = aws_api_gateway_resource.auth.path
+    method = aws_api_gateway_method.auth_options.http_method
+  }
+}
+
+# 204 No Content
+
+resource "aws_api_gateway_documentation_part" "auth_options_204" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/auth/options-204.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.auth.path
+    method      = aws_api_gateway_method.auth_options.http_method
+    status_code = "204"
   }
 }
 
@@ -90,6 +89,48 @@ resource "aws_api_gateway_documentation_part" "auth_post_401" {
   }
 }
 
+# 403 Forbidden
+
+resource "aws_api_gateway_documentation_part" "auth_post_403" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/auth/post-403.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.auth.path
+    method      = aws_api_gateway_method.auth_post.http_method
+    status_code = "403"
+  }
+}
+
+# 404 Not Found
+
+resource "aws_api_gateway_documentation_part" "auth_post_404" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/auth/post-404.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.auth.path
+    method      = aws_api_gateway_method.auth_post.http_method
+    status_code = "404"
+  }
+}
+
+# 500 Internal Server Error
+
+resource "aws_api_gateway_documentation_part" "auth_post_500" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/auth/post-500.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.auth.path
+    method      = aws_api_gateway_method.auth_post.http_method
+    status_code = "500"
+  }
+}
+
 # /users
 
 resource "aws_api_gateway_documentation_part" "users" {
@@ -99,6 +140,33 @@ resource "aws_api_gateway_documentation_part" "users" {
   location {
     type = "RESOURCE"
     path = aws_api_gateway_resource.users.path
+  }
+}
+
+# [OPTIONS]
+
+resource "aws_api_gateway_documentation_part" "users_options" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/options.json")
+
+  location {
+    type   = "METHOD"
+    path   = aws_api_gateway_resource.users.path
+    method = aws_api_gateway_method.users_options.http_method
+  }
+}
+
+# 204 No Content
+
+resource "aws_api_gateway_documentation_part" "users_options_204" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/options-204.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users.path
+    method      = aws_api_gateway_method.users_options.http_method
+    status_code = "204"
   }
 }
 
@@ -129,17 +197,17 @@ resource "aws_api_gateway_documentation_part" "users_get_200" {
   }
 }
 
-# 401 Unauthorized
+# 400 Bad Request
 
-resource "aws_api_gateway_documentation_part" "users_get_401" {
+resource "aws_api_gateway_documentation_part" "users_get_400" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  properties  = file("${path.module}/api-documentation/users/get-401.json")
+  properties  = file("${path.module}/api-documentation/users/get-400.json")
 
   location {
     type        = "RESPONSE"
     path        = aws_api_gateway_resource.users.path
     method      = aws_api_gateway_method.users_get.http_method
-    status_code = "401"
+    status_code = "400"
   }
 }
 
@@ -154,6 +222,20 @@ resource "aws_api_gateway_documentation_part" "users_get_403" {
     path        = aws_api_gateway_resource.users.path
     method      = aws_api_gateway_method.users_get.http_method
     status_code = "403"
+  }
+}
+
+# 500 Internal Server Error
+
+resource "aws_api_gateway_documentation_part" "users_get_500" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/get-500.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users.path
+    method      = aws_api_gateway_method.users_get.http_method
+    status_code = "500"
   }
 }
 
@@ -184,6 +266,62 @@ resource "aws_api_gateway_documentation_part" "users_post_201" {
   }
 }
 
+# 400 Bad Request
+
+resource "aws_api_gateway_documentation_part" "users_post_400" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/post-400.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users.path
+    method      = aws_api_gateway_method.users_post.http_method
+    status_code = "400"
+  }
+}
+
+# 403 Forbidden
+
+resource "aws_api_gateway_documentation_part" "users_post_403" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/post-403.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users.path
+    method      = aws_api_gateway_method.users_post.http_method
+    status_code = "403"
+  }
+}
+
+# 409 Conflict
+
+resource "aws_api_gateway_documentation_part" "users_post_409" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/post-409.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users.path
+    method      = aws_api_gateway_method.users_post.http_method
+    status_code = "409"
+  }
+}
+
+# 500 Internal Server Error
+
+resource "aws_api_gateway_documentation_part" "users_post_500" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/post-500.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users.path
+    method      = aws_api_gateway_method.users_post.http_method
+    status_code = "500"
+  }
+}
+
 # /users/:user_id
 
 resource "aws_api_gateway_documentation_part" "users_userid" {
@@ -193,6 +331,33 @@ resource "aws_api_gateway_documentation_part" "users_userid" {
   location {
     type = "RESOURCE"
     path = aws_api_gateway_resource.users_userid.path
+  }
+}
+
+# [OPTIONS]
+
+resource "aws_api_gateway_documentation_part" "users_userid_options" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/options.json")
+
+  location {
+    type   = "METHOD"
+    path   = aws_api_gateway_resource.users_userid.path
+    method = aws_api_gateway_method.users_userid_options.http_method
+  }
+}
+
+# 204 No Content
+
+resource "aws_api_gateway_documentation_part" "users_userid_options_204" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/options-204.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid.path
+    method      = aws_api_gateway_method.users_userid_options.http_method
+    status_code = "204"
   }
 }
 
@@ -223,6 +388,20 @@ resource "aws_api_gateway_documentation_part" "users_userid_get_200" {
   }
 }
 
+# 403 Forbidden
+
+resource "aws_api_gateway_documentation_part" "users_userid_get_403" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/get-403.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid.path
+    method      = aws_api_gateway_method.users_userid_get.http_method
+    status_code = "403"
+  }
+}
+
 # 404 Not Found
 
 resource "aws_api_gateway_documentation_part" "users_userid_get_404" {
@@ -234,6 +413,20 @@ resource "aws_api_gateway_documentation_part" "users_userid_get_404" {
     path        = aws_api_gateway_resource.users_userid.path
     method      = aws_api_gateway_method.users_userid_get.http_method
     status_code = "404"
+  }
+}
+
+# 500 Internal Server Error
+
+resource "aws_api_gateway_documentation_part" "users_userid_get_500" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/get-500.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid.path
+    method      = aws_api_gateway_method.users_userid_get.http_method
+    status_code = "500"
   }
 }
 
@@ -264,6 +457,34 @@ resource "aws_api_gateway_documentation_part" "users_userid_put_200" {
   }
 }
 
+# 400 Bad Request
+
+resource "aws_api_gateway_documentation_part" "users_userid_put_400" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/put-400.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid.path
+    method      = aws_api_gateway_method.users_userid_put.http_method
+    status_code = "400"
+  }
+}
+
+# 403 Forbidden
+
+resource "aws_api_gateway_documentation_part" "users_userid_put_403" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/put-403.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid.path
+    method      = aws_api_gateway_method.users_userid_put.http_method
+    status_code = "403"
+  }
+}
+
 # 404 Not Found
 
 resource "aws_api_gateway_documentation_part" "users_userid_put_404" {
@@ -275,6 +496,34 @@ resource "aws_api_gateway_documentation_part" "users_userid_put_404" {
     path        = aws_api_gateway_resource.users_userid.path
     method      = aws_api_gateway_method.users_userid_put.http_method
     status_code = "404"
+  }
+}
+
+# 409 Conflict
+
+resource "aws_api_gateway_documentation_part" "users_userid_put_409" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/put-409.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid.path
+    method      = aws_api_gateway_method.users_userid_put.http_method
+    status_code = "409"
+  }
+}
+
+# 500 Internal Server Error
+
+resource "aws_api_gateway_documentation_part" "users_userid_put_500" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/put-500.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid.path
+    method      = aws_api_gateway_method.users_userid_put.http_method
+    status_code = "500"
   }
 }
 
@@ -305,6 +554,20 @@ resource "aws_api_gateway_documentation_part" "users_userid_delete_204" {
   }
 }
 
+# 403 Forbidden
+
+resource "aws_api_gateway_documentation_part" "users_userid_delete_403" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/delete-403.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid.path
+    method      = aws_api_gateway_method.users_userid_delete.http_method
+    status_code = "403"
+  }
+}
+
 # 404 Not Found
 
 resource "aws_api_gateway_documentation_part" "users_userid_delete_404" {
@@ -319,6 +582,20 @@ resource "aws_api_gateway_documentation_part" "users_userid_delete_404" {
   }
 }
 
+# 500 Internal Server Error
+
+resource "aws_api_gateway_documentation_part" "users_userid_delete_500" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/delete-500.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid.path
+    method      = aws_api_gateway_method.users_userid_delete.http_method
+    status_code = "500"
+  }
+}
+
 # /users/:user_id/password
 
 resource "aws_api_gateway_documentation_part" "users_userid_password" {
@@ -328,6 +605,33 @@ resource "aws_api_gateway_documentation_part" "users_userid_password" {
   location {
     type = "RESOURCE"
     path = aws_api_gateway_resource.users_userid_password.path
+  }
+}
+
+# [OPTIONS]
+
+resource "aws_api_gateway_documentation_part" "users_userid_password_options" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/password/options.json")
+
+  location {
+    type   = "METHOD"
+    path   = aws_api_gateway_resource.users_userid_password.path
+    method = aws_api_gateway_method.users_userid_password_options.http_method
+  }
+}
+
+# 204 No Content
+
+resource "aws_api_gateway_documentation_part" "users_userid_password_options_204" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/password/options-204.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_password.path
+    method      = aws_api_gateway_method.users_userid_password_options.http_method
+    status_code = "204"
   }
 }
 
@@ -358,6 +662,34 @@ resource "aws_api_gateway_documentation_part" "users_userid_password_put_200" {
   }
 }
 
+# 400 Bad Request
+
+resource "aws_api_gateway_documentation_part" "users_userid_password_put_400" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/password/put-400.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_password.path
+    method      = aws_api_gateway_method.users_userid_password_put.http_method
+    status_code = "400"
+  }
+}
+
+# 403 Forbidden
+
+resource "aws_api_gateway_documentation_part" "users_userid_password_put_403" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/password/put-403.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_password.path
+    method      = aws_api_gateway_method.users_userid_password_put.http_method
+    status_code = "403"
+  }
+}
+
 # 404 Not Found
 
 resource "aws_api_gateway_documentation_part" "users_userid_password_put_404" {
@@ -372,6 +704,20 @@ resource "aws_api_gateway_documentation_part" "users_userid_password_put_404" {
   }
 }
 
+# 500 Internal Server Error
+
+resource "aws_api_gateway_documentation_part" "users_userid_password_put_500" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/password/put-500.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_password.path
+    method      = aws_api_gateway_method.users_userid_password_put.http_method
+    status_code = "500"
+  }
+}
+
 # /users/:user_id/reset-password
 
 resource "aws_api_gateway_documentation_part" "users_userid_reset-password" {
@@ -381,6 +727,33 @@ resource "aws_api_gateway_documentation_part" "users_userid_reset-password" {
   location {
     type = "RESOURCE"
     path = aws_api_gateway_resource.users_userid_reset-password.path
+  }
+}
+
+# [OPTIONS]
+
+resource "aws_api_gateway_documentation_part" "users_userid_reset-password_options" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/reset-password/options.json")
+
+  location {
+    type   = "METHOD"
+    path   = aws_api_gateway_resource.users_userid_reset-password.path
+    method = aws_api_gateway_method.users_userid_reset-password_options.http_method
+  }
+}
+
+# 204 No Content
+
+resource "aws_api_gateway_documentation_part" "users_userid_reset-password_options_204" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/reset-password/options-204.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_reset-password.path
+    method      = aws_api_gateway_method.users_userid_reset-password_options.http_method
+    status_code = "204"
   }
 }
 
@@ -411,6 +784,20 @@ resource "aws_api_gateway_documentation_part" "users_userid_reset-password_put_2
   }
 }
 
+# 403 Forbidden
+
+resource "aws_api_gateway_documentation_part" "users_userid_reset-password_put_403" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/reset-password/put-403.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_reset-password.path
+    method      = aws_api_gateway_method.users_userid_reset-password_put.http_method
+    status_code = "403"
+  }
+}
+
 # 404 Not Found
 
 resource "aws_api_gateway_documentation_part" "users_userid_reset-password_put_404" {
@@ -425,6 +812,20 @@ resource "aws_api_gateway_documentation_part" "users_userid_reset-password_put_4
   }
 }
 
+# 500 Internal Server Error
+
+resource "aws_api_gateway_documentation_part" "users_userid_reset-password_put_500" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/reset-password/put-500.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_reset-password.path
+    method      = aws_api_gateway_method.users_userid_reset-password_put.http_method
+    status_code = "500"
+  }
+}
+
 # /users/:user_id/send-verification
 
 resource "aws_api_gateway_documentation_part" "users_userid_send-verification" {
@@ -434,6 +835,33 @@ resource "aws_api_gateway_documentation_part" "users_userid_send-verification" {
   location {
     type = "RESOURCE"
     path = aws_api_gateway_resource.users_userid_send-verification.path
+  }
+}
+
+# [OPTIONS]
+
+resource "aws_api_gateway_documentation_part" "users_userid_send-verification_options" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/send-verification/options.json")
+
+  location {
+    type   = "METHOD"
+    path   = aws_api_gateway_resource.users_userid_send-verification.path
+    method = aws_api_gateway_method.users_userid_send-verification_options.http_method
+  }
+}
+
+# 204 No Content
+
+resource "aws_api_gateway_documentation_part" "users_userid_send-verification_options_204" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/send-verification/options-204.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_send-verification.path
+    method      = aws_api_gateway_method.users_userid_send-verification_options.http_method
+    status_code = "204"
   }
 }
 
@@ -464,6 +892,20 @@ resource "aws_api_gateway_documentation_part" "users_userid_send-verification_pu
   }
 }
 
+# 403 Forbidden
+
+resource "aws_api_gateway_documentation_part" "users_userid_send-verification_put_403" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/send-verification/put-403.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_send-verification.path
+    method      = aws_api_gateway_method.users_userid_send-verification_put.http_method
+    status_code = "403"
+  }
+}
+
 # 404 Not Found
 
 resource "aws_api_gateway_documentation_part" "users_userid_send-verification_put_404" {
@@ -478,6 +920,20 @@ resource "aws_api_gateway_documentation_part" "users_userid_send-verification_pu
   }
 }
 
+# 500 Internal Server Error
+
+resource "aws_api_gateway_documentation_part" "users_userid_send-verification_put_500" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/send-verification/put-500.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_send-verification.path
+    method      = aws_api_gateway_method.users_userid_send-verification_put.http_method
+    status_code = "500"
+  }
+}
+
 # /users/:user_id/lock
 
 resource "aws_api_gateway_documentation_part" "users_userid_lock" {
@@ -487,6 +943,33 @@ resource "aws_api_gateway_documentation_part" "users_userid_lock" {
   location {
     type = "RESOURCE"
     path = aws_api_gateway_resource.users_userid_lock.path
+  }
+}
+
+# [OPTIONS]
+
+resource "aws_api_gateway_documentation_part" "users_userid_lock_options" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/lock/options.json")
+
+  location {
+    type   = "METHOD"
+    path   = aws_api_gateway_resource.users_userid_lock.path
+    method = aws_api_gateway_method.users_userid_lock_options.http_method
+  }
+}
+
+# 204 No Content
+
+resource "aws_api_gateway_documentation_part" "users_userid_lock_options_204" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/lock/options-204.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_lock.path
+    method      = aws_api_gateway_method.users_userid_lock_options.http_method
+    status_code = "204"
   }
 }
 
@@ -517,6 +1000,20 @@ resource "aws_api_gateway_documentation_part" "users_userid_lock_put_200" {
   }
 }
 
+# 403 Forbidden
+
+resource "aws_api_gateway_documentation_part" "users_userid_lock_put_403" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/lock/put-403.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_lock.path
+    method      = aws_api_gateway_method.users_userid_lock_put.http_method
+    status_code = "403"
+  }
+}
+
 # 404 Not Found
 
 resource "aws_api_gateway_documentation_part" "users_userid_lock_put_404" {
@@ -531,6 +1028,20 @@ resource "aws_api_gateway_documentation_part" "users_userid_lock_put_404" {
   }
 }
 
+# 500 Internal Server Error
+
+resource "aws_api_gateway_documentation_part" "users_userid_lock_put_500" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/lock/put-500.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_lock.path
+    method      = aws_api_gateway_method.users_userid_lock_put.http_method
+    status_code = "500"
+  }
+}
+
 # /users/:user_id/unlock
 
 resource "aws_api_gateway_documentation_part" "users_userid_unlock" {
@@ -540,6 +1051,33 @@ resource "aws_api_gateway_documentation_part" "users_userid_unlock" {
   location {
     type = "RESOURCE"
     path = aws_api_gateway_resource.users_userid_unlock.path
+  }
+}
+
+# [OPTIONS]
+
+resource "aws_api_gateway_documentation_part" "users_userid_unlock_options" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/unlock/options.json")
+
+  location {
+    type   = "METHOD"
+    path   = aws_api_gateway_resource.users_userid_unlock.path
+    method = aws_api_gateway_method.users_userid_unlock_options.http_method
+  }
+}
+
+# 204 No Content
+
+resource "aws_api_gateway_documentation_part" "users_userid_unlock_options_204" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/unlock/options-204.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_unlock.path
+    method      = aws_api_gateway_method.users_userid_unlock_options.http_method
+    status_code = "204"
   }
 }
 
@@ -570,6 +1108,20 @@ resource "aws_api_gateway_documentation_part" "users_userid_unlock_put_200" {
   }
 }
 
+# 403 Forbidden
+
+resource "aws_api_gateway_documentation_part" "users_userid_unlock_put_403" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/unlock/put-403.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_unlock.path
+    method      = aws_api_gateway_method.users_userid_unlock_put.http_method
+    status_code = "403"
+  }
+}
+
 # 404 Not Found
 
 resource "aws_api_gateway_documentation_part" "users_userid_unlock_put_404" {
@@ -581,5 +1133,19 @@ resource "aws_api_gateway_documentation_part" "users_userid_unlock_put_404" {
     path        = aws_api_gateway_resource.users_userid_unlock.path
     method      = aws_api_gateway_method.users_userid_unlock_put.http_method
     status_code = "404"
+  }
+}
+
+# 500 Internal Server Error
+
+resource "aws_api_gateway_documentation_part" "users_userid_unlock_put_500" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/unlock/put-500.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_unlock.path
+    method      = aws_api_gateway_method.users_userid_unlock_put.http_method
+    status_code = "500"
   }
 }

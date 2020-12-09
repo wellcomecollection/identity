@@ -1,9 +1,28 @@
 {
   "info": {
-    "description": "",
+    "title": "Wellcome Collection Identity Services",
+    "description": "This API is part of the Wellcome Collection's Identity platform, providing services which expose operations over user accounts. Clients of the API require an API key provided in the `X-API-Key` header, a number of operations require a `Bearer` token in the `Authorization` header.",
     "contact": {
-      "name": "Daniel Grant",
-      "email": "daniel.grant@digirati.com"
+      "email": "info@wellcomecollection.org"
+    },
+    "license": {
+      "name": "MIT License",
+      "url": "https://github.com/wellcomecollection/identity/blob/main/LICENSE"
     }
-  }
+  },
+  "externalDocs": {
+    "description": "Wellcome Collection",
+    "url": "https://wellcomecollection.org/"
+  },
+  "tags": [
+    {
+      "name": "Authentication"
+    },
+    {
+      "name": "User"
+    },
+    {
+      "name": "Cross-Origin Resource Sharing"
+    }
+  ]
 }

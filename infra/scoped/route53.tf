@@ -55,3 +55,34 @@ resource "aws_route53_record" "identity_api_validation" {
   type            = each.value.type
   zone_id         = data.aws_route53_zone.identity.zone_id
 }
+
+# S3 Swagger UI
+
+resource "aws_route53_record" "swagger_ui_v1" {
+  name    = local.identity_v1_docs_hostname
+  type    = "A"
+  zone_id = data.aws_route53_zone.identity.id
+
+  alias {
+    evaluate_target_health = false
+    name                   = aws_cloudfront_distribution.swagger_ui_v1.domain_name
+    zone_id                = aws_cloudfront_distribution.swagger_ui_v1.hosted_zone_id
+  }
+}
+
+resource "aws_route53_record" "swagger_ui_v1_validation" {
+  for_each = {
+    for dvo in aws_acm_certificate.swagger_ui_v1.domain_validation_options : dvo.domain_name => {
+      name   = dvo.resource_record_name
+      record = dvo.resource_record_value
+      type   = dvo.resource_record_type
+    }
+  }
+
+  allow_overwrite = true
+  name            = each.value.name
+  records         = [each.value.record]
+  ttl             = 60
+  type            = each.value.type
+  zone_id         = data.aws_route53_zone.identity.zone_id
+}

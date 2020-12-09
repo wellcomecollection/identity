@@ -7,13 +7,18 @@
       "type": "object",
       "properties": {
         "page": {
-          "type": "integer"
+          "type": "integer",
+          "minimum": 0,
+          "multipleOf": 1.0
         },
         "pageSize": {
-          "type": "integer"
+          "type": "integer",
+          "minimum": 0,
+          "multipleOf": 1.0
         },
         "query": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         }
       },
       "required": [
@@ -28,22 +33,29 @@
       "items": {
         "properties": {
           "patronId": {
-            "type": "string"
+            "type": "number",
+            "minimum": 0,
+            "multipleOf": 1.0
           },
           "barcode": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           },
           "title": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           },
           "firstName": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           },
           "lastName": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           },
           "email": {
-            "type": "string"
+            "type": "string",
+            "format": "email"
           },
           "emailValidated": {
             "type": "boolean"
@@ -52,16 +64,28 @@
             "type": "boolean"
           },
           "creationDate": {
-            "type": "string"
+            "type": "string",
+            "format": "date-time"
           },
           "lastLogin": {
-            "type": "string"
+            "type": "string",
+            "format": "date-time"
           },
           "lastLoginIp": {
-            "type": "string"
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "ipv4"
+              }, {
+                "type": "string",
+                "format": "ipv6"
+              }
+            ]
           },
           "totalLogins": {
-            "type": "integer"
+            "type": "number",
+            "minimum": 0,
+            "multipleOf": 1.0
           }
         },
         "required": [

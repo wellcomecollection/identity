@@ -1,6 +1,6 @@
 function login(email, password, callback) {
 
-    const axios = require("axios");
+    const axios = require('axios');
 
     const apiRoot = configuration.API_ROOT;
     const clientKey = configuration.CLIENT_KEY;
@@ -83,10 +83,10 @@ function login(email, password, callback) {
         const nameVarField = extractVarField(data.varFields, 'n');
         const patronName = getPatronName(nameVarField);
         return Object.assign(patronName, {
-                recordNumber: data.id,
-                barcode: extractVarField(data.varFields, 'b'),
-                emailAddress: extractVarField(data.varFields, 'z')
-            }
+            recordNumber: data.id,
+            barcode: extractVarField(data.varFields, 'b'),
+            emailAddress: extractVarField(data.varFields, 'z')
+        }
         );
     }
 

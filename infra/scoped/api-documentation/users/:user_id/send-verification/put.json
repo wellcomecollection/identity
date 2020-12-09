@@ -1,3 +1,7 @@
 {
-  "description": ""
+  "summary": "Re-sends a verification email",
+  "description": "Triggers a verification email for the user defined by the `userId` parameter.",
+  "tags": [
+    "User"
+  ]
 }

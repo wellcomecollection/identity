@@ -1,7 +1,7 @@
-import {Request, Response} from "express";
-import SierraClient from "@weco/sierra-client";
-import {ResponseStatus} from "@weco/identity-common";
-import {toMessage} from "../models/common";
+import { ResponseStatus } from '@weco/identity-common';
+import SierraClient from '@weco/sierra-client';
+import { Request, Response } from 'express';
+import { toMessage } from '../models/common';
 
 export async function validateCredentials(sierraClient: SierraClient, req: Request, res: Response): Promise<void> {
   sierraClient.getPatronRecordByEmail(req.body.email).then(response => {

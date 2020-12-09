@@ -1,7 +1,7 @@
-import {APIGatewayAuthorizerResult, APIGatewayRequestAuthorizerEvent} from 'aws-lambda';
 import Auth0Client from '@weco/auth0-client';
-import {ResponseStatus} from "@weco/identity-common";
-import {Auth0UserInfo} from "@weco/auth0-client/lib/auth0";
+import { Auth0UserInfo } from '@weco/auth0-client/lib/auth0';
+import { ResponseStatus } from '@weco/identity-common';
+import { APIGatewayAuthorizerResult, APIGatewayRequestAuthorizerEvent } from 'aws-lambda';
 
 export async function lambdaHandler(event: APIGatewayRequestAuthorizerEvent): Promise<APIGatewayAuthorizerResult> {
 
@@ -18,7 +18,7 @@ export async function lambdaHandler(event: APIGatewayRequestAuthorizerEvent): Pr
     const accessToken = extractAccessToken(authorizationHeader);
 
     if (!accessToken) {
-      console.log("Authorization header [" + authorizationHeader + "] is not a valid bearer token");
+      console.log('Authorization header [' + authorizationHeader + '] is not a valid bearer token');
       return buildAuthorizerResult(authorizationHeader, 'Deny', event.methodArn);
     }
 
@@ -28,22 +28,22 @@ export async function lambdaHandler(event: APIGatewayRequestAuthorizerEvent): Pr
           if (validateRequest(response.result, event.pathParameters, event.resource, event.httpMethod)) {
             return buildAuthorizerResult(response.result.userId, 'Allow', event.methodArn);
           } else {
-            console.log("Access token [" + accessToken + "] for user [" + JSON.stringify(response.result) + "] cannot operate on ID [" + event.pathParameters.userId + "]");
+            console.log('Access token [' + accessToken + '] for user [' + JSON.stringify(response.result) + '] cannot operate on ID [' + event.pathParameters.userId + ']');
             return buildAuthorizerResult(response.result.userId, 'Deny', event.methodArn);
           }
         } else {
           return buildAuthorizerResult(response.result.userId, 'Allow', event.methodArn);
         }
       } else if (response.status == ResponseStatus.InvalidCredentials) {
-        console.log("Access token token [" + accessToken + "] rejected by Auth0: " + response.message);
+        console.log('Access token token [' + accessToken + '] rejected by Auth0: ' + response.message);
         return buildAuthorizerResult(accessToken, 'Deny', event.methodArn);
       } else {
-        console.log("Unknown error processing access token [" + accessToken + "]: " + response.message);
+        console.log('Unknown error processing access token [' + accessToken + ']: ' + response.message);
         return buildAuthorizerResult(accessToken, 'Deny', event.methodArn);
       }
     });
   } else {
-    return buildAuthorizerResult("user", 'Deny', event.methodArn);
+    return buildAuthorizerResult('user', 'Deny', event.methodArn);
   }
 }
 
@@ -59,17 +59,17 @@ function validateRequest(auth0UserInfo: Auth0UserInfo, pathParameters: { [name: 
   const userId: string = auth0UserInfo.userId.toString();
   const targetUserId: string = pathParameters.userId;
 
-  if (resource === "/users" && method === "GET") {
+  if (resource === '/users' && method === 'GET') {
     return false; // TODO Only accessible to administrators
-  } else if (resource === "/users/{userId}" && (method === "GET" || method === "PUT" || method === "DELETE")) {
+  } else if (resource === '/users/{userId}' && (method === 'GET' || method === 'PUT' || method === 'DELETE')) {
     return userId === targetUserId; // TODO Accessible to both users and administrators
-  } else if (resource === "/users/{userId}/password" && method === "PUT") {
+  } else if (resource === '/users/{userId}/password' && method === 'PUT') {
     return userId === targetUserId; // TODO Accessible to both users and administrators
-  } else if (resource === "/users/{userId}/send-verification" && method === "PUT") {
+  } else if (resource === '/users/{userId}/send-verification' && method === 'PUT') {
     return false; // TODO Only accessible to administrators
-  } else if (resource === "/users/{userId}/lock" && method === "PUT") {
+  } else if (resource === '/users/{userId}/lock' && method === 'PUT') {
     return false; // TODO Only accessible to administrators
-  } else if (resource === "/users/{userId}/unlock" && method === "PUT") {
+  } else if (resource === '/users/{userId}/unlock' && method === 'PUT') {
     return false; // TODO Only accessible to administrators
   }
 
