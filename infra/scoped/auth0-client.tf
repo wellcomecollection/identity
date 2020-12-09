@@ -79,7 +79,7 @@ resource "auth0_client_grant" "buildkite" {
 }
 
 resource "auth0_client" "api_gateway_identity" {
-  name     = "Identity API Gateway ${terraform.workspace}"
+  name     = "Identity Lambda API (${terraform.workspace})"
   app_type = "non_interactive"
 
   custom_login_page_on = false
@@ -90,6 +90,7 @@ resource "auth0_client_grant" "api_gateway_identity" {
   audience  = "https://${aws_ssm_parameter.auth0_domain.value}/api/v2/"
   scope = [
     "read:users",
-    "read:user_idp_tokens"
+    "read:user_idp_tokens",
+    "create:users"
   ]
 }

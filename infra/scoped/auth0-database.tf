@@ -3,6 +3,7 @@ resource "auth0_connection" "sierra" {
   strategy = "auth0"
 
   enabled_clients = [
+    auth0_client.api_gateway_identity.id, # Required to allow the Lambda API client credentials to operate on the connection
     auth0_client.dummy_test.id
   ]
 
@@ -16,7 +17,7 @@ resource "auth0_connection" "sierra" {
 
     password_history {
       enable = false
-      size   = 0
+      size   = 5 # Even though we don't use it, this can't be zero - set it to the default value of 5
     }
 
     password_no_personal_info {

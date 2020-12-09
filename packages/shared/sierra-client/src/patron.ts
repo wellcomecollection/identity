@@ -1,19 +1,21 @@
-export default function toPatronRecord(data: any): PatronRecord {
-  const patronName = getPatronName(data.varFields);
+export function toPatronRecord(patronRecord: any): PatronRecord {
+  const patronName = getPatronName(patronRecord.varFields);
   return Object.assign(patronName, {
-      recordNumber: data.id,
-      barcode: getVarFieldContent(data.varFields, 'b'),
-      emailAddress: getVarFieldContent(data.varFields, 'z')
-    }
-  );
+    recordNumber: patronRecord.id,
+    barcode: getVarFieldContent(patronRecord.varFields, 'b'),
+    email: getVarFieldContent(patronRecord.varFields, 'z')
+  });
 }
 
-function getVarFieldContent(varFields: VarField[], fieldTag: string) {
+function getVarFieldContent(varFields: VarField[], fieldTag: string): string {
   const found = varFields.find(varField => varField.fieldTag === fieldTag);
-  return found ? found.content : '';
+  return found ? found.content || '' : '';
 }
 
-function getPatronName(varFields: VarField[]) {
+// Sierra stores the names of Patron records in two formats: MARC and non-MARC. In the former, names are represented as
+// a JSON object, where each part of the name (title, first name, last name) is represented as a sub-object on its own.
+// In the case of non-MARC, it's a single string value with various prefixes.
+function getPatronName(varFields: VarField[]): { title: string, firstName: string, lastName: string } {
   const found = varFields.find(varField => varField.fieldTag === 'n');
   if (found && found.content) {
     return getPatronNameNonMarc(found.content);
@@ -28,7 +30,7 @@ function getPatronName(varFields: VarField[]) {
   }
 }
 
-function getPatronNameMarc(subFields: VarSubField[]): PatronName {
+function getPatronNameMarc(subFields: SubField[]): { title: string, firstName: string, lastName: string } {
   const title = subFields.find(subField => subField.tag === 'c')
   const firstName = subFields.find(subField => subField.tag === 'b')
   const lastName = subFields.find(subField => subField.tag === 'a')
@@ -39,7 +41,7 @@ function getPatronNameMarc(subFields: VarSubField[]): PatronName {
   }
 }
 
-function getPatronNameNonMarc(content: string): PatronName {
+function getPatronNameNonMarc(content: string): { title: string, firstName: string, lastName: string } {
   if (!content.trim()) {
     return {
       title: '',
@@ -74,25 +76,92 @@ function getPatronNameNonMarc(content: string): PatronName {
   };
 }
 
-interface VarField {
-  fieldTag: string,
-  content: string,
-  subfields: VarSubField[]
+// There's a bunch of hardcoded fields in here. This is intentional, these are static and don't change and mostly
+// indicate that the user has self-registered. I don't think we need to extract them out into configuration.
+export function toCreatePatron(title: string, firstName: string, lastName: string, pin: string): PatronCreate {
+  return {
+    pin: pin,
+    pMessage: 's',
+    homeLibraryCode: 'sreg',
+    patronType: 29,
+    fixedFields: {
+      46: {
+        label: "USER CAT.",
+        value: "13"
+      },
+    },
+    varFields: [
+      {
+        fieldTag: "n",
+        marcTag: "100",
+        subfields: [
+          {
+            tag: "a",
+            content: lastName
+          },
+          {
+            tag: "c",
+            content: title
+          },
+          {
+            tag: "b",
+            content: firstName
+          }
+        ]
+      }
+    ]
+  }
 }
 
-interface VarSubField {
-  tag: string,
-  content: string
+// The Patron record creation endpoint returns in response to a successful record creation the full URL to the API
+// endpoint to query that new record. We're not interested in that, just give us the Patron record number.
+export function extractRecordNumberFromLink(link: string): number {
+  const match = link.match(/^https:\/\/.+?\/v6\/patrons\/(\d+)$/);
+  if (!match || match.length < 2) {
+    throw new Error('Patron creation link [' + link + '] not in expected format');
+  }
+  return Number(match[1]);
 }
 
-interface PatronName {
+export interface PatronRecord {
+  recordNumber: number;
+  barcode: string;
   title: string;
   firstName: string;
   lastName: string;
+  email: string;
 }
 
-export interface PatronRecord extends PatronName {
-  recordNumber: number;
-  barcode: string;
-  emailAddress: string;
+// This represents the data required to create a Patron record in Sierra. The 'fixedFields' a bit odd, as the keys of
+// the embedded objects appear to be array indices of some description, but 'fixedFields' itself isn't an array...?
+export interface PatronCreate {
+  pin: string,
+  pMessage: string,
+  homeLibraryCode: string,
+  patronType: number,
+  fixedFields: {
+    46: {
+      label: string,
+      value: string
+    }
+  },
+  varFields: {
+    fieldTag: string,
+    marcTag: string,
+    subfields: {
+      tag: string,
+      content: string
+    }[]
+  }[]
+}
+
+interface VarField {
+  fieldTag: string,
+  content?: string,
+  subfields?: SubField[]
+}
+
+interface SubField {
+  tag: string,
+  content: string
 }

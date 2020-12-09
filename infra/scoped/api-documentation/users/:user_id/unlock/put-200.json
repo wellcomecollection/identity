@@ -1,3 +1,3 @@
 {
-  "description": ""
+  "description": "The target record was successfully unlocked. Note that this response is also returned if the record was already unlocked."
 }

@@ -1,3 +1,7 @@
 {
-  "description": ""
+  "summary": "Triggers a password reset",
+  "description": "Triggers the password reset process for the user defined by the `userId` parameter.",
+  "tags": [
+    "User"
+  ]
 }

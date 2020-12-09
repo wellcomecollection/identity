@@ -1,3 +1,7 @@
 {
-  "description": ""
+  "summary": "Unlocks a user",
+  "description": "Unlocks the user defined by the `userId` path parameter.",
+  "tags": [
+    "User"
+  ]
 }
