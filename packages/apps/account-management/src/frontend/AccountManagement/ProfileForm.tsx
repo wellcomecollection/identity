@@ -5,12 +5,10 @@ import { OutlinedButton } from '@weco/common/views/components/ButtonOutlined/But
 
 // @ts-ignore
 import TextInput from '@weco/common/views/components/TextInput/TextInput';
-// @ts-ignore
 import SpacingComponent from '@weco/common/views/components/SpacingComponent/SpacingComponent';
 // @ts-ignore
 import SectionHeader from '@weco/common/views/components/SectionHeader/SectionHeader';
 
-import styled from 'styled-components';
 import { ErrorMessage } from '../Shared/ErrorMessage';
 
 export const ProfileForm: React.FC<{

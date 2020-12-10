@@ -1,5 +1,4 @@
 import React from 'react';
-// @ts-ignore
 import SpacingComponent from '@weco/common/views/components/SpacingComponent/SpacingComponent';
 
 export const AccountCreated = () => {

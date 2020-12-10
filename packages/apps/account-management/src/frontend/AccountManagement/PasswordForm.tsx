@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { SolidButton } from '@weco/common/views/components/ButtonSolid/ButtonSolid';
 // @ts-ignore
 import TextInput from '@weco/common/views/components/TextInput/TextInput';
-// @ts-ignore
 import SpacingComponent from '@weco/common/views/components/SpacingComponent/SpacingComponent';
 // @ts-ignore
 import SectionHeader from '@weco/common/views/components/SectionHeader/SectionHeader';

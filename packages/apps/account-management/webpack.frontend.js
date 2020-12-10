@@ -2,6 +2,7 @@ const createStyledComponentsTransformer = require('typescript-plugin-styled-comp
 const styledComponentsTransformer = createStyledComponentsTransformer({
   displayName: true,
 });
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const browserTargets = {
   edge: '17',
@@ -68,8 +69,25 @@ module.exports = {
       },
       // Pass through style loader.
       {
-        test: /\.css$/i,
-        use: ['style-loader', 'css-loader'],
+        test: /\.s?[ac]ss$/,
+        use: [
+          {
+            loader: MiniCssExtractPlugin.loader,
+            options: {
+              filename: '[name].css',
+              chunkFilename: '[id].css',
+            },
+          },
+          require.resolve('css-loader'),
+          {
+            loader: require.resolve('postcss-loader'),
+            options: {
+              ident: 'postcss',
+              plugins: (loader) => [require('autoprefixer')(), require('cssnano')()],
+            },
+          },
+          require.resolve('sass-loader'),
+        ],
       },
     ],
   },

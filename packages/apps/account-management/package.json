@@ -14,7 +14,9 @@
     "build": "NODE_ENV=production yarn build:schema && NODE_ENV=production yarn build:ts && NODE_ENV=production yarn build:frontend",
     "build:ts": "tsc -p .",
     "build:schema": "node generate-schemas.js",
-    "build:frontend": "webpack --config webpack.frontend.js ./src/frontend/index.tsx --output-path lib/frontend/build"
+    "build:frontend": "webpack --config webpack.frontend.js ./src/frontend/index.tsx --output-path lib/frontend/build",
+    "storybook": "start-storybook -p 4009",
+    "build-storybook": "build-storybook"
   },
   "dependencies": {
     "@koa/router": "^10.0.0",
@@ -28,6 +30,7 @@
     "koa-passport": "^4.1.3",
     "koa-send": "^5.0.1",
     "koa-session": "^6.1.0",
+    "next": "file:./src/next-shim",
     "passport": "^0.4.1",
     "passport-auth0": "^1.4.0",
     "passport-local": "^1.0.0",
@@ -37,6 +40,16 @@
     "styled-components": "^5.2.1"
   },
   "devDependencies": {
+    "@fesk/babel-config": "1.4.0-pr.b6dc2fa3",
+    "@fesk/eslint-config-standard": "1.4.0-pr.b6dc2fa3",
+    "@fesk/scripts": "1.4.0-pr.a95f698d",
+    "@storybook/addon-a11y": "^6.1.9",
+    "@storybook/addon-actions": "^6.0.0-rc.26",
+    "@storybook/addon-essentials": "^6.0.0-rc.26",
+    "@storybook/addon-knobs": "^6.1.9",
+    "@storybook/addon-links": "^6.0.0-rc.26",
+    "@storybook/core": "^6.0.0-rc.26",
+    "@storybook/react": "^6.0.0-rc.26",
     "@types/koa": "^2.11.0",
     "@types/koa-json": "^2.0.18",
     "@types/koa-logger": "^3.1.1",
@@ -55,6 +68,7 @@
     "babel-plugin-styled-components": "^1.12.0",
     "babel-plugin-transform-typescript-metadata": "^0.3.1",
     "babel-preset-react": "^6.24.1",
+    "css-loader": "^3.2.0",
     "eslint": "^7.15.0",
     "eslint-config-prettier": "^7.0.0",
     "eslint-plugin-babel": "^5.3.1",
@@ -66,6 +80,8 @@
     "eslint-plugin-react-hooks": "^4.2.0",
     "jest": "^26.6.3",
     "prettier": "^2.2.1",
+    "react-ga": "3.3.0",
+    "sass-loader": "7.1.0",
     "style-loader": "^2.0.0",
     "ts-loader": "^8.0.11",
     "ts-node": "^8.6.2",

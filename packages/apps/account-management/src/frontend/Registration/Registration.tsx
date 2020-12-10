@@ -4,7 +4,6 @@ import { SolidButton } from '@weco/common/views/components/ButtonSolid/ButtonSol
 // @ts-ignore
 import TextInput from '@weco/common/views/components/TextInput/TextInput';
 import CheckboxRadio from '@weco/common/views/components/CheckboxRadio/CheckboxRadio';
-// @ts-ignore
 import SpacingComponent from '@weco/common/views/components/SpacingComponent/SpacingComponent';
 // @ts-ignore
 import SectionHeader from '@weco/common/views/components/SectionHeader/SectionHeader';

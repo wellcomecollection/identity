@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { SolidButton } from '@weco/common/views/components/ButtonSolid/ButtonSolid';
-// @ts-ignore
 import SpacingComponent from '@weco/common/views/components/SpacingComponent/SpacingComponent';
 
 const logo = 'https://identity-public-assets-stage.s3.eu-west-1.amazonaws.com/images/wellcomecollections-150x50.png';

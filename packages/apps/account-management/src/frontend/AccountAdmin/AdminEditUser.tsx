@@ -6,11 +6,11 @@ import SectionHeader from '@weco/common/views/components/SectionHeader/SectionHe
 import TabNav from '@weco/common/views/components/TabNav/TabNav';
 import SpacingComponent from '@weco/common/views/components/SpacingComponent/SpacingComponent';
 
-import { ProfileForm } from './ProfileForm';
-import { PasswordForm } from './PasswordForm';
+import { AdminProfileForm } from './AdminProfileForm';
 
 const logo = 'https://identity-public-assets-stage.s3.eu-west-1.amazonaws.com/images/wellcomecollections-150x50.png';
 import styled from 'styled-components';
+import { AdminAccountActions } from './AdminAccountActions';
 
 const LogoContainer = styled.div`
    {
@@ -19,12 +19,27 @@ const LogoContainer = styled.div`
   }
 `;
 
-export const AccountManagement: React.FC<{
+export const AdminEditUser: React.FC<{
   existingTitle: string;
   existingFirstName: string;
   existingLastName: string;
+  existingPatronType: string;
+  existingGeographicArea: string;
+  existingSourceLocation: string;
+  existingInterest: string;
+  existingUserCategory: string;
   existingEmail: string;
-}> = ({ existingTitle, existingFirstName, existingLastName, existingEmail }) => {
+}> = ({
+  existingTitle,
+  existingFirstName,
+  existingLastName,
+  existingEmail,
+  existingPatronType,
+  existingGeographicArea,
+  existingSourceLocation,
+  existingInterest,
+  existingUserCategory,
+}) => {
   const [idx, setIdx] = useState(0);
 
   return (
@@ -33,25 +48,32 @@ export const AccountManagement: React.FC<{
         <img src={logo} alt="Wellcome Collection Logo" height="200px" />
       </LogoContainer>
       <SpacingComponent />
-      <h1 className="font-wb font-size-1">My Account</h1>
+      <h1 className="font-wb font-size-1">Account Administration</h1>
+      <SectionHeader title={`Edit user profile: ${existingFirstName} ${existingLastName}`} />
       <>
         <TabNav
           items={[
             { link: '#', text: 'Profile', selected: idx === 0, onClick: () => setIdx(0) },
-            { link: '#', text: 'Password', selected: idx === 1, onClick: () => setIdx(1) },
+            { link: '#', text: 'Usage data', selected: idx === 1, onClick: () => setIdx(1) },
+            { link: '#', text: 'Account actions', selected: idx === 2, onClick: () => setIdx(2) },
           ]}
         />
         {idx === 0 ? (
-          <ProfileForm
+          <AdminProfileForm
             existingTitle={existingTitle}
             existingFirstName={existingFirstName}
             existingLastName={existingLastName}
             existingEmail={existingEmail}
+            existingPatronType={existingPatronType}
+            existingGeographicArea={existingGeographicArea}
+            existingSourceLocation={existingSourceLocation}
+            existingInterest={existingInterest}
+            existingUserCategory={existingUserCategory}
           />
         ) : (
           <></>
         )}
-        {idx === 1 ? <PasswordForm /> : <></>}
+        {idx === 2 ? <AdminAccountActions /> : <></>}
       </>
     </div>
   );
