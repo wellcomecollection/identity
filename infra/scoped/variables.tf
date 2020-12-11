@@ -19,6 +19,9 @@ locals {
 
   # API CORS origins
   identity_v1_origins = "https://${local.identity_v1_docs_hostname}"
+
+  # Email
+  auth_email_from = "${aws_ssm_parameter.auth0_email_from_name.value} <${data.aws_ssm_parameter.auth0_email_from_user.value}@${data.aws_ssm_parameter.auth0_email_from_domain.value}>"
 }
 
 # Tags
@@ -34,5 +37,11 @@ variable "tag_managed_by" {
 # SSM Parameters
 
 variable "ssm_parameter_placeholder" {
+  default = "unset"
+}
+
+# Auth0 Email
+
+variable "auth0_email_body_placeholder" {
   default = "unset"
 }

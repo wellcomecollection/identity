@@ -13,7 +13,11 @@ function __package_auth0_scripts() {
 
 function __package_auth0_html() {
   mkdir -p /app/.buildkite/build/
-  zip -vj "/app/.buildkite/build/auth0-html-${NORMALIZED_BRANCH_NAME}.zip" "/app/html/auth0/login.html" "/app/html/auth0/reset_email.html" "/app/html/auth0/verify_email.html"
+  zip -vj "/app/.buildkite/build/auth0-html-${NORMALIZED_BRANCH_NAME}.zip" \
+    "/app/html/auth0/login.html" \
+    "/app/html/auth0/password_reset.html" \
+    "/app/html/auth0/reset_email.html" \
+    "/app/html/auth0/verify_email.html"
 }
 
 function __store_auth0_scripts() {
