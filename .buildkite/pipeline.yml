@@ -1,14 +1,5 @@
 steps:
 
-  # Build the build image.
-  - name: "build image"
-    plugins:
-      - docker-compose#v3.7.0:
-          build: app
-          config: .buildkite/docker-compose.yml
-
-  - wait
-
   # Carry out some basic linting across the codebase.
   - name: "linting"
     command:

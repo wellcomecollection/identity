@@ -1,0 +1,30 @@
+#!/bin/bash
+########################################################
+# Script name : auth0-script-packaging.sh
+# Author      : Daniel Grant <daniel.grant@digirati.com>
+########################################################
+
+set -o errexit
+
+function __package_auth0_scripts() {
+  mkdir -p /app/.buildkite/build/
+  zip -vj "/app/.buildkite/build/auth0-scripts-${NORMALIZED_BRANCH_NAME}.zip" "/app/packages/apps/auth0-actions/src/get_user.js" "/app/packages/apps/auth0-actions/src/login.js"
+}
+
+function __package_auth0_html() {
+  mkdir -p /app/.buildkite/build/
+  zip -vj "/app/.buildkite/build/auth0-html-${NORMALIZED_BRANCH_NAME}.zip" "/apps/html/auth0/login.html /apps/html/auth0/reset-password-email.html /apps/html/auth0/verification-email.html"
+}
+
+function __store_auth0_scripts() {
+  aws s3 cp "/app/.buildkite/build/auth0-scripts-${NORMALIZED_BRANCH_NAME}.zip" "s3://identity-dist/auth0-scripts-${NORMALIZED_BRANCH_NAME}.zip"
+}
+
+function __store_auth0_html() {
+  aws s3 cp "/app/.buildkite/build/auth0-html-${NORMALIZED_BRANCH_NAME}.zip" "s3://identity-dist/auth0-html-${NORMALIZED_BRANCH_NAME}.zip"
+}
+
+__package_auth0_scripts
+__package_auth0_html
+__store_auth0_scripts
+__store_auth0_html
