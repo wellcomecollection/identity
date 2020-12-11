@@ -1,9 +1,8 @@
 resource "auth0_client" "dummy_test" {
-  name           = "Dummy Test Client"
-  app_type       = "regular_web"
-  is_first_party = true
-
-  custom_login_page_on = false
+  name                 = "Dummy Test Client"
+  app_type             = "regular_web"
+  is_first_party       = true
+  custom_login_page_on = true
 
   callbacks = [
     "https://${local.auth0_hostname}/login/callback"
@@ -11,7 +10,8 @@ resource "auth0_client" "dummy_test" {
 
   lifecycle {
     ignore_changes = [
-      custom_login_page_preview
+      custom_login_page_preview,
+      custom_login_page
     ]
   }
 }
