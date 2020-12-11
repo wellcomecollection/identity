@@ -45,3 +45,9 @@ variable "ssm_parameter_placeholder" {
 variable "auth0_email_body_placeholder" {
   default = "unset"
 }
+
+# Auth0 HTML
+
+variable "auth0_html_placeholder" {
+  default = "unset"
+}

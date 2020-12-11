@@ -11,4 +11,15 @@ resource "auth0_tenant" "tenant" {
       page_background = "#F0EDE3"
     }
   }
+
+  change_password {
+    enabled = true
+    html    = var.auth0_html_placeholder
+  }
+
+  lifecycle {
+    ignore_changes = [
+      change_password.0.html
+    ]
+  }
 }
