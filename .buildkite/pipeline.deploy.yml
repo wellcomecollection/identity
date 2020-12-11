@@ -18,7 +18,7 @@ steps:
     # Deploy the Auth0 scripts to Auth0. We don't want to execute the deployment every time there's
     # a push to revision control. We're only interested in doing a deployment if e.g. it was
     # manually invoked via the web UI, or a downstream job triggered the build.
-  - name: "auth0 script deployment"
+  - name: "auth0 deployment"
     if: build.source != "webhook"
     command:
       - ". /app/.buildkite/scripts/init-environment.sh"

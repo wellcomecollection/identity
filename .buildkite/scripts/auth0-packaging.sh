@@ -1,6 +1,6 @@
 #!/bin/bash
 ########################################################
-# Script name : auth0-script-packaging.sh
+# Script name : auth0-packaging.sh
 # Author      : Daniel Grant <daniel.grant@digirati.com>
 ########################################################
 
