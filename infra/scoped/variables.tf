@@ -9,18 +9,18 @@ locals {
   }
 
   # DNS
-  auth0_hostname = "${aws_ssm_parameter.hostname_prefix.value}.${data.aws_ssm_parameter.hostname.value}"
+  auth0_hostname = "auth.${aws_ssm_parameter.hostname_prefix.value}.${data.aws_ssm_parameter.hostname.value}"
   api_hostname   = "api.${aws_ssm_parameter.hostname_prefix.value}.${data.aws_ssm_parameter.hostname.value}"
 
-  # API versions
+  # API Gateway V1
   identity_v1               = "v1"
   identity_v1_hostname      = "v1-${local.api_hostname}"
+  identity_v1_endpoint      = "https://${local.identity_v1_hostname}"
   identity_v1_docs_hostname = "docs.${local.identity_v1_hostname}"
+  identity_v1_docs_endpoint = "https://${local.identity_v1_docs_hostname}"
 
-  # API CORS origins
-  identity_v1_origins = "https://${local.identity_v1_docs_hostname}"
-
-  # Email
+  # Auth0
+  auth0_endpoint  = "https://${local.auth0_hostname}"
   auth_email_from = "${aws_ssm_parameter.auth0_email_from_name.value} <${data.aws_ssm_parameter.auth0_email_from_user.value}@${data.aws_ssm_parameter.auth0_email_from_domain.value}>"
 }
 
