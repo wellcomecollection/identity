@@ -1,14 +1,5 @@
 steps:
 
-  # Build the build image.
-  - name: "build image"
-    plugins:
-      - docker-compose#v3.7.0:
-          build: app
-          config: .buildkite/docker-compose.yml
-
-  - wait
-
   # Carry out some basic linting across the codebase.
   - name: "linting"
     command:
@@ -21,10 +12,10 @@ steps:
   - wait
 
   # Package and persist the Auth0 scripts.
-  - name: "auth0-script-packaging"
+  - name: "auth0-packaging"
     command:
       - ". /app/.buildkite/scripts/init-environment.sh"
-      - "/app/.buildkite/scripts/auth0-script-packaging.sh"
+      - "/app/.buildkite/scripts/auth0-packaging.sh"
     plugins:
       - wellcomecollection/aws-assume-role#v0.2.2:
           role: "arn:aws:iam::770700576653:role/identity-ci"

@@ -27,7 +27,7 @@ resource "aws_route53_record" "identity_auth0" {
 
 # Identity API
 
-resource "aws_route53_record" "identity_api" {
+resource "aws_route53_record" "identity_api_v1" {
   name    = aws_api_gateway_domain_name.identity_v1.domain_name
   type    = "A"
   zone_id = data.aws_route53_zone.identity.id
@@ -39,7 +39,7 @@ resource "aws_route53_record" "identity_api" {
   }
 }
 
-resource "aws_route53_record" "identity_api_validation" {
+resource "aws_route53_record" "identity_api_v1_validation" {
   for_each = {
     for dvo in aws_acm_certificate.identity_api_v1.domain_validation_options : dvo.domain_name => {
       name   = dvo.resource_record_name

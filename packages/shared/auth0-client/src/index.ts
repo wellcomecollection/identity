@@ -117,7 +117,7 @@ export default class Auth0Client {
 
   private getInstanceOnBehalfOf(accessToken: string): AxiosInstance {
     return axios.create({
-      baseURL: this.apiRoot + '/api/v2',
+      baseURL: this.apiRoot,
       headers: {
         Authorization: 'Bearer ' + accessToken
       },
