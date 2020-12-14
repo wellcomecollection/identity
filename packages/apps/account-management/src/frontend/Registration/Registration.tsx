@@ -26,7 +26,6 @@ const LogoContainer = styled.div`
 `;
 
 export const Registration = () => {
-  const [title, setTitle] = useState<string>();
   const [firstName, setFirstName] = useState<string>();
   const [lastName, setLastName] = useState<string>();
   const [email, setEmail] = useState<string>();
@@ -42,7 +41,7 @@ export const Registration = () => {
 
   useEffect(() => {
     // check if email exists
-    // setAlreadyExists(true);
+    setAlreadyExists(true);
   }, [email]);
 
   useEffect(() => {
@@ -57,7 +56,6 @@ export const Registration = () => {
 
   useEffect(() => {
     setValid(
-      title &&
         firstName &&
         lastName &&
         email &&
@@ -66,11 +64,11 @@ export const Registration = () => {
         pass === passCheck &&
         consent
     );
-  }, [title, firstName, lastName, email, pass, passCheck, consent]);
+  }, [firstName, lastName, email, pass, passCheck, consent]);
 
   useEffect(() => {
     //determine if validated on mount
-    // setValidated(true);
+    setValidated(true);
   }, []);
 
   const createAccount = () => {
@@ -93,15 +91,7 @@ export const Registration = () => {
           <form>
             <SpacingComponent />
             <SectionHeader title="Personal details" />
-            <TextInput
-              placeholder=""
-              required={true}
-              aria-label="Title"
-              label="Title"
-              value={title}
-              setValue={(value: string) => setTitle(value)}
-            />
-            <SpacingComponent />
+
             <TextInput
               placeholder=""
               required={true}

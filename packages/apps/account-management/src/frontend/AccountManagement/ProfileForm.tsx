@@ -25,7 +25,8 @@ export const ProfileForm: React.FC<{
 
   useEffect(() => {
     // check if email exists
-    // setAlreadyExists(true);
+    console.log(saved);
+    setAlreadyExists(true);
   }, [email]);
 
   useEffect(() => {

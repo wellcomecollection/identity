@@ -39,7 +39,7 @@ export const AdminProfileForm: React.FC<{
   const [sourceLocation, setSourceLocation] = useState<string>(existingSourceLocation);
   const [interest, setInterest] = useState<string>(existingInterest);
   const [userCategory, setUserCategory] = useState<string>(existingUserCategory);
-  const [alreadyExists, setAlreadyExists] = useState<boolean>(false);
+  // const [alreadyExists, setAlreadyExists] = useState<boolean>(false);
   const [valid, setValid] = useState<boolean | undefined | string>(false);
   const [saved, setSaved] = useState<boolean>(false);
 
@@ -54,6 +54,7 @@ export const AdminProfileForm: React.FC<{
 
   const saveChanges = () => {
     setSaved(true);
+    console.log(saved)
     // Save Changes
   };
 

@@ -36,13 +36,13 @@ export const AdminRegistration = () => {
   const [userCategory, setUserCategory] = useState<string>();
 
   const [email, setEmail] = useState<string>();
-  const [valid, setValid] = useState<boolean | undefined | ''>(false);
+  const [valid, setValid] = useState<boolean | undefined | string>(false);
   const [created, setCreated] = useState<boolean>(false);
   const [alreadyExists, setAlreadyExists] = useState(false);
 
   useEffect(() => {
     // check if email exists
-    // setAlreadyExists(true);
+    setAlreadyExists(true);
   }, [email]);
 
   useEffect(() => {
