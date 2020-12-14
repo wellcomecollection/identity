@@ -1,13 +1,17 @@
-# API Gateway endpoints
+# API Gateway V1
 
-output "api_identity_v1_endpoint" {
-  value = "https://${aws_api_gateway_domain_name.identity_v1.domain_name}/"
+output "identity_v1_endpoint" {
+  value = local.identity_v1_endpoint
 }
 
-# Auth0 hostname
+output "identity_v1_docs_endpoint" {
+  value = local.identity_v1_docs_endpoint
+}
+
+# Auth0
 
 output "auth0_endpoint" {
-  value = "https://${auth0_custom_domain.identity.domain}/"
+  value = local.auth0_endpoint
 }
 
 # Auth0 clients
@@ -37,7 +41,7 @@ Client Secret: ${auth0_client.api_gateway_identity.client_secret}
 EOF
 }
 
-# Environment variables
+# Environment variables (for CI / CD)
 
 output "ci_environment_variables" {
   value = [
