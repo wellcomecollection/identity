@@ -20,8 +20,9 @@ locals {
   identity_v1_docs_endpoint = "https://${local.identity_v1_docs_hostname}"
 
   # Auth0
-  auth0_endpoint  = "https://${local.auth0_hostname}"
-  auth_email_from = "${aws_ssm_parameter.auth0_email_from_name.value} <${data.aws_ssm_parameter.auth0_email_from_user.value}@${data.aws_ssm_parameter.auth0_email_from_domain.value}>"
+  auth0_endpoint      = "https://${local.auth0_hostname}"
+  auth0_email_address = "${data.aws_ssm_parameter.auth0_email_from_user.value}@${data.aws_ssm_parameter.auth0_email_from_domain.value}"
+  auth0_email_from    = "${aws_ssm_parameter.auth0_email_from_name.value} <${local.auth0_email_address}>"
 }
 
 # Tags
