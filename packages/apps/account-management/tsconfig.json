@@ -14,13 +14,14 @@
     "strict": true,
     "sourceMap": true,
     "skipLibCheck": true,
-    "jsx": "react",
+    "jsx": "preserve",
     "resolveJsonModule": true,
-    "noImplicitAny": true,
+    "noImplicitAny": false,
     "downlevelIteration": true,
     "noUnusedLocals": true,
     "noFallthroughCasesInSwitch": true
   },
+
   "exclude": [
     "node_modules",
     "node_modules/@weco",

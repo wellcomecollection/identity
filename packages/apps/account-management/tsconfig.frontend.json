@@ -11,12 +11,12 @@
     "moduleResolution": "node",
     "outDir": "./lib",
     "noEmitOnError": false,
-    "strict": true,
+    "strict": false,
     "sourceMap": true,
     "skipLibCheck": true,
     "jsx": "react",
     "resolveJsonModule": true,
-    "noImplicitAny": true,
+    "noImplicitAny": false,
     "downlevelIteration": true,
     "noUnusedLocals": false,
     "noFallthroughCasesInSwitch": true
@@ -24,6 +24,7 @@
   "exclude": [
     "node_modules",
     "node_modules/@weco/**",
+    "node_modules/@types/react",
     "lib/",
     "**/*.stories.tsx",
     "__tests__/"
