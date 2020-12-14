@@ -111,6 +111,7 @@ export const DefaultPagination: React.FC = () => {
         currentPage={2}
         pageCount={100}
         nextPage={2}
+        total={10}
       />
     </>
   );
