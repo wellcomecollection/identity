@@ -21,11 +21,5 @@
     "noUnusedLocals": true,
     "noFallthroughCasesInSwitch": true
   },
-
-  "exclude": [
-    "node_modules",
-    "node_modules/@weco",
-    "./lib/**/*"
-  ],
   "references": []
 }
