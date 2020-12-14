@@ -1,7 +1,7 @@
 resource "auth0_email" "email" {
   name                 = "smtp"
   enabled              = true
-  default_from_address = local.auth_email_from
+  default_from_address = local.auth0_email_from
 
   credentials {
     smtp_host = aws_ssm_parameter.smtp_host.value
@@ -14,7 +14,7 @@ resource "auth0_email" "email" {
 resource "auth0_email_template" "verify_email" {
   template                = "verify_email"
   enabled                 = true
-  from                    = local.auth_email_from
+  from                    = local.auth0_email_from
   subject                 = aws_ssm_parameter.auth0_verify_email_subject.value
   body                    = var.auth0_email_body_placeholder
   syntax                  = "liquid"
@@ -30,7 +30,7 @@ resource "auth0_email_template" "verify_email" {
 resource "auth0_email_template" "reset_email" {
   template                = "reset_email"
   enabled                 = true
-  from                    = local.auth_email_from
+  from                    = local.auth0_email_from
   subject                 = aws_ssm_parameter.auth0_reset_email_subject.value
   body                    = var.auth0_email_body_placeholder
   syntax                  = "liquid"

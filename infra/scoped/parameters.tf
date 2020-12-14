@@ -42,6 +42,23 @@ resource "aws_ssm_parameter" "sierra_api_hostname" {
 
 # Auth0
 
+resource "aws_ssm_parameter" "auth0_friendly_name" {
+  name  = "identity-auth0_friendly_name-${terraform.workspace}"
+  type  = "String"
+  value = var.ssm_parameter_placeholder
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+
+  tags = merge(
+    local.common_tags,
+    {
+      "Name" = "identity-auth0_friendly_name-${terraform.workspace}"
+    }
+  )
+}
+
 resource "aws_ssm_parameter" "auth0_universal_login_primary_colour" {
   name  = "identity-auth0_universal_login_primary_colour-${terraform.workspace}"
   type  = "String"
@@ -93,6 +110,23 @@ resource "aws_ssm_parameter" "auth0_domain" {
   )
 }
 
+resource "aws_ssm_parameter" "auth0_support_url" {
+  name  = "identity-auth0_support_url-${terraform.workspace}"
+  type  = "String"
+  value = var.ssm_parameter_placeholder
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+
+  tags = merge(
+    local.common_tags,
+    {
+      "Name" = "identity-auth0_support_url-${terraform.workspace}"
+    }
+  )
+}
+
 resource "aws_ssm_parameter" "auth0_email_from_name" {
   name  = "identity-auth0_email_from_name-${terraform.workspace}"
   type  = "String"
@@ -110,12 +144,12 @@ resource "aws_ssm_parameter" "auth0_email_from_name" {
   )
 }
 
-data "aws_ssm_parameter" "auth0_email_from_domain" {
-  name = "identity-auth0_email_from_domain"
-}
-
 data "aws_ssm_parameter" "auth0_email_from_user" {
   name = "identity-auth0_email_from_user"
+}
+
+data "aws_ssm_parameter" "auth0_email_from_domain" {
+  name = "identity-auth0_email_from_domain"
 }
 
 resource "aws_ssm_parameter" "auth0_verify_email_subject" {
