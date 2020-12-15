@@ -64,7 +64,7 @@ describe('sierra client', () => {
   describe('get patron record by record number', () => {
 
     it('finds the record with non-marc name', async () => {
-      moxios.stubRequest('/patrons/' + recordNumber + '?fields=varFields', {
+      moxios.stubRequest('/patrons/' + recordNumber + '?fields=varFields,deleted', {
         status: 200,
         response: recordNonMarc
       });
@@ -81,7 +81,7 @@ describe('sierra client', () => {
     });
 
     it('finds the record with marc name', async () => {
-      moxios.stubRequest('/patrons/' + recordNumber + '?fields=varFields', {
+      moxios.stubRequest('/patrons/' + recordNumber + '?fields=varFields,deleted', {
         status: 200,
         response: recordMarc
       });
@@ -97,8 +97,20 @@ describe('sierra client', () => {
       equal(result.recordNumber, recordNumber);
     });
 
+    it('finds the deleted record', async () => {
+      moxios.stubRequest('/patrons/' + recordNumber + '?fields=varFields,deleted', {
+        status: 200,
+        response: {
+          deleted: true
+        }
+      });
+
+      const response = await client.getPatronRecordByRecordNumber(recordNumber);
+      equal(response.status, ResponseStatus.NotFound);
+    });
+
     it('does not find the record', async () => {
-      moxios.stubRequest('/patrons/' + recordNumber + '?fields=varFields', {
+      moxios.stubRequest('/patrons/' + recordNumber + '?fields=varFields,deleted', {
         status: 404
       });
 
@@ -107,7 +119,7 @@ describe('sierra client', () => {
     });
 
     it('returns an unexpected response code', async () => {
-      moxios.stubRequest('/patrons/' + recordNumber + '?fields=varFields', {
+      moxios.stubRequest('/patrons/' + recordNumber + '?fields=varFields,deleted', {
         status: 500
       });
 
@@ -268,7 +280,7 @@ describe('sierra client', () => {
       moxios.stubOnce('put', '/patrons/' + recordNumber, {
         status: 204
       });
-      moxios.stubOnce('get', '/patrons/' + recordNumber + '?fields=varFields', {
+      moxios.stubOnce('get', '/patrons/' + recordNumber + '?fields=varFields,deleted', {
         status: 200,
         response: recordMarc
       });
