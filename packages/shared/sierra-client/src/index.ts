@@ -117,8 +117,13 @@ export default class SierraClient {
       ).catch(error => {
         if (error.response) {
           switch (error.response.status) {
-            case 400:
-              return errorResponse('Malformed or invalid Patron record creation request', ResponseStatus.MalformedRequest, error);
+            case 400: {
+              if (error.response.data?.code === 3 && error.response.data?.specificCode === 3) {
+                return errorResponse('Password does not meet Sierra policy', ResponseStatus.PasswordTooWeak, error);
+              } else {
+                return errorResponse('Malformed or invalid Patron record creation request', ResponseStatus.MalformedRequest, error);
+              }
+            }
           }
         }
         return unhandledError(error);

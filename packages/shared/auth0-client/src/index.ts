@@ -87,8 +87,8 @@ export default class Auth0Client {
         if (error.response) {
           switch (error.response.status) {
             case 400: {
-              if (error.response.data && error.response.data.message && error.response.data.message.startsWith('PasswordStrengthError')) {
-                return errorResponse('Password does not meet policy', ResponseStatus.PasswordTooWeak, error);
+              if (error.response.data?.message?.startsWith('PasswordStrengthError')) {
+                return errorResponse('Password does not meet Auth0 policy', ResponseStatus.PasswordTooWeak, error);
               } else {
                 return errorResponse('Malformed or invalid Auth0 user creation request', ResponseStatus.MalformedRequest, error);
               }
