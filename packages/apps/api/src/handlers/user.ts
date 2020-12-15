@@ -1,11 +1,11 @@
 import Auth0Client from '@weco/auth0-client';
-import {Auth0Profile} from "@weco/auth0-client/lib/auth0";
-import {APIResponse, isNonBlank, ResponseStatus} from '@weco/identity-common';
+import { Auth0Profile } from "@weco/auth0-client/lib/auth0";
+import { APIResponse, isNonBlank, ResponseStatus } from '@weco/identity-common';
 import SierraClient from '@weco/sierra-client';
-import {PatronRecord} from "@weco/sierra-client/lib/patron";
-import {Request, Response} from 'express';
-import {toMessage} from '../models/common';
-import {toUser} from '../models/user';
+import { PatronRecord } from "@weco/sierra-client/lib/patron";
+import { Request, Response } from 'express';
+import { toMessage } from '../models/common';
+import { toUser } from '../models/user';
 
 export async function getUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
 
@@ -106,6 +106,10 @@ export async function createUser(sierraClient: SierraClient, auth0Client: Auth0C
         // The request to create the Patron record was malformed.
       } else if (sierraCreate.status === ResponseStatus.MalformedRequest) {
         response.status(400).json(toMessage(sierraCreate.message));
+
+        // The given password did not meet the configured Sierra password policy.
+      } else if (sierraCreate.status === ResponseStatus.PasswordTooWeak) {
+        response.status(422).json(toMessage(sierraCreate.message));
 
         // An unhandled error occurred trying to create the Patorn record.
       } else {
