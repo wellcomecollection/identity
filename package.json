@@ -21,6 +21,7 @@
         ]
     },
     "devDependencies": {
+        "@types/assert": "^1.5.2",
         "@types/jest": "^26.0.17",
         "@types/moxios": "^0.4.9",
         "assert": "^2.0.0",
