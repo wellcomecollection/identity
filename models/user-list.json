@@ -41,10 +41,6 @@
             "type": "string",
             "minLength": 1
           },
-          "title": {
-            "type": "string",
-            "minLength": 1
-          },
           "firstName": {
             "type": "string",
             "minLength": 1
@@ -91,7 +87,6 @@
         "required": [
           "patronId",
           "barcode",
-          "title",
           "firstName",
           "lastName",
           "email",
