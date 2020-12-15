@@ -1,11 +1,11 @@
 import Auth0Client from '@weco/auth0-client';
-import { Auth0Profile } from "@weco/auth0-client/lib/auth0";
-import { APIResponse, isNonBlank, ResponseStatus } from '@weco/identity-common';
+import {Auth0Profile} from "@weco/auth0-client/lib/auth0";
+import {APIResponse, isNonBlank, ResponseStatus} from '@weco/identity-common';
 import SierraClient from '@weco/sierra-client';
-import { PatronRecord } from "@weco/sierra-client/lib/patron";
-import { Request, Response } from 'express';
-import { toMessage } from '../models/common';
-import { toUser } from '../models/user';
+import {PatronRecord} from "@weco/sierra-client/lib/patron";
+import {Request, Response} from 'express';
+import {toMessage} from '../models/common';
+import {toUser} from '../models/user';
 
 export async function getUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
 
@@ -26,6 +26,8 @@ export async function getUser(sierraClient: SierraClient, auth0Client: Auth0Clie
     }
   } else if (sierraGet.status === ResponseStatus.NotFound) {
     response.status(404).json(toMessage(sierraGet.message));
+  } else if (sierraGet.status === ResponseStatus.UserDeleted) {
+    response.status(410).json(toMessage(sierraGet.message));
   } else {
     response.status(500).json(toMessage(sierraGet.message));
   }
@@ -77,6 +79,8 @@ export async function createUser(sierraClient: SierraClient, auth0Client: Auth0C
     }
   } else if (sierraGet.status === ResponseStatus.Success) {
     response.status(409).json(toMessage('Patron record with email [' + email + '] already exists'));
+  } else if (sierraGet.status === ResponseStatus.UserDeleted) {
+    response.status(410).json(toMessage(sierraGet.message));
   } else {
     response.status(500).json(toMessage(sierraGet.message));
   }

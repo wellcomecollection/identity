@@ -47,7 +47,7 @@ export default class SierraClient {
           if (!response.data.deleted) {
             return successResponse(toPatronRecord(response.data))
           } else {
-            return errorResponse('Patron record with record number [' + recordNumber + '] is deleted', ResponseStatus.NotFound);
+            return errorResponse('Patron record with record number [' + recordNumber + '] is deleted', ResponseStatus.UserDeleted);
           }
         }
       ).catch(error => {
@@ -75,7 +75,7 @@ export default class SierraClient {
           if (!response.data.deleted) {
             return successResponse(toPatronRecord(response.data))
           } else {
-            return errorResponse('Patron record with barcode [' + barcode + '] is deleted', ResponseStatus.NotFound);
+            return errorResponse('Patron record with barcode [' + barcode + '] is deleted', ResponseStatus.UserDeleted);
           }
         }
       ).catch(error => {
@@ -103,7 +103,7 @@ export default class SierraClient {
           if (!response.data.deleted) {
             return successResponse(toPatronRecord(response.data))
           } else {
-            return errorResponse('Patron record with email [' + email + '] is deleted', ResponseStatus.NotFound);
+            return errorResponse('Patron record with email [' + email + '] is deleted', ResponseStatus.UserDeleted);
           }
         }
       ).catch(error => {
@@ -150,6 +150,8 @@ export default class SierraClient {
           switch (error.response.status) {
             case 400:
               return errorResponse('Malformed or invalid Patron barcode update request', ResponseStatus.MalformedRequest, error);
+            case 404:
+              return errorResponse('Patron record with record number [' + recordNumber + '] not found', ResponseStatus.NotFound, error);
           }
         }
         return unhandledError(error);
