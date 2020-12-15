@@ -1,8 +1,8 @@
 import React from 'react';
-import { Registration } from '../src/frontend/Registration/Registration';
-import { AccountCreated } from '../src/frontend/AccountManagement/AccountCreated';
-import { AccountValidated } from '../src/frontend/AccountManagement/AccountValidated';
-import { ErrorMessage } from '../src/frontend/Shared/ErrorMessage';
+import { Registration } from '../frontend/Registration/Registration';
+import { AccountCreated } from '../frontend/AccountManagement/AccountCreated';
+import { AccountValidated } from '../frontend/AccountManagement/AccountValidated';
+import { ErrorMessage } from '../frontend/Shared/ErrorMessage';
 
 export default { title: 'Registration' };
 

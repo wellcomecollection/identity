@@ -1,7 +1,7 @@
 import React from 'react';
-import { ProfileForm } from '../src/frontend/AccountManagement/ProfileForm';
-import { PasswordForm } from '../src/frontend/AccountManagement/PasswordForm';
-import { DeleteAccount } from '../src/frontend/AccountManagement/DeleteAccount';
+import { ProfileForm } from '../frontend/AccountManagement/ProfileForm';
+import { PasswordForm } from '../frontend/AccountManagement/PasswordForm';
+import { DeleteAccount } from '../frontend/AccountManagement/DeleteAccount';
 
 import { withKnobs, text } from '@storybook/addon-knobs';
 

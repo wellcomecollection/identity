@@ -1,9 +1,9 @@
 import React from 'react';
-import { AdminRegistration } from '../src/frontend/AccountAdmin/AdminRegistration';
-import { AdminAccountCreated } from '../src/frontend/AccountAdmin/AdminAccountCreated';
-import { AdminEditUser } from '../src/frontend/AccountAdmin/AdminEditUser';
-import { AdminProfileForm } from '../src/frontend/AccountAdmin/AdminProfileForm';
-import { AdminAccountActions } from '../src/frontend/AccountAdmin/AdminAccountActions';
+import { AdminRegistration } from '../frontend/AccountAdmin/AdminRegistration';
+import { AdminAccountCreated } from '../frontend/AccountAdmin/AdminAccountCreated';
+import { AdminEditUser } from '../frontend/AccountAdmin/AdminEditUser';
+import { AdminProfileForm } from '../frontend/AccountAdmin/AdminProfileForm';
+import { AdminAccountActions } from '../frontend/AccountAdmin/AdminAccountActions';
 
 import { withKnobs, text } from '@storybook/addon-knobs';
 
