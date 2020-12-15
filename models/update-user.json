@@ -3,17 +3,12 @@
   "title": "Update User Schema",
   "type": "object",
   "properties": {
-    "title": {
-      "type": "string",
-      "minLength": 1
-    },
     "email": {
       "type": "string",
       "format": "email"
     }
   },
   "required": [
-    "title",
     "email"
   ],
   "additionalProperties": false
