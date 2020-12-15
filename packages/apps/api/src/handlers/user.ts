@@ -26,8 +26,6 @@ export async function getUser(sierraClient: SierraClient, auth0Client: Auth0Clie
     }
   } else if (sierraGet.status === ResponseStatus.NotFound) {
     response.status(404).json(toMessage(sierraGet.message));
-  } else if (sierraGet.status === ResponseStatus.UserDeleted) {
-    response.status(410).json(toMessage(sierraGet.message));
   } else {
     response.status(500).json(toMessage(sierraGet.message));
   }
@@ -79,8 +77,6 @@ export async function createUser(sierraClient: SierraClient, auth0Client: Auth0C
     }
   } else if (sierraGet.status === ResponseStatus.Success) {
     response.status(409).json(toMessage('Patron record with email [' + email + '] already exists'));
-  } else if (sierraGet.status === ResponseStatus.UserDeleted) {
-    response.status(410).json(toMessage(sierraGet.message));
   } else {
     response.status(500).json(toMessage(sierraGet.message));
   }

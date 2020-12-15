@@ -25,8 +25,6 @@ export async function validateCredentials(sierraClient: SierraClient, request: R
     }
   } else if (sierraGet.status === ResponseStatus.NotFound) {
     response.status(404).json(toMessage(sierraGet.message))
-  } else if (sierraGet.status === ResponseStatus.UserDeleted) {
-    response.status(410).json(toMessage(sierraGet.message));
   } else {
     response.status(500).json(toMessage(sierraGet.message));
   }

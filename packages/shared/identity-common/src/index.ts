@@ -17,7 +17,6 @@ export function errorResponse(
     | ResponseStatus.InvalidCredentials
     | ResponseStatus.UserAlreadyExists
     | ResponseStatus.MalformedRequest
-    | ResponseStatus.UserDeleted
     | ResponseStatus.UnknownError,
   error?: AxiosError): ErrorResponse {
   const cause = error ? (error.response ? JSON.stringify(error.response.data) : error.message) : 'unknown';
@@ -42,7 +41,6 @@ export type ErrorResponse = {
   | ResponseStatus.InvalidCredentials
   | ResponseStatus.UserAlreadyExists
   | ResponseStatus.MalformedRequest
-  | ResponseStatus.UserDeleted
   | ResponseStatus.UnknownError
 }
 
@@ -52,7 +50,6 @@ export enum ResponseStatus {
   InvalidCredentials,
   UserAlreadyExists,
   MalformedRequest,
-  UserDeleted,
   UnknownError
 }
 
