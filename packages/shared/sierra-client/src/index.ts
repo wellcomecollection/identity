@@ -44,12 +44,12 @@ export default class SierraClient {
         },
         validateStatus: status => status === 200
       }).then(response => {
-          if (!response.data.deleted) {
-            return successResponse(toPatronRecord(response.data))
-          } else {
-            return errorResponse('Patron record with record number [' + recordNumber + '] is deleted', ResponseStatus.NotFound);
-          }
+        if (!response.data.deleted) {
+          return successResponse(toPatronRecord(response.data))
+        } else {
+          return errorResponse('Patron record with record number [' + recordNumber + '] is deleted', ResponseStatus.NotFound);
         }
+      }
       ).catch(error => {
         if (error.response) {
           switch (error.response.status) {
@@ -72,7 +72,7 @@ export default class SierraClient {
         },
         validateStatus: status => status === 200
       }).then(response =>
-            successResponse(toPatronRecord(response.data))
+        successResponse(toPatronRecord(response.data))
       ).catch(error => {
         if (error.response) {
           switch (error.response.status) {
@@ -95,7 +95,7 @@ export default class SierraClient {
         },
         validateStatus: status => status === 200
       }).then(response =>
-            successResponse(toPatronRecord(response.data))
+        successResponse(toPatronRecord(response.data))
       ).catch(error => {
         if (error.response) {
           switch (error.response.status) {
@@ -147,6 +147,24 @@ export default class SierraClient {
         return unhandledError(error);
       });
     })
+  }
+
+  async deletePatronRecord(recordNumber: number): Promise<APIResponse<{}>> {
+    return this.getInstance().then(instance => {
+      return instance.delete('/patrons/' + recordNumber, {
+        validateStatus: status => status === 204
+      }).then(() => {
+        return successResponse({});
+      }).catch(error => {
+        if (error.response) {
+          switch (error.response.status) {
+            case 404:
+              return errorResponse('Patron record with record number [' + recordNumber + '] not found', ResponseStatus.NotFound, error);
+          }
+        }
+        return unhandledError(error);
+      });
+    });
   }
 
   private async getInstance(): Promise<AxiosInstance> {
