@@ -33,13 +33,12 @@ export async function getUser(sierraClient: SierraClient, auth0Client: Auth0Clie
 
 export async function createUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
 
-  const title: string = request.body.title;
   const firstName: string = request.body.firstName;
   const lastName: string = request.body.lastName;
   const email: string = request.body.email;
   const password: string = request.body.password;
 
-  if (!isNonBlank(title) || !isNonBlank(firstName) || !isNonBlank(lastName) || !isNonBlank(email) || !isNonBlank(password)) {
+  if (!isNonBlank(firstName) || !isNonBlank(lastName) || !isNonBlank(email) || !isNonBlank(password)) {
     response.status(400).json(toMessage("All fields must be provided and non-blank"));
   }
 
@@ -47,7 +46,7 @@ export async function createUser(sierraClient: SierraClient, auth0Client: Auth0C
   if (sierraGet.status === ResponseStatus.NotFound) {
     const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByEmail(email);
     if (auth0Get.status === ResponseStatus.NotFound) {
-      const sierraCreate: APIResponse<number> = await sierraClient.createPatronRecord(title, firstName, lastName, password);
+      const sierraCreate: APIResponse<number> = await sierraClient.createPatronRecord(firstName, lastName, password);
       if (sierraCreate.status === ResponseStatus.Success) {
         const auth0Create: APIResponse<Auth0Profile> = await auth0Client.createUser(sierraCreate.result, email, password);
         if (auth0Create.status === ResponseStatus.Success) {

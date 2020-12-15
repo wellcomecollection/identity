@@ -118,9 +118,9 @@ export default class SierraClient {
     });
   }
 
-  async createPatronRecord(title: string, firstName: string, lastName: string, pin: string): Promise<APIResponse<number>> {
+  async createPatronRecord(firstName: string, lastName: string, pin: string): Promise<APIResponse<number>> {
     return this.getInstance().then(instance => {
-      return instance.post('/patrons', toCreatePatron(title, firstName, lastName, pin), {
+      return instance.post('/patrons', toCreatePatron(firstName, lastName, pin), {
         validateStatus: status => status === 200
       }).then(response =>
         successResponse(extractRecordNumberFromLink(response.data.link))

@@ -13,9 +13,9 @@ function getVarFieldContent(varFields: VarField[], fieldTag: string): string {
 }
 
 // Sierra stores the names of Patron records in two formats: MARC and non-MARC. In the former, names are represented as
-// a JSON object, where each part of the name (title, first name, last name) is represented as a sub-object on its own.
-// In the case of non-MARC, it's a single string value with various prefixes.
-function getPatronName(varFields: VarField[]): { title: string, firstName: string, lastName: string } {
+// a JSON object, where each part of the name (first name, last name) is represented as a sub-object on its own. In the
+// case of non-MARC, it's a single string value with various prefixes.
+function getPatronName(varFields: VarField[]): { firstName: string, lastName: string } {
   const found = varFields.find(varField => varField.fieldTag === 'n');
   if (found && found.content) {
     return getPatronNameNonMarc(found.content);
@@ -23,28 +23,24 @@ function getPatronName(varFields: VarField[]): { title: string, firstName: strin
     return getPatronNameMarc(found.subfields);
   } else {
     return {
-      title: '',
       firstName: '',
       lastName: ''
     }
   }
 }
 
-function getPatronNameMarc(subFields: SubField[]): { title: string, firstName: string, lastName: string } {
-  const title = subFields.find(subField => subField.tag === 'c')
+function getPatronNameMarc(subFields: SubField[]): { firstName: string, lastName: string } {
   const firstName = subFields.find(subField => subField.tag === 'b')
   const lastName = subFields.find(subField => subField.tag === 'a')
   return {
-    title: title ? title.content.trim() : '',
     firstName: firstName ? firstName.content.trim() : '',
     lastName: lastName ? lastName.content.trim() : ''
   }
 }
 
-function getPatronNameNonMarc(content: string): { title: string, firstName: string, lastName: string } {
+function getPatronNameNonMarc(content: string): { firstName: string, lastName: string } {
   if (!content.trim()) {
     return {
-      title: '',
       firstName: '',
       lastName: ''
     };
@@ -57,11 +53,6 @@ function getPatronNameNonMarc(content: string): { title: string, firstName: stri
     lastName = content.substring(0, content.indexOf(','));
   }
 
-  let title = '';
-  if (content.includes('|c')) {
-    title = content.substring(content.indexOf('|c') + 2, content.indexOf('|b'));
-  }
-
   let firstName = '';
   if (content.includes('|b')) {
     firstName = content.substring(content.indexOf('|b') + 2, content.length);
@@ -70,7 +61,6 @@ function getPatronNameNonMarc(content: string): { title: string, firstName: stri
   }
 
   return {
-    title: title.trim(),
     firstName: firstName.trim(),
     lastName: lastName.trim()
   };
@@ -78,7 +68,7 @@ function getPatronNameNonMarc(content: string): { title: string, firstName: stri
 
 // There's a bunch of hardcoded fields in here. This is intentional, these are static and don't change and mostly
 // indicate that the user has self-registered. I don't think we need to extract them out into configuration.
-export function toCreatePatron(title: string, firstName: string, lastName: string, pin: string): PatronCreate {
+export function toCreatePatron(firstName: string, lastName: string, pin: string): PatronCreate {
   return {
     pin: pin,
     pMessage: 's',
@@ -98,10 +88,6 @@ export function toCreatePatron(title: string, firstName: string, lastName: strin
           {
             tag: "a",
             content: lastName
-          },
-          {
-            tag: "c",
-            content: title
           },
           {
             tag: "b",
@@ -126,7 +112,6 @@ export function extractRecordNumberFromLink(link: string): number {
 export interface PatronRecord {
   recordNumber: number;
   barcode: string;
-  title: string;
   firstName: string;
   lastName: string;
   email: string;
