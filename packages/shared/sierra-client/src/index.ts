@@ -40,12 +40,10 @@ export default class SierraClient {
     return this.getInstance().then(instance => {
       return instance.get('/patrons/' + recordNumber, {
         params: {
-          fields: 'varFields'
+          fields: 'varFields,deleted'
         },
         validateStatus: status => status === 200
       }).then(response => {
-          console.log(JSON.stringify(response.data));
-          console.log(JSON.stringify(response.data.deleted));
           if (!response.data.deleted) {
             return successResponse(toPatronRecord(response.data))
           } else {
