@@ -44,6 +44,8 @@ export default class SierraClient {
         },
         validateStatus: status => status === 200
       }).then(response => {
+          console.log(JSON.stringify(response.data));
+          console.log(JSON.stringify(response.data.deleted));
           if (!response.data.deleted) {
             return successResponse(toPatronRecord(response.data))
           } else {
