@@ -78,7 +78,6 @@ describe('sierra client', () => {
       equal(result.firstName, firstName);
       equal(result.lastName, lastName);
       equal(result.recordNumber, recordNumber);
-      equal(result.title, title);
     });
 
     it('finds the record with marc name', async () => {
@@ -96,7 +95,6 @@ describe('sierra client', () => {
       equal(result.firstName, firstName);
       equal(result.lastName, lastName);
       equal(result.recordNumber, recordNumber);
-      equal(result.title, title);
     });
 
     it('does not find the record', async () => {
@@ -135,7 +133,6 @@ describe('sierra client', () => {
       equal(result.firstName, firstName);
       equal(result.lastName, lastName);
       equal(result.recordNumber, recordNumber);
-      equal(result.title, title);
     });
 
     it('finds the record with marc name', async () => {
@@ -153,7 +150,6 @@ describe('sierra client', () => {
       equal(result.firstName, firstName);
       equal(result.lastName, lastName);
       equal(result.recordNumber, recordNumber);
-      equal(result.title, title);
     });
 
     it('does not find the record', async () => {
@@ -192,7 +188,6 @@ describe('sierra client', () => {
       equal(result.firstName, firstName);
       equal(result.lastName, lastName);
       equal(result.recordNumber, recordNumber);
-      equal(result.title, title);
     });
 
     it('finds the record with marc name', async () => {
@@ -210,7 +205,6 @@ describe('sierra client', () => {
       equal(result.firstName, firstName);
       equal(result.lastName, lastName);
       equal(result.recordNumber, recordNumber);
-      equal(result.title, title);
     });
 
     it('does not find the record', async () => {
@@ -242,7 +236,7 @@ describe('sierra client', () => {
         }
       });
 
-      const response = await client.createPatronRecord(title, firstName, lastName, pin);
+      const response = await client.createPatronRecord(firstName, lastName, pin);
       equal(response.status, ResponseStatus.Success);
 
       const result = (<SuccessResponse<number>>response).result;
@@ -254,7 +248,7 @@ describe('sierra client', () => {
         status: 400
       });
 
-      const response = await client.createPatronRecord(title, firstName, lastName, pin);
+      const response = await client.createPatronRecord(firstName, lastName, pin);
       equal(response.status, ResponseStatus.MalformedRequest);
     });
 
@@ -263,7 +257,7 @@ describe('sierra client', () => {
         status: 500
       });
 
-      const response = await client.createPatronRecord(title, firstName, lastName, pin);
+      const response = await client.createPatronRecord(firstName, lastName, pin);
       equal(response.status, ResponseStatus.UnknownError);
     });
   });
@@ -288,7 +282,6 @@ describe('sierra client', () => {
       equal(result.firstName, firstName);
       equal(result.lastName, lastName);
       equal(result.recordNumber, recordNumber);
-      equal(result.title, title);
     });
 
     it('does not update the record', async () => {
@@ -320,7 +313,6 @@ const accessToken: string = 'a1b23c4d5e6f7g8hj';
 const recordNumber: number = 123456;
 const barcode: string = "654321";
 const pin: string = "superstrongpassword";
-const title: string = "Mr";
 const firstName: string = "Test";
 const lastName: string = "User";
 const email: string = "test.user@example.com";
@@ -347,10 +339,6 @@ const recordMarc: any = {
           content: lastName
         },
         {
-          tag: "c",
-          content: title
-        },
-        {
           tag: "b",
           content: firstName
         }
@@ -372,7 +360,7 @@ const recordNonMarc: any = {
     },
     {
       fieldTag: "n",
-      content: "a|" + lastName + ", |c" + title + " |b" + firstName
+      content: "a|" + lastName + ", |b" + firstName
     }
   ]
 }
