@@ -1,9 +1,9 @@
-import axios, {AxiosInstance} from 'axios';
+import { APIResponse, ResponseStatus, SuccessResponse } from '@weco/identity-common';
+import { equal } from 'assert';
+import axios, { AxiosInstance } from 'axios';
 import moxios from 'moxios';
 import Auth0Client from '../src';
-import {APIResponse, ResponseStatus, SuccessResponse} from '@weco/identity-common';
-import {equal} from 'assert'
-import {Auth0Profile, Auth0UserInfo} from '../src/auth0';
+import { Auth0Profile, Auth0UserInfo } from '../src/auth0';
 
 describe('auth0 client', () => {
 
@@ -241,6 +241,18 @@ describe('auth0 client', () => {
 
       const response = await client.createUser(userId, email, password);
       equal(response.status, ResponseStatus.UserAlreadyExists);
+    });
+
+    it('does not meet the password policy', async () => {
+      moxios.stubRequest('/users', {
+        status: 400,
+        response: {
+          message: 'PasswordStrengthError'
+        }
+      });
+
+      const response = await client.createUser(userId, email, password);
+      equal(response.status, ResponseStatus.PasswordTooWeak);
     });
 
     it('receives a malformed request', async () => {

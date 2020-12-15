@@ -1,9 +1,9 @@
 import SierraClient from "../lib";
 import moxios from 'moxios';
-import axios, {AxiosInstance} from 'axios';
-import {equal} from 'assert'
-import {ResponseStatus, SuccessResponse} from "@weco/identity-common";
-import {PatronRecord} from "../lib/patron";
+import axios, { AxiosInstance } from 'axios';
+import { equal } from 'assert'
+import { ResponseStatus, SuccessResponse } from "@weco/identity-common";
+import { PatronRecord } from "../lib/patron";
 
 describe('sierra client', () => {
 
@@ -262,6 +262,19 @@ describe('sierra client', () => {
 
       const response = await client.createPatronRecord(firstName, lastName, pin);
       equal(response.status, ResponseStatus.MalformedRequest);
+    });
+
+    it('does not meet the password policy', async () => {
+      moxios.stubRequest('/patrons', {
+        status: 400,
+        response: {
+          code: 136,
+          specificCode: 3
+        }
+      });
+
+      const response = await client.createPatronRecord(firstName, lastName, pin);
+      equal(response.status, ResponseStatus.PasswordTooWeak);
     });
 
     it('returns an unexpected response code', async () => {
