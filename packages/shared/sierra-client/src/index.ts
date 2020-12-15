@@ -43,8 +43,13 @@ export default class SierraClient {
           fields: 'varFields'
         },
         validateStatus: status => status === 200
-      }).then(response =>
-        successResponse(toPatronRecord(response.data))
+      }).then(response => {
+          if (!response.data.deleted) {
+            return successResponse(toPatronRecord(response.data))
+          } else {
+            return errorResponse('Patron record with record number [' + recordNumber + '] is deleted', ResponseStatus.NotFound);
+          }
+        }
       ).catch(error => {
         if (error.response) {
           switch (error.response.status) {
@@ -66,8 +71,13 @@ export default class SierraClient {
           fields: 'varFields'
         },
         validateStatus: status => status === 200
-      }).then(response =>
-        successResponse(toPatronRecord(response.data))
+      }).then(response => {
+          if (!response.data.deleted) {
+            return successResponse(toPatronRecord(response.data))
+          } else {
+            return errorResponse('Patron record with barcode [' + barcode + '] is deleted', ResponseStatus.NotFound);
+          }
+        }
       ).catch(error => {
         if (error.response) {
           switch (error.response.status) {
@@ -89,8 +99,13 @@ export default class SierraClient {
           fields: 'varFields'
         },
         validateStatus: status => status === 200
-      }).then(response =>
-        successResponse(toPatronRecord(response.data))
+      }).then(response => {
+          if (!response.data.deleted) {
+            return successResponse(toPatronRecord(response.data))
+          } else {
+            return errorResponse('Patron record with email [' + email + '] is deleted', ResponseStatus.NotFound);
+          }
+        }
       ).catch(error => {
         if (error.response) {
           switch (error.response.status) {
