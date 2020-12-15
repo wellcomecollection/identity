@@ -1,9 +1,9 @@
-import { APIResponse, ResponseStatus, SuccessResponse } from '@weco/identity-common';
-import { equal } from 'assert';
-import axios, { AxiosInstance } from 'axios';
+import axios, {AxiosInstance} from 'axios';
 import moxios from 'moxios';
 import Auth0Client from '../src';
-import { Auth0Profile, Auth0UserInfo } from '../src/auth0';
+import {APIResponse, ResponseStatus, SuccessResponse} from '@weco/identity-common';
+import {equal} from 'assert'
+import {Auth0Profile, Auth0UserInfo} from '../src/auth0';
 
 describe('auth0 client', () => {
 
@@ -169,47 +169,47 @@ describe('auth0 client', () => {
       const response = await client.getUserByEmail(email);
       equal(response.status, ResponseStatus.UnknownError);
     });
-  });
 
-  it('finds the user without blocked', async () => {
-    moxios.stubRequest('/users-by-email?email=' + email, {
-      status: 200,
-      response: [
-        user
-      ]
+    it('finds the user without blocked', async () => {
+      moxios.stubRequest('/users-by-email?email=' + email, {
+        status: 200,
+        response: [
+          user
+        ]
+      });
+
+      const response = await client.getUserByEmail(email);
+      equal(response.status, ResponseStatus.Success);
+
+      const result = (<SuccessResponse<Auth0Profile>>response).result;
+      equal(result.userId, 'auth0|p' + userId);
+      equal(result.email, email);
+      equal(result.emailValidated, emailValidated);
+      equal(result.locked, locked);
+      equal(result.creationDate, creationDate);
+      equal(result.lastLogin, lastLoginDate);
+      equal(result.lastLoginIp, lastLoginIp);
+      equal(result.totalLogins, totalLogins);
     });
 
-    const response = await client.getUserByEmail(email);
-    equal(response.status, ResponseStatus.Success);
+    it('does not find the user', async () => {
+      moxios.stubRequest('/users-by-email?email=' + email, {
+        status: 200,
+        response: []
+      });
 
-    const result = (<SuccessResponse<Auth0Profile>>response).result;
-    equal(result.userId, 'auth0|p' + userId);
-    equal(result.email, email);
-    equal(result.emailValidated, emailValidated);
-    equal(result.locked, locked);
-    equal(result.creationDate, creationDate);
-    equal(result.lastLogin, lastLoginDate);
-    equal(result.lastLoginIp, lastLoginIp);
-    equal(result.totalLogins, totalLogins);
-  });
-
-  it('does not find the user', async () => {
-    moxios.stubRequest('/users-by-email?email=' + email, {
-      status: 200,
-      response: []
+      const response = await client.getUserByEmail(email);
+      equal(response.status, ResponseStatus.NotFound);
     });
 
-    const response = await client.getUserByEmail(email);
-    equal(response.status, ResponseStatus.NotFound);
-  });
+    it('returns an unexpected response code', async () => {
+      moxios.stubRequest('/users-by-email?email=' + email, {
+        status: 500
+      });
 
-  it('returns an unexpected response code', async () => {
-    moxios.stubRequest('/users-by-email?email=' + email, {
-      status: 500
+      const response = await client.getUserByEmail(email);
+      equal(response.status, ResponseStatus.UnknownError);
     });
-
-    const response = await client.getUserByEmail(email);
-    equal(response.status, ResponseStatus.UnknownError);
   });
 
   describe('creates a user', () => {
@@ -241,18 +241,6 @@ describe('auth0 client', () => {
 
       const response = await client.createUser(userId, email, password);
       equal(response.status, ResponseStatus.UserAlreadyExists);
-    });
-
-    it('does not meet the password policy', async () => {
-      moxios.stubRequest('/users', {
-        status: 400,
-        response: {
-          message: 'PasswordStrengthError'
-        }
-      });
-
-      const response = await client.createUser(userId, email, password);
-      equal(response.status, ResponseStatus.PasswordTooWeak);
     });
 
     it('receives a malformed request', async () => {
