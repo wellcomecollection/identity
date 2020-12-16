@@ -83,6 +83,8 @@ module.exports = {
           require.resolve('sass-loader'),
         ],
       },
+    ],
+  },
 
   // Add problem packages to alias.
   resolve: {
