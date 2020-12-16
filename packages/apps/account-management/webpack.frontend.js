@@ -2,7 +2,6 @@ const createStyledComponentsTransformer = require('typescript-plugin-styled-comp
 const styledComponentsTransformer = createStyledComponentsTransformer({
   displayName: true,
 });
-
 const browserTargets = {
   edge: '17',
   firefox: '60',
@@ -24,6 +23,7 @@ module.exports = {
       // Load and convert typescript to javascript
       {
         test: /\.(ts|tsx)$/,
+        exclude: /node_modules\/(?!@weco).*/,
         use: [
           {
             loader: require.resolve('ts-loader'),
@@ -41,7 +41,7 @@ module.exports = {
       // Pass javascript through babel with preset env to target browsers.
       {
         test: /\.(js)$/,
-        exclude: /node_modules/,
+        exclude: /node_modules\/(?!@weco).*/,
         use: [
           {
             loader: 'babel-loader',
@@ -52,6 +52,8 @@ module.exports = {
                 ['@babel/plugin-proposal-decorators', { legacy: true }],
               ],
               presets: [
+                '@babel/preset-flow',
+                '@babel/preset-react',
                 [
                   '@babel/preset-env',
                   {
@@ -81,8 +83,6 @@ module.exports = {
           require.resolve('sass-loader'),
         ],
       },
-    ],
-  },
 
   // Add problem packages to alias.
   resolve: {
@@ -94,8 +94,8 @@ module.exports = {
   },
 
   // We could use React from CDN.
-  // externals: {
-  //   react: 'React',
-  //   'react-dom': 'ReactDOM',
-  // },
+  externals: {
+    react: 'React',
+    'react-dom': 'ReactDOM',
+  },
 };

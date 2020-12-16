@@ -3,8 +3,6 @@ import { ping, pingPost } from './routes/ping';
 import { frontendBundles } from './routes/assets/frontend-bundle';
 import { indexPage } from './routes/index';
 import { localAuthRoutes } from './routes/local/local-auth';
-import { registrationRoutes } from './routes/registration';
-
 import { config } from './config';
 import { authCallback, loginAction, logoutAction } from './routes/auth';
 import { RouteMiddleware } from './types/application';
@@ -55,8 +53,6 @@ export const router = new TypedRouter({
   ...loginRoutes,
 
   // Frontend fallback route.
-  frontend: [TypedRouter.GET, /(.*)/ as any, indexPage],
+  frontend: [TypedRouter.GET, /(.*)/ as any, indexPage]
 
-  // Registration
-  ...registrationRoutes,
 });
