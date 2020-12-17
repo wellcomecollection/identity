@@ -78,11 +78,12 @@ module.exports = {
           'css-loader',
           // Compiles Sass to CSS
           {
-            loader: "sass-loader",
+            loader: 'sass-loader',
             options: {
-              implementation: require("sass"),
+              implementation: require('node-sass'),
+              additionalData: '$is-next: true;',
               sassOptions: {
-                fiber: false,
+                includePaths: ['node_modules/@weco/common/styles'],
               },
             },
           },
