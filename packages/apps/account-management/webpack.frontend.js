@@ -72,15 +72,20 @@ module.exports = {
       {
         test: /\.s?[ac]ss$/,
         use: [
-          require.resolve('css-loader'),
+          // Creates `style` nodes from JS strings
+          'style-loader',
+          // Translates CSS into CommonJS
+          'css-loader',
+          // Compiles Sass to CSS
           {
-            loader: require.resolve('postcss-loader'),
+            loader: "sass-loader",
             options: {
-              ident: 'postcss',
-              plugins: (loader) => [require('autoprefixer')(), require('cssnano')()],
+              implementation: require("sass"),
+              sassOptions: {
+                fiber: false,
+              },
             },
           },
-          require.resolve('sass-loader'),
         ],
       },
     ],

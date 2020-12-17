@@ -6,11 +6,15 @@ import { AppContextProvider } from '@weco/common/views/components/AppContext/App
 import { ThemeProvider } from 'styled-components';
 import theme from '@weco/common/views/themes/default';
 
+// import '@weco/common/styles/styleguide.scss';
+import './main.scss';
+
 const root = document.getElementById('root');
 
 if (root) {
   render(
     <ThemeProvider theme={theme}>
+      <style id="styleguide-sass"></style>
       <AppContextProvider>
         <BrowserRouter>
           <Switch>

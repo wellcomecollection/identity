@@ -68,7 +68,7 @@ export const Registration = () => {
 
   useEffect(() => {
     //determine if validated on mount
-    setValidated(true);
+    setValidated(false);
   }, []);
 
   const createAccount = () => {
