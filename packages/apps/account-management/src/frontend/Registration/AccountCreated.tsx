@@ -7,9 +7,11 @@ export const AccountCreated = () => {
       <SpacingComponent />
       <h1 className="font-wb font-size-1">Account Created</h1>
       <SpacingComponent />
-      <p>Thank you for completing the registration form, you have succesfully created an acccount</p>
+      <p className="font-wb font-size-5">
+        Thank you for completing the registration form, you have succesfully created an acccount
+      </p>
       <SpacingComponent />
-      <p>Please check your email inbox to verify your email address.</p>
+      <p className="font-wb font-size-5">Please check your email inbox to verify your email address.</p>
     </>
   );
 };

@@ -8,7 +8,7 @@ import SpacingComponent from '@weco/common/views/components/SpacingComponent/Spa
 // @ts-ignore
 import SectionHeader from '@weco/common/views/components/SectionHeader/SectionHeader';
 
-import { AccountCreated } from '../AccountManagement/AccountCreated';
+import { AccountCreated } from './AccountCreated';
 import { AccountValidated } from '../AccountManagement/AccountValidated';
 import { ErrorMessage } from '../Shared/ErrorMessage';
 
@@ -20,7 +20,8 @@ const passwordPolicy = /(?=.{8,})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).*/;
 
 const LogoContainer = styled.div`
    {
-    display: flex;
+    margin: auto;
+    padding: 42px;
     width: 200px;
   }
 `;
@@ -30,18 +31,15 @@ export const Registration = () => {
   const [lastName, setLastName] = useState<string>();
   const [email, setEmail] = useState<string>();
   const [pass, setPass] = useState<string>();
-  const [passCheck, setPassCheck] = useState<string>();
-  const [consent, setConsent] = useState(false);
   const [valid, setValid] = useState<boolean | undefined | ''>(false);
   const [created, setCreated] = useState<boolean>(false);
   const [validated, setValidated] = useState<boolean>(false);
   const [alreadyExists, setAlreadyExists] = useState(false);
   const [passQualifies, setPassQualifies] = useState(true);
-  const [passMatch, setPassMatch] = useState(true);
 
   useEffect(() => {
     // check if email exists
-    setAlreadyExists(true);
+    setAlreadyExists(false);
   }, [email]);
 
   useEffect(() => {
@@ -49,22 +47,15 @@ export const Registration = () => {
     pass && !passwordPolicy.test(pass || '') ? setPassQualifies(false) : setPassQualifies(true);
   }, [pass]);
 
-  useEffect(() => {
-    // check if password matches each other
-    pass === passCheck ? setPassMatch(true) : setPassMatch(false);
-  }, [passCheck]);
 
   useEffect(() => {
     setValid(
-        firstName &&
+      firstName &&
         lastName &&
         email &&
-        passwordPolicy.test(pass || '') &&
-        passwordPolicy.test(passCheck || '') &&
-        pass === passCheck &&
-        consent
+        passwordPolicy.test(pass || '')
     );
-  }, [firstName, lastName, email, pass, passCheck, consent]);
+  }, [firstName, lastName, email, pass]);
 
   useEffect(() => {
     //determine if validated on mount
@@ -78,7 +69,7 @@ export const Registration = () => {
   return (
     <div>
       <LogoContainer>
-        <img src={logo} alt="Wellcome Collection Logo" height="200px" />
+        <img src={logo} alt="Wellcome Collection Logo" />
       </LogoContainer>
       {validated ? (
         <AccountValidated />
@@ -87,11 +78,12 @@ export const Registration = () => {
       ) : (
         <>
           <SpacingComponent />
-          <h1 className="font-wb font-size-1">Register for Wellcome Collection</h1>
+          <h1 className="font-wb font-size-1" style={{ textAlign: 'center' }}>
+            Register
+          </h1>
           <form>
             <SpacingComponent />
-            <SectionHeader title="Personal details" />
-
+            <h1 className="font-wb font-size-4"> Personal Details</h1>
             <TextInput
               placeholder=""
               required={true}
@@ -110,7 +102,7 @@ export const Registration = () => {
               setValue={(value: string) => setLastName(value)}
             />
             <SpacingComponent />
-            <SectionHeader title="Login details" />
+            <h1 className="font-wb font-size-4"> Login Details</h1>
 
             <TextInput
               placeholder=""
@@ -145,32 +137,16 @@ export const Registration = () => {
                 characters, a combination of upper and lowercase letters and at least one number.
               </ErrorMessage>
             ) : (
-              <></>
+              <ul>
+                <li>One lowercase character</li>
+                <li>One uppercase character</li>
+                <li>One number</li>
+                <li> 8 characters minimum</li>
+              </ul>
             )}
             <SpacingComponent />
-            <TextInput
-              required={true}
-              aria-label="Retype password"
-              label="Reype Password"
-              value={passCheck}
-              setValue={(value: string) => setPassCheck(value)}
-              type="password"
-              pattern={passwordPolicy}
-            />
-            {!passMatch ? <ErrorMessage>The passwords you have entered do not match</ErrorMessage> : <></>}
-            <SpacingComponent />
-            <CheckboxRadio
-              type="checkbox"
-              id="T&Cs"
-              checked={consent}
-              onChange={() => setConsent(!consent)}
-              name="Terms and Conditions"
-              value={''}
-              // Need to update this component to accept more than just text
-              text={`I have read and agreed to the ${(<a href="">Privacy and Terms</a>)} for Wellcome Collection.`}
-            />
-            <SpacingComponent />
             <SolidButton onClick={createAccount}>Create Account</SolidButton>
+            <SpacingComponent />
             <input type="submit" value="Submit" hidden={true} />
           </form>
         </>

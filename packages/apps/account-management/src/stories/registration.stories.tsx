@@ -1,6 +1,6 @@
 import React from 'react';
 import { Registration } from '../frontend/Registration/Registration';
-import { AccountCreated } from '../frontend/AccountManagement/AccountCreated';
+import { AccountCreated } from '../frontend/Registration/AccountCreated';
 import { AccountValidated } from '../frontend/AccountManagement/AccountValidated';
 import { ErrorMessage } from '../frontend/Shared/ErrorMessage';
 
