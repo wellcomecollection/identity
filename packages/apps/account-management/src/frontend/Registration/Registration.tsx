@@ -33,6 +33,7 @@ export const Registration = () => {
   const [pass, setPass] = useState<string>();
   const [valid, setValid] = useState<boolean | undefined | ''>(false);
   const [created, setCreated] = useState<boolean>(false);
+  const [consent, setConsent] = useState(false);
   const [validated, setValidated] = useState<boolean>(false);
   const [alreadyExists, setAlreadyExists] = useState(false);
   const [passQualifies, setPassQualifies] = useState(true);
@@ -55,7 +56,7 @@ export const Registration = () => {
         email &&
         passwordPolicy.test(pass || '')
     );
-  }, [firstName, lastName, email, pass]);
+  }, [firstName, lastName, email, pass, consent]);
 
   useEffect(() => {
     //determine if validated on mount
@@ -144,6 +145,19 @@ export const Registration = () => {
                 <li> 8 characters minimum</li>
               </ul>
             )}
+            <SpacingComponent />
+            <CheckboxRadio
+              type="checkbox"
+              id="T&Cs"
+              checked={consent}
+              onChange={() => setConsent(!consent)}
+              name="Terms and Conditions"
+              value={''}
+              // Need to update this component to accept more than just text
+              text={`I have read and agreed to the ${(
+                <a href="https://wellcome.org/about-us/governance/privacy-and-terms" target="_blank" rel="noopener">Privacy and Terms</a>
+              )} for Wellcome Collection.`}
+            />
             <SpacingComponent />
             <SolidButton onClick={createAccount}>Create Account</SolidButton>
             <SpacingComponent />
