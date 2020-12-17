@@ -6,8 +6,8 @@ import { AppContextProvider } from '@weco/common/views/components/AppContext/App
 import { ThemeProvider } from 'styled-components';
 import theme from '@weco/common/views/themes/default';
 
-// import '@weco/common/styles/styleguide.scss';
-import './main.scss';
+import '@weco/common/styles/styleguide.scss';
+// import './main.scss';
 
 const root = document.getElementById('root');
 
