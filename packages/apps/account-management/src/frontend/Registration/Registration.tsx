@@ -9,7 +9,7 @@ import SpacingComponent from '@weco/common/views/components/SpacingComponent/Spa
 import SectionHeader from '@weco/common/views/components/SectionHeader/SectionHeader';
 
 import { AccountCreated } from './AccountCreated';
-import { AccountValidated } from '../AccountManagement/AccountValidated';
+import { AccountValidated } from './AccountValidated';
 import { ErrorMessage } from '../Shared/ErrorMessage';
 
 const logo = 'https://identity-public-assets-stage.s3.eu-west-1.amazonaws.com/images/wellcomecollections-150x50.png';
@@ -36,7 +36,6 @@ export const Registration = () => {
   const [valid, setValid] = useState<boolean | undefined | ''>(false);
   const [created, setCreated] = useState<boolean>(false);
   const [consent, setConsent] = useState(false);
-  const [validated, setValidated] = useState<boolean>(false);
   const [alreadyExists, setAlreadyExists] = useState(false);
   const [passQualifies, setPassQualifies] = useState(true);
 
@@ -61,10 +60,6 @@ export const Registration = () => {
     );
   }, [firstName, lastName, email, pass, consent]);
 
-  useEffect(() => {
-    //determine if validated on mount
-    setValidated(false);
-  }, []);
 
   const createAccount = () => {
     if (valid) setCreated(true);
@@ -75,9 +70,7 @@ export const Registration = () => {
       <LogoContainer>
         <img src={logo} alt="Wellcome Collection Logo" />
       </LogoContainer>
-      {validated ? (
-        <AccountValidated />
-      ) : created ? (
+    {created ? (
         <AccountCreated />
       ) : (
         <>

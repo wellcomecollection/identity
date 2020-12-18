@@ -1,7 +1,7 @@
 import React from 'react';
 import { Registration } from '../frontend/Registration/Registration';
 import { AccountCreated } from '../frontend/Registration/AccountCreated';
-import { AccountValidated } from '../frontend/AccountManagement/AccountValidated';
+import { AccountValidated } from '../frontend/Registration/AccountValidated';
 import { ErrorMessage } from '../frontend/Shared/ErrorMessage';
 
 export default { title: 'Registration' };
