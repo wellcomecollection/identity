@@ -17,6 +17,7 @@ import styled from 'styled-components';
 
 // At least 8 characters, one uppercase, one lowercase and number
 const passwordPolicy = /(?=.{8,})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).*/;
+const emailTest = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 const LogoContainer = styled.div`
    {
@@ -30,6 +31,7 @@ export const Registration = () => {
   const [firstName, setFirstName] = useState<string>();
   const [lastName, setLastName] = useState<string>();
   const [email, setEmail] = useState<string>();
+  const [emailValid, setEmailValid] = useState<boolean>(true);
   const [pass, setPass] = useState<string>();
   const [valid, setValid] = useState<boolean | undefined | ''>(false);
   const [created, setCreated] = useState<boolean>(false);
@@ -41,6 +43,7 @@ export const Registration = () => {
   useEffect(() => {
     // check if email exists
     setAlreadyExists(false);
+    if(email !== '') setEmailValid(emailTest.test(email|| ''));
   }, [email]);
 
   useEffect(() => {
@@ -121,6 +124,14 @@ export const Registration = () => {
             ) : (
               <></>
             )}
+            {!emailValid ? (
+              <ErrorMessage>
+                Please enter a valid email address.
+              </ErrorMessage>
+            ) : (
+              <></>
+            )}
+
             <SpacingComponent />
             <TextInput
               placeholder=""
@@ -139,10 +150,10 @@ export const Registration = () => {
               </ErrorMessage>
             ) : (
               <ul>
-                <li>One lowercase character</li>
-                <li>One uppercase character</li>
-                <li>One number</li>
-                <li> 8 characters minimum</li>
+                <li className="font-wb font-size-6">One lowercase character</li>
+                <li className="font-wb font-size-6">One uppercase character</li>
+                <li className="font-wb font-size-6">One number</li>
+                <li className="font-wb font-size-6">8 characters minimum</li>
               </ul>
             )}
             <SpacingComponent />
@@ -155,7 +166,9 @@ export const Registration = () => {
               value={''}
               // Need to update this component to accept more than just text
               text={`I have read and agreed to the ${(
-                <a href="https://wellcome.org/about-us/governance/privacy-and-terms" target="_blank" rel="noopener">Privacy and Terms</a>
+                <a href="https://wellcome.org/about-us/governance/privacy-and-terms" target="_blank" rel="noopener">
+                  Privacy and Terms
+                </a>
               )} for Wellcome Collection.`}
             />
             <SpacingComponent />
