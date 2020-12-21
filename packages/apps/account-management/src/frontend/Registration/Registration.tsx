@@ -3,12 +3,13 @@ import React, { useState, useEffect } from 'react';
 import { SolidButton } from '@weco/common/views/components/ButtonSolid/ButtonSolid';
 // @ts-ignore
 import TextInput from '@weco/common/views/components/TextInput/TextInput';
-import CheckboxRadio from '@weco/common/views/components/CheckboxRadio/CheckboxRadio';
 import SpacingComponent from '@weco/common/views/components/SpacingComponent/SpacingComponent';
 import EyeIcon from '@weco/common/icons/components/Eye';
 import AllyVisual from '@weco/common/icons/components/A11yVisual';
 import { AccountCreated } from './AccountCreated';
 import { ErrorMessage } from '../Shared/ErrorMessage';
+import CheckboxRadio from '../Shared/CheckBoxLabel';
+
 
 const logo = 'https://identity-public-assets-stage.s3.eu-west-1.amazonaws.com/images/wellcomecollections-150x50.png';
 import styled from 'styled-components';
@@ -163,12 +164,9 @@ export const Registration = () => {
               onChange={() => setConsent(!consent)}
               name="Terms and Conditions"
               value={''}
-              // Need to update this component to accept more than just text
-              text={`I have read and agreed to the ${(
-                <a href="https://wellcome.org/about-us/governance/privacy-and-terms" target="_blank" rel="noopener">
+              text={`I have read and agreed to the <a href="https://wellcome.org/about-us/governance/privacy-and-terms" target="_blank" rel="noopener">
                   Privacy and Terms
-                </a>
-              )} for Wellcome Collection.`}
+                </a> for Wellcome Collection.`}
             />
             <SpacingComponent />
             <SolidButton onClick={createAccount}>Create Account</SolidButton>
