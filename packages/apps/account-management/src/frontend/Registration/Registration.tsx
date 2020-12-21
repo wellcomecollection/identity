@@ -5,11 +5,9 @@ import { SolidButton } from '@weco/common/views/components/ButtonSolid/ButtonSol
 import TextInput from '@weco/common/views/components/TextInput/TextInput';
 import CheckboxRadio from '@weco/common/views/components/CheckboxRadio/CheckboxRadio';
 import SpacingComponent from '@weco/common/views/components/SpacingComponent/SpacingComponent';
-// @ts-ignore
-import SectionHeader from '@weco/common/views/components/SectionHeader/SectionHeader';
-
+import EyeIcon from '@weco/common/icons/components/Eye';
+import AllyVisual from '@weco/common/icons/components/A11yVisual';
 import { AccountCreated } from './AccountCreated';
-import { AccountValidated } from './AccountValidated';
 import { ErrorMessage } from '../Shared/ErrorMessage';
 
 const logo = 'https://identity-public-assets-stage.s3.eu-west-1.amazonaws.com/images/wellcomecollections-150x50.png';
@@ -27,6 +25,16 @@ const LogoContainer = styled.div`
   }
 `;
 
+const PasswordFieldWrapper = styled.div`
+  display: grid;
+`;
+const IconWrapper = styled.div`
+  height: 30px;
+  width: 30px;
+  justify-self: end;
+  transform: translate(-10px, -40px);
+`;
+
 export const Registration = () => {
   const [firstName, setFirstName] = useState<string>();
   const [lastName, setLastName] = useState<string>();
@@ -38,11 +46,13 @@ export const Registration = () => {
   const [consent, setConsent] = useState(false);
   const [alreadyExists, setAlreadyExists] = useState(false);
   const [passQualifies, setPassQualifies] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     // check if email exists
     setAlreadyExists(false);
-    if(email !== '') setEmailValid(emailTest.test(email|| ''));
+    if (email !== '') setEmailValid(emailTest.test(email || ''));
+    if (email === '') setEmailValid(true);
   }, [email]);
 
   useEffect(() => {
@@ -50,16 +60,9 @@ export const Registration = () => {
     pass && !passwordPolicy.test(pass || '') ? setPassQualifies(false) : setPassQualifies(true);
   }, [pass]);
 
-
   useEffect(() => {
-    setValid(
-      firstName &&
-        lastName &&
-        email &&
-        passwordPolicy.test(pass || '')
-    );
+    setValid(firstName && lastName && email && passwordPolicy.test(pass || ''));
   }, [firstName, lastName, email, pass, consent]);
-
 
   const createAccount = () => {
     if (valid) setCreated(true);
@@ -70,7 +73,7 @@ export const Registration = () => {
       <LogoContainer>
         <img src={logo} alt="Wellcome Collection Logo" />
       </LogoContainer>
-    {created ? (
+      {created ? (
         <AccountCreated />
       ) : (
         <>
@@ -100,7 +103,6 @@ export const Registration = () => {
             />
             <SpacingComponent />
             <h1 className="font-wb font-size-4"> Login Details</h1>
-
             <TextInput
               placeholder=""
               required={true}
@@ -117,25 +119,29 @@ export const Registration = () => {
             ) : (
               <></>
             )}
-            {!emailValid ? (
-              <ErrorMessage>
-                Please enter a valid email address.
-              </ErrorMessage>
-            ) : (
-              <></>
-            )}
-
+            {!emailValid ? <ErrorMessage>Please enter a valid email address.</ErrorMessage> : <></>}
             <SpacingComponent />
-            <TextInput
-              placeholder=""
-              required={true}
-              aria-label="Password"
-              label="Password"
-              value={pass}
-              setValue={(value: string) => setPass(value)}
-              type="password"
-              pattern={passwordPolicy}
-            />
+            <PasswordFieldWrapper>
+              <TextInput
+                placeholder=""
+                required={true}
+                aria-label="Password"
+                label="Password"
+                value={pass}
+                setValue={(value: string) => setPass(value)}
+                type={showPassword ? 'text' : 'password'}
+                pattern={passwordPolicy}
+                style={{width: '100%'}}
+              />
+              <IconWrapper>
+                {!showPassword ? (
+                  <EyeIcon onClick={() => setShowPassword(true)} />
+                ) : (
+                  <AllyVisual onClick={() => setShowPassword(false)} />
+                )}
+              </IconWrapper>
+            </PasswordFieldWrapper>
+
             {!passQualifies ? (
               <ErrorMessage>
                 The password you have entered does not meet the password policy. Please enter a password with at least 8
