@@ -86,7 +86,6 @@ export const Registration: React.FC = () => {
             password: pass,
           },
         });
-        console.log(res);
         switch (res.status) {
           case 200:
             setCreated(true);
