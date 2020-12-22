@@ -7,9 +7,10 @@ import SpacingComponent from '@weco/common/views/components/SpacingComponent/Spa
 import EyeIcon from '@weco/common/icons/components/Eye';
 import AllyVisual from '@weco/common/icons/components/A11yVisual';
 import { AccountCreated } from './AccountCreated';
+import { RegistrationSummaryParagraph } from './RegistrationSummaryParagraph';
 import { ErrorMessage } from '../Shared/ErrorMessage';
 import CheckboxRadio from '../Shared/CheckBoxLabel';
-
+import axios from "axios";
 
 const logo = 'https://identity-public-assets-stage.s3.eu-west-1.amazonaws.com/images/wellcomecollections-150x50.png';
 import styled from 'styled-components';
@@ -36,7 +37,7 @@ const IconWrapper = styled.div`
   transform: translate(-10px, -40px);
 `;
 
-export const Registration = () => {
+export const Registration: React.FC = () => {
   const [firstName, setFirstName] = useState<string>();
   const [lastName, setLastName] = useState<string>();
   const [email, setEmail] = useState<string>();
@@ -50,8 +51,11 @@ export const Registration = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
-    // check if email exists
-    setAlreadyExists(false);
+    // Component did mount set title of the page
+    document.title = 'Register for an account'
+  }, [])
+
+  useEffect(() => {
     if (email !== '') setEmailValid(emailTest.test(email || ''));
     if (email === '') setEmailValid(true);
   }, [email]);
@@ -65,10 +69,31 @@ export const Registration = () => {
     setValid(firstName && lastName && email && passwordPolicy.test(pass || ''));
   }, [firstName, lastName, email, pass, consent]);
 
-  const createAccount = () => {
-    if (valid) setCreated(true);
-    // Create account
+  const createAccount = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (valid) {
+      // Create Account
+      await axios({
+        method: 'post',
+        url: '/api/user/create',
+        data: {
+          firstName,
+          lastName,
+          email,
+          pass,
+        },
+      });
+
+      // check if email exists
+      setAlreadyExists(false);
+
+      // check if meets futher password policy
+      setAlreadyExists(false);
+
+      setCreated(true);
+    }
   };
+
   return (
     <div>
       <LogoContainer>
@@ -82,7 +107,8 @@ export const Registration = () => {
           <h1 className="font-wb font-size-1" style={{ textAlign: 'center' }}>
             Register
           </h1>
-          <form>
+          <RegistrationSummaryParagraph />
+          <form onSubmit={createAccount}>
             <SpacingComponent />
             <h1 className="font-wb font-size-4"> Personal Details</h1>
             <TextInput
@@ -132,7 +158,7 @@ export const Registration = () => {
                 setValue={(value: string) => setPass(value)}
                 type={showPassword ? 'text' : 'password'}
                 pattern={passwordPolicy}
-                style={{width: '100%'}}
+                style={{ width: '100%' }}
               />
               <IconWrapper>
                 {!showPassword ? (
@@ -150,10 +176,10 @@ export const Registration = () => {
               </ErrorMessage>
             ) : (
               <ul>
-                <li className="font-wb font-size-6">One lowercase character</li>
-                <li className="font-wb font-size-6">One uppercase character</li>
-                <li className="font-wb font-size-6">One number</li>
-                <li className="font-wb font-size-6">8 characters minimum</li>
+                <li className="font-hnl font-size-6">One lowercase character</li>
+                <li className="font-hnl font-size-6">One uppercase character</li>
+                <li className="font-hnl font-size-6">One number</li>
+                <li className="font-hnl font-size-6">8 characters minimum</li>
               </ul>
             )}
             <SpacingComponent />

@@ -19,7 +19,8 @@ const Wrapper = styled.div`
     margin: auto;
     background-color: #f0ede3;
     padding: 0 42px;
-    height: 100%;
+    max-height: 100%;
+    overflow: auto;
   }
 `;
 

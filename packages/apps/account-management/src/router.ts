@@ -7,6 +7,7 @@ import { config } from './config';
 import { authCallback, loginAction, logoutAction } from './routes/auth';
 import { RouteMiddleware } from './types/application';
 import { updatePassword } from './routes/api/update-password';
+import { registerUser } from './routes/api/register-user';
 
 const loginRoutes =
   process.env.NODE_ENV === 'production' || config.authMethod === 'auth0'
@@ -48,6 +49,7 @@ export const router = new TypedRouter({
   'send-user-verification': [TypedRouter.PUT, '/api/users/:user_id/send-verification', stubApi],
   'lock-user-account': [TypedRouter.PUT, '/api/users/:user_id/lock', stubApi],
   'unlock-user-account': [TypedRouter.PUT, '/api/users/:user_id/unlock', stubApi],
+  'create-user': [TypedRouter.PUT, 'api/user/create', registerUser, 'RegisterUserSchema'],
 
   // Local route overrides.
   ...loginRoutes,
