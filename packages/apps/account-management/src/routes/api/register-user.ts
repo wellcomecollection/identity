@@ -2,6 +2,7 @@ import { RouteMiddleware } from '../../types/application';
 import { RegisterUserSchema } from '../../types/schemas/register-user';
 // import axios from 'axios';
 
+// This will communicate with the backend api to make the call on our behalf.
 
 export const registerUser: RouteMiddleware<{
   firstName: string;
