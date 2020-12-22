@@ -4,6 +4,9 @@ import { classNames } from '@weco/common/utils/classnames.js';
 import Space from '@weco/common/views/components/styled/Space';
 import Icon from '@weco/common/views/components/Icon/Icon';
 
+// NB this component is adapted from CheckboxRadio at '@weco/common/views/components/CheckboxRadio/CheckboxRadio';
+// It has been modified to allow HTML to be rendered in the label field, allowing for <a> tags to be rendered.
+
 const CheckboxRadioLabel = styled.label.attrs({
   className: classNames({
     'flex-inline flex--v-center': true,
