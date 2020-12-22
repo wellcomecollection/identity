@@ -9,7 +9,6 @@ import theme from '@weco/common/views/themes/default';
 import styled from 'styled-components';
 
 import '@weco/common/styles/styleguide.scss';
-// import './main.scss';
 
 const root = document.getElementById('root');
 
