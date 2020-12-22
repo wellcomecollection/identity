@@ -49,7 +49,7 @@ export const router = new TypedRouter({
   'send-user-verification': [TypedRouter.PUT, '/api/users/:user_id/send-verification', stubApi],
   'lock-user-account': [TypedRouter.PUT, '/api/users/:user_id/lock', stubApi],
   'unlock-user-account': [TypedRouter.PUT, '/api/users/:user_id/unlock', stubApi],
-  'create-user': [TypedRouter.PUT, 'api/user/create', registerUser, 'RegisterUserSchema'],
+  'create-user': [TypedRouter.POST, '/api/user/create', registerUser, 'RegisterUserSchema'],
 
   // Local route overrides.
   ...loginRoutes,

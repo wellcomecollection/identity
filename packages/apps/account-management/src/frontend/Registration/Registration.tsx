@@ -10,7 +10,7 @@ import { AccountCreated } from './AccountCreated';
 import { RegistrationSummaryParagraph } from './RegistrationSummaryParagraph';
 import { ErrorMessage } from '../Shared/ErrorMessage';
 import CheckboxRadio from '../Shared/CheckBoxLabel';
-import axios from "axios";
+import axios from 'axios';
 
 const logo = 'https://identity-public-assets-stage.s3.eu-west-1.amazonaws.com/images/wellcomecollections-150x50.png';
 import styled from 'styled-components';
@@ -49,11 +49,13 @@ export const Registration: React.FC = () => {
   const [alreadyExists, setAlreadyExists] = useState(false);
   const [passQualifies, setPassQualifies] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [commonPassword, setCommonPassword] = useState(false);
+  const [errorOccured, setErrorOccured] = useState(false);
 
   useEffect(() => {
     // Component did mount set title of the page
-    document.title = 'Register for an account'
-  }, [])
+    document.title = 'Register for an account';
+  }, []);
 
   useEffect(() => {
     if (email !== '') setEmailValid(emailTest.test(email || ''));
@@ -73,24 +75,39 @@ export const Registration: React.FC = () => {
     event.preventDefault();
     if (valid) {
       // Create Account
-      await axios({
-        method: 'post',
-        url: '/api/user/create',
-        data: {
-          firstName,
-          lastName,
-          email,
-          pass,
-        },
-      });
-
-      // check if email exists
-      setAlreadyExists(false);
-
-      // check if meets futher password policy
-      setAlreadyExists(false);
-
-      setCreated(true);
+      try {
+        let res = await axios({
+          method: 'POST',
+          url: '/api/user/create',
+          data: {
+            firstName,
+            lastName,
+            email,
+            password: pass,
+          },
+        });
+        console.log(res);
+        switch (res.status) {
+          case 200:
+            setCreated(true);
+            break;
+          case 201:
+            setCreated(true);
+            break;
+          case 422:
+            // If the password has flagged on the common password list by Auth0, or the user has used their own name -> prompted to change the password.
+            setCommonPassword(true);
+            break;
+          case 409:
+            // If there is a account already existing with that email address. -> Prompted to login
+            setAlreadyExists(true);
+            break;
+          default:
+            setErrorOccured(true);
+        }
+      } catch (error) {
+        console.log('Something went wrong');
+      }
     }
   };
 
@@ -99,6 +116,13 @@ export const Registration: React.FC = () => {
       <LogoContainer>
         <img src={logo} alt="Wellcome Collection Logo" />
       </LogoContainer>
+      {errorOccured ? (
+        <ErrorMessage>
+          Something went wrong.
+        </ErrorMessage>
+      ) : (
+        <></>
+      )}
       {created ? (
         <AccountCreated />
       ) : (
@@ -168,7 +192,15 @@ export const Registration: React.FC = () => {
                 )}
               </IconWrapper>
             </PasswordFieldWrapper>
-
+            {commonPassword ? (
+              <ErrorMessage>
+                The password you have entered has been flagged as a common password, or you have used your name in the
+                password. <br />
+                Please change your password and try again.
+              </ErrorMessage>
+            ) : (
+              <></>
+            )}
             {!passQualifies ? (
               <ErrorMessage>
                 The password you have entered does not meet the password policy. Please enter a password with at least 8
