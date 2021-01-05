@@ -42,7 +42,7 @@ steps:
     command:
       - ". /app/.buildkite/scripts/init-environment.sh"
       - "yarn install"
-      - "yarn run -- lerna run build"
+      - "yarn workspaces run build"
       - "/app/.buildkite/scripts/aws-lambda-packaging.sh"
     plugins:
       - wellcomecollection/aws-assume-role#v0.2.2:
