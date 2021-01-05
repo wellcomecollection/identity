@@ -1,13 +1,19 @@
 resource "auth0_client" "dummy_test" {
-  name           = "Dummy Test Client"
-  app_type       = "regular_web"
-  is_first_party = true
-
-  custom_login_page_on = false
+  name                 = "Dummy Test Client"
+  app_type             = "regular_web"
+  is_first_party       = true
+  custom_login_page_on = true
 
   callbacks = [
     "https://${local.auth0_hostname}/login/callback"
   ]
+
+  lifecycle {
+    ignore_changes = [
+      custom_login_page_preview,
+      custom_login_page
+    ]
+  }
 }
 
 resource "auth0_client" "buildkite" {
@@ -15,6 +21,12 @@ resource "auth0_client" "buildkite" {
   app_type = "non_interactive"
 
   custom_login_page_on = false
+
+  lifecycle {
+    ignore_changes = [
+      custom_login_page_preview
+    ]
+  }
 }
 
 resource "auth0_client_grant" "buildkite" {
@@ -83,6 +95,12 @@ resource "auth0_client" "api_gateway_identity" {
   app_type = "non_interactive"
 
   custom_login_page_on = false
+
+  lifecycle {
+    ignore_changes = [
+      custom_login_page_preview
+    ]
+  }
 }
 
 resource "auth0_client_grant" "api_gateway_identity" {

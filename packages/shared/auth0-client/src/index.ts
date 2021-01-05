@@ -86,8 +86,13 @@ export default class Auth0Client {
       ).catch(error => {
         if (error.response) {
           switch (error.response.status) {
-            case 400:
-              return errorResponse('Malformed or invalid Auth0 user creation request', ResponseStatus.MalformedRequest, error);
+            case 400: {
+              if (error.response.data?.message?.startsWith('PasswordStrengthError')) {
+                return errorResponse('Password does not meet Auth0 policy', ResponseStatus.PasswordTooWeak, error);
+              } else {
+                return errorResponse('Malformed or invalid Auth0 user creation request', ResponseStatus.MalformedRequest, error);
+              }
+            }
             case 409:
               return errorResponse('AUth0 user with email [' + email + '] already exists', ResponseStatus.UserAlreadyExists, error);
           }
@@ -117,7 +122,7 @@ export default class Auth0Client {
 
   private getInstanceOnBehalfOf(accessToken: string): AxiosInstance {
     return axios.create({
-      baseURL: this.apiRoot + '/api/v2',
+      baseURL: this.apiRoot,
       headers: {
         Authorization: 'Bearer ' + accessToken
       },

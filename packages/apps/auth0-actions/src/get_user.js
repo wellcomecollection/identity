@@ -73,7 +73,6 @@ function getUser(email, callback) {
             return getPatronNameMarc(found.subfields);
         } else {
             return {
-                title: '',
                 firstName: '',
                 lastName: ''
             }
@@ -81,11 +80,9 @@ function getUser(email, callback) {
     }
 
     function getPatronNameMarc(subFields) {
-        const title = subFields.find(subField => subField.tag === 'c')
         const firstName = subFields.find(subField => subField.tag === 'b')
         const lastName = subFields.find(subField => subField.tag === 'a')
         return {
-            title: title ? title.content.trim() : '',
             firstName: firstName ? firstName.content.trim() : '',
             lastName: lastName ? lastName.content.trim() : ''
         }
@@ -94,7 +91,6 @@ function getUser(email, callback) {
     function getPatronNameNonMarc(content) {
         if (!content.trim()) {
             return {
-                title: '',
                 firstName: '',
                 lastName: ''
             };
@@ -107,11 +103,6 @@ function getUser(email, callback) {
             lastName = content.substring(0, content.indexOf(','));
         }
 
-        let title = '';
-        if (content.includes('|c')) {
-            title = content.substring(content.indexOf('|c') + 2, content.indexOf('|b'));
-        }
-
         let firstName = '';
         if (content.includes('|b')) {
             firstName = content.substring(content.indexOf('|b') + 2, content.length);
@@ -120,7 +111,6 @@ function getUser(email, callback) {
         }
 
         return {
-            title: title.trim(),
             firstName: firstName.trim(),
             lastName: lastName.trim()
         };

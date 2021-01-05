@@ -1,13 +1,17 @@
-# API Gateway endpoints
+# API Gateway V1
 
-output "api_identity_v1_endpoint" {
-  value = "https://${aws_api_gateway_domain_name.identity_v1.domain_name}/"
+output "identity_v1_endpoint" {
+  value = local.identity_v1_endpoint
 }
 
-# Auth0 hostname
+output "identity_v1_docs_endpoint" {
+  value = local.identity_v1_docs_endpoint
+}
+
+# Auth0
 
 output "auth0_endpoint" {
-  value = "https://${auth0_custom_domain.identity.domain}/"
+  value = local.auth0_endpoint
 }
 
 # Auth0 clients
@@ -37,7 +41,7 @@ Client Secret: ${auth0_client.api_gateway_identity.client_secret}
 EOF
 }
 
-# Environment variables
+# Environment variables (for CI / CD)
 
 output "ci_environment_variables" {
   value = [
@@ -48,6 +52,7 @@ output "ci_environment_variables" {
     "export API_GATEWAY_ID=${aws_api_gateway_rest_api.identity.id}",
     "export API_GATEWAY_AUTHORIZER_ID=${aws_api_gateway_authorizer.token_authorizer.id}",
     "export AWS_ACCOUNT_ID=${data.aws_caller_identity.current.account_id}",
-    "export CLOUDFRONT_SWAGGER_UI_DISTRIBUTION_ID=${aws_cloudfront_distribution.swagger_ui_v1.id}"
+    "export CLOUDFRONT_SWAGGER_UI_DISTRIBUTION_ID=${aws_cloudfront_distribution.swagger_ui_v1.id}",
+    "export SMTP_PASS=${aws_iam_access_key.auth0_email.ses_smtp_password_v4}"
   ]
 }

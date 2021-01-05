@@ -5,7 +5,6 @@ export function toUser(patronRecord: PatronRecord, auth0Profile: Auth0Profile): 
   return {
     patronId: patronRecord.recordNumber,
     barcode: patronRecord.barcode,
-    title: patronRecord.title,
     firstName: patronRecord.firstName,
     lastName: patronRecord.lastName,
     email: patronRecord.email,
@@ -21,7 +20,6 @@ export function toUser(patronRecord: PatronRecord, auth0Profile: Auth0Profile): 
 interface User {
   patronId: number,
   barcode: string,
-  title: string,
   firstName: string,
   lastName: string,
   email: string,
@@ -37,7 +35,6 @@ interface User {
 export const DummyUserOne = {
   patronId: 123456,
   barcode: '654321',
-  title: 'Mr',
   firstName: 'John',
   lastName: 'Doe',
   email: 'john.doe@example.com',
@@ -52,7 +49,6 @@ export const DummyUserOne = {
 export const DummyUserTwo = {
   patronId: 654321,
   barcode: '123456',
-  title: 'Mrs',
   firstName: 'Jane',
   lastName: 'Doe',
   email: 'jane.doe@example.com',

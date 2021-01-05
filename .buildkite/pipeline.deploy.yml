@@ -1,12 +1,5 @@
 steps:
 
-  # Build the build image.
-  - name: "build image"
-    plugins:
-      - docker-compose#v3.7.0:
-          build: app
-          config: .buildkite/docker-compose.yml
-
     # Only prompt for deployment parameters if the build was triggered via the Web UI. All other
     # methods of invoking the build should provide these are environment variables to the build.
   - block: "provide deployment parameters"
@@ -25,11 +18,11 @@ steps:
     # Deploy the Auth0 scripts to Auth0. We don't want to execute the deployment every time there's
     # a push to revision control. We're only interested in doing a deployment if e.g. it was
     # manually invoked via the web UI, or a downstream job triggered the build.
-  - name: "auth0 script deployment"
+  - name: "auth0 deployment"
     if: build.source != "webhook"
     command:
       - ". /app/.buildkite/scripts/init-environment.sh"
-      - "/app/.buildkite/scripts/auth0-script-deployment.sh"
+      - "/app/.buildkite/scripts/auth0-deployment.sh"
     plugins:
       - wellcomecollection/aws-assume-role#v0.2.2:
           role: "arn:aws:iam::770700576653:role/identity-ci"

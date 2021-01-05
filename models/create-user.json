@@ -3,10 +3,6 @@
   "title": "Create User Schema",
   "type": "object",
   "properties": {
-    "title": {
-      "type": "string",
-      "minLength": 1
-    },
     "firstName": {
       "type": "string",
       "minLength": 1
@@ -23,9 +19,8 @@
       "type": "string",
       "minLength": 1
     }
-    },
+  },
   "required": [
-    "title",
     "firstName",
     "lastName",
     "email",

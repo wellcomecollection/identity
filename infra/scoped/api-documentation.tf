@@ -308,6 +308,20 @@ resource "aws_api_gateway_documentation_part" "users_post_409" {
   }
 }
 
+# 422 Unprocessable Entity
+
+resource "aws_api_gateway_documentation_part" "users_post_422" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/post-422.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users.path
+    method      = aws_api_gateway_method.users_post.http_method
+    status_code = "422"
+  }
+}
+
 # 500 Internal Server Error
 
 resource "aws_api_gateway_documentation_part" "users_post_500" {
@@ -701,6 +715,20 @@ resource "aws_api_gateway_documentation_part" "users_userid_password_put_404" {
     path        = aws_api_gateway_resource.users_userid_password.path
     method      = aws_api_gateway_method.users_userid_password_put.http_method
     status_code = "404"
+  }
+}
+
+# 422 Unprocessable Entity
+
+resource "aws_api_gateway_documentation_part" "users_userid_password_put_422" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/password/put-422.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_password.path
+    method      = aws_api_gateway_method.users_userid_password_put.http_method
+    status_code = "422"
   }
 }
 
