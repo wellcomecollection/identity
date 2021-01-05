@@ -62,7 +62,7 @@
     "@types/koa__router": "^8.0.2",
     "@types/node": "^12.12.6",
     "@types/passport-auth0": "^1.0.4",
-    "@types/react": "^16.9.35",
+    "@types/react": "16.9.56",
     "@types/react-dom": "^16.9.9",
     "@typescript-eslint/eslint-plugin": "^4.9.0",
     "@typescript-eslint/parser": "^4.9.0",
