@@ -17,7 +17,7 @@ export function configureAuth0(): void {
     done(null, user);
   });
 
-  koaPassport.deserializeUser(function (user, done) {
+  koaPassport.deserializeUser(function (user: any, done) {
     done(null, user);
   });
 }
