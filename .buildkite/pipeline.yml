@@ -16,8 +16,8 @@ steps:
     command:
       - ". /app/.buildkite/scripts/init-environment.sh"
       - "yarn install"
-      - "yarn workspaces run build"
-      - "yarn workspaces run jest --passWithNoTests"
+      - "yarn run -- lerna run build"
+      - "yarn run test"
     plugins:
       - wellcomecollection/aws-assume-role#v0.2.2:
           role: "arn:aws:iam::770700576653:role/identity-ci"
