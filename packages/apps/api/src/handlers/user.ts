@@ -1,6 +1,6 @@
 import Auth0Client from '@weco/auth0-client';
 import { Auth0Profile } from "@weco/auth0-client/lib/auth0";
-import { APIResponse, isNonBlank, ResponseStatus } from '@weco/identity-common';
+import { APIResponse, isNonBlank, ResponseStatus, truncate } from '@weco/identity-common';
 import SierraClient from '@weco/sierra-client';
 import { PatronRecord } from "@weco/sierra-client/lib/patron";
 import { Request, Response } from 'express';
@@ -51,11 +51,15 @@ export async function createUser(sierraClient: SierraClient, auth0Client: Auth0C
     if (auth0Get.status === ResponseStatus.NotFound) {
 
       // At this point the given email address isn't in use in Patron or Auth0, so create a new "barebones" Patron
-      // record for the user - this is a record which doesn't have an email address or barcode associated with it.
-      const sierraCreate: APIResponse<number> = await sierraClient.createPatronRecord(firstName, lastName, password);
+      // record for the user - this is a record which doesn't have an email address or barcode associated with it. When
+      // we set the Sierra password, we truncate it to 31 characters if necessary - Sierra will return an error if the
+      // password is greater than 31 characters.
+      const sierraCreate: APIResponse<number> = await sierraClient.createPatronRecord(firstName, lastName, truncate(password, 30));
       if (sierraCreate.status === ResponseStatus.Success) {
 
         // Create the corresponding Auth0 user, using the Patron record number from the previous step as the user ID.
+        // Note that there's no limitation on password length here - Auth0 will accept any password length, but they use
+        // bcrypt under the hood and thus only the first 72 characters are actually used to store / compare passwords.
         const auth0Create: APIResponse<Auth0Profile> = await auth0Client.createUser(sierraCreate.result, email, password);
         if (auth0Create.status === ResponseStatus.Success) {
 
@@ -111,7 +115,7 @@ export async function createUser(sierraClient: SierraClient, auth0Client: Auth0C
       } else if (sierraCreate.status === ResponseStatus.PasswordTooWeak) {
         response.status(422).json(toMessage(sierraCreate.message));
 
-        // An unhandled error occurred trying to create the Patorn record.
+        // An unhandled error occurred trying to create the Patron record.
       } else {
         response.status(500).json(toMessage(sierraCreate.message));
       }

@@ -5,7 +5,8 @@ resource "auth0_client" "dummy_test" {
   custom_login_page_on = true
 
   callbacks = [
-    "https://${local.auth0_hostname}/login/callback"
+    "https://${local.auth0_hostname}/login/callback",
+    "https://oauth.pstmn.io/v1/callback"
   ]
 
   lifecycle {
@@ -86,7 +87,8 @@ resource "auth0_client_grant" "buildkite" {
     "read:prompts",
     "update:prompts",
     "read:branding",
-    "update:branding"
+    "update:branding",
+    "read:actions"
   ]
 }
 

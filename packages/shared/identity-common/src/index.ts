@@ -4,6 +4,13 @@ export function isNonBlank(str: string): boolean {
   return !!(str && /\S/.test(str));
 }
 
+export function truncate(str: string, length: number): string {
+  if (str.length <= length) {
+    return str;
+  }
+  return str.substr(0, length);
+}
+
 export function successResponse<T>(result: T): SuccessResponse<T> {
   return {
     result: result,
