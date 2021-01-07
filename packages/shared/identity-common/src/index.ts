@@ -8,7 +8,7 @@ export function truncate(str: string, length: number): string {
   if (str.length <= length) {
     return str;
   }
-  return str.substr(0, length - 1);
+  return str.substr(0, length);
 }
 
 export function successResponse<T>(result: T): SuccessResponse<T> {
