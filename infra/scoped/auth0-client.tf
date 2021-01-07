@@ -86,7 +86,8 @@ resource "auth0_client_grant" "buildkite" {
     "read:prompts",
     "update:prompts",
     "read:branding",
-    "update:branding"
+    "update:branding",
+    "read:actions"
   ]
 }
 
