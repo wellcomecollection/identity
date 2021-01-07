@@ -54,7 +54,7 @@ export async function createUser(sierraClient: SierraClient, auth0Client: Auth0C
       // record for the user - this is a record which doesn't have an email address or barcode associated with it. When
       // we set the Sierra password, we truncate it to 31 characters if necessary - Sierra will return an error if the
       // password is greater than 31 characters.
-      const sierraCreate: APIResponse<number> = await sierraClient.createPatronRecord(firstName, lastName, truncate(password, 31));
+      const sierraCreate: APIResponse<number> = await sierraClient.createPatronRecord(firstName, lastName, truncate(password, 30));
       if (sierraCreate.status === ResponseStatus.Success) {
 
         // Create the corresponding Auth0 user, using the Patron record number from the previous step as the user ID.
