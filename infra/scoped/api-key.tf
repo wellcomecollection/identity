@@ -37,3 +37,22 @@ resource "aws_api_gateway_usage_plan_key" "dummy" {
   usage_plan_id = aws_api_gateway_usage_plan.basic.id
   key_type      = "API_KEY"
 }
+
+# Account Management System
+
+resource "aws_api_gateway_api_key" "account_management_system" {
+  name = "account management system"
+
+  tags = merge(
+    local.common_tags,
+    {
+      "Name" = "account management system"
+    }
+  )
+}
+
+resource "aws_api_gateway_usage_plan_key" "account_management_system" {
+  key_id        = aws_api_gateway_api_key.account_management_system.id
+  usage_plan_id = aws_api_gateway_usage_plan.basic.id
+  key_type      = "API_KEY"
+}
