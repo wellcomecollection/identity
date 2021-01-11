@@ -7,6 +7,10 @@ resource "auth0_client" "dummy_test" {
   is_first_party       = true
   custom_login_page_on = true
 
+  grant_types = [
+    "authorization_code"
+  ]
+
   callbacks = [
     "https://${local.auth0_hostname}/login/callback",
     "https://oauth.pstmn.io/v1/callback"
@@ -24,10 +28,13 @@ resource "auth0_client" "dummy_test" {
 # Lets the API Gateway and underlying Lambda Functions interact with the Auth0 Management API
 
 resource "auth0_client" "api_gateway_identity" {
-  name     = "Identity Lambda API (${terraform.workspace})"
-  app_type = "non_interactive"
-
+  name                 = "Identity Lambda API (${terraform.workspace})"
+  app_type             = "non_interactive"
   custom_login_page_on = false
+
+  grant_types = [
+    "client_credentials"
+  ]
 
   lifecycle {
     ignore_changes = [
@@ -51,10 +58,13 @@ resource "auth0_client_grant" "api_gateway_identity" {
 # (https://auth0.com/docs/extensions/deploy-cli-tool)
 
 resource "auth0_client" "buildkite" {
-  name     = "Buildkite (${terraform.workspace})"
-  app_type = "non_interactive"
-
+  name                 = "Buildkite (${terraform.workspace})"
+  app_type             = "non_interactive"
   custom_login_page_on = false
+
+  grant_types = [
+    "client_credentials"
+  ]
 
   lifecycle {
     ignore_changes = [
