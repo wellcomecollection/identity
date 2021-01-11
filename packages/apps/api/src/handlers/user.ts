@@ -149,6 +149,10 @@ export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0C
   }
   const email: string = request.body.email;
 
+  if (!isNonBlank(email)) {
+    response.status(400).json(toMessage("All fields must be provided and non-blank"));
+  }
+
   const sierraGet: APIResponse<PatronRecord> = await sierraClient.getPatronRecordByEmail(email);
   if (sierraGet.status === ResponseStatus.NotFound) {
     const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByEmail(email);
