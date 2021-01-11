@@ -75,6 +75,7 @@ export default class Auth0Client {
     return this.getMachineToMachineInstance().then(instance => {
       return instance.post('/users', {
         user_id: 'p' + userId, // When creating an Auth0 user, don't provide the 'auth0|' prefix, just prefix the 'p' - Auth0 will do the rest.
+        name: email, // Auth0 defaults this to the email address, but we'll provide it here anyway for consistency
         email: email,
         password: password,
         email_verified: false,
@@ -105,8 +106,9 @@ export default class Auth0Client {
   async updateUser(userId: number, email: string): Promise<APIResponse<Auth0Profile>> {
     return this.getMachineToMachineInstance().then(instance => {
       return instance.patch('/users/auth0|p' + userId, { // Automatically append the mandatory Auth0 prefix to the given user ID.
+        name: email, // Auth0 defaults this to the email address, but we'll provide it here anyway for consistency
         email: email,
-        email_verified: false,
+        verify_email: true,
         connection: 'Sierra-Connection'
       }, {
         validateStatus: status => status === 200
