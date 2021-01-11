@@ -1,5 +1,8 @@
+# Dummy client
+# For local development / testing of the login flows and stuff ¯\_(ツ)_/¯
+
 resource "auth0_client" "dummy_test" {
-  name                 = "Dummy Test Client"
+  name                 = "Dummy Test Client (${terraform.workspace})"
   app_type             = "regular_web"
   is_first_party       = true
   custom_login_page_on = true
@@ -17,8 +20,38 @@ resource "auth0_client" "dummy_test" {
   }
 }
 
+# API Gateway / Lambda
+# Lets the API Gateway and underlying Lambda Functions interact with the Auth0 Management API
+
+resource "auth0_client" "api_gateway_identity" {
+  name     = "Identity Lambda API (${terraform.workspace})"
+  app_type = "non_interactive"
+
+  custom_login_page_on = false
+
+  lifecycle {
+    ignore_changes = [
+      custom_login_page_preview
+    ]
+  }
+}
+
+resource "auth0_client_grant" "api_gateway_identity" {
+  client_id = auth0_client.api_gateway_identity.id
+  audience  = "https://${aws_ssm_parameter.auth0_domain.value}/api/v2/"
+  scope = [
+    "read:users",
+    "read:user_idp_tokens",
+    "create:users"
+  ]
+}
+
+# Buildkite
+# Lets the deployment pipeline interact with the Auth0 Management API, specifically using the Deploy CLI Tool
+# (https://auth0.com/docs/extensions/deploy-cli-tool)
+
 resource "auth0_client" "buildkite" {
-  name     = "Buildkite"
+  name     = "Buildkite (${terraform.workspace})"
   app_type = "non_interactive"
 
   custom_login_page_on = false
@@ -92,25 +125,27 @@ resource "auth0_client_grant" "buildkite" {
   ]
 }
 
-resource "auth0_client" "api_gateway_identity" {
-  name     = "Identity Lambda API (${terraform.workspace})"
-  app_type = "non_interactive"
+# Account Management System
+# Lets the Account Management System component initialise and process OAuth 2.0 / OIDC login requests through Auth0
 
-  custom_login_page_on = false
+resource "auth0_client" "account_management_system" {
+  name                 = "Account Management System (${terraform.workspace})"
+  app_type             = "regular_web"
+  is_first_party       = true
+  custom_login_page_on = true
+
+  grant_types = [
+    "authorization_code"
+  ]
+
+  callbacks = [
+    local.ams_redirect_uri
+  ]
 
   lifecycle {
     ignore_changes = [
-      custom_login_page_preview
+      custom_login_page_preview,
+      custom_login_page
     ]
   }
-}
-
-resource "auth0_client_grant" "api_gateway_identity" {
-  client_id = auth0_client.api_gateway_identity.id
-  audience  = "https://${aws_ssm_parameter.auth0_domain.value}/api/v2/"
-  scope = [
-    "read:users",
-    "read:user_idp_tokens",
-    "create:users"
-  ]
 }
