@@ -102,6 +102,37 @@ export default class Auth0Client {
     });
   }
 
+  async updateUser(userId: number, email: string): Promise<APIResponse<Auth0Profile>> {
+    return this.getMachineToMachineInstance().then(instance => {
+      return instance.patch('/users/auth0|p' + userId, { // Automatically append the mandatory Auth0 prefix to the given user ID.
+        email: email,
+        email_verified: false,
+        connection: 'Sierra-Connection'
+      }, {
+        validateStatus: status => status === 200
+      }).then(response =>
+        successResponse(toAuth0Profile(response.data))
+      ).catch(error => {
+        if (error.response) {
+          switch (error.response.status) {
+            case 400: {
+              // Unlike '[POST] /users' which returns a 409 when the email address is already in use,
+              // '[PATCH] /users/:user_id' returns a 400, so we have to test the content of the error message...
+              if (error.response.data?.message?.startsWith('The specified new email already exists')) {
+                return errorResponse('Auth0 user with email [' + email + '] already exists', ResponseStatus.UserAlreadyExists, error);
+              } else {
+                return errorResponse('Malformed or invalid Auth0 user update request', ResponseStatus.MalformedRequest, error);
+              }
+            }
+            case 404:
+              return errorResponse('Auth0 user with ID [' + userId + '] not found', ResponseStatus.NotFound, error);
+          }
+        }
+        return unhandledError(error);
+      });
+    });
+  }
+
   private async getMachineToMachineInstance(): Promise<AxiosInstance> {
     return axios.post(this.apiRoot + '/oauth/token', {
       client_id: this.clientId,

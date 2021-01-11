@@ -1,9 +1,9 @@
-import axios, {AxiosInstance} from 'axios';
+import { APIResponse, ResponseStatus, SuccessResponse } from '@weco/identity-common';
+import { equal } from 'assert';
+import axios, { AxiosInstance } from 'axios';
 import moxios from 'moxios';
 import Auth0Client from '../src';
-import {APIResponse, ResponseStatus, SuccessResponse} from '@weco/identity-common';
-import {equal} from 'assert'
-import {Auth0Profile, Auth0UserInfo} from '../src/auth0';
+import { Auth0Profile, Auth0UserInfo } from '../src/auth0';
 
 describe('auth0 client', () => {
 
@@ -243,6 +243,18 @@ describe('auth0 client', () => {
       equal(response.status, ResponseStatus.UserAlreadyExists);
     });
 
+    it('has an insecure password', async () => {
+      moxios.stubRequest('/users', {
+        status: 400,
+        response: {
+          message: 'PasswordStrengthError'
+        }
+      });
+
+      const response = await client.createUser(userId, email, password);
+      equal(response.status, ResponseStatus.PasswordTooWeak);
+    });
+
     it('receives a malformed request', async () => {
       moxios.stubRequest('/users', {
         status: 400
@@ -258,6 +270,68 @@ describe('auth0 client', () => {
       });
 
       const response = await client.createUser(userId, email, password);
+      equal(response.status, ResponseStatus.UnknownError);
+    });
+  });
+
+  describe('updates a user', () => {
+
+    it('updates the user', async () => {
+      moxios.stubRequest('/users/auth0|p' + userId, {
+        status: 200,
+        response: user
+      });
+
+      const response = await client.updateUser(userId, email);
+      equal(response.status, ResponseStatus.Success);
+
+      const result = (<SuccessResponse<Auth0Profile>>response).result;
+      equal(result.userId, 'auth0|p' + userId);
+      equal(result.email, email);
+      equal(result.emailValidated, emailValidated);
+      equal(result.locked, locked);
+      equal(result.creationDate, creationDate);
+      equal(result.lastLogin, lastLoginDate);
+      equal(result.lastLoginIp, lastLoginIp);
+      equal(result.totalLogins, totalLogins);
+    });
+
+    it('does not update the user', async () => {
+      moxios.stubRequest('/users/auth0|p' + userId, {
+        status: 400,
+        response: {
+          message: 'The specified new email already exists'
+        }
+      });
+
+      const response = await client.updateUser(userId, email);
+      equal(response.status, ResponseStatus.UserAlreadyExists);
+    });
+
+    it('receives a malformed request', async () => {
+      moxios.stubRequest('/users/auth0|p' + userId, {
+        status: 400
+      });
+
+      const response = await client.updateUser(userId, email);
+      equal(response.status, ResponseStatus.MalformedRequest);
+    });
+
+    it('does not find the user', async () => {
+      moxios.stubRequest('/users/auth0|p' + userId, {
+        status: 404
+      });
+
+      const response = await client.updateUser(userId, email);
+      equal(response.status, ResponseStatus.NotFound);
+    });
+
+    it('returns an unexpected response code', async () => {
+      moxios.stubRequest('/users/auth0|p' + userId, {
+        status: 500
+      });
+
+      const response = await client.updateUser(userId, email);
       equal(response.status, ResponseStatus.UnknownError);
     });
   });

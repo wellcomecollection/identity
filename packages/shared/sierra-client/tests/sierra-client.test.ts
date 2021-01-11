@@ -1,8 +1,8 @@
-import SierraClient from "../lib";
-import moxios from 'moxios';
-import axios, { AxiosInstance } from 'axios';
-import { equal } from 'assert'
 import { ResponseStatus, SuccessResponse } from "@weco/identity-common";
+import { equal } from 'assert';
+import axios, { AxiosInstance } from 'axios';
+import moxios from 'moxios';
+import SierraClient from "../lib";
 import { PatronRecord } from "../lib/patron";
 
 describe('sierra client', () => {
@@ -325,6 +325,48 @@ describe('sierra client', () => {
       });
 
       const response = await client.updatePatronPostCreationFields(recordNumber, email);
+      equal(response.status, ResponseStatus.UnknownError)
+    });
+  });
+
+  describe('update patron record', () => {
+
+    it('updates the record', async () => {
+      moxios.stubOnce('put', '/patrons/' + recordNumber, {
+        status: 204
+      });
+      moxios.stubOnce('get', '/patrons/' + recordNumber + '?fields=varFields,deleted', {
+        status: 200,
+        response: recordMarc
+      });
+
+      const response = await client.updatePatronRecord(recordNumber, email);
+      equal(response.status, ResponseStatus.Success)
+
+      const result = (<SuccessResponse<PatronRecord>>response).result;
+      equal(result.barcode, barcode);
+      equal(result.email, email);
+      equal(result.firstName, firstName);
+      equal(result.lastName, lastName);
+      equal(result.recordNumber, recordNumber);
+    });
+
+    it('does not update the record', async () => {
+      moxios.stubRequest('/patrons/' + recordNumber, {
+        status: 400
+      });
+
+      const response = await client.updatePatronRecord(recordNumber, email);
+      equal(response.status, ResponseStatus.MalformedRequest)
+
+    });
+
+    it('returns an unexpected response code', async () => {
+      moxios.stubRequest('/patrons/' + recordNumber, {
+        status: 500
+      });
+
+      const response = await client.updatePatronRecord(recordNumber, email);
       equal(response.status, ResponseStatus.UnknownError)
     });
   });
