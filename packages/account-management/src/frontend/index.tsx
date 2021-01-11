@@ -10,7 +10,7 @@ import styled from 'styled-components';
 
 import '@weco/common/styles/styleguide.scss';
 
-const root = document.getElementById('root');
+const root = typeof document !== 'undefined' ? document.getElementById('root') : undefined;
 
 const Wrapper = styled.div`
    {

@@ -95,10 +95,6 @@ module.exports = {
   // Add problem packages to alias.
   resolve: {
     extensions: ['.js', '.ts', '.tsx'],
-    alias: {
-      https: false,
-      http: false,
-    },
   },
 
   // We could use React from CDN.

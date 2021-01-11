@@ -14,7 +14,7 @@
     "build": "NODE_ENV=production yarn build:schema && NODE_ENV=production yarn build:ts && NODE_ENV=production yarn build:frontend",
     "build:ts": "tsc -p .",
     "build:schema": "node generate-schemas.js",
-    "build:frontend": "webpack --config webpack.frontend.js ./src/frontend/index.tsx --output-path lib/frontend/build",
+    "build:frontend": "webpack --config webpack.frontend.js --entry ./src/frontend/index.tsx --output-path lib/frontend/build",
     "storybook": "start-storybook -p 4009",
     "build-storybook": "build-storybook"
   },
@@ -90,10 +90,10 @@
     "style-loader": "^2.0.0",
     "ts-loader": "^8.0.11",
     "ts-node": "^8.6.2",
-    "typescript": "^4.0.5",
+    "typescript": "^3.9.7",
     "typescript-json-schema": "^0.42.0",
     "typescript-plugin-styled-components": "^1.4.4",
-    "webpack": "^5.10.0",
+    "webpack": "^4.45.0",
     "webpack-cli": "^4.2.0"
   }
 }
