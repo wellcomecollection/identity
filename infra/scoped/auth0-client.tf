@@ -111,6 +111,7 @@ resource "auth0_client_grant" "api_gateway_identity" {
   scope = [
     "read:users",
     "read:user_idp_tokens",
-    "create:users"
+    "create:users",
+    "update:users"
   ]
 }
