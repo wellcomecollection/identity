@@ -153,39 +153,39 @@ export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0C
     response.status(400).json(toMessage("All fields must be provided and non-blank"));
   }
 
-  const sierraGet: APIResponse<PatronRecord> = await sierraClient.getPatronRecordByEmail(email);
-  if (sierraGet.status === ResponseStatus.NotFound) {
-    const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByEmail(email);
-    if (auth0Get.status === ResponseStatus.NotFound) {
-      const sierraUpdate: APIResponse<PatronRecord> = await sierraClient.updatePatronRecord(userId, email);
-      if (sierraUpdate.status === ResponseStatus.Success) {
-        const auth0Update: APIResponse<Auth0Profile> = await auth0Client.updateUser(userId, email);
-        if (auth0Update.status === ResponseStatus.Success) {
+  const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByEmail(email);
+  if (auth0Get.status === ResponseStatus.NotFound) {
+    const sierraGet: APIResponse<PatronRecord> = await sierraClient.getPatronRecordByEmail(email);
+    if (sierraGet.status === ResponseStatus.NotFound) {
+      const auth0Update: APIResponse<Auth0Profile> = await auth0Client.updateUser(userId, email);
+      if (auth0Update.status === ResponseStatus.Success) {
+        const sierraUpdate: APIResponse<PatronRecord> = await sierraClient.updatePatronRecord(userId, email);
+        if (sierraUpdate.status === ResponseStatus.Success) {
           response.status(200).json(toUser(sierraUpdate.result, auth0Update.result));
-        } else if (auth0Update.status === ResponseStatus.NotFound) {
-          response.status(404).json(toMessage(auth0Update.message));
-        } else if (auth0Update.status === ResponseStatus.UserAlreadyExists) {
-          response.status(409).json(toMessage(auth0Update.message));
-        } else if (auth0Update.status === ResponseStatus.MalformedRequest) {
-          response.status(400).json(toMessage(auth0Update.message));
+        } else if (sierraUpdate.status === ResponseStatus.NotFound) {
+          response.status(404).json(toMessage(sierraUpdate.message));
+        } else if (sierraUpdate.status === ResponseStatus.MalformedRequest) {
+          response.status(400).json(toMessage(sierraUpdate.message));
         } else {
-          response.status(500).json(toMessage(auth0Update.message));
+          response.status(500).json(toMessage(sierraUpdate.message));
         }
-      } else if (sierraUpdate.status === ResponseStatus.NotFound) {
-        response.status(404).json(toMessage(sierraUpdate.message));
-      } else if (sierraUpdate.status === ResponseStatus.MalformedRequest) {
-        response.status(400).json(toMessage(sierraUpdate.message));
+      } else if (auth0Update.status === ResponseStatus.NotFound) {
+        response.status(404).json(toMessage(auth0Update.message));
+      } else if (auth0Update.status === ResponseStatus.UserAlreadyExists) {
+        response.status(409).json(toMessage(auth0Update.message));
+      } else if (auth0Update.status === ResponseStatus.MalformedRequest) {
+        response.status(400).json(toMessage(auth0Update.message));
       } else {
-        response.status(500).json(toMessage(sierraUpdate.message));
+        response.status(500).json(toMessage(auth0Update.message));
       }
-    } else if (auth0Get.status === ResponseStatus.Success) {
-      response.status(409).json(toMessage('Auth0 user with email [' + email + '] already exists'));
+    } else if (sierraGet.status === ResponseStatus.Success) {
+      response.status(409).json(toMessage('Patron record with email [' + email + '] already exists'));
     } else {
-      response.status(500).json(toMessage(auth0Get.message));
+      response.status(500).json(toMessage(sierraGet.message));
     }
-  } else if (sierraGet.status === ResponseStatus.Success) {
-    response.status(409).json(toMessage('Patron record with email [' + email + '] already exists'));
+  } else if (auth0Get.status === ResponseStatus.Success) {
+    response.status(409).json(toMessage('Auth0 user with email [' + email + '] already exists'));
   } else {
-    response.status(500).json(toMessage(sierraGet.message));
+    response.status(500).json(toMessage(auth0Get.message));
   }
 }
