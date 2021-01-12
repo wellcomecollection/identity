@@ -9,6 +9,7 @@ import SpacingComponent from '@weco/common/views/components/SpacingComponent/Spa
 import { ProfileForm } from './ProfileForm';
 import { PasswordForm } from './PasswordForm';
 
+// TODO: Update this to prod.
 const logo = 'https://identity-public-assets-stage.s3.eu-west-1.amazonaws.com/images/wellcomecollections-150x50.png';
 import styled from 'styled-components';
 

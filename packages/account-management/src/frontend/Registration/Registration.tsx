@@ -12,6 +12,7 @@ import { ErrorMessage } from '../Shared/ErrorMessage';
 import CheckboxRadio from '../Shared/CheckBoxLabel';
 import axios from 'axios';
 
+// TODO: Update this to prod.
 const logo = 'https://identity-public-assets-stage.s3.eu-west-1.amazonaws.com/images/wellcomecollections-150x50.png';
 import styled from 'styled-components';
 
