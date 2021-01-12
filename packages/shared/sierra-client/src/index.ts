@@ -144,14 +144,14 @@ export default class SierraClient {
         if (error.response) {
           switch (error.response.status) {
             case 400:
-              return errorResponse('Malformed or invalid Patron barcode update request', ResponseStatus.MalformedRequest, error);
+              return errorResponse('Malformed or invalid Patron record update request', ResponseStatus.MalformedRequest, error);
             case 404:
               return errorResponse('Patron record with record number [' + recordNumber + '] not found', ResponseStatus.NotFound, error);
           }
         }
         return unhandledError(error);
       });
-    })
+    });
   }
 
   async deletePatronRecord(recordNumber: number): Promise<APIResponse<{}>> {
@@ -163,6 +163,28 @@ export default class SierraClient {
       }).catch(error => {
         if (error.response) {
           switch (error.response.status) {
+            case 404:
+              return errorResponse('Patron record with record number [' + recordNumber + '] not found', ResponseStatus.NotFound, error);
+          }
+        }
+        return unhandledError(error);
+      });
+    });
+  }
+
+  async updatePatronRecord(recordNumber: number, email: string): Promise<APIResponse<PatronRecord>> {
+    return this.getInstance().then(instance => {
+      return instance.put('/patrons/' + recordNumber, {
+        emails: [email]
+      }, {
+        validateStatus: status => status === 204
+      }).then(() =>
+        this.getPatronRecordByRecordNumber(recordNumber)
+      ).catch(error => {
+        if (error.response) {
+          switch (error.response.status) {
+            case 400:
+              return errorResponse('Malformed or invalid Patron record update request', ResponseStatus.MalformedRequest, error);
             case 404:
               return errorResponse('Patron record with record number [' + recordNumber + '] not found', ResponseStatus.NotFound, error);
           }
