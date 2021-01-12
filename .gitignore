@@ -239,3 +239,6 @@ override.tf.json
 /.buildkite/build
 /lambda/**/*.zip
 /packages/**/lib
+
+# Mac OS DS Store files
+.DS_Store
