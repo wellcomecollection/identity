@@ -28,3 +28,13 @@ output "wellcomecollection_org_ses_dkim_tokens" {
     }
   ]
 }
+
+# ECR
+
+output "repository_account_management_system" {
+  value = "https://${aws_ecr_repository.account_management_system.repository_url}"
+}
+
+output "repository_account_admin_system" {
+  value = "https://${aws_ecr_repository.account_admin_system.repository_url}"
+}

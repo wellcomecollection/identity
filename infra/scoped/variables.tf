@@ -56,3 +56,55 @@ variable "auth0_email_body_placeholder" {
 variable "auth0_html_placeholder" {
   default = "unset"
 }
+
+# AWS VPC
+
+variable "network_cidr" {
+  default = "10.0.0.0/16"
+}
+
+variable "network_azs" {
+  default = [
+    "eu-west-1a",
+    "eu-west-1b",
+    "eu-west-1c"
+  ]
+}
+
+variable "network_public_cidrs" {
+  default = [
+    "10.0.101.0/24",
+    "10.0.102.0/24",
+    "10.0.103.0/24"
+  ]
+}
+
+variable "network_private_cidrs" {
+  default = [
+    "10.0.1.0/24",
+    "10.0.2.0/24",
+    "10.0.3.0/24"
+  ]
+}
+
+# Account Management System
+
+variable "ams_image_repo" {
+  default = "770700576653.dkr.ecr.eu-west-1.amazonaws.com/identity-account-management-system"
+}
+
+variable "ams_image_tag" {
+  default = "latest"
+}
+
+variable "ams_cpu" {
+  default = 256
+}
+
+variable "ams_memory" {
+  default = 512
+}
+
+variable "ams_container_port" {
+  default = 3000
+}
