@@ -25,22 +25,6 @@ Client Secret: ${auth0_client.dummy_test.client_secret}"
 EOF
 }
 
-output "auth0_client_buildkite" {
-  value = <<EOF
-Client Name: ${auth0_client.buildkite.name}
-Client ID: ${auth0_client.buildkite.client_id}
-Client Secret: ${auth0_client.buildkite.client_secret}
-EOF
-}
-
-output "auth0_client_api_gateway_identity" {
-  value = <<EOF
-Client Name: ${auth0_client.api_gateway_identity.name}
-Client ID: ${auth0_client.api_gateway_identity.client_id}
-Client Secret: ${auth0_client.api_gateway_identity.client_secret}
-EOF
-}
-
 # Environment variables (for CI / CD)
 
 output "ci_environment_variables" {
