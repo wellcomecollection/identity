@@ -7,7 +7,7 @@
 set -o errexit
 
 function __authenticate_ecr() {
-  eval "$(aws ecr get-login --no-include-email --region eu-west-1)"
+  eval "$(aws ecr get-login --no-include-email)"
 }
 
 function __build_image() {
