@@ -25,6 +25,7 @@ const NavItemInner: ComponentType<SpaceComponentProps> = styled(Space).attrs((pr
 }))`
   z-index: 1;
   padding: 0 0.3em;
+  text-decoration: none !important;
   &:after {
     content: '';
     position: absolute;
@@ -51,25 +52,29 @@ const NavItemInner: ComponentType<SpaceComponentProps> = styled(Space).attrs((pr
     width: 100%;
   }
 `;
+
+const TabLink = styled(Link)`
+  text-decoration: none;
+`;
+
 const NavItem = ({ link, text, selected, onClick }: SelectableTextLink) => (
-  <Link {...link}>
+  <TabLink {...link}>
     <Space
       v={{
         size: 'm',
         properties: ['padding-top', 'padding-bottom'],
       }}
-      as="a"
       className={classNames({
         'plain-link': true,
         block: true,
       })}
       onClick={onClick}
     >
-      <NavItemInner as="span" h={{ size: 'm', properties: ['margin-right'] }} selected={selected}>
+      <NavItemInner h={{ size: 'm', properties: ['margin-right'] }} selected={selected}>
         {text}
       </NavItemInner>
     </Space>
-  </Link>
+  </TabLink>
 );
 
 const TabNav = ({ items }: Props): JSX.Element => {
