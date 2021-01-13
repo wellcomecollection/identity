@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 
-// @ts-ignore
-import SectionHeader from '@weco/common/views/components/SectionHeader/SectionHeader';
-// @ts-ignore
-import TabNav from '@weco/common/views/components/TabNav/TabNav';
+import TabNav from './TabNav';
 import SpacingComponent from '@weco/common/views/components/SpacingComponent/SpacingComponent';
 
 import { ProfileForm } from './ProfileForm';
@@ -14,10 +11,8 @@ const logo = 'https://identity-public-assets-stage.s3.eu-west-1.amazonaws.com/im
 import styled from 'styled-components';
 
 const LogoContainer = styled.div`
-   {
-    display: flex;
-    width: 200px;
-  }
+  display: flex;
+  width: 200px;
 `;
 
 export const AccountManagement: React.FC<{
@@ -38,8 +33,8 @@ export const AccountManagement: React.FC<{
       <>
         <TabNav
           items={[
-            { link: '#', text: 'Profile', selected: idx === 0, onClick: () => setIdx(0) },
-            { link: '#', text: 'Password', selected: idx === 1, onClick: () => setIdx(1) },
+            { link: { to: '#' }, text: 'Profile', selected: idx === 0, onClick: () => setIdx(0) },
+            { link: { to: '#' }, text: 'Password', selected: idx === 1, onClick: () => setIdx(1) },
           ]}
         />
         {idx === 0 ? (
