@@ -11,7 +11,7 @@ function __authenticate_ecr() {
 }
 
 function __build_image() {
-  docker build -f packages/account-management/Dockerfile -t identity-account-management-system packages/account-management/
+  docker build -f /app/packages/account-management/Dockerfile -t identity-account-management-system /app/packages/account-management/
 }
 
 function __tag_image() {
