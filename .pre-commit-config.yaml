@@ -17,6 +17,7 @@
     - id: trailing-whitespace
       exclude: ^infra/scoped/assets/swagger-ui
     - id: check-json
+      exclude: ^infra/scoped/task-definitions
     - id: check-yaml
 
 - repo: https://github.com/detailyang/pre-commit-shell.git
