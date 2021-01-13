@@ -32,7 +32,7 @@ resource "aws_ecs_service" "account_management_system" {
   task_definition = aws_ecs_task_definition.account_management_system.arn
 
   launch_type   = "FARGATE"
-  desired_count = 1
+  desired_count = var.ams_instance_count
 
   network_configuration {
     subnets = [
