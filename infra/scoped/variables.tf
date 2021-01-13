@@ -89,10 +89,6 @@ variable "network_private_cidrs" {
 
 # Account Management System
 
-variable "ams_image_repo" {
-  default = "770700576653.dkr.ecr.eu-west-1.amazonaws.com/identity-account-management-system"
-}
-
 variable "ams_image_tag" {
   default = "latest"
 }
@@ -107,4 +103,18 @@ variable "ams_memory" {
 
 variable "ams_container_port" {
   default = 3000
+}
+
+variable "ams_instance_count" {
+  default = 1
+}
+
+# Fluent Bit
+
+variable "fluent_bit_image_repo" {
+  default = "760097843905.dkr.ecr.eu-west-1.amazonaws.com/uk.ac.wellcome/fluentbit"
+}
+
+variable "fluent_bit_image_tag" {
+  default = "2ccd2c68f38aa77a8ac1a32fe3ea54bbbd397a38"
 }

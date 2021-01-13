@@ -101,3 +101,91 @@ data "aws_iam_policy_document" "s3_swagger_ui_policy_v1" {
     ]
   }
 }
+
+# ECS
+
+resource "aws_iam_role" "ecs_task_role" {
+  name               = "identity-ecs-task-role-${terraform.workspace}"
+  assume_role_policy = data.aws_iam_policy_document.ecs_task_policy.json
+
+  tags = merge(
+    local.common_tags,
+    {
+      "Name" = "identity-ecs-task-role-${terraform.workspace}"
+    }
+  )
+}
+
+data "aws_iam_policy_document" "ecs_task_policy" {
+  statement {
+    actions = [
+      "sts:AssumeRole",
+    ]
+
+    principals {
+      type        = "Service"
+      identifiers = ["ecs-tasks.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role" "ecs_execution_role" {
+  name               = "identity-ecs-execution-role-${terraform.workspace}"
+  assume_role_policy = data.aws_iam_policy_document.ecs_task_policy.json
+
+  tags = merge(
+    local.common_tags,
+    {
+      "Name" = "identity-ecs-execution-role-${terraform.workspace}"
+    }
+  )
+}
+
+resource "aws_iam_role_policy" "ecs_execution_policy" {
+  role   = aws_iam_role.ecs_execution_role.name
+  policy = data.aws_iam_policy_document.ecs_execution_policy_document.json
+}
+
+data "aws_iam_policy_document" "ecs_execution_policy_document" {
+  statement {
+    actions = [
+      "ecr:GetAuthorizationToken",
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:BatchGetImage",
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+    ]
+
+    resources = [
+      "*",
+    ]
+  }
+
+  statement {
+    actions = [
+      "ssm:GetParameters",
+    ]
+
+    resources = [
+      "arn:aws:ssm:eu-west-1:${data.aws_caller_identity.current.account_id}:parameter/aws/reference/secretsmanager/shared/logging/es_user",
+      "arn:aws:ssm:eu-west-1:${data.aws_caller_identity.current.account_id}:parameter/aws/reference/secretsmanager/shared/logging/es_port",
+      "arn:aws:ssm:eu-west-1:${data.aws_caller_identity.current.account_id}:parameter/aws/reference/secretsmanager/shared/logging/es_pass",
+      "arn:aws:ssm:eu-west-1:${data.aws_caller_identity.current.account_id}:parameter/aws/reference/secretsmanager/shared/logging/es_host"
+    ]
+  }
+
+  statement {
+    actions = [
+      "secretsmanager:GetSecretValue",
+    ]
+
+    resources = [
+      "arn:aws:secretsmanager:eu-west-1:${data.aws_caller_identity.current.account_id}:secret:shared/logging/es_user*",
+      "arn:aws:secretsmanager:eu-west-1:${data.aws_caller_identity.current.account_id}:secret:shared/logging/es_port*",
+      "arn:aws:secretsmanager:eu-west-1:${data.aws_caller_identity.current.account_id}:secret:shared/logging/es_pass*",
+      "arn:aws:secretsmanager:eu-west-1:${data.aws_caller_identity.current.account_id}:secret:shared/logging/es_host*"
+    ]
+  }
+}

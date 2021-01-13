@@ -13,11 +13,11 @@ function __deploy_updated_service() {
   )
 
   log_definition=$(echo "${task_definition}" |
-    jq '.containerDefinitions[] | select(.name == "log_router")'
+    jq '.containerDefinitions[] | select(.name == "fluentbit-log-router")'
   )
 
   app_definition=$(echo "${task_definition}" |
-    jq --arg environment "${DEPLOY_ENVIRONMENT}" '.containerDefinitions[] | select(.name == "identity-account-management-system-" + $environment)'
+    jq '.containerDefinitions[] | select(.name == "account-management-system")'
   )
 
   app_definition=$(echo "${app_definition}" |
