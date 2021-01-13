@@ -4,7 +4,8 @@ resource "auth0_connection" "sierra" {
 
   enabled_clients = [
     auth0_client.api_gateway_identity.id, # Required to allow the Lambda API client credentials to operate on the connection
-    auth0_client.dummy_test.id
+    auth0_client.dummy_test.id,
+    auth0_client.account_management_system.id
   ]
 
   options {

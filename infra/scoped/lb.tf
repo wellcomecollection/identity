@@ -56,7 +56,18 @@ resource "aws_alb_target_group" "account_management_system" {
   vpc_id      = aws_vpc.main.id
   target_type = "ip"
   protocol    = "HTTP"
-  port        = 80
+  port        = var.ams_container_port
+
+  health_check {
+    enabled             = true
+    path                = "/"
+    protocol            = "HTTP"
+    healthy_threshold   = 3
+    unhealthy_threshold = 3
+    matcher             = 302
+    port                = var.ams_container_port
+    interval            = 10
+  }
 
   tags = merge(
     local.common_tags,

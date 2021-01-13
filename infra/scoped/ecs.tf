@@ -46,11 +46,23 @@ module "ams_container_definition" {
 
   port_mappings = [{
     containerPort = var.ams_container_port
-    hostPort      = 80
+    hostPort      = var.ams_container_port
     protocol      = "tcp"
   }]
 
+  environment = {
+    "KOA_SESSION_KEYS" : random_password.ams_koa_session_key.result,
+    "AUTH0_DOMAIN" : local.auth0_hostname,
+    "AUTH0_CLIENT_ID" : auth0_client.account_management_system.id,
+    "AUTH0_CLIENT_SECRET" : auth0_client.account_management_system.client_secret,
+    "AUTH0_CALLBACK_URL" : local.ams_redirect_uri
+  }
+
   log_configuration = module.ams_log_router_container.container_log_configuration
+}
+
+resource "random_password" "ams_koa_session_key" {
+  length = 32
 }
 
 module "ams_task_definition" {

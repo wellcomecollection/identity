@@ -15,6 +15,9 @@ terraform {
     external = {
       source = "hashicorp/external"
     }
+    random = {
+      source = "hashicorp/random"
+    }
   }
 }
 
@@ -43,4 +46,8 @@ provider "auth0" {
 
 provider "external" {
   version = "~> 2.0.0" # Any non-beta version >= 2.0.0 and <2.1.0, i.e. 2.0.X
+}
+
+provider "random" {
+  version = "~> 3.0.0" # Any non-beta version >= 3.0.0 and <3.1.0, i.e. 3.0.X
 }
