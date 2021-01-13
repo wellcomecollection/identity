@@ -2,6 +2,8 @@ import React from 'react';
 import { render } from 'react-dom';
 import { Registration } from './Registration/Registration';
 import { AccountValidated } from './Registration/AccountValidated';
+import { LinkExpired } from './Registration/LinkExpired';
+
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { AppContextProvider } from '@weco/common/views/components/AppContext/AppContext';
 import { ThemeProvider } from 'styled-components';
@@ -31,6 +33,7 @@ if (root) {
             <Switch>
               <Route exact path="/register" component={Registration} />
               <Route exact path="/validated" component={AccountValidated} />
+              <Route exact path="/expired" component={LinkExpired} />
             </Switch>
           </BrowserRouter>
         </AppContextProvider>
