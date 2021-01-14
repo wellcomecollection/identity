@@ -263,3 +263,22 @@ resource "aws_ssm_parameter" "smtp_host" {
     }
   )
 }
+
+# Networking
+
+resource "aws_ssm_parameter" "network_http_whitelist" {
+  name  = "identity-network_whitelist_http-${terraform.workspace}"
+  type  = "StringList"
+  value = var.ssm_parameter_placeholder
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+
+  tags = merge(
+    local.common_tags,
+    {
+      "Name" = "identity-network_whitelist_http-${terraform.workspace}"
+    }
+  )
+}
