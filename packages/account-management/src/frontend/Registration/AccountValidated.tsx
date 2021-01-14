@@ -29,7 +29,7 @@ export const AccountValidated = () => {
   const history = useHistory();
 
   const redirectToLogin = () => {
-    history.push('/login')
+    history.push('/')
   };
 
   return (
