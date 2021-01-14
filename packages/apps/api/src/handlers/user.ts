@@ -38,6 +38,43 @@ export async function getUser(sierraClient: SierraClient, auth0Client: Auth0Clie
   response.status(200).json(toUser(sierraGet.result, auth0Get.result));
 }
 
+export async function deleteUser(
+  sierraClient: SierraClient,
+  auth0Client: Auth0Client,
+  request: Request,
+  response: Response): Promise<void> {
+
+  const userId: number = Number(request.params.user_id);
+  if (isNaN(userId)) {
+    response.status(400).json(toMessage('Invalid user ID [' + userId + ']'));
+  }
+
+  const auth0DeleteResult = await auth0Client.deleteUser(userId);
+  if (auth0DeleteResult.status != ResponseStatus.Success) {
+    if (auth0DeleteResult.status == ResponseStatus.NotFound) {
+      response.status(404).json(toMessage(auth0DeleteResult.message));
+    } else {
+      response.status(500).json(toMessage(auth0DeleteResult.message));
+    }
+
+    return;
+  }
+
+
+  const sierraDeleteResult = await sierraClient.deletePatronRecord(userId);
+  if (sierraDeleteResult.status != ResponseStatus.Success) {
+    if (sierraDeleteResult.status == ResponseStatus.NotFound) {
+      response.status(404).json(toMessage(sierraDeleteResult.message));
+    } else {
+      response.status(500).json(toMessage(sierraDeleteResult.message));
+    }
+
+    return;
+  }
+
+  response.status(204);
+}
+
 export async function createUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
 
   const firstName: string = request.body.firstName;
@@ -83,7 +120,7 @@ export async function createUser(sierraClient: SierraClient, auth0Client: Auth0C
 
   const auth0Create: APIResponse<Auth0Profile> = await auth0Client.createUser(sierraCreate.result, email, password);
   if (auth0Create.status != ResponseStatus.Success) {
-    await sierraClient.deletePatronRecord(sierraCreate.result);
+          await sierraClient.deletePatronRecord(sierraCreate.result);
     if (auth0Create.status === ResponseStatus.MalformedRequest) {
       response.status(400).json(toMessage(auth0Create.message));
     } else if (auth0Create.status === ResponseStatus.UserAlreadyExists) {

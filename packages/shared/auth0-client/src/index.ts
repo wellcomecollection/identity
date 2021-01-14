@@ -1,6 +1,10 @@
 import { APIResponse, errorResponse, ResponseStatus, successResponse, unhandledError } from '@weco/identity-common';
-import axios, { AxiosInstance } from 'axios';
+import axios, { AxiosError, AxiosInstance } from 'axios';
 import { Auth0Profile, Auth0UserInfo, toAuth0Profile, toAuth0UserInfo } from './auth0';
+
+function responseCodeIs(responseCode: number) {
+  return (status: number) => status === responseCode;
+}
 
 export default class Auth0Client {
 
@@ -14,6 +18,25 @@ export default class Auth0Client {
     this.apiAudience = apiAudience;
     this.clientId = clientId;
     this.clientSecret = clientSecret;
+  }
+
+  async deleteUser(userId: number): Promise<APIResponse<boolean>> {
+    const httpClient = await this.getMachineToMachineInstance();
+
+    return httpClient.delete(`/users/auth0|p${userId}`, { validateStatus: responseCodeIs(204), })
+      .then(_ => {
+        return successResponse(true);
+      })
+      .catch((error: AxiosError) => {
+        if (error.response) {
+          switch (error.response.status) {
+            case 404:
+              return errorResponse(`User with id "auth0|p${userId}" not found`, ResponseStatus.NotFound, error);
+          }
+        }
+
+        return unhandledError(error);
+      });
   }
 
   async validateAccessToken(accessToken: string): Promise<APIResponse<Auth0UserInfo>> {
