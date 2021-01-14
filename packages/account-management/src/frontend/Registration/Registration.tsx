@@ -7,7 +7,7 @@ import SpacingComponent from '@weco/common/views/components/SpacingComponent/Spa
 import { AccountCreated } from './AccountCreated';
 import { RegistrationSummaryParagraph } from './RegistrationSummaryParagraph';
 import { ErrorMessage } from '../Shared/ErrorMessage';
-import CheckboxRadio from '../Shared/CheckBoxLabel';
+import CheckboxRadio from '../WellcomeComponents/CheckBoxLabel';
 import axios from 'axios';
 
 // TODO: Update this to prod.
