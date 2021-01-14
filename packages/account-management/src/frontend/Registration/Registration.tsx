@@ -29,11 +29,11 @@ const LogoContainer = styled.div`
 `;
 
 export const Registration: React.FC = () => {
-  const [firstName, setFirstName] = useState<string>();
-  const [lastName, setLastName] = useState<string>();
-  const [email, setEmail] = useState<string>();
+  const [firstName, setFirstName] = useState<string | undefined>(undefined);
+  const [lastName, setLastName] = useState<string | undefined>(undefined);
+  const [email, setEmail] = useState<string | undefined>(undefined);
   const [emailValid, setEmailValid] = useState<boolean>(true);
-  const [pass, setPass] = useState<string>();
+  const [pass, setPass] = useState<string | undefined>(undefined);
   const [valid, setValid] = useState<boolean | undefined | ''>(false);
   const [created, setCreated] = useState<boolean>(false);
   const [consent, setConsent] = useState(false);
@@ -153,6 +153,9 @@ export const Registration: React.FC = () => {
               label="First name"
               value={firstName}
               setValue={(value: string) => setFirstName(value)}
+              isValid={firstName && firstName !== ''}
+              showValidity={!!valid}
+              errorMessage={'Please enter your first name'}
             />
             <SpacingComponent />
             <TextInput
@@ -162,6 +165,9 @@ export const Registration: React.FC = () => {
               label="Last name"
               value={lastName}
               setValue={(value: string) => setLastName(value)}
+              isValid={lastName || lastName === ''}
+              showValidity={!!valid}
+              errorMessage={'Please enter your last name'}
             />
             <SpacingComponent />
             <h1 className="font-wb font-size-4"> Login details</h1>
@@ -171,7 +177,7 @@ export const Registration: React.FC = () => {
               aria-label="Email Address"
               label="Email address"
               isValid={!alreadyExists && emailValid}
-              showValidity={true}
+              showValidity={!!valid}
               errorMessage={emailErrorMessage()}
               value={email}
               type="email"
@@ -183,12 +189,10 @@ export const Registration: React.FC = () => {
               setValue={(value: string) => setPass(value)}
               pattern={passwordPolicy}
               isValid={!commonPassword && passQualifies}
-              showValidity={true}
+              showValidity={!!valid}
               errorMessage={passwordErrorMessage()}
             />
-            {!passQualifies ? (
-              null
-            ) : (
+            {!passQualifies ? null : (
               <ul>
                 <li className="font-hnl font-size-6">One lowercase character</li>
                 <li className="font-hnl font-size-6">One uppercase character</li>
