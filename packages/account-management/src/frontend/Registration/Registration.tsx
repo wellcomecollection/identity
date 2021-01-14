@@ -9,7 +9,7 @@ import { RegistrationSummaryParagraph } from './RegistrationSummaryParagraph';
 import { ErrorMessage } from '../Shared/ErrorMessage';
 import CheckboxRadio from '../WellcomeComponents/CheckBoxLabel';
 import axios from 'axios';
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
 
 // TODO: Update this to prod.
 const logo = 'https://identity-public-assets-stage.s3.eu-west-1.amazonaws.com/images/wellcomecollections-150x50.png';
@@ -82,8 +82,10 @@ export const Registration: React.FC = () => {
             password: pass,
           },
         })
-          .then(response => { setCreated(true) })
-          .catch(error => {
+          .then((response) => {
+            setCreated(true);
+          })
+          .catch((error) => {
             switch (error.response.status) {
               case 400:
               case 422:
@@ -104,18 +106,34 @@ export const Registration: React.FC = () => {
     }
   };
 
+  const emailErrorMessage = () => {
+    if (alreadyExists) {
+      return `This account already exists. You can try to ${(<Link to="/">login</Link>)}`;
+    } else if (!emailValid) {
+      return 'Please enter a valid email address';
+    } else {
+      return '';
+    }
+  };
+
+  const passwordErrorMessage = () => {
+    if (commonPassword) {
+      return `The password you have entered has been flagged as a common password, or you have used your name in the
+                password.${(<br />)}
+                Please change your password and try again.`;
+    } else if (!passQualifies) {
+      return ' The password you have entered does not meet the password policy. Please enter a password with at least 8 characters, a combination of upper and lowercase letters and at least one number';
+    } else {
+      return '';
+    }
+  };
+
   return (
     <div>
       <LogoContainer>
         <img src={logo} alt="Wellcome Collection Logo" />
       </LogoContainer>
-      {errorOccured ? (
-        <ErrorMessage>
-          Something went wrong.
-        </ErrorMessage>
-      ) : (
-        <></>
-      )}
+      {errorOccured ? <ErrorMessage>Something went wrong.</ErrorMessage> : <></>}
       {created ? (
         <AccountCreated />
       ) : (
@@ -152,34 +170,24 @@ export const Registration: React.FC = () => {
               required={true}
               aria-label="Email Address"
               label="Email address"
+              isValid={!alreadyExists && emailValid}
+              showValidity={true}
+              errorMessage={emailErrorMessage()}
               value={email}
               type="email"
               setValue={(value: string) => setEmail(value)}
             />
-            {alreadyExists ? (
-              <ErrorMessage>
-                This account already exists. You can try to <Link to='/'>login</Link>
-              </ErrorMessage>
-            ) : (
-              <></>
-            )}
-            {!emailValid ? <ErrorMessage>Please enter a valid email address.</ErrorMessage> : <></>}
             <SpacingComponent />
-            <PasswordInput value={pass} setValue={(value: string) => setPass(value)} pattern={passwordPolicy} />
-            {commonPassword ? (
-              <ErrorMessage>
-                The password you have entered has been flagged as a common password, or you have used your name in the
-                password. <br />
-                Please change your password and try again.
-              </ErrorMessage>
-            ) : (
-              <></>
-            )}
+            <PasswordInput
+              value={pass}
+              setValue={(value: string) => setPass(value)}
+              pattern={passwordPolicy}
+              isValid={!commonPassword && passQualifies}
+              showValidity={true}
+              errorMessage={passwordErrorMessage()}
+            />
             {!passQualifies ? (
-              <ErrorMessage>
-                The password you have entered does not meet the password policy. Please enter a password with at least 8
-                characters, a combination of upper and lowercase letters and at least one number.
-              </ErrorMessage>
+              null
             ) : (
               <ul>
                 <li className="font-hnl font-size-6">One lowercase character</li>
