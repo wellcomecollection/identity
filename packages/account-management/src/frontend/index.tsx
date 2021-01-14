@@ -3,6 +3,8 @@ import { render } from 'react-dom';
 import { Registration } from './Registration/Registration';
 import { AccountValidated } from './Registration/AccountValidated';
 import { AccountManagement } from './AccountManagement/AccountManagement';
+import { ErrorPage } from './Shared/ErrorPage';
+
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { AppContextProvider } from '@weco/common/views/components/AppContext/AppContext';
 import { ThemeProvider } from 'styled-components';
@@ -40,6 +42,7 @@ if (root) {
                   libraryCardNumber="123456"
                 />
               </Route>
+              <Route exact path="/error" component={ErrorPage}/>
             </Switch>
           </BrowserRouter>
         </AppContextProvider>
