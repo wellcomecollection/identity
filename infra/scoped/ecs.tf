@@ -113,6 +113,8 @@ data "template_file" "account_management_system" {
     auth0_callback_url  = local.ams_redirect_uri
     fluent_bit_repo     = var.fluent_bit_image_repo
     fluent_bit_tag      = var.fluent_bit_image_tag
+    api_base_url        = local.identity_v1_endpoint
+    api_key             = aws_api_gateway_api_key.account_management_system.value
   }
 }
 

@@ -29,6 +29,14 @@
       {
         "name": "AUTH0_CALLBACK_URL",
         "value": "${auth0_callback_url}"
+      },
+      {
+        "name": "API_BASE_URL",
+        "value": "${api_base_url}"
+      },
+      {
+        "name": "API_KEY",
+        "value": "${api_key}"
       }
     ],
     "logConfiguration": {
