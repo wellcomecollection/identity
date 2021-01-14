@@ -29,11 +29,11 @@ const LogoContainer = styled.div`
 `;
 
 export const Registration: React.FC = () => {
-  const [firstName, setFirstName] = useState<string | undefined>(undefined);
-  const [lastName, setLastName] = useState<string | undefined>(undefined);
-  const [email, setEmail] = useState<string | undefined>(undefined);
+  const [firstName, setFirstName] = useState<string>();
+  const [lastName, setLastName] = useState<string>();
+  const [email, setEmail] = useState<string>();
   const [emailValid, setEmailValid] = useState<boolean>(true);
-  const [pass, setPass] = useState<string | undefined>(undefined);
+  const [pass, setPass] = useState<string>();
   const [valid, setValid] = useState<boolean | undefined | ''>(false);
   const [created, setCreated] = useState<boolean>(false);
   const [consent, setConsent] = useState(false);
@@ -108,7 +108,7 @@ export const Registration: React.FC = () => {
 
   const emailErrorMessage = () => {
     if (alreadyExists) {
-      return `This account already exists. You can try to ${(<Link to="/">login</Link>)}`;
+      return `This account already exists. You can try to ${<Link to="/">login</Link>}`
     } else if (!emailValid) {
       return 'Please enter a valid email address';
     } else {
@@ -177,7 +177,7 @@ export const Registration: React.FC = () => {
               aria-label="Email Address"
               label="Email address"
               isValid={!alreadyExists && emailValid}
-              showValidity={!!valid}
+              showValidity={true}
               errorMessage={emailErrorMessage()}
               value={email}
               type="email"
@@ -189,10 +189,10 @@ export const Registration: React.FC = () => {
               setValue={(value: string) => setPass(value)}
               pattern={passwordPolicy}
               isValid={!commonPassword && passQualifies}
-              showValidity={!!valid}
+              showValidity={true}
               errorMessage={passwordErrorMessage()}
             />
-            {!passQualifies ? null : (
+            {!passQualifies && (
               <ul>
                 <li className="font-hnl font-size-6">One lowercase character</li>
                 <li className="font-hnl font-size-6">One uppercase character</li>
