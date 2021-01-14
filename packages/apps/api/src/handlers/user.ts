@@ -211,13 +211,15 @@ export async function changePassword(sierraClient: SierraClient, auth0Client: Au
       response.status(404).json(toMessage(sierraUpdate.message));
     } else if (sierraUpdate.status === ResponseStatus.MalformedRequest) {
       response.status(400).json(toMessage(sierraUpdate.message));
+    } else if (sierraUpdate.status === ResponseStatus.PasswordTooWeak) {
+      response.status(422).json(toMessage(sierraUpdate.message));
     } else {
       response.status(500).json(toMessage(sierraUpdate.message));
     }
   } else if (auth0Update.status === ResponseStatus.NotFound) {
     response.status(404).json(toMessage(auth0Update.message));
-  } else if (auth0Update.status === ResponseStatus.UserAlreadyExists) {
-    response.status(409).json(toMessage(auth0Update.message));
+  } else if (auth0Update.status === ResponseStatus.PasswordTooWeak) {
+    response.status(422).json(toMessage(auth0Update.message));
   } else if (auth0Update.status === ResponseStatus.MalformedRequest) {
     response.status(400).json(toMessage(auth0Update.message));
   } else {
