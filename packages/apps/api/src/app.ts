@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import express, { Application, Request, Response } from 'express';
 import { validateCredentials } from './handlers/auth';
-import {changePassword, createUser, getUser, updateUser} from './handlers/user';
+import { changePassword, createUser, getUser, updateUser } from './handlers/user';
 import { DummyUserOne, DummyUserTwo } from './models/user';
 
 export default createApplication();
