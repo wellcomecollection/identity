@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
 
 import { SolidButton } from '@weco/common/views/components/ButtonSolid/ButtonSolid';
-// @ts-ignore
-import TextInput from '@weco/common/views/components/TextInput/TextInput';
+import TextInput from '../WellcomeComponents/TextInput';
 import SpacingComponent from '@weco/common/views/components/SpacingComponent/SpacingComponent';
 import { AccountCreated } from './AccountCreated';
 import { RegistrationSummaryParagraph } from './RegistrationSummaryParagraph';
 import { ErrorMessage } from '../Shared/ErrorMessage';
 import CheckboxRadio from '../WellcomeComponents/CheckBoxLabel';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
 
 // TODO: Update this to prod.
 const logo = 'https://identity-public-assets-stage.s3.eu-west-1.amazonaws.com/images/wellcomecollections-150x50.png';
@@ -108,7 +106,7 @@ export const Registration: React.FC = () => {
 
   const emailErrorMessage = () => {
     if (alreadyExists) {
-      return `This account already exists. You can try to ${<Link to="/">login</Link>}`
+      return `This account already exists. You can try to <a href="/">login</a>`;
     } else if (!emailValid) {
       return 'Please enter a valid email address';
     } else {
@@ -147,31 +145,34 @@ export const Registration: React.FC = () => {
             <SpacingComponent />
             <h1 className="font-wb font-size-4"> Personal details</h1>
             <TextInput
+              id="firstname"
               placeholder=""
               required={true}
               aria-label="First Name"
               label="First name"
               value={firstName}
               setValue={(value: string) => setFirstName(value)}
-              isValid={firstName && firstName !== ''}
+              isValid={!!(firstName && firstName !== '')}
               showValidity={!!valid}
               errorMessage={'Please enter your first name'}
             />
             <SpacingComponent />
             <TextInput
+              id="lastname"
               placeholder=""
               required={true}
               aria-label="Last name"
               label="Last name"
               value={lastName}
               setValue={(value: string) => setLastName(value)}
-              isValid={lastName || lastName === ''}
+              isValid={!!(lastName || lastName === '')}
               showValidity={!!valid}
               errorMessage={'Please enter your last name'}
             />
             <SpacingComponent />
             <h1 className="font-wb font-size-4"> Login details</h1>
             <TextInput
+              id="email"
               placeholder=""
               required={true}
               aria-label="Email Address"
