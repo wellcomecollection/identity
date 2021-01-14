@@ -127,7 +127,7 @@ export const Registration: React.FC = () => {
           <RegistrationSummaryParagraph />
           <form onSubmit={createAccount}>
             <SpacingComponent />
-            <h1 className="font-wb font-size-4"> Personal Details</h1>
+            <h1 className="font-wb font-size-4"> Personal details</h1>
             <TextInput
               placeholder=""
               required={true}
@@ -146,7 +146,7 @@ export const Registration: React.FC = () => {
               setValue={(value: string) => setLastName(value)}
             />
             <SpacingComponent />
-            <h1 className="font-wb font-size-4"> Login Details</h1>
+            <h1 className="font-wb font-size-4"> Login details</h1>
             <TextInput
               placeholder=""
               required={true}
