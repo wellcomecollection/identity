@@ -34,7 +34,7 @@ export const PasswordInput: React.FC<PasswordInputProps> = (props) => {
   return (
     <PasswordFieldWrapper>
       <IconWrapper>
-        {!showPassword ? <EyeIcon onClick={toggleShowPassword} /> : <AllyVisual onClick={toggleShowPassword} />}
+        {showPassword ? <AllyVisual onClick={toggleShowPassword} /> : <EyeIcon onClick={toggleShowPassword} />}
       </IconWrapper>
       <TextInput
         placeholder=""
