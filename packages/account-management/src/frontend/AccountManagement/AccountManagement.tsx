@@ -15,12 +15,14 @@ const LogoContainer = styled.div`
   width: 200px;
 `;
 
-export const AccountManagement: React.FC<{
-  existingTitle: string;
-  existingFirstName: string;
-  existingLastName: string;
-  existingEmail: string;
-}> = ({ existingTitle, existingFirstName, existingLastName, existingEmail }) => {
+export type UserInfo = {
+  firstName: string;
+  lastName: string;
+  emailAddress: string;
+  libraryCardNumber: string;
+};
+
+export const AccountManagement: React.FC<UserInfo> = (props) => {
   const [idx, setIdx] = useState(0);
 
   return (
@@ -37,17 +39,8 @@ export const AccountManagement: React.FC<{
             { link: { to: '#' }, text: 'Password', selected: idx === 1, onClick: () => setIdx(1) },
           ]}
         />
-        {idx === 0 ? (
-          <ProfileForm
-            existingTitle={existingTitle}
-            existingFirstName={existingFirstName}
-            existingLastName={existingLastName}
-            existingEmail={existingEmail}
-          />
-        ) : (
-          <></>
-        )}
-        {idx === 1 ? <PasswordForm /> : <></>}
+        {idx === 0 && <ProfileForm {...props} />}
+        {idx === 1 && <PasswordForm />}
       </>
     </div>
   );
