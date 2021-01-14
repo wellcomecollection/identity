@@ -14,21 +14,12 @@ import '@weco/common/styles/styleguide.scss';
 const root = typeof document !== 'undefined' ? document.getElementById('root') : undefined;
 
 const Wrapper = styled.div`
-<<<<<<< HEAD
-   {
-    width: 70%;
-    margin: auto;
-    background-color: #f0ede3;
-    padding: 42px;
-  }
-=======
   width: 70%;
   margin: auto;
   background-color: #f0ede3;
   padding: 0 42px;
   max-height: 100%;
   overflow: auto;
->>>>>>> Adjust ProfileForm in line with UX design
 `;
 
 if (root) {
