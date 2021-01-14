@@ -5,9 +5,6 @@
 ########################################################
 
 set -o errexit
-# TODO: if this fails at any point a lot of things could be left in a bad state.
-
-export AWS_DEFAULT_REGION=eu-west-1
 
 function __create_alias_for_bundle() {
   local bundle_name="${1}"

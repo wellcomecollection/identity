@@ -1,0 +1,95 @@
+[
+  {
+    "name": "account-management-system",
+    "image": "${account_id}.dkr.ecr.eu-west-1.amazonaws.com/identity-account-management-system:${ams_image_tag}",
+    "essential": true,
+    "portMappings": [
+      {
+        "containerPort": ${ams_container_port},
+        "hostPort": ${ams_container_port}
+      }
+    ],
+    "environment": [
+      {
+        "name": "KOA_SESSION_KEYS",
+        "value": "${koa_session_keys}"
+      },
+      {
+        "name": "AUTH0_CLIENT_SECRET",
+        "value": "${auth0_client_secret}"
+      },
+      {
+        "name": "AUTH0_DOMAIN",
+        "value": "${auth0_domain}"
+      },
+      {
+        "name": "AUTH0_CLIENT_ID",
+        "value": "${auth0_client_id}"
+      },
+      {
+        "name": "AUTH0_CALLBACK_URL",
+        "value": "${auth0_callback_url}"
+      },
+      {
+        "name": "API_BASE_URL",
+        "value": "${api_base_url}"
+      },
+      {
+        "name": "API_KEY",
+        "value": "${api_key}"
+      }
+    ],
+    "logConfiguration": {
+      "logDriver": "awsfirelens",
+      "options": {
+        "Match": "*",
+        "Name": "null"
+      }
+    }
+  },
+  {
+    "name": "fluentbit-log-router",
+    "image": "${fluent_bit_repo}:${fluent_bit_tag}",
+    "essential": true,
+    "environment": [
+      {
+        "name": "SERVICE_NAME",
+        "value": "identity-account-management-system-${environment}"
+      }
+    ],
+    "secrets": [
+      {
+        "name": "ES_HOST",
+        "valueFrom": "/aws/reference/secretsmanager/shared/logging/es_host"
+      },
+      {
+        "name": "ES_PASS",
+        "valueFrom": "/aws/reference/secretsmanager/shared/logging/es_pass"
+      },
+      {
+        "name": "ES_PORT",
+        "valueFrom": "/aws/reference/secretsmanager/shared/logging/es_port"
+      },
+      {
+        "name": "ES_USER",
+        "valueFrom": "/aws/reference/secretsmanager/shared/logging/es_user"
+      }
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-create-group": "true",
+        "awslogs-group": "identity-account-management-system-${environment}",
+        "awslogs-region": "eu-west-1",
+        "awslogs-stream-prefix": "log_router"
+      }
+    },
+    "firelensConfiguration": {
+      "type": "fluentbit",
+      "options": {
+        "config-file-type": "file",
+        "config-file-value": "/extra.conf"
+      }
+    }
+  }
+]

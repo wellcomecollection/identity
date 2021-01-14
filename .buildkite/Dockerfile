@@ -1,9 +1,11 @@
-FROM registry.access.redhat.com/ubi8/ubi-minimal:8.3
+FROM fedora:33
 LABEL maintainer="Daniel Grant <daniel.grant@digirati.com>"
 
 SHELL ["/bin/bash", "-ox", "pipefail", "-c"]
 
-RUN microdnf install git zip unzip findutils python3 python3-pip npm jq tar xz which \
+RUN dnf -y install dnf-plugins-core \
+    && dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo \
+    && dnf -y install git zip unzip findutils python3 python3-pip npm jq tar xz which docker-ce docker-ce-cli containerd.io \
     && pip3 install pre-commit awscli \
     && npm install --global auth0-deploy-cli yarn
 

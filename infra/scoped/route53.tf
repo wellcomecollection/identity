@@ -86,3 +86,34 @@ resource "aws_route53_record" "swagger_ui_v1_validation" {
   type            = each.value.type
   zone_id         = data.aws_route53_zone.identity.zone_id
 }
+
+# Account Management System
+
+resource "aws_route53_record" "account_management_system" {
+  name    = local.ams_hostname
+  type    = "A"
+  zone_id = data.aws_route53_zone.identity.id
+
+  alias {
+    evaluate_target_health = true
+    name                   = aws_lb.account_management_system.dns_name
+    zone_id                = aws_lb.account_management_system.zone_id
+  }
+}
+
+resource "aws_route53_record" "account_management_system_validation" {
+  for_each = {
+    for dvo in aws_acm_certificate.account_management_system.domain_validation_options : dvo.domain_name => {
+      name   = dvo.resource_record_name
+      record = dvo.resource_record_value
+      type   = dvo.resource_record_type
+    }
+  }
+
+  allow_overwrite = true
+  name            = each.value.name
+  records         = [each.value.record]
+  ttl             = 60
+  type            = each.value.type
+  zone_id         = data.aws_route53_zone.identity.zone_id
+}
