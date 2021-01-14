@@ -6,7 +6,7 @@
 
 set -o errexit
 
-function __deploy_updated_service() {
+function __deploy_service() {
   task_definition=$(aws ecs describe-task-definition \
       --task-definition "identity-account-management-system-${DEPLOY_ENVIRONMENT}" |
     jq '.taskDefinition | del(.taskDefinitionArn) | del(.revision) | del(.status) | del(.requiresAttributes) | del(.compatibilities)'
@@ -16,12 +16,10 @@ function __deploy_updated_service() {
     jq '.containerDefinitions[] | select(.name == "fluentbit-log-router")'
   )
 
-  app_definition=$(echo "${task_definition}" |
-    jq '.containerDefinitions[] | select(.name == "account-management-system")'
-  )
+  app_definition=$(echo "${task_definition}" | jq '.containerDefinitions[] | select(.name == "account-management-system")')
 
   app_definition=$(echo "${app_definition}" |
-    jq --arg tag "${NORMALIZED_BRANCH_NAME}" '.image = "770700576653.dkr.ecr.eu-west-1.amazonaws.com/identity-account-management-system:" + $tag'
+    jq --arg account_id "${AWS_ACCOUNT_ID}" --arg region "${AWS_DEFAULT_REGION}" --arg tag "${NORMALIZED_BRANCH_NAME}" '.image = $account_id + ".dkr.ecr." + $region + ".amazonaws.com/identity-account-management-system:" + $tag'
   )
 
   task_definition=$(echo "${task_definition}" |
@@ -39,4 +37,4 @@ function __deploy_updated_service() {
     --force-new-deployment
 }
 
-__deploy_updated_service
+__deploy_service
