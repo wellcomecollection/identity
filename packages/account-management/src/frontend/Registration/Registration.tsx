@@ -133,7 +133,7 @@ export const Registration: React.FC = () => {
       <LogoContainer>
         <img src={logo} alt="Wellcome Collection Logo" />
       </LogoContainer>
-      {errorOccured ? <ErrorMessage>Something went wrong.</ErrorMessage> : <></>}
+      {errorOccured && <ErrorMessage>Something went wrong.</ErrorMessage>}
       {created ? (
         <AccountCreated />
       ) : (
