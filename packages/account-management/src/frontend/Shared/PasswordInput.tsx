@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, ReactNode } from 'react';
 import styled from 'styled-components';
 import TextInput from '@weco/common/views/components/TextInput/TextInput';
 import EyeIcon from '@weco/common/icons/components/Eye';
@@ -23,7 +23,7 @@ type PasswordInputProps = {
   pattern?: RegExp;
   showValidity?: boolean;
   isValid?: boolean;
-  errorMessage?: any;
+  errorMessage?: string | ReactNode;
 };
 
 export const PasswordInput: React.FC<PasswordInputProps> = (props) => {
