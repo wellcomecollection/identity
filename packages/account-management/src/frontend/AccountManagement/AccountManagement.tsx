@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import TabNav from './TabNav';
+import TabNav from '../WellcomeComponents/TabNav';
 import SpacingComponent from '@weco/common/views/components/SpacingComponent/SpacingComponent';
 
 import { ProfileForm } from './ProfileForm';
