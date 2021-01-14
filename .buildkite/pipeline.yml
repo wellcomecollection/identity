@@ -69,7 +69,7 @@ steps:
             - AWS_SESSION_TOKEN
 
   # Build and push the Account Management System image
-  - name: "ams-packaging"
+  - name: "account-management-system-packaging"
     command:
       - ". /app/.buildkite/scripts/init-environment.sh"
       - "/app/.buildkite/scripts/ams-packaging.sh"
