@@ -15,7 +15,9 @@ const CheckboxRadioLabel = styled.label.attrs({
   cursor: pointer;
 `;
 
-const CheckboxRadioBoxSpan = styled.span<{ type: string }>``;
+const CheckboxRadioBoxSpan = styled.span<{ type: string }>`
+  background-color: white;
+`;
 const CheckboxRadioBox = styled(CheckboxRadioBoxSpan).attrs({
   className: classNames({
     'flex-inline flex--v-center flex--h-center relative': true,
