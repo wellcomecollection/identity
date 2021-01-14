@@ -31,6 +31,43 @@ export async function getUser(sierraClient: SierraClient, auth0Client: Auth0Clie
   }
 }
 
+export async function deleteUser(
+  sierraClient: SierraClient,
+  auth0Client: Auth0Client,
+  request: Request,
+  response: Response): Promise<void> {
+
+  const userId: number = Number(request.params.user_id);
+  if (isNaN(userId)) {
+    response.status(400).json(toMessage('Invalid user ID [' + userId + ']'));
+  }
+
+  const auth0DeleteResult = await auth0Client.deleteUser(userId);
+  if (auth0DeleteResult.status != ResponseStatus.Success) {
+    if (auth0DeleteResult.status == ResponseStatus.NotFound) {
+      response.status(404).json(toMessage(auth0DeleteResult.message));
+    } else {
+      response.status(500).json(toMessage(auth0DeleteResult.message));
+    }
+
+    return;
+  }
+
+
+  const sierraDeleteResult = await sierraClient.deletePatronRecord(userId);
+  if (sierraDeleteResult.status != ResponseStatus.Success) {
+    if (sierraDeleteResult.status == ResponseStatus.NotFound) {
+      response.status(404).json(toMessage(sierraDeleteResult.message));
+    } else {
+      response.status(500).json(toMessage(sierraDeleteResult.message));
+    }
+
+    return;
+  }
+
+  response.status(204);
+}
+
 export async function createUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
 
   const firstName: string = request.body.firstName;
@@ -85,7 +122,7 @@ export async function createUser(sierraClient: SierraClient, auth0Client: Auth0C
           // An error occurred creating the linked Auth0 user, so delete the corresponding Patron record. This isn't
           // exactly necessary, but prevent junk data from building up in Sierra - as such, we don't really care if it
           // fails. After we do this, we return a more specific error response to the caller indicating what went wrong.
-          sierraClient.deletePatronRecord(sierraCreate.result);
+          await sierraClient.deletePatronRecord(sierraCreate.result);
 
           // The request to create the Auth0 user was malformed.
           if (auth0Create.status === ResponseStatus.MalformedRequest) {
