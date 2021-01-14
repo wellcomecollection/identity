@@ -5,11 +5,14 @@ import { font, classNames } from '@weco/common/utils/classnames';
 import Space, { SpaceComponentProps } from '@weco/common/views/components/styled/Space';
 import { Link } from 'react-router-dom';
 
+// adapted from @weco/common/views/components/styled/Space
+// to work with React Router's Link instead of Nextjs' Link component
+
 export type SelectableTextLink = {
   text: string;
   link: any;
   selected: boolean;
-  onClick?: (HTMLAnchorElement) => void;
+  onClick?: (element: HTMLAnchorElement) => void;
 };
 
 type Props = {
