@@ -1,5 +1,5 @@
 import { APIResponse, ResponseStatus, SuccessResponse } from '@weco/identity-common';
-import { equal } from 'assert';
+import { equal, strictEqual } from 'assert';
 import axios, { AxiosInstance } from 'axios';
 import moxios from 'moxios';
 import Auth0Client from '../src';
@@ -25,6 +25,28 @@ describe('auth0 client', () => {
   afterEach(() => {
     // @ts-ignore
     moxios.uninstall(axios as AxiosInstance);
+  });
+
+  describe('delete user', () => {
+    it('deletes the user with given id', async () => {
+      moxios.stubRequest('/users/auth0|p' + userId, {
+        status: 204
+      });
+
+      const response = await client.deleteUser(userId);
+
+      strictEqual(response.status, ResponseStatus.Success);
+    });
+
+    it('not found on invalid user', async () => {
+      moxios.stubRequest('/users/auth0|p' + userId, {
+        status: 404
+      });
+
+      const response = await client.deleteUser(userId);
+
+      strictEqual(response.status, ResponseStatus.NotFound);
+    });
   });
 
   describe('validate access token', () => {
