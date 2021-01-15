@@ -31,7 +31,7 @@ export default class Auth0Client {
         if (error.response) {
           switch (error.response.status) {
             case 404:
-              return errorResponse(`User with id "auth0|p${userId}" not found`, ResponseStatus.NotFound, error);
+              return errorResponse('Auth0 user with ID [' + userId + '] not found', ResponseStatus.NotFound, error);
           }
         }
 
