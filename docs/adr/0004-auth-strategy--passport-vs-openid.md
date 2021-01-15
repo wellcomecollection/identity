@@ -29,11 +29,12 @@ Auth0 [recently launched](https://auth0.com/blog/auth0-s-express-openid-connect-
 - The work to implement user authentication in this project is more or less done already, and meets the customer's requirements.
 - The app has no dependency on Auth0's Passport strategy for which development is stopping. Passport integration is achieved with [koa-passport](https://github.com/rkusa/koa-passport).
 - The Node.js server uses the Koa framework, but the OpenID Connect SDK is written for Express. Express middleware is not directly compatible with Koa, although solutions to achieve compatibility do exist.
+- Passport is used to enable local development. The work that has been already done here would need looked at again, or could be lost altogether.
 
 ### In favour of OpenID Connect SDK
 
 - Based on their [examples](https://github.com/auth0/express-openid-connect/blob/master/EXAMPLES.md), Auth0's OpenID Connect SDK seems to _vastly_ reduce the amount of code necessary to achieve the standard aims of user authentication.
-- The koa-passport repo has not been updated since July 2019, and the package not published since April 2019. As it is a wrapper around the main Passport library, it is not clear if there are security implications of such a long time without updates.
+- The koa-passport repo has not been updated since July 2019, and the package not published since April 2019. As it is a wrapper around the main Passport library, it is not clear if there are security implications of such a long time without updates. If needed, the Passport dependency can be upgraded independently.
 
 ## Decision Outcome
 
