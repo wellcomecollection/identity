@@ -13,18 +13,12 @@ import axios from 'axios';
 const logo = 'https://identity-public-assets-stage.s3.eu-west-1.amazonaws.com/images/wellcomecollections-150x50.png';
 import styled from 'styled-components';
 import { PasswordInput } from '../Shared/PasswordInput';
+import { LogoContainer } from '../Shared/LogoContainer';
 
 // At least 8 characters, one uppercase, one lowercase and number
 const passwordPolicy = /(?=.{8,})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).*/;
 const emailTest = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-const LogoContainer = styled.div`
-   {
-    margin: auto;
-    padding: 42px;
-    width: 200px;
-  }
-`;
 
 export const Registration: React.FC = () => {
   const [firstName, setFirstName] = useState<string>();
