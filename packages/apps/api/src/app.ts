@@ -42,7 +42,7 @@ function registerAuthResource(app: Application): void {
     origin: process.env.API_ALLOWED_ORIGINS
   }
   app.options('/auth', cors(corsOptions));
-  app.post('/auth', cors(corsOptions), (request: Request, response: Response) => validateCredentials(sierraClient, request, response));
+  app.post('/auth', cors(corsOptions), (request: Request, response: Response) => validateCredentials(auth0Client, request, response));
 }
 
 function registerUsersResource(app: Application): void {
@@ -65,7 +65,6 @@ function registerUsersUserIdResource(app: Application): void {
   app.options('/users/:user_id', cors(corsOptions));
   app.get('/users/:user_id', cors(corsOptions), (request: Request, response: Response) => getUser(sierraClient, auth0Client, request, response));
   app.put('/users/:user_id', cors(corsOptions), (request: Request, response: Response) => updateUser(sierraClient, auth0Client, request, response));
-  app.post('/users/:user_id/auth', cors(corsOptions), (request: Request, response: Response) => authenticateUser(auth0Client, request, response));
   app.delete('/users/:user_id', cors(corsOptions), (request: Request, response: Response) => response.status(204).end());
 }
 
