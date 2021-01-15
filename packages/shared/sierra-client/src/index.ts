@@ -194,6 +194,32 @@ export default class SierraClient {
     });
   }
 
+  async updatePassword(recordNumber: number, password: string): Promise<APIResponse<PatronRecord>> {
+    return this.getInstance().then(instance => {
+      return instance.put('/patrons/' + recordNumber, {
+        pin: password
+      }, {
+        validateStatus: status => status === 204
+      }).then(() =>
+        this.getPatronRecordByRecordNumber(recordNumber)
+      ).catch(error => {
+        if (error.response) {
+          switch (error.response.status) {
+            case 400:
+              if (error.response.data?.code === 136 && error.response.data?.specificCode === 3) {
+                return errorResponse('Password does not meet Sierra policy', ResponseStatus.PasswordTooWeak, error);
+              } else {
+                return errorResponse('Malformed or invalid Patron record update request', ResponseStatus.MalformedRequest, error);
+              }
+            case 404:
+              return errorResponse('Patron record with record number [' + recordNumber + '] not found', ResponseStatus.NotFound, error);
+          }
+        }
+        return unhandledError(error);
+      });
+    });
+  }
+
   private async getInstance(): Promise<AxiosInstance> {
     return axios.post(this.apiRoot + '/token', {}, {
       auth: {

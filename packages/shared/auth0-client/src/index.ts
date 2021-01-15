@@ -135,6 +135,34 @@ export default class Auth0Client {
     });
   }
 
+  async updatePassword(userId: number, password: string): Promise<APIResponse<Auth0Profile>> {
+    return this.getMachineToMachineInstance().then(instance => {
+      return instance.patch('/users/auth0|p' + userId, {
+        password: password,
+        connection: 'Sierra-Connection'
+      }, {
+        validateStatus: status => status === 200
+      }).then(response =>
+        successResponse(toAuth0Profile(response.data))
+      ).catch(error => {
+        if (error.response) {
+          switch (error.response.status) {
+            case 400: {
+              if (error.response.data?.message?.startsWith('PasswordStrengthError')) {
+                return errorResponse('Password does not meet Auth0 policy', ResponseStatus.PasswordTooWeak, error);
+              } else {
+                return errorResponse('Malformed or invalid Auth0 user creation request', ResponseStatus.MalformedRequest, error);
+              }
+            }
+            case 404:
+              return errorResponse('Auth0 user with ID [' + userId + '] not found', ResponseStatus.NotFound, error);
+          }
+        }
+        return unhandledError(error);
+      });
+    });
+  }
+
   private async getMachineToMachineInstance(): Promise<AxiosInstance> {
     return axios.post(this.apiRoot + '/oauth/token', {
       client_id: this.clientId,
