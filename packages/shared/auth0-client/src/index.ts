@@ -1,10 +1,6 @@
-import { APIResponse, errorResponse, ResponseStatus, successResponse, unhandledError } from '@weco/identity-common';
+import { APIResponse, errorResponse, ResponseStatus, successResponse, unhandledError, responseCodeIs } from '@weco/identity-common';
 import axios, { AxiosError, AxiosInstance } from 'axios';
 import { Auth0Profile, Auth0UserInfo, toAuth0Profile, toAuth0UserInfo } from './auth0';
-
-function responseCodeIs(responseCode: number) {
-  return (status: number) => status === responseCode;
-}
 
 export default class Auth0Client {
 
