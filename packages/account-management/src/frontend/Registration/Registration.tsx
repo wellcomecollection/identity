@@ -23,12 +23,12 @@ export const Registration: React.FC = () => {
   const [email, setEmail] = useState<string>();
   const [emailValid, setEmailValid] = useState<boolean>(true);
   const [pass, setPass] = useState<string>();
-  const [valid, setValid] = useState<boolean | undefined | ''>(false);
-  const [created, setCreated] = useState<boolean>(true);
+  const [valid, setValid] = useState<boolean>(false);
+  const [created, setCreated] = useState<boolean>(false);
   const [consent, setConsent] = useState(false);
-  const [alreadyExists, setAlreadyExists] = useState(false);
+  const [alreadyExists, setAlreadyExists] = useState(true);
   const [passQualifies, setPassQualifies] = useState(true);
-  const [commonPassword, setCommonPassword] = useState(false);
+  const [commonPassword, setCommonPassword] = useState(true);
   const [errorOccured, setErrorOccured] = useState(false);
 
   useEffect(() => {
@@ -53,7 +53,7 @@ export const Registration: React.FC = () => {
   }, [pass]);
 
   useEffect(() => {
-    setValid(firstName && lastName && email && passwordPolicy.test(pass || ''));
+    setValid(!!(firstName && lastName && email && passwordPolicy.test(pass || '')));
   }, [firstName, lastName, email, pass, consent]);
 
   const createAccount = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -111,9 +111,14 @@ export const Registration: React.FC = () => {
 
   const passwordErrorMessage = () => {
     if (commonPassword) {
-      return `The password you have entered has been flagged as a common password, or you have used your name in the
-                password.${(<br />)}
-                Please change your password and try again.`;
+      return (
+        <>
+          The password you have entered has been flagged as a common password, or you have used your name in the
+          password.
+          <br />
+          Please change your password and try again.
+        </>
+      );
     } else if (!passQualifies) {
       return 'The password you have entered does not meet the password policy. Please enter a password with at least 8 characters, a combination of upper and lowercase letters and at least one number.';
     } else {
@@ -147,8 +152,8 @@ export const Registration: React.FC = () => {
               label="First name"
               value={firstName}
               setValue={(value: string) => setFirstName(value)}
-              isValid={!!(firstName && firstName !== '')}
-              showValidity={!!valid}
+              isValid={firstName !== ''}
+              showValidity={!!firstName && firstName !== ''}
               errorMessage={'Please enter your first name'}
             />
             <SpacingComponent />
@@ -160,8 +165,8 @@ export const Registration: React.FC = () => {
               label="Last name"
               value={lastName}
               setValue={(value: string) => setLastName(value)}
-              isValid={!!(lastName || lastName === '')}
-              showValidity={!!valid}
+              isValid={lastName !== ''}
+              showValidity={!!lastName && lastName !== ''}
               errorMessage={'Please enter your last name'}
             />
             <SpacingComponent />
@@ -173,7 +178,7 @@ export const Registration: React.FC = () => {
               aria-label="Email Address"
               label="Email address"
               isValid={!alreadyExists && emailValid}
-              showValidity={true}
+              showValidity={!!email && email !== ''}
               errorMessage={emailErrorMessage()}
               value={email}
               type="email"
@@ -185,7 +190,7 @@ export const Registration: React.FC = () => {
               setValue={(value: string) => setPass(value)}
               pattern={passwordPolicy}
               isValid={!commonPassword && passQualifies}
-              showValidity={true}
+              showValidity={!!pass && pass !== ''}
               errorMessage={passwordErrorMessage()}
             />
             <ul>
