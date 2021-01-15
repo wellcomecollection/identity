@@ -9,7 +9,7 @@ RUN dnf -y install dnf-plugins-core \
     && dnf clean all \
     && rm -rf /var/cache/yum \
     && pip3 install pre-commit awscli \
-    && npm install --global auth0-deploy-cli yarn
+    && npm install --global auth0-deploy-cli@6.0.0 yarn
 
 ARG TERRAFORM_VERSION=0.14.2
 ARG TERRAFORM_SHA256=6f380c0c7a846f9e0aedb98a2073d2cbd7d1e2dc0e070273f9325f1b69e668b2
