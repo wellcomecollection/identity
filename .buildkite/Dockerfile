@@ -6,6 +6,8 @@ SHELL ["/bin/bash", "-ox", "pipefail", "-c"]
 RUN dnf -y install dnf-plugins-core \
     && dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo \
     && dnf -y install git zip unzip findutils python3 python3-pip npm jq tar xz which docker-ce docker-ce-cli containerd.io \
+    && dnf clean all \
+    && rm -rf /var/cache/yum \
     && pip3 install pre-commit awscli \
     && npm install --global auth0-deploy-cli yarn
 
