@@ -56,6 +56,9 @@ export const Registration: React.FC = () => {
     setValid(!!(firstName && lastName && email && passwordPolicy.test(pass || '')));
   }, [firstName, lastName, email, pass, consent]);
 
+  const isFirstNameValid = Boolean(firstName && firstName !== '');
+  const isLastNameValid = Boolean(lastName && lastName !== '');
+
   const createAccount = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (valid) {
@@ -152,8 +155,8 @@ export const Registration: React.FC = () => {
               label="First name"
               value={firstName}
               setValue={(value: string) => setFirstName(value)}
-              isValid={firstName !== ''}
-              showValidity={!!firstName && firstName !== ''}
+              isValid={isFirstNameValid}
+              showValidity={isFirstNameValid}
               errorMessage={'Please enter your first name'}
             />
             <SpacingComponent />
@@ -165,8 +168,8 @@ export const Registration: React.FC = () => {
               label="Last name"
               value={lastName}
               setValue={(value: string) => setLastName(value)}
-              isValid={lastName !== ''}
-              showValidity={!!lastName && lastName !== ''}
+              isValid={isLastNameValid}
+              showValidity={isLastNameValid}
               errorMessage={'Please enter your last name'}
             />
             <SpacingComponent />
