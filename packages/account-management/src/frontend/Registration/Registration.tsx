@@ -28,7 +28,7 @@ export const Registration: React.FC = () => {
   const [consent, setConsent] = useState(false);
   const [alreadyExists, setAlreadyExists] = useState(true);
   const [passQualifies, setPassQualifies] = useState(true);
-  const [commonPassword, setCommonPassword] = useState(true);
+  const [commonPassword, setCommonPassword] = useState(false);
   const [errorOccured, setErrorOccured] = useState(false);
 
   useEffect(() => {
