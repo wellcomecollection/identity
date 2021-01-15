@@ -38,6 +38,22 @@ export async function getUser(sierraClient: SierraClient, auth0Client: Auth0Clie
   response.status(200).json(toUser(sierraGet.result, auth0Get.result));
 }
 
+export async function authenticateUser(auth0Client: Auth0Client, request: Request, response: Response) {
+  const email: string = request.body.email;
+  const password: string = request.body.password;
+
+  if (!isNonBlank(email) || !isNonBlank(password)) {
+    response.status(400).json(toMessage("All fields must be provided and non-blank"));
+  }
+
+  const validationResult = await auth0Client.validateUserCredentials(email, password);
+  if (validationResult.status == ResponseStatus.Success) {
+    response.sendStatus(200);
+  } else {
+    response.sendStatus(401);
+  }
+}
+
 export async function deleteUser(
   sierraClient: SierraClient,
   auth0Client: Auth0Client,
@@ -72,7 +88,7 @@ export async function deleteUser(
     return;
   }
 
-  response.status(204);
+  response.sendStatus(204);
 }
 
 export async function createUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
