@@ -1,6 +1,4 @@
 import { APIResponse, isNonBlank, ResponseStatus } from '@weco/identity-common';
-import SierraClient from '@weco/sierra-client';
-import { PatronRecord } from "@weco/sierra-client/lib/patron";
 import { Request, Response } from 'express';
 import { toMessage } from '../models/common';
 import Auth0Client from "@weco/auth0-client";
@@ -16,6 +14,8 @@ export async function validateCredentials(auth0Client: Auth0Client, request: Req
   const validationResult = await auth0Client.validateUserCredentials(email, password);
   if (validationResult.status == ResponseStatus.Success) {
     response.sendStatus(200);
+  } else if (validationResult.status == ResponseStatus.NotFound) {
+    response.sendStatus(404);
   } else {
     response.sendStatus(401);
   }
