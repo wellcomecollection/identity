@@ -1,7 +1,8 @@
 # Auth Strategy: Passport vs. OpenID Connect
 
-- Status: pending
+- Status: Approved
 - Deciders:
+  - Kelsie Caldwell @ionab
   - Stephen Fraser @stephenwf
   - Daniel Grant @danielgrant
   - Alan Russell @ajrussellaudio
@@ -38,4 +39,4 @@ Auth0 [recently launched](https://auth0.com/blog/auth0-s-express-openid-connect-
 
 ## Decision Outcome
 
-...
+Following discussion, it is decided that the project will continue to use Passport and no work to integrate the OpenID Connect SDK is currently required.
