@@ -1,4 +1,4 @@
-import { APIResponse, errorResponse, ResponseStatus, successResponse, unhandledError } from '@weco/identity-common';
+import { APIResponse, errorResponse, ResponseStatus, successResponse, unhandledError, responseCodeIs } from '@weco/identity-common';
 import axios, { AxiosInstance } from 'axios';
 import { Auth0Profile, Auth0UserInfo, toAuth0Profile, toAuth0UserInfo } from './auth0';
 
