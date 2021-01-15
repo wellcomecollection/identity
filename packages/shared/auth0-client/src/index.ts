@@ -202,7 +202,7 @@ export default class Auth0Client {
       username,
       password,
     }, {
-      validateStatus: status => status === 200
+      validateStatus: responseCodeIs(200)
     }).then(response => {
       return axios.create({
         baseURL: this.apiRoot + '/api/v2',

@@ -1,4 +1,4 @@
-import { errorResponse, isNonBlank, ResponseStatus } from '@weco/identity-common';
+import { isNonBlank, ResponseStatus } from '@weco/identity-common';
 import { Request, Response } from 'express';
 import { toMessage } from '../models/common';
 import Auth0Client from "@weco/auth0-client";
@@ -13,14 +13,13 @@ export async function validateCredentials(auth0Client: Auth0Client, request: Req
 
   const userFetchResult = await auth0Client.getUserByEmail(email);
   if (userFetchResult.status != ResponseStatus.Success) {
-    return errorResponse(userFetchResult.message, userFetchResult.status);
+    response.status(404).json(toMessage(userFetchResult.message));
+    return;
   }
 
   const validationResult = await auth0Client.validateUserCredentials(email, password);
   if (validationResult.status == ResponseStatus.Success) {
     response.sendStatus(200);
-  } else if (validationResult.status == ResponseStatus.NotFound) {
-    response.sendStatus(404);
   } else {
     response.sendStatus(401);
   }
