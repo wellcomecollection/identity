@@ -3,29 +3,20 @@ import SierraClient from '@weco/sierra-client';
 import { PatronRecord } from "@weco/sierra-client/lib/patron";
 import { Request, Response } from 'express';
 import { toMessage } from '../models/common';
+import Auth0Client from "@weco/auth0-client";
 
-export async function validateCredentials(sierraClient: SierraClient, request: Request, response: Response): Promise<void> {
-
-  const email = request.body.email;
-  const password = request.body.password;
+export async function validateCredentials(auth0Client: Auth0Client, request: Request, response: Response) {
+  const email: string = request.body.email;
+  const password: string = request.body.password;
 
   if (!isNonBlank(email) || !isNonBlank(password)) {
     response.status(400).json(toMessage("All fields must be provided and non-blank"));
   }
 
-  const sierraGet: APIResponse<PatronRecord> = await sierraClient.getPatronRecordByEmail(email);
-  if (sierraGet.status === ResponseStatus.Success) {
-    const sierraValidate: APIResponse<{}> = await sierraClient.validateCredentials(sierraGet.result.barcode, password);
-    if (sierraValidate.status === ResponseStatus.Success) {
-      response.status(200).end();
-    } else if (sierraValidate.status === ResponseStatus.InvalidCredentials) {
-      response.status(401).json(toMessage(sierraValidate.message));
-    } else {
-      response.status(500).json(toMessage(sierraValidate.message));
-    }
-  } else if (sierraGet.status === ResponseStatus.NotFound) {
-    response.status(404).json(toMessage(sierraGet.message))
+  const validationResult = await auth0Client.validateUserCredentials(email, password);
+  if (validationResult.status == ResponseStatus.Success) {
+    response.sendStatus(200);
   } else {
-    response.status(500).json(toMessage(sierraGet.message));
+    response.sendStatus(401);
   }
 }
