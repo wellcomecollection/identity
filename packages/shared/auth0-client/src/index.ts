@@ -127,12 +127,6 @@ export default class Auth0Client {
   }
 
   async validateUserCredentials(username: string, password: string) : Promise<APIResponse<boolean>> {
-    const userFetchResult = await this.getUserByEmail(username);
-
-    if (userFetchResult.status != ResponseStatus.Success) {
-      return errorResponse(userFetchResult.message, userFetchResult.status);
-    }
-
     return this.getInstanceWithCredentials(username, password)
       .then(_ => successResponse(true))
       .catch(error => {
