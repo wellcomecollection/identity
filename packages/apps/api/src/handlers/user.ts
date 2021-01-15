@@ -38,8 +38,6 @@ export async function getUser(sierraClient: SierraClient, auth0Client: Auth0Clie
   response.status(200).json(toUser(sierraGet.result, auth0Get.result));
 }
 
-
-
 export async function deleteUser(
   sierraClient: SierraClient,
   auth0Client: Auth0Client,
