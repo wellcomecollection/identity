@@ -26,6 +26,8 @@ steps:
     plugins:
       - wellcomecollection/aws-assume-role#v0.2.2:
           role: "arn:aws:iam::770700576653:role/identity-ci"
+      - ecr#v2.2.0:
+          login: true
       - docker-compose#v3.7.0:
           run: app
           config: .buildkite/docker-compose.yml
@@ -49,6 +51,8 @@ steps:
     plugins:
       - wellcomecollection/aws-assume-role#v0.2.2:
           role: "arn:aws:iam::770700576653:role/identity-ci"
+      - ecr#v2.2.0:
+          login: true
       - docker-compose#v3.7.0:
           run: app
           config: .buildkite/docker-compose.yml
@@ -73,6 +77,8 @@ steps:
     plugins:
       - wellcomecollection/aws-assume-role#v0.2.2:
           role: "arn:aws:iam::770700576653:role/identity-ci"
+      - ecr#v2.2.0:
+          login: true
       - docker-compose#v3.7.0:
           run: app
           config: .buildkite/docker-compose.yml
