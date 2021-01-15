@@ -103,6 +103,18 @@ export default class Auth0Client {
     });
   }
 
+  async validateUserCredentials(username: string, password: string) : Promise<APIResponse<boolean>> {
+    return this.getInstanceWithCredentials(username, password)
+      .then(_ => successResponse(true))
+      .catch(error => {
+        if (error.response) {
+          return errorResponse("Invalid credentials", ResponseStatus.InvalidCredentials, error);
+        }
+
+        return unhandledError(error);
+      });
+  }
+
   async updateUser(userId: number, email: string): Promise<APIResponse<Auth0Profile>> {
     return this.getMachineToMachineInstance().then(instance => {
       return instance.patch('/users/auth0|p' + userId, { // Automatically append the mandatory Auth0 prefix to the given user ID.
@@ -169,6 +181,26 @@ export default class Auth0Client {
       client_secret: this.clientSecret,
       audience: this.apiAudience,
       grant_type: 'client_credentials'
+    }, {
+      validateStatus: status => status === 200
+    }).then(response => {
+      return axios.create({
+        baseURL: this.apiRoot + '/api/v2',
+        headers: {
+          Authorization: 'Bearer ' + response.data.access_token
+        }
+      });
+    });
+  }
+
+  private getInstanceWithCredentials(username: string, password: string): Promise<AxiosInstance> {
+    return axios.post(this.apiRoot + '/oauth/token', {
+      client_id: this.clientId,
+      client_secret: this.clientSecret,
+      audience: this.apiAudience,
+      grant_type: 'password',
+      username,
+      password,
     }, {
       validateStatus: status => status === 200
     }).then(response => {
