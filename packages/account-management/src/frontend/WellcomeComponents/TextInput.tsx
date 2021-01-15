@@ -1,5 +1,5 @@
 // Converted from flow to TSX element
-import React, { forwardRef, useContext } from 'react';
+import React, { forwardRef, useContext, ReactElement } from 'react';
 import styled from 'styled-components';
 import Icon from '@weco/common/views/components/Icon/Icon';
 import { AppContext } from '@weco/common/views/components/AppContext/AppContext';
@@ -150,7 +150,7 @@ type Props = {
   pattern?: string,
   required?: boolean,
   placeholder?: string,
-  errorMessage?: any,
+  errorMessage?: string | ReactElement,
   isValid?: boolean,
   setIsValid?: (value: boolean) => void,
   showValidity?: boolean,
@@ -160,7 +160,6 @@ type Props = {
   ariaLabel?: string,
 };
 
-// $FlowFixMe (forwardRef)
 const TextInput = forwardRef(
   (
     {
@@ -181,7 +180,7 @@ const TextInput = forwardRef(
       big,
       ariaLabel,
     }: Props,
-    ref // eslint-disable-line
+    ref
   ) => {
     const { isEnhanced } = useContext(AppContext);
 
@@ -232,7 +231,7 @@ const TextInput = forwardRef(
           )}
         </TextInputWrap>
         {errorMessage && !isValid && showValidity && (
-          <TextInputErrorMessage dangerouslySetInnerHTML={{ __html: errorMessage }}/>
+          <TextInputErrorMessage>{errorMessage}</TextInputErrorMessage>
         )}
       </div>
     );

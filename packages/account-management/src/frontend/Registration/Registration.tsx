@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-
 import { SolidButton } from '@weco/common/views/components/ButtonSolid/ButtonSolid';
 import TextInput from '../WellcomeComponents/TextInput';
 import SpacingComponent from '@weco/common/views/components/SpacingComponent/SpacingComponent';
@@ -7,18 +6,16 @@ import { AccountCreated } from './AccountCreated';
 import { RegistrationSummaryParagraph } from './RegistrationSummaryParagraph';
 import { ErrorMessage } from '../Shared/ErrorMessage';
 import CheckboxRadio from '../WellcomeComponents/CheckBoxLabel';
+import { PasswordInput } from '../Shared/PasswordInput';
+import { LogoContainer } from '../Shared/LogoContainer';
 import axios from 'axios';
 
 // TODO: Update this to prod.
 const logo = 'https://identity-public-assets-stage.s3.eu-west-1.amazonaws.com/images/wellcomecollections-150x50.png';
-import styled from 'styled-components';
-import { PasswordInput } from '../Shared/PasswordInput';
-import { LogoContainer } from '../Shared/LogoContainer';
 
 // At least 8 characters, one uppercase, one lowercase and number
 const passwordPolicy = /(?=.{8,})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).*/;
 const emailTest = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
 
 export const Registration: React.FC = () => {
   const [firstName, setFirstName] = useState<string>();
@@ -27,7 +24,7 @@ export const Registration: React.FC = () => {
   const [emailValid, setEmailValid] = useState<boolean>(true);
   const [pass, setPass] = useState<string>();
   const [valid, setValid] = useState<boolean | undefined | ''>(false);
-  const [created, setCreated] = useState<boolean>(false);
+  const [created, setCreated] = useState<boolean>(true);
   const [consent, setConsent] = useState(false);
   const [alreadyExists, setAlreadyExists] = useState(false);
   const [passQualifies, setPassQualifies] = useState(true);
@@ -100,7 +97,11 @@ export const Registration: React.FC = () => {
 
   const emailErrorMessage = () => {
     if (alreadyExists) {
-      return `This account already exists. You can try to <a href="/">login</a>`;
+      return (
+        <>
+          This account already exists. You can try to <a href="/">login</a>.
+        </>
+      );
     } else if (!emailValid) {
       return 'Please enter a valid email address';
     } else {
@@ -114,7 +115,7 @@ export const Registration: React.FC = () => {
                 password.${(<br />)}
                 Please change your password and try again.`;
     } else if (!passQualifies) {
-      return ' The password you have entered does not meet the password policy. Please enter a password with at least 8 characters, a combination of upper and lowercase letters and at least one number';
+      return 'The password you have entered does not meet the password policy. Please enter a password with at least 8 characters, a combination of upper and lowercase letters and at least one number.';
     } else {
       return '';
     }
@@ -187,14 +188,12 @@ export const Registration: React.FC = () => {
               showValidity={true}
               errorMessage={passwordErrorMessage()}
             />
-            {!passQualifies && (
-              <ul>
-                <li className="font-hnl font-size-6">One lowercase character</li>
-                <li className="font-hnl font-size-6">One uppercase character</li>
-                <li className="font-hnl font-size-6">One number</li>
-                <li className="font-hnl font-size-6">8 characters minimum</li>
-              </ul>
-            )}
+            <ul>
+              <li className="font-hnl font-size-6">One lowercase character</li>
+              <li className="font-hnl font-size-6">One uppercase character</li>
+              <li className="font-hnl font-size-6">One number</li>
+              <li className="font-hnl font-size-6">8 characters minimum</li>
+            </ul>
             <SpacingComponent />
             <CheckboxRadio
               type="checkbox"
@@ -203,9 +202,15 @@ export const Registration: React.FC = () => {
               onChange={() => setConsent(!consent)}
               name="Terms and Conditions"
               value={''}
-              text={`I have read and agreed to the <a href="https://wellcome.org/about-us/governance/privacy-and-terms" target="_blank" rel="noopener">
-                  Privacy and Terms
-                </a> for Wellcome Collection.`}
+              text={
+                <>
+                  I have read and agreed to the{' '}
+                  <a href="https://wellcome.org/about-us/governance/privacy-and-terms" target="_blank" rel="noopener">
+                    Privacy and Terms
+                  </a>{' '}
+                  for Wellcome Collection.
+                </>
+              }
             />
             <SpacingComponent />
             <SolidButton onClick={createAccount}>Create Account</SolidButton>

@@ -69,7 +69,7 @@ const CheckboxRadioInput = styled.input.attrs((props) => ({
 type CheckboxRadioProps = {
   type: 'checkbox' | 'radio';
   id: string;
-  text: any;
+  text: string | ReactElement;
   checked: boolean;
   name: string;
   onChange: (event: SyntheticEvent<HTMLInputElement>) => void;
@@ -88,7 +88,7 @@ const CheckboxRadio: FunctionComponent<CheckboxRadioProps> = ({
       <CheckboxRadioBox type={type}>
         <Icon name={type === 'checkbox' ? 'check' : 'indicator'} />
       </CheckboxRadioBox>
-      <Space as="span" h={{ size: 'xs', properties: ['margin-left'] }} dangerouslySetInnerHTML={{ __html: text }} />
+      <Space as="span" h={{ size: 'xs', properties: ['margin-left'] }}>{text}</Space>
     </CheckboxRadioLabel>
   );
 };
