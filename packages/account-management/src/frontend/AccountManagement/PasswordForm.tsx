@@ -9,6 +9,7 @@ import { PasswordInput } from '../Shared/PasswordInput';
 const passwordPolicy = /(?=.{8,})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).*/;
 
 export const PasswordForm: React.FC = () => {
+  const [currentPassword, setCurrentPassword] = useState<string>('');
   const [newPassword, setNewPassword] = useState<string>('');
   const [confirmation, setConfirmation] = useState<string>('');
 
@@ -22,14 +23,11 @@ export const PasswordForm: React.FC = () => {
   return (
     <>
       <h1 className="font-wb font-size-4">Change your password using the form below.</h1>
+      <SpacingComponent />
       <form>
+        <PasswordInput label="Current password" value={currentPassword} setValue={setCurrentPassword} />
         <SpacingComponent />
-        <PasswordInput
-          label="Type new password"
-          value={newPassword}
-          setValue={setNewPassword}
-          pattern={passwordPolicy}
-        />
+        <PasswordInput label="New password" value={newPassword} setValue={setNewPassword} pattern={passwordPolicy} />
         {!isValid && (
           <ErrorMessage>
             The password you have entered does not meet the password policy. Please enter a password with at least 8
@@ -40,7 +38,7 @@ export const PasswordForm: React.FC = () => {
         <PasswordInput label="Retype new password" value={confirmation} setValue={setConfirmation} />
         {!isConfirmed && <ErrorMessage>The passwords you entered did not match.</ErrorMessage>}
         <SpacingComponent />
-        <SolidButton disabled={!isValid} onClick={updatePassword}>
+        <SolidButton disabled={!isValid || !isConfirmed} onClick={updatePassword}>
           Update Password
         </SolidButton>
         <input type="submit" value="Submit" hidden={true} />
