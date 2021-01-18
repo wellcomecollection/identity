@@ -12,39 +12,49 @@ export async function lambdaHandler(event: APIGatewayRequestAuthorizerEvent): Pr
 
   const auth0Client = new Auth0Client(AUTH0_API_ROOT, AUTH0_API_AUDIENCE, AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET);
 
-  if (event.headers && event.headers.Authorization) {
-
-    const authorizationHeader = event.headers.Authorization;
-    const accessToken = extractAccessToken(authorizationHeader);
-
-    if (!accessToken) {
-      console.log('Authorization header [' + authorizationHeader + '] is not a valid bearer token');
-      return buildAuthorizerResult(authorizationHeader, 'Deny', event.methodArn);
-    }
-
-    return auth0Client.validateAccessToken(accessToken).then(response => {
-      if (response.status === ResponseStatus.Success) {
-        if (event.pathParameters && event.pathParameters.userId) {
-          if (validateRequest(response.result, event.pathParameters, event.resource, event.httpMethod)) {
-            return buildAuthorizerResult(response.result.userId, 'Allow', event.methodArn);
-          } else {
-            console.log('Access token [' + accessToken + '] for user [' + JSON.stringify(response.result) + '] cannot operate on ID [' + event.pathParameters.userId + ']');
-            return buildAuthorizerResult(response.result.userId, 'Deny', event.methodArn);
-          }
-        } else {
-          return buildAuthorizerResult(response.result.userId, 'Allow', event.methodArn);
-        }
-      } else if (response.status == ResponseStatus.InvalidCredentials) {
-        console.log('Access token token [' + accessToken + '] rejected by Auth0: ' + response.message);
-        return buildAuthorizerResult(accessToken, 'Deny', event.methodArn);
-      } else {
-        console.log('Unknown error processing access token [' + accessToken + ']: ' + response.message);
-        return buildAuthorizerResult(accessToken, 'Deny', event.methodArn);
-      }
-    });
-  } else {
+  // The 'Authorization' header is not present.
+  if (!event.headers?.Authorization) {
+    console.log('Authorization header is not present on request');
     return buildAuthorizerResult('user', 'Deny', event.methodArn);
   }
+
+  // Extract the access token from the 'Authorization' header. Reject the request if it's not present, or if it's not a
+  // valid bearer token.
+  const authorizationHeader = event.headers.Authorization;
+  const accessToken = extractAccessToken(authorizationHeader);
+  if (!accessToken) {
+    console.log('Authorization header [' + authorizationHeader + '] is not a valid bearer token');
+    return buildAuthorizerResult(authorizationHeader, 'Deny', event.methodArn);
+  }
+
+  // Validate the access token against Auth0 for validity. Auth0 will either explicitly reject the access token as not
+  // being valid, or some other unknown error may occur with the Auth0 API.
+  const auth0Validate = await auth0Client.validateAccessToken(accessToken);
+  if (auth0Validate.status != ResponseStatus.Success) {
+    if (auth0Validate.status == ResponseStatus.InvalidCredentials) {
+      console.log('Access token token [' + accessToken + '] rejected by Auth0: ' + auth0Validate.message);
+      return buildAuthorizerResult(accessToken, 'Deny', event.methodArn);
+    } else {
+      console.log('Unknown error processing access token [' + accessToken + ']: ' + auth0Validate.message);
+      return buildAuthorizerResult(accessToken, 'Deny', event.methodArn);
+    }
+  }
+
+  // We've validated the access token, now fetch the user ID from the request path. If it's not present, we can't
+  // continue.
+  if (!event.pathParameters?.userId) {
+    return buildAuthorizerResult(auth0Validate.result.userId, 'Allow', event.methodArn);
+  }
+
+  // Finally, validate the access token alongside the request path and embedded user ID. If that doesn't work out, then
+  // reject the request.
+  if (!validateRequest(auth0Validate.result, event.pathParameters, event.resource, event.httpMethod)) {
+    console.log('Access token [' + accessToken + '] for user [' + JSON.stringify(auth0Validate.result) + '] cannot operate on ID [' + event.pathParameters.userId + ']');
+    return buildAuthorizerResult(auth0Validate.result.userId, 'Deny', event.methodArn);
+  }
+
+  // Everything looks good.
+  return buildAuthorizerResult(auth0Validate.result.userId, 'Allow', event.methodArn);
 }
 
 function extractAccessToken(tokenString: string): null | string {
@@ -66,6 +76,8 @@ function validateRequest(auth0UserInfo: Auth0UserInfo, pathParameters: { [name: 
   } else if (resource === '/users/{userId}/password' && method === 'PUT') {
     return userId === targetUserId; // TODO Accessible to both users and administrators
   } else if (resource === '/users/{userId}/send-verification' && method === 'PUT') {
+    return false; // TODO Only accessible to administrators
+  } else if (resource === '/users/{userId}/reset-password' && method === 'PUT') {
     return false; // TODO Only accessible to administrators
   } else if (resource === '/users/{userId}/lock' && method === 'PUT') {
     return false; // TODO Only accessible to administrators
