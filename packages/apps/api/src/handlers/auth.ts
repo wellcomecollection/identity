@@ -9,6 +9,7 @@ export async function validateCredentials(auth0Client: Auth0Client, request: Req
 
   if (!isNonBlank(email) || !isNonBlank(password)) {
     response.status(400).json(toMessage("All fields must be provided and non-blank"));
+    return;
   }
 
   const userFetchResult = await auth0Client.getUserByEmail(email);
