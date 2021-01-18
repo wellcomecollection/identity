@@ -1,20 +1,19 @@
 import React, { useState } from 'react';
 import { SolidButton } from '@weco/common/views/components/ButtonSolid/ButtonSolid';
-// @ts-ignore
-import TextInput from '@weco/common/views/components/TextInput/TextInput';
 import SpacingComponent from '@weco/common/views/components/SpacingComponent/SpacingComponent';
 
 import { ErrorMessage } from '../Shared/ErrorMessage';
+import { PasswordInput } from '../Shared/PasswordInput';
 
 // At least 8 characters, one uppercase, one lowercase and number
 const passwordPolicy = /(?=.{8,})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).*/;
 
 export const PasswordForm: React.FC = () => {
-  const [password, setPassword] = useState<string>();
-  const [confirmation, setConfirmation] = useState<string>();
+  const [newPassword, setNewPassword] = useState<string>('');
+  const [confirmation, setConfirmation] = useState<string>('');
 
-  const isValid = password && !passwordPolicy.test(password || '');
-  const isConfirmed = password === confirmation;
+  const isValid = newPassword && passwordPolicy.test(newPassword);
+  const isConfirmed = newPassword === confirmation;
 
   const updatePassword = () => {
     // Update Password
@@ -25,14 +24,10 @@ export const PasswordForm: React.FC = () => {
       <h1 className="font-wb font-size-4">Change your password using the form below.</h1>
       <form>
         <SpacingComponent />
-        <TextInput
-          placeholder=""
-          required={true}
-          aria-label="Type new password"
+        <PasswordInput
           label="Type new password"
-          value={password}
-          setValue={(value: string) => setPassword(value)}
-          type="password"
+          value={newPassword}
+          setValue={setNewPassword}
           pattern={passwordPolicy}
         />
         {!isValid && (
@@ -42,14 +37,7 @@ export const PasswordForm: React.FC = () => {
           </ErrorMessage>
         )}
         <SpacingComponent />
-        <TextInput
-          required={true}
-          aria-label="Retype new password"
-          label="Retype new password"
-          value={confirmation}
-          setValue={(value: string) => setConfirmation(value)}
-          type="password"
-        />
+        <PasswordInput label="Retype new password" value={confirmation} setValue={setConfirmation} />
         {!isConfirmed && <ErrorMessage>The passwords you entered did not match.</ErrorMessage>}
         <SpacingComponent />
         <SolidButton disabled={!isValid} onClick={updatePassword}>
