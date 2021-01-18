@@ -45,7 +45,7 @@ export const PasswordForm: React.FC = () => {
         <TextInput
           required={true}
           aria-label="Retype new password"
-          label="Reype new password"
+          label="Retype new password"
           value={confirmation}
           setValue={(value: string) => setConfirmation(value)}
           type="password"
