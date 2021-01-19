@@ -5,9 +5,9 @@ export function toUser(patronRecord: PatronRecord, auth0Profile: Auth0Profile): 
   return {
     patronId: patronRecord.recordNumber,
     barcode: patronRecord.barcode,
-    firstName: patronRecord.firstName,
-    lastName: patronRecord.lastName,
-    email: patronRecord.email,
+    firstName: auth0Profile.firstName,
+    lastName: auth0Profile.lastName,
+    email: auth0Profile.email,
     emailValidated: auth0Profile.emailValidated,
     locked: auth0Profile.locked,
     creationDate: auth0Profile.creationDate,
