@@ -34,6 +34,12 @@ export const PasswordForm: React.FC = () => {
             characters, a combination of upper and lowercase letters and at least one number.
           </ErrorMessage>
         )}
+        <ul>
+          <li className="font-hnl font-size-6">One lowercase character</li>
+          <li className="font-hnl font-size-6">One uppercase character</li>
+          <li className="font-hnl font-size-6">One number</li>
+          <li className="font-hnl font-size-6">8 characters minimum</li>
+        </ul>
         <SpacingComponent />
         <PasswordInput label="Retype new password" value={confirmation} setValue={setConfirmation} />
         {!isConfirmed && <ErrorMessage>The passwords you entered did not match.</ErrorMessage>}
