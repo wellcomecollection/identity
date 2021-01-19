@@ -8,7 +8,10 @@ set -o errexit
 
 function __package_auth0_scripts() {
   mkdir -p /app/.buildkite/build/
-  zip -vj "/app/.buildkite/build/auth0-scripts-${NORMALIZED_BRANCH_NAME}.zip" "/app/packages/apps/auth0-actions/src/get_user.js" "/app/packages/apps/auth0-actions/src/login.js"
+  zip -vj "/app/.buildkite/build/auth0-scripts-${NORMALIZED_BRANCH_NAME}.zip" \
+    "/app/packages/apps/auth0-actions/src/get_user.js" \
+    "/app/packages/apps/auth0-actions/src/login.js" \
+    "/app/packages/apps/auth0-actions/src/enrich_patron_attributes.js"
 }
 
 function __package_auth0_html() {
