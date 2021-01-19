@@ -17,7 +17,7 @@ export async function validateCredentials(auth0Client: Auth0Client, request: Req
     if (userFetchResult.status == ResponseStatus.NotFound) {
       response.status(404).json(toMessage(userFetchResult.message));
     } else {
-      response.sendStatus(500);
+      response.status(500).json(toMessage(userFetchResult.message));
     }
 
     return;
@@ -27,8 +27,8 @@ export async function validateCredentials(auth0Client: Auth0Client, request: Req
   if (validationResult.status == ResponseStatus.Success) {
     response.sendStatus(200);
   } else if (validationResult.status == ResponseStatus.InvalidCredentials) {
-    response.sendStatus(401);
+    response.status(401).json(toMessage(validationResult.message));
   } else {
-    response.sendStatus(500);
+    response.status(500).json(toMessage(validationResult.message));
   }
 }
