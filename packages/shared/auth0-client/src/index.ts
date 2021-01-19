@@ -76,8 +76,8 @@ export default class Auth0Client {
       return instance.post('/users', {
         user_id: 'p' + userId, // When creating an Auth0 user, don't provide the 'auth0|' prefix, just prefix the 'p' - Auth0 will do the rest.
         name: firstName + ' ' + lastName,
-        family_name: firstName,
-        last_name: lastName,
+        given_name: firstName,
+        family_name: lastName,
         email: email,
         password: password,
         email_verified: false,

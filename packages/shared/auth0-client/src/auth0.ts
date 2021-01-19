@@ -14,8 +14,8 @@ export function toAuth0Profile(auth0User: any): Auth0Profile {
   return {
     userId: auth0User.user_id,
     name: auth0User.name,
-    firstName: auth0User.family_name,
-    lastName: auth0User.last_name,
+    firstName: auth0User.given_name,
+    lastName: auth0User.family_name,
     email: auth0User.email,
     emailValidated: auth0User.email_verified,
     creationDate: auth0User.created_at,
