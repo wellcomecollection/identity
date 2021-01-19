@@ -42,7 +42,7 @@ function registerAuthResource(app: Application): void {
     origin: process.env.API_ALLOWED_ORIGINS
   }
   app.options('/auth', cors(corsOptions));
-  app.post('/auth', cors(corsOptions), (request: Request, response: Response) => validateCredentials(sierraClient, request, response));
+  app.post('/auth', cors(corsOptions), (request: Request, response: Response) => validateCredentials(auth0Client, request, response));
 }
 
 function registerUsersResource(app: Application): void {
