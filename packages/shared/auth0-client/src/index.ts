@@ -107,7 +107,7 @@ export default class Auth0Client {
     return this.getInstanceWithCredentials(username, password)
       .then(_ => successResponse(true))
       .catch(error => {
-        if (error.response) {
+        if (error?.response?.status == 401) {
           return errorResponse("Invalid credentials", ResponseStatus.InvalidCredentials, error);
         }
 

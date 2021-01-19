@@ -21,7 +21,9 @@ export async function validateCredentials(auth0Client: Auth0Client, request: Req
   const validationResult = await auth0Client.validateUserCredentials(email, password);
   if (validationResult.status == ResponseStatus.Success) {
     response.sendStatus(200);
-  } else {
+  } else if (validationResult.status == ResponseStatus.InvalidCredentials) {
     response.sendStatus(401);
+  } else {
+    response.sendStatus(500);
   }
 }
