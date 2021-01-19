@@ -14,7 +14,12 @@ export async function validateCredentials(auth0Client: Auth0Client, request: Req
 
   const userFetchResult = await auth0Client.getUserByEmail(email);
   if (userFetchResult.status != ResponseStatus.Success) {
-    response.status(404).json(toMessage(userFetchResult.message));
+    if (userFetchResult.status == ResponseStatus.NotFound) {
+      response.status(404).json(toMessage(userFetchResult.message));
+    } else {
+      response.sendStatus(500);
+    }
+
     return;
   }
 
