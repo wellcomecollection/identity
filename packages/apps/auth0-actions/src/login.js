@@ -10,7 +10,10 @@ function login(email, password, callback) {
         validateCredentials(patronRecord.barcode, password).then(() => {
             callback(null, {
                 user_id: 'p' + patronRecord.recordNumber,
-                email: patronRecord.email
+                email: patronRecord.email,
+                name: patronRecord.firstName + ' ' + patronRecord.lastName,
+                given_name: patronRecord.firstName,
+                family_name: patronRecord.lastName
             });
         }).catch(error => {
             callback(error)
