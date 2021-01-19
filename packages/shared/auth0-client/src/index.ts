@@ -1,4 +1,4 @@
-import { APIResponse, errorResponse, ResponseStatus, successResponse, unhandledError, responseCodeIs } from '@weco/identity-common';
+import { APIResponse, errorResponse, responseCodeIs, ResponseStatus, successResponse, unhandledError } from '@weco/identity-common';
 import axios, { AxiosInstance } from 'axios';
 import { Auth0Profile, Auth0UserInfo, toAuth0Profile, toAuth0UserInfo } from './auth0';
 
@@ -71,11 +71,13 @@ export default class Auth0Client {
     });
   }
 
-  async createUser(userId: number, email: string, password: string): Promise<APIResponse<Auth0Profile>> {
+  async createUser(userId: number, firstName: string, lastName: string, email: string, password: string): Promise<APIResponse<Auth0Profile>> {
     return this.getMachineToMachineInstance().then(instance => {
       return instance.post('/users', {
         user_id: 'p' + userId, // When creating an Auth0 user, don't provide the 'auth0|' prefix, just prefix the 'p' - Auth0 will do the rest.
-        name: email, // Auth0 defaults this to the email address, but we'll provide it here anyway for consistency
+        name: firstName + ' ' + lastName,
+        family_name: firstName,
+        last_name: lastName,
         email: email,
         password: password,
         email_verified: false,
@@ -103,7 +105,7 @@ export default class Auth0Client {
     });
   }
 
-  async validateUserCredentials(username: string, password: string) : Promise<APIResponse<boolean>> {
+  async validateUserCredentials(username: string, password: string): Promise<APIResponse<boolean>> {
     return this.getInstanceWithCredentials(username, password)
       .then(_ => successResponse(true))
       .catch(error => {
