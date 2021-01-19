@@ -16,10 +16,11 @@ async function enrichPatronAttributes(user, context, callback) {
         const idToken = context.idToken || {};
         idToken[namespace] = {
             record_number: patronRecord.recordNumber,
+            barcode: patronRecord.barcode,
             email: patronRecord.email,
             name: patronRecord.firstName + ' ' + patronRecord.lastName,
-            given_name: patronRecord.firstName,
-            family_name: patronRecord.lastName
+            first_names: patronRecord.firstName,
+            last_names: patronRecord.lastName
         };
         context.idToken = idToken;
 
