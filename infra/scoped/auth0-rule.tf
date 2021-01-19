@@ -14,7 +14,7 @@ resource "auth0_rule_config" "rule_config_sierra_client_secret" {
 }
 
 resource "auth0_rule" "enrich_patron_attributes" {
-  name    = "Enrich Patron Attributes"
+  name    = "Enrich-Patron-Attributes"
   script  = file("${path.module}/../../packages/apps/auth0-actions/src/enrich_patron_attributes.js")
   enabled = true
 
