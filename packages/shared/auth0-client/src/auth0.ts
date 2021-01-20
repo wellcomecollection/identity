@@ -12,7 +12,8 @@ export function toAuth0UserInfo(userInfo: any): Auth0UserInfo {
 
 export function toAuth0Profile(auth0User: any): Auth0Profile {
   return {
-    userId: auth0User.user_id,
+    // As far as the application is concerned, Auth0 ID's are identical to Sierra ID's. So remove the mandatory Auth0 prefix.
+    userId: auth0User.user_id.slice(auth0User.user_id.indexOf('auth0|p') + 'auth0|p'.length),
     name: auth0User.name,
     firstName: auth0User.given_name,
     lastName: auth0User.family_name,
@@ -73,6 +74,8 @@ export function toAuth0SearchResults(page: number, sort: string, sortDir: number
     sort: sort,
     sortDir: sortDir,
     query: query,
-    results: auth0SearchResults.users.map((user: any) => toAuth0Profile(user))
+    results: auth0SearchResults.users.map((user: any) => {
+
+    })
   }
 }
