@@ -76,7 +76,7 @@ describe('auth0 client', () => {
       equal(response.status, ResponseStatus.Success);
 
       const result = (<SuccessResponse<Auth0Profile>>response).result;
-      equal(result.userId, 'auth0|p' + userId);
+      equal(result.userId, userId);
       equal(result.email, email);
       equal(result.emailValidated, emailValidated);
       equal(result.locked, locked);
@@ -96,7 +96,7 @@ describe('auth0 client', () => {
       equal(response.status, ResponseStatus.Success);
 
       const result = (<SuccessResponse<Auth0Profile>>response).result;
-      equal(result.userId, 'auth0|p' + userId);
+      equal(result.userId, userId);
       equal(result.email, email);
       equal(result.emailValidated, emailValidated);
       equal(result.locked, locked);
@@ -141,7 +141,7 @@ describe('auth0 client', () => {
       equal(response.status, ResponseStatus.Success);
 
       const result = (<SuccessResponse<Auth0Profile>>response).result;
-      equal(result.userId, 'auth0|p' + userId);
+      equal(result.userId, userId);
       equal(result.email, email);
       equal(result.emailValidated, emailValidated);
       equal(result.locked, locked);
@@ -182,7 +182,7 @@ describe('auth0 client', () => {
       equal(response.status, ResponseStatus.Success);
 
       const result = (<SuccessResponse<Auth0Profile>>response).result;
-      equal(result.userId, 'auth0|p' + userId);
+      equal(result.userId, userId);
       equal(result.email, email);
       equal(result.emailValidated, emailValidated);
       equal(result.locked, locked);
@@ -224,7 +224,7 @@ describe('auth0 client', () => {
       equal(response.status, ResponseStatus.Success);
 
       const result = (<SuccessResponse<Auth0Profile>>response).result;
-      equal(result.userId, 'auth0|p' + userId);
+      equal(result.userId, userId);
       equal(result.name, name);
       equal(result.firstName, firstName);
       equal(result.lastName, lastName);
@@ -289,7 +289,7 @@ describe('auth0 client', () => {
       equal(response.status, ResponseStatus.Success);
 
       const result = (<SuccessResponse<Auth0Profile>>response).result;
-      equal(result.userId, 'auth0|p' + userId);
+      equal(result.userId, userId);
       equal(result.email, email);
       equal(result.emailValidated, emailValidated);
       equal(result.locked, locked);
