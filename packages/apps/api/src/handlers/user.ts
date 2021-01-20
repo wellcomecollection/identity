@@ -234,6 +234,11 @@ export async function searchUsers(auth0Client: Auth0Client, request: Request, re
     return;
   }
 
+  if (sortDir !== 1 && sortDir !== -1) {
+    response.status(400).json(toMessage('\'sortDir\' must be \'1\' or \'-1\' to sort ascending and descending respectively'))
+    return;
+  }
+
   const userSearch: APIResponse<Auth0SearchResults> = await auth0Client.searchUsers(page, pageSize, sort, sortDir, query);
   if (userSearch.status != ResponseStatus.Success) {
     if (userSearch.status === ResponseStatus.MalformedRequest) {
