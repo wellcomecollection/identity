@@ -3,6 +3,9 @@ export function toAuth0UserInfo(userInfo: any): Auth0UserInfo {
   return {
     // As far as the application is concerned, Auth0 ID's are identical to Sierra ID's. So remove the mandatory Auth0 prefix.
     userId: sub.slice(sub.indexOf('auth0|p') + 'auth0|p'.length),
+    name: userInfo.name,
+    firstName: userInfo.given_name,
+    lastName: userInfo.family_name,
     email: userInfo.email
   }
 }
@@ -10,6 +13,9 @@ export function toAuth0UserInfo(userInfo: any): Auth0UserInfo {
 export function toAuth0Profile(auth0User: any): Auth0Profile {
   return {
     userId: auth0User.user_id,
+    name: auth0User.name,
+    firstName: auth0User.given_name,
+    lastName: auth0User.family_name,
     email: auth0User.email,
     emailValidated: auth0User.email_verified,
     creationDate: auth0User.created_at,
@@ -23,6 +29,9 @@ export function toAuth0Profile(auth0User: any): Auth0Profile {
 // A simple representation of the Auth0 user, using only the attributes we provide to Auth0 to create it.
 export interface Auth0UserInfo {
   userId: number;
+  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
 }
 
