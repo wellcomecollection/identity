@@ -19,9 +19,7 @@ const Wrapper = styled.div`
   width: 70%;
   margin: auto;
   background-color: #f0ede3;
-  padding: 0 42px;
-  max-height: 100%;
-  overflow: auto;
+  padding: 42px;
 `;
 
 if (root) {

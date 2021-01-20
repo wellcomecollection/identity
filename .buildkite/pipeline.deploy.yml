@@ -26,6 +26,8 @@ steps:
     plugins:
       - wellcomecollection/aws-assume-role#v0.2.2:
           role: "arn:aws:iam::770700576653:role/identity-ci"
+      - ecr#v2.2.0:
+          login: true
       - docker-compose#v3.7.0:
           run: app
           config: .buildkite/docker-compose.yml
@@ -49,6 +51,8 @@ steps:
     plugins:
       - wellcomecollection/aws-assume-role#v0.2.2:
           role: "arn:aws:iam::770700576653:role/identity-ci"
+      - ecr#v2.2.0:
+          login: true
       - docker-compose#v3.7.0:
           run: app
           config: .buildkite/docker-compose.yml
@@ -61,3 +65,28 @@ steps:
             - AWS_SESSION_TOKEN
             - DEPLOY_ENVIRONMENT
             - DEPLOY_API_GATEWAY_STAGE
+
+  # Deploy the Account Management System ECS service / task. We don't want to execute the
+  # deployment every time there's a push to revision control. We're only interested in doing
+  # a deployment if e.g. it was manually invoked via the web UI, or a downstream job triggered the build.
+  - name: "account management system deployment"
+    if: build.source != "webhook"
+    command:
+      - ". /app/.buildkite/scripts/init-environment.sh"
+      - "/app/.buildkite/scripts/ams-deployment.sh"
+    plugins:
+      - wellcomecollection/aws-assume-role#v0.2.2:
+          role: "arn:aws:iam::770700576653:role/identity-ci"
+      - ecr#v2.2.0:
+          login: true
+      - docker-compose#v3.7.0:
+          run: app
+          config: .buildkite/docker-compose.yml
+          mount-buildkite-agent: true
+          env:
+            - BUILDKITE_BRANCH
+            - BUILDKITE_SOURCE
+            - AWS_ACCESS_KEY_ID
+            - AWS_SECRET_ACCESS_KEY
+            - AWS_SESSION_TOKEN
+            - DEPLOY_ENVIRONMENT

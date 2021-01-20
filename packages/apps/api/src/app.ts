@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import express, { Application, Request, Response } from 'express';
 import { validateCredentials } from './handlers/auth';
-import {createUser, getUser, updateUser} from './handlers/user';
+import { changePassword, createUser, getUser, updateUser } from './handlers/user';
 import { DummyUserOne, DummyUserTwo } from './models/user';
 
 export default createApplication();
@@ -42,7 +42,7 @@ function registerAuthResource(app: Application): void {
     origin: process.env.API_ALLOWED_ORIGINS
   }
   app.options('/auth', cors(corsOptions));
-  app.post('/auth', cors(corsOptions), (request: Request, response: Response) => validateCredentials(sierraClient, request, response));
+  app.post('/auth', cors(corsOptions), (request: Request, response: Response) => validateCredentials(auth0Client, request, response));
 }
 
 function registerUsersResource(app: Application): void {
@@ -75,7 +75,7 @@ function registerUsersUserIdPasswordResource(app: Application): void {
     origin: process.env.API_ALLOWED_ORIGINS
   }
   app.options('/users/:user_id/password', cors(corsOptions));
-  app.put('/users/:user_id/password', cors(corsOptions), (request: Request, response: Response) => response.status(200).end());
+  app.put('/users/:user_id/password', cors(corsOptions), (request: Request, response: Response) => changePassword(sierraClient, auth0Client, request, response));
 }
 
 function registerUsersUserIdResetPasswordResource(app: Application): void {

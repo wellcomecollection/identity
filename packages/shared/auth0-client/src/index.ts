@@ -1,4 +1,4 @@
-import { APIResponse, errorResponse, ResponseStatus, successResponse, unhandledError } from '@weco/identity-common';
+import { APIResponse, errorResponse, ResponseStatus, successResponse, unhandledError, responseCodeIs } from '@weco/identity-common';
 import axios, { AxiosInstance } from 'axios';
 import { Auth0Profile, Auth0UserInfo, toAuth0Profile, toAuth0UserInfo } from './auth0';
 
@@ -103,6 +103,18 @@ export default class Auth0Client {
     });
   }
 
+  async validateUserCredentials(username: string, password: string) : Promise<APIResponse<boolean>> {
+    return this.getInstanceWithCredentials(username, password)
+      .then(_ => successResponse(true))
+      .catch(error => {
+        if (error?.response?.status == 401) {
+          return errorResponse("Invalid credentials", ResponseStatus.InvalidCredentials, error);
+        }
+
+        return unhandledError(error);
+      });
+  }
+
   async updateUser(userId: number, email: string): Promise<APIResponse<Auth0Profile>> {
     return this.getMachineToMachineInstance().then(instance => {
       return instance.patch('/users/auth0|p' + userId, { // Automatically append the mandatory Auth0 prefix to the given user ID.
@@ -135,6 +147,34 @@ export default class Auth0Client {
     });
   }
 
+  async updatePassword(userId: number, password: string): Promise<APIResponse<Auth0Profile>> {
+    return this.getMachineToMachineInstance().then(instance => {
+      return instance.patch('/users/auth0|p' + userId, {
+        password: password,
+        connection: 'Sierra-Connection'
+      }, {
+        validateStatus: status => status === 200
+      }).then(response =>
+        successResponse(toAuth0Profile(response.data))
+      ).catch(error => {
+        if (error.response) {
+          switch (error.response.status) {
+            case 400: {
+              if (error.response.data?.message?.startsWith('PasswordStrengthError')) {
+                return errorResponse('Password does not meet Auth0 policy', ResponseStatus.PasswordTooWeak, error);
+              } else {
+                return errorResponse('Malformed or invalid Auth0 user creation request', ResponseStatus.MalformedRequest, error);
+              }
+            }
+            case 404:
+              return errorResponse('Auth0 user with ID [' + userId + '] not found', ResponseStatus.NotFound, error);
+          }
+        }
+        return unhandledError(error);
+      });
+    });
+  }
+
   private async getMachineToMachineInstance(): Promise<AxiosInstance> {
     return axios.post(this.apiRoot + '/oauth/token', {
       client_id: this.clientId,
@@ -143,6 +183,26 @@ export default class Auth0Client {
       grant_type: 'client_credentials'
     }, {
       validateStatus: status => status === 200
+    }).then(response => {
+      return axios.create({
+        baseURL: this.apiRoot + '/api/v2',
+        headers: {
+          Authorization: 'Bearer ' + response.data.access_token
+        }
+      });
+    });
+  }
+
+  private getInstanceWithCredentials(username: string, password: string): Promise<AxiosInstance> {
+    return axios.post(this.apiRoot + '/oauth/token', {
+      client_id: this.clientId,
+      client_secret: this.clientSecret,
+      audience: this.apiAudience,
+      grant_type: 'password',
+      username,
+      password,
+    }, {
+      validateStatus: responseCodeIs(200)
     }).then(response => {
       return axios.create({
         baseURL: this.apiRoot + '/api/v2',

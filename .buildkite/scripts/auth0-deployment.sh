@@ -23,6 +23,7 @@ function __do_deployment() {
   cp -v /app/.buildkite/build/password_reset.html "/app/.buildkite/build/auth0-export/pages/"
   cp -v /app/.buildkite/build/reset_email.html "/app/.buildkite/build/auth0-export/emails/"
   cp -v /app/.buildkite/build/verify_email.html "/app/.buildkite/build/auth0-export/emails/"
+  cp -v /app/.buildkite/build/enrich_patron_attributes.js "/app/.buildkite/build/auth0-export/rules/${AUTH0_ENRICH_PATRON_ATTRIBUTES_RULE_NAME}.js"
   a0deploy import --input_file "/app/.buildkite/build/auth0-export/"
 }
 

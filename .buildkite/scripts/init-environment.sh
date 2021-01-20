@@ -7,6 +7,7 @@
 set -o errexit
 
 function __process_environment_variables() {
+  export AWS_DEFAULT_REGION=eu-west-1
   export NORMALIZED_BRANCH_NAME="${BUILDKITE_BRANCH/\//-}"
 }
 

@@ -34,6 +34,10 @@ export function errorResponse(
   }
 }
 
+export function responseCodeIs(responseCode: number) {
+  return (status: number) => status === responseCode;
+}
+
 export function unhandledError(error: AxiosError): ErrorResponse {
   return errorResponse('Unhandled API response [' + error.message + ']', ResponseStatus.UnknownError, error);
 }
