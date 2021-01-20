@@ -42,8 +42,12 @@ const ErrorMessage = styled.p`
   text-align: center;
 `;
 
+type ErrorParams = {
+  error_description: string | undefined;
+};
+
 export const ErrorPage = () => {
-  const { error_description } = useLocationQuery();
+  const { error_description } = useLocationQuery<ErrorParams>();
   return (
     <PageContainer>
       <Auth0StyleErrorBox>
