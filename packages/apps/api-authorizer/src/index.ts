@@ -62,30 +62,90 @@ function extractAccessToken(tokenString: string): null | string {
   return !match || match.length < 2 ? null : match[1];
 }
 
-function validateRequest(auth0UserInfo: Auth0UserInfo, pathParameters: { [name: string]: string }, resource: string, method: string): boolean {
-  // TODO Can we do this better? We need to be able to determine if the resource and method that is being operated on is
-  // accessible to the user for whom the request is being made on behalf of. Hardcoding the resource and methods like
-  // this doesn't seem very good...
-  const userId: string = auth0UserInfo.userId.toString();
-  const targetUserId: string = pathParameters.userId;
+type ResourceAclMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
+type ResourceAclCheckType = 'AND' | 'OR';
+type ResourceAclCheck = (user: Auth0UserInfo, params: Record<string, string>) => boolean;
 
-  if (resource === '/users' && method === 'GET') {
-    return false; // TODO Only accessible to administrators
-  } else if (resource === '/users/{userId}' && (method === 'GET' || method === 'PUT' || method === 'DELETE')) {
-    return userId === targetUserId; // TODO Accessible to both users and administrators
-  } else if (resource === '/users/{userId}/password' && method === 'PUT') {
-    return userId === targetUserId; // TODO Accessible to both users and administrators
-  } else if (resource === '/users/{userId}/send-verification' && method === 'PUT') {
-    return false; // TODO Only accessible to administrators
-  } else if (resource === '/users/{userId}/reset-password' && method === 'PUT') {
-    return false; // TODO Only accessible to administrators
-  } else if (resource === '/users/{userId}/lock' && method === 'PUT') {
-    return false; // TODO Only accessible to administrators
-  } else if (resource === '/users/{userId}/unlock' && method === 'PUT') {
-    return false; // TODO Only accessible to administrators
+type ResourceAcl = {
+  resource: string,
+  methods: ResourceAclMethod[],
+  check: ResourceAclCheck | Array<ResourceAclCheck>,
+  checkType?: ResourceAclCheckType
+};
+
+const isAdministrator = function (user: Auth0UserInfo, params: Record<string, string>): boolean {
+  return false; // @todo
+};
+
+const isSelf = function (user: Auth0UserInfo, params: Record<string, string>): boolean {
+  return params.userId === user.userId.toString();
+};
+
+const resourceAcls: ResourceAcl[] = [
+  {
+    resource: '/users',
+    methods: ['GET'],
+    check: isAdministrator
+  },
+  {
+    resource: '/users/{userId}',
+    methods: ['GET', 'PUT', 'DELETE'],
+    check: isSelf,
+  },
+  {
+    resource: '/users/{userId}/password',
+    methods: ['PUT'],
+    check: [isSelf, isAdministrator],
+    checkType: 'OR'
+  },
+  {
+    resource: '/users/{userId}/send-verification',
+    methods: ['PUT'],
+    check: [isAdministrator],
+  },
+  {
+    resource: '/users/{userId}/reset-password',
+    methods: ['PUT'],
+    check: [isAdministrator],
+  },
+  {
+    resource: '/users/{userId}/lock',
+    methods: ['PUT'],
+    check: [isAdministrator],
+  },
+  {
+    resource: '/users/{userId}/unlock',
+    methods: ['PUT'],
+    check: [isAdministrator],
+  },
+];
+
+function validateRequest(auth0UserInfo: Auth0UserInfo, pathParameters: { [name: string]: string }, resource: string, method: ResourceAclMethod): boolean {
+  let acl = resourceAcls.find(acl => acl.resource === resource && acl.methods.includes(method));
+  if (!acl) {
+    // No ACL found, defensively deny access
+    return false;
   }
 
-  return false;
+  let aclCheckType = acl.checkType ?? 'OR';
+
+  // Start with the ACL flag by default set to the following
+  //   AND: a successful match will keep the flag on, an unsuccessful match will turn it off
+  //   OR: a successful match will OR the flag on, an unsuccessful match will leave it as is.
+  let aclMatched = aclCheckType === 'AND';
+
+  let aclChecks = Array.isArray(acl.check) ? acl.check : [acl.check];
+
+  for (const check of aclChecks) {
+    let matched = check(auth0UserInfo, pathParameters);
+    if (aclCheckType == 'OR') {
+      aclMatched = aclMatched || matched;
+    } else if (aclCheckType == 'AND') {
+      aclMatched = aclMatched && matched;
+    }
+  }
+
+  return aclMatched;
 }
 
 function buildAuthorizerResult(principal: string | number, effect: string, methodArn: string): APIGatewayAuthorizerResult {
