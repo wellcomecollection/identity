@@ -21,9 +21,10 @@ export function toAuth0Profile(auth0User: any): Auth0Profile {
     emailValidated: auth0User.email_verified,
     creationDate: auth0User.created_at,
     locked: !!(auth0User.blocked), // Auth0 quirk - this attribute doesn't appear on Auth0 responses until it's been toggled off and on at least once.
-    lastLogin: auth0User.last_login,
-    lastLoginIp: auth0User.last_ip,
-    totalLogins: auth0User.logins_count
+    // Some fields won't be available until after the user has logged in at least once...
+    lastLogin: auth0User.last_login ? auth0User.last_login : '',
+    lastLoginIp: auth0User.last_ip ? auth0User.last_ip : '',
+    totalLogins: auth0User.logins_count ? auth0User.logins_count : 0
   }
 }
 
