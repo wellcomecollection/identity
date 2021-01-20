@@ -3,7 +3,7 @@ import SpacingComponent from '@weco/common/views/components/SpacingComponent/Spa
 // @ts-ignore
 import SectionHeader from '@weco/common/views/components/SectionHeader/SectionHeader';
 import { OutlinedButton } from '@weco/common/views/components/ButtonOutlined/ButtonOutlined';
-import { useLocationQuery } from '../../hooks/use-location-query';
+import { useLocationQuery } from '../hooks/use-location-query';
 
 import styled from 'styled-components';
 
