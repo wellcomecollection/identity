@@ -23,6 +23,25 @@
       "minimum": 0,
       "multipleOf": 1.0
     },
+    "sort": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sortDir": {
+      "type": "integer",
+      "oneOf": [
+        {
+          "type": "integer",
+          "minimum": -1,
+          "maximum": -1
+        },
+        {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1
+        }
+      ]
+    },
     "query": {
       "type": "string",
       "minLength": 1
@@ -105,6 +124,8 @@
     "pageSize",
     "pageCount",
     "totalResults",
+    "sort",
+    "sortDir",
     "query",
     "results"
   ],
