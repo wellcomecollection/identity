@@ -204,7 +204,7 @@ export default class Auth0Client {
         },
         validateStatus: status => status === 200
       }).then(response =>
-        successResponse(toAuth0SearchResults(page, query, response.data))
+        successResponse(toAuth0SearchResults(page, sort, sortDir, query, response.data))
       ).catch(error => {
         if (error.response) {
           switch (error.response.status) {
