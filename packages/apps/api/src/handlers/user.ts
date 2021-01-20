@@ -219,11 +219,11 @@ export async function changePassword(sierraClient: SierraClient, auth0Client: Au
 
 export async function searchUsers(auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
 
-  const page: number = Number(request.params.page);
-  const pageSize: number = Number(request.params.pageSize);
-  const sort: string = request.params.sort;
-  const sortDir: number = Number(request.params.sortDir);
-  const query: string = request.params.query;
+  const page: number = Number(request.query.page);
+  const pageSize: number = Number(request.query.pageSize);
+  const sort: string = request.query.sort as string;
+  const sortDir: number = Number(request.query.sortDir);
+  const query: string = request.query.query as string;
   if (isNaN(page) || isNaN(pageSize) || !isNonBlank(query) || !isNonBlank(sort) || isNaN(sortDir)) {
     response.status(400).json(toMessage("All fields must be provided and non-blank"));
     return;
