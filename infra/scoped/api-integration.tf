@@ -64,8 +64,10 @@ resource "aws_api_gateway_integration" "users_get" {
   uri                     = aws_lambda_function.api.invoke_arn
 
   request_parameters = {
-    "integration.request.path.userId"   = "method.request.querystring.page",
+    "integration.request.path.page"     = "method.request.querystring.page",
     "integration.request.path.pageSize" = "method.request.querystring.pageSize",
+    "integration.request.path.sort"     = "method.request.querystring.sort"
+    "integration.request.path.sortDir"  = "method.request.querystring.sortDir"
     "integration.request.path.query"    = "method.request.querystring.query"
   }
 
