@@ -69,13 +69,11 @@ export function toAuth0SearchResults(page: number, sort: string, sortDir: number
   return {
     page: page,
     pageSize: auth0SearchResults.length,
-    pageCount: Math.ceil(auth0SearchResults.total / auth0SearchResults.limit) - 1,
+    pageCount: Math.ceil(auth0SearchResults.total / auth0SearchResults.limit),
     totalResults: auth0SearchResults.total,
     sort: sort,
     sortDir: sortDir,
     query: query,
-    results: auth0SearchResults.users.map((user: any) => {
-
-    })
+    results: auth0SearchResults.users.map((user: any) => toAuth0Profile(user))
   }
 }
