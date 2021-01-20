@@ -81,7 +81,7 @@ export async function createUser(sierraClient: SierraClient, auth0Client: Auth0C
     return;
   }
 
-  const auth0Create: APIResponse<Auth0Profile> = await auth0Client.createUser(sierraCreate.result, email, password);
+  const auth0Create: APIResponse<Auth0Profile> = await auth0Client.createUser(sierraCreate.result, firstName, lastName, email, password);
   if (auth0Create.status != ResponseStatus.Success) {
     await sierraClient.deletePatronRecord(sierraCreate.result);
     if (auth0Create.status === ResponseStatus.MalformedRequest) {
