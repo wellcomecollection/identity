@@ -35,8 +35,8 @@ export async function lambdaHandler(event: APIGatewayRequestAuthorizerEvent): Pr
     }
   }
 
-  if (!validateRequest(auth0Validate.result, event.pathParameters, event.resource, <ResourceAclMethod>event.httpMethod)) {
-    console.log('Access token [' + accessToken + '] for user [' + JSON.stringify(auth0Validate.result) + '] cannot operate on ID [' + event.pathParameters?.userId + ']');
+  if (!validateRequest(auth0Validate.result, event.resource, <ResourceAclMethod>event.httpMethod, event.pathParameters)) {
+    console.log('Access token [' + accessToken + '] for user [' + JSON.stringify(auth0Validate.result) + '] cannot operate on [' + event.httpMethod + ' ' + event.resource + '] with path parameters [' + event.pathParameters + ']');
     return buildAuthorizerResult(auth0Validate.result.userId, 'Deny', event.methodArn);
   }
 
@@ -50,7 +50,7 @@ function extractAccessToken(tokenString: string): null | string {
 
 type ResourceAclMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 type ResourceAclCheckType = 'AND' | 'OR';
-type ResourceAclCheck = (user: Auth0UserInfo, params: { [name: string]: string } | null) => boolean;
+type ResourceAclCheck = (user: Auth0UserInfo, pathParameters: Record<string, string> | null) => boolean;
 
 type ResourceAcl = {
   resource: string,
@@ -59,12 +59,12 @@ type ResourceAcl = {
   checkType?: ResourceAclCheckType
 };
 
-const isAdministrator = function (user: Auth0UserInfo, params: { [name: string]: string } | null): boolean {
+const isAdministrator = function (user: Auth0UserInfo, pathParameters: Record<string, string> | null): boolean {
   return false; // @todo
 };
 
-const isSelf = function (user: Auth0UserInfo, params: { [name: string]: string } | null): boolean {
-  return params?.userId === user.userId.toString();
+const isSelf = function (user: Auth0UserInfo, pathParameters: Record<string, string> | null): boolean {
+  return pathParameters?.userId === user.userId.toString();
 };
 
 const resourceAcls: ResourceAcl[] = [
@@ -107,7 +107,7 @@ const resourceAcls: ResourceAcl[] = [
   },
 ];
 
-function validateRequest(auth0UserInfo: Auth0UserInfo, pathParameters: { [name: string]: string } | null, resource: string, method: ResourceAclMethod): boolean {
+function validateRequest(auth0UserInfo: Auth0UserInfo, resource: string, method: ResourceAclMethod, pathParameters: Record<string, string> | null): boolean {
   let acl = resourceAcls.find(acl => acl.resource === resource && acl.methods.includes(method));
   if (!acl) {
     // No ACL found, defensively deny access
