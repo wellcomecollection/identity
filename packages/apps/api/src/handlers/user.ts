@@ -221,9 +221,9 @@ export async function searchUsers(auth0Client: Auth0Client, request: Request, re
 
   const page: number = Number(request.params.page);
   const pageSize: number = Number(request.params.pageSize);
-  const sort: string = request.body.sort;
+  const sort: string = request.params.sort;
   const sortDir: number = Number(request.params.sortDir);
-  const query: string = request.body.query;
+  const query: string = request.params.query;
   if (isNaN(page) || isNaN(pageSize) || !isNonBlank(query) || !isNonBlank(sort) || isNaN(sortDir)) {
     response.status(400).json(toMessage("All fields must be provided and non-blank"));
     return;
