@@ -48,7 +48,7 @@ export async function lambdaHandler(event: APIGatewayRequestAuthorizerEvent): Pr
 
   // Finally, validate the access token alongside the request path and embedded user ID. If that doesn't work out, then
   // reject the request.
-  if (!validateRequest(auth0Validate.result, event.pathParameters, event.resource, event.httpMethod)) {
+  if (!validateRequest(auth0Validate.result, event.pathParameters, event.resource, <ResourceAclMethod>event.httpMethod)) {
     console.log('Access token [' + accessToken + '] for user [' + JSON.stringify(auth0Validate.result) + '] cannot operate on ID [' + event.pathParameters.userId + ']');
     return buildAuthorizerResult(auth0Validate.result.userId, 'Deny', event.methodArn);
   }
