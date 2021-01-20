@@ -239,6 +239,20 @@ resource "aws_api_gateway_documentation_part" "users_get_500" {
   }
 }
 
+# 503 Service Unavailable
+
+resource "aws_api_gateway_documentation_part" "users_get_503" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/get-503.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users.path
+    method      = aws_api_gateway_method.users_get.http_method
+    status_code = "503"
+  }
+}
+
 # [POST]
 
 resource "aws_api_gateway_documentation_part" "users_post" {
