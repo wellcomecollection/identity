@@ -12,14 +12,11 @@ export async function lambdaHandler(event: APIGatewayRequestAuthorizerEvent): Pr
 
   const auth0Client = new Auth0Client(AUTH0_API_ROOT, AUTH0_API_AUDIENCE, AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET);
 
-  // The 'Authorization' header is not present.
   if (!event.headers?.Authorization) {
     console.log('Authorization header is not present on request');
     return buildAuthorizerResult('user', 'Deny', event.methodArn);
   }
 
-  // Extract the access token from the 'Authorization' header. Reject the request if it's not present, or if it's not a
-  // valid bearer token.
   const authorizationHeader = event.headers.Authorization;
   const accessToken = extractAccessToken(authorizationHeader);
   if (!accessToken) {
@@ -27,8 +24,6 @@ export async function lambdaHandler(event: APIGatewayRequestAuthorizerEvent): Pr
     return buildAuthorizerResult(authorizationHeader, 'Deny', event.methodArn);
   }
 
-  // Validate the access token against Auth0 for validity. Auth0 will either explicitly reject the access token as not
-  // being valid, or some other unknown error may occur with the Auth0 API.
   const auth0Validate = await auth0Client.validateAccessToken(accessToken);
   if (auth0Validate.status != ResponseStatus.Success) {
     if (auth0Validate.status == ResponseStatus.InvalidCredentials) {
@@ -40,20 +35,11 @@ export async function lambdaHandler(event: APIGatewayRequestAuthorizerEvent): Pr
     }
   }
 
-  // We've validated the access token, now fetch the user ID from the request path. If it's not present, we can't
-  // continue.
-  if (!event.pathParameters?.userId) {
-    return buildAuthorizerResult(auth0Validate.result.userId, 'Allow', event.methodArn);
-  }
-
-  // Finally, validate the access token alongside the request path and embedded user ID. If that doesn't work out, then
-  // reject the request.
   if (!validateRequest(auth0Validate.result, event.pathParameters, event.resource, <ResourceAclMethod>event.httpMethod)) {
-    console.log('Access token [' + accessToken + '] for user [' + JSON.stringify(auth0Validate.result) + '] cannot operate on ID [' + event.pathParameters.userId + ']');
+    console.log('Access token [' + accessToken + '] for user [' + JSON.stringify(auth0Validate.result) + '] cannot operate on ID [' + event.pathParameters?.userId + ']');
     return buildAuthorizerResult(auth0Validate.result.userId, 'Deny', event.methodArn);
   }
 
-  // Everything looks good.
   return buildAuthorizerResult(auth0Validate.result.userId, 'Allow', event.methodArn);
 }
 
@@ -64,7 +50,7 @@ function extractAccessToken(tokenString: string): null | string {
 
 type ResourceAclMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 type ResourceAclCheckType = 'AND' | 'OR';
-type ResourceAclCheck = (user: Auth0UserInfo, params: Record<string, string>) => boolean;
+type ResourceAclCheck = (user: Auth0UserInfo, params: { [name: string]: string } | null) => boolean;
 
 type ResourceAcl = {
   resource: string,
@@ -73,12 +59,12 @@ type ResourceAcl = {
   checkType?: ResourceAclCheckType
 };
 
-const isAdministrator = function (user: Auth0UserInfo, params: Record<string, string>): boolean {
+const isAdministrator = function (user: Auth0UserInfo, params: { [name: string]: string } | null): boolean {
   return false; // @todo
 };
 
-const isSelf = function (user: Auth0UserInfo, params: Record<string, string>): boolean {
-  return params.userId === user.userId.toString();
+const isSelf = function (user: Auth0UserInfo, params: { [name: string]: string } | null): boolean {
+  return params?.userId === user.userId.toString();
 };
 
 const resourceAcls: ResourceAcl[] = [
@@ -90,7 +76,8 @@ const resourceAcls: ResourceAcl[] = [
   {
     resource: '/users/{userId}',
     methods: ['GET', 'PUT', 'DELETE'],
-    check: isSelf,
+    check: [isSelf, isAdministrator],
+    checkType: 'OR'
   },
   {
     resource: '/users/{userId}/password',
@@ -101,26 +88,26 @@ const resourceAcls: ResourceAcl[] = [
   {
     resource: '/users/{userId}/send-verification',
     methods: ['PUT'],
-    check: [isAdministrator],
+    check: isAdministrator,
   },
   {
     resource: '/users/{userId}/reset-password',
     methods: ['PUT'],
-    check: [isAdministrator],
+    check: isAdministrator,
   },
   {
     resource: '/users/{userId}/lock',
     methods: ['PUT'],
-    check: [isAdministrator],
+    check: isAdministrator,
   },
   {
     resource: '/users/{userId}/unlock',
     methods: ['PUT'],
-    check: [isAdministrator],
+    check: isAdministrator,
   },
 ];
 
-function validateRequest(auth0UserInfo: Auth0UserInfo, pathParameters: { [name: string]: string }, resource: string, method: ResourceAclMethod): boolean {
+function validateRequest(auth0UserInfo: Auth0UserInfo, pathParameters: { [name: string]: string } | null, resource: string, method: ResourceAclMethod): boolean {
   let acl = resourceAcls.find(acl => acl.resource === resource && acl.methods.includes(method));
   if (!acl) {
     // No ACL found, defensively deny access
