@@ -1,5 +1,5 @@
 import Auth0Client from '@weco/auth0-client';
-import { Auth0Profile } from "@weco/auth0-client/lib/auth0";
+import { Auth0Profile, Auth0SearchResults, Auth0SearchSortFields } from "@weco/auth0-client/lib/auth0";
 import { APIResponse, isNonBlank, ResponseStatus, truncate } from '@weco/identity-common';
 import SierraClient from '@weco/sierra-client';
 import { PatronRecord } from "@weco/sierra-client/lib/patron";
@@ -215,4 +215,35 @@ export async function changePassword(sierraClient: SierraClient, auth0Client: Au
   }
 
   response.status(200).json(toUser(sierraUpdate.result, auth0Update.result));
+}
+
+export async function searchUsers(auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
+
+  const page: number = Number(request.params.page);
+  const pageSize: number = Number(request.params.pageSize);
+  const query: string = request.body.query;
+  const sort: string = request.body.sort;
+  if (isNaN(page) || isNaN(pageSize) || !isNonBlank(query) || !isNonBlank(sort)) {
+    response.status(400).json(toMessage("All fields must be provided and non-blank"));
+    return;
+  }
+
+  if (!Auth0SearchSortFields.get(sort)) {
+    response.status(400).json(toMessage("Invalid sort field, one of [" + Array.from(Auth0SearchSortFields.keys()) + "] must be provided"));
+    return;
+  }
+
+  const userSearch: APIResponse<Auth0SearchResults> = await auth0Client.searchUsers(page, pageSize, sort, query);
+  if (userSearch.status != ResponseStatus.Success) {
+    if (userSearch.status === ResponseStatus.MalformedRequest) {
+      response.status(400).json(toMessage(userSearch.message));
+    } else if (userSearch.status === ResponseStatus.QueryTimeout) {
+      response.status(503).json(toMessage(userSearch.message));
+    } else {
+      response.status(500).json(toMessage(userSearch.message));
+    }
+    return;
+  }
+
+  response.status(200).json(userSearch.result);
 }

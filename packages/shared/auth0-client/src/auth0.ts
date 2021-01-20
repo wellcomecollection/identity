@@ -46,21 +46,14 @@ export interface Auth0SearchResults {
   results: Auth0Profile[]
 }
 
-export enum Auth0SearchSortField {
-  Name,
-  Email,
-  LastLogin,
-  PatronRecordNumber
-}
-
-export const Auth0SearchSortFieldMapping = new Map<number, string>([
-  [Auth0SearchSortField.Name, 'name'],
-  [Auth0SearchSortField.Email, 'email'],
-  [Auth0SearchSortField.LastLogin, 'last_login'],
-  [Auth0SearchSortField.PatronRecordNumber, 'user_id']
+export const Auth0SearchSortFields = new Map<string, string>([
+  ['name', 'name'],
+  ['email', 'email'],
+  ['lastLogin', 'last_login'],
+  ['recordNumber', 'user_id']
 ]);
 
-export function toAuth0SearchResults(page: number, query:string, auth0SearchResults: any): Auth0SearchResults {
+export function toAuth0SearchResults(page: number, query: string, auth0SearchResults: any): Auth0SearchResults {
   return {
     page: page,
     pageSize: auth0SearchResults.length,

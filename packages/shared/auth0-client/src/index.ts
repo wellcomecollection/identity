@@ -6,12 +6,11 @@ import {
   successResponse,
   unhandledError
 } from '@weco/identity-common';
-import axios, {AxiosInstance} from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import {
   Auth0Profile,
   Auth0SearchResults,
-  Auth0SearchSortField,
-  Auth0SearchSortFieldMapping,
+  Auth0SearchSortFields,
   Auth0UserInfo,
   toAuth0Profile,
   toAuth0SearchResults,
@@ -191,14 +190,14 @@ export default class Auth0Client {
     });
   }
 
-  async search(page: number, pageSize: number, sort: Auth0SearchSortField, query: string): Promise<APIResponse<Auth0SearchResults>> {
+  async searchUsers(page: number, pageSize: number, sort: string, query: string): Promise<APIResponse<Auth0SearchResults>> {
     return this.getMachineToMachineInstance().then(instance => {
       return instance.get('/users', {
         params: {
           page: page,
           per_page: pageSize,
           include_totals: true,
-          sort: Auth0SearchSortFieldMapping.get(sort),
+          sort: Auth0SearchSortFields.get(sort),
           connection: 'Sierra-Connection',
           q: 'name:' + query + ' OR email:' + query,
           search_engine: 'v3'
