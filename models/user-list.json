@@ -3,30 +3,29 @@
   "title": "User List Schema",
   "type": "object",
   "properties": {
-    "search": {
-      "type": "object",
-      "properties": {
-        "page": {
-          "type": "integer",
-          "minimum": 0,
-          "multipleOf": 1.0
-        },
-        "pageSize": {
-          "type": "integer",
-          "minimum": 0,
-          "multipleOf": 1.0
-        },
-        "query": {
-          "type": "string",
-          "minLength": 1
-        }
-      },
-      "required": [
-        "page",
-        "pageSize",
-        "query"
-      ],
-      "additionalProperties": false
+    "page": {
+      "type": "integer",
+      "minimum": 0,
+      "multipleOf": 1.0
+    },
+    "pageSize": {
+      "type": "integer",
+      "minimum": 0,
+      "multipleOf": 1.0
+    },
+    "pageCount": {
+      "type": "integer",
+      "minimum": 0,
+      "multipleOf": 1.0
+    },
+    "totalResults": {
+      "type": "integer",
+      "minimum": 0,
+      "multipleOf": 1.0
+    },
+    "query": {
+      "type": "string",
+      "minLength": 1
     },
     "results": {
       "type": "array",
@@ -100,5 +99,14 @@
         "additionalProperties": false
       }
     }
-  }
+  },
+  "required": [
+    "page",
+    "pageSize",
+    "pageCount",
+    "totalResults",
+    "query",
+    "results"
+  ],
+  "additionalProperties": false
 }
