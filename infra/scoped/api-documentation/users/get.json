@@ -1,6 +1,6 @@
 {
   "summary": "Searches for users",
-  "description": "Executes a search for users using the `query` parameter, limited to `pageSize` results per page. Multiple pages of results can be paged through using the `page` parameter, and sorted using the 'sort' parameter.",
+  "description": "Executes a search for users using the `query` parameter, limited to `pageSize` results per page. Multiple pages of results can be paged through using the `page` parameter, and sorted using the `sort` parameter.",
   "tags": [
     "User"
   ]
