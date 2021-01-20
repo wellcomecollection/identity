@@ -70,7 +70,7 @@ function validateRequest(auth0UserInfo: Auth0UserInfo, pathParameters: { [name: 
   const targetUserId: string = pathParameters.userId;
 
   if (resource === '/users' && method === 'GET') {
-    return false; // TODO Only accessible to administrators
+    return true; // TODO Only accessible to administrators
   } else if (resource === '/users/{userId}' && (method === 'GET' || method === 'PUT' || method === 'DELETE')) {
     return userId === targetUserId; // TODO Accessible to both users and administrators
   } else if (resource === '/users/{userId}/password' && method === 'PUT') {
