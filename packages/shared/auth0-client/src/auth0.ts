@@ -35,3 +35,38 @@ export interface Auth0Profile extends Auth0UserInfo {
   lastLoginIp: string,
   totalLogins: number
 }
+
+// A container that represents Auth0 user search results.
+export interface Auth0SearchResults {
+  page: number,
+  pageSize: number,
+  pageCount: number,
+  totalResults: number,
+  query: string,
+  results: Auth0Profile[]
+}
+
+export enum Auth0SearchSortField {
+  Name,
+  Email,
+  LastLogin,
+  PatronRecordNumber
+}
+
+export const Auth0SearchSortFieldMapping = new Map<number, string>([
+  [Auth0SearchSortField.Name, 'name'],
+  [Auth0SearchSortField.Email, 'email'],
+  [Auth0SearchSortField.LastLogin, 'last_login'],
+  [Auth0SearchSortField.PatronRecordNumber, 'user_id']
+]);
+
+export function toAuth0SearchResults(page: number, query:string, auth0SearchResults: any): Auth0SearchResults {
+  return {
+    page: page,
+    pageSize: auth0SearchResults.length,
+    pageCount: Math.ceil(auth0SearchResults.total / auth0SearchResults.limit) - 1,
+    totalResults: auth0SearchResults.total,
+    query: query,
+    results: auth0SearchResults.users.map((user: any) => toAuth0Profile(user))
+  }
+}
