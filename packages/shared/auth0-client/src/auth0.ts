@@ -2,28 +2,27 @@ export function toAuth0UserInfo(userInfo: any): Auth0UserInfo {
   const sub = userInfo.sub;
   return {
     // As far as the application is concerned, Auth0 ID's are identical to Sierra ID's. So remove the mandatory Auth0 prefix.
-    userId: sub.slice(sub.indexOf('auth0|p') + 'auth0|p'.length),
-    name: userInfo.name,
-    firstName: userInfo.given_name,
-    lastName: userInfo.family_name,
-    email: userInfo.email
+    userId: sub.slice(sub.indexOf('auth0|p') + 'auth0|p'.length), // Mandatory Auth0 field
+    name: userInfo.name, // Mandatory Auth0 field
+    firstName: userInfo.given_name ? userInfo.given_name : null,
+    lastName: userInfo.family_name ? userInfo.family_name : null,
+    email: userInfo.email // Mandatory Auth0 field
   }
 }
 
 export function toAuth0Profile(auth0User: any): Auth0Profile {
   return {
     // As far as the application is concerned, Auth0 ID's are identical to Sierra ID's. So remove the mandatory Auth0 prefix.
-    userId: auth0User.user_id.slice(auth0User.user_id.indexOf('auth0|p') + 'auth0|p'.length),
-    name: auth0User.name,
-    firstName: auth0User.given_name,
-    lastName: auth0User.family_name,
-    email: auth0User.email,
-    emailValidated: auth0User.email_verified,
-    creationDate: auth0User.created_at,
+    userId: auth0User.user_id.slice(auth0User.user_id.indexOf('auth0|p') + 'auth0|p'.length), // Mandatory Auth0 field
+    name: auth0User.name, // Mandatory Auth0 field
+    firstName: auth0User.given_name ? auth0User.given_name : null,
+    lastName: auth0User.family_name ? auth0User.family_name : null,
+    email: auth0User.email, // Mandatory Auth0 field
+    emailValidated: auth0User.email_verified, // Mandatory Auth0 field
+    creationDate: auth0User.created_at, // Mandatory Auth0 field
     locked: !!(auth0User.blocked), // Auth0 quirk - this attribute doesn't appear on Auth0 responses until it's been toggled off and on at least once.
-    // Some fields won't be available until after the user has logged in at least once...
-    lastLogin: auth0User.last_login ? auth0User.last_login : '',
-    lastLoginIp: auth0User.last_ip ? auth0User.last_ip : '',
+    lastLogin: auth0User.last_login ? auth0User.last_login : null,
+    lastLoginIp: auth0User.last_ip ? auth0User.last_ip : null,
     totalLogins: auth0User.logins_count ? auth0User.logins_count : 0
   }
 }
