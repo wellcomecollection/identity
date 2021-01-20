@@ -12,14 +12,11 @@ export async function lambdaHandler(event: APIGatewayRequestAuthorizerEvent): Pr
 
   const auth0Client = new Auth0Client(AUTH0_API_ROOT, AUTH0_API_AUDIENCE, AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET);
 
-  // The 'Authorization' header is not present.
   if (!event.headers?.Authorization) {
     console.log('Authorization header is not present on request');
     return buildAuthorizerResult('user', 'Deny', event.methodArn);
   }
 
-  // Extract the access token from the 'Authorization' header. Reject the request if it's not present, or if it's not a
-  // valid bearer token.
   const authorizationHeader = event.headers.Authorization;
   const accessToken = extractAccessToken(authorizationHeader);
   if (!accessToken) {
@@ -27,8 +24,6 @@ export async function lambdaHandler(event: APIGatewayRequestAuthorizerEvent): Pr
     return buildAuthorizerResult(authorizationHeader, 'Deny', event.methodArn);
   }
 
-  // Validate the access token against Auth0 for validity. Auth0 will either explicitly reject the access token as not
-  // being valid, or some other unknown error may occur with the Auth0 API.
   const auth0Validate = await auth0Client.validateAccessToken(accessToken);
   if (auth0Validate.status != ResponseStatus.Success) {
     if (auth0Validate.status == ResponseStatus.InvalidCredentials) {
@@ -40,20 +35,11 @@ export async function lambdaHandler(event: APIGatewayRequestAuthorizerEvent): Pr
     }
   }
 
-  // We've validated the access token, now fetch the user ID from the request path. If it's not present, we can't
-  // continue.
-  if (!event.pathParameters?.userId) {
-    return buildAuthorizerResult(auth0Validate.result.userId, 'Allow', event.methodArn);
-  }
-
-  // Finally, validate the access token alongside the request path and embedded user ID. If that doesn't work out, then
-  // reject the request.
-  if (!validateRequest(auth0Validate.result, event.pathParameters, event.resource, event.httpMethod)) {
-    console.log('Access token [' + accessToken + '] for user [' + JSON.stringify(auth0Validate.result) + '] cannot operate on ID [' + event.pathParameters.userId + ']');
+  if (!validateRequest(auth0Validate.result, event.resource, <ResourceAclMethod>event.httpMethod, event.pathParameters)) {
+    console.log('Access token [' + accessToken + '] for user [' + JSON.stringify(auth0Validate.result) + '] cannot operate on [' + event.httpMethod + ' ' + event.resource + '] with path parameters [' + event.pathParameters + ']');
     return buildAuthorizerResult(auth0Validate.result.userId, 'Deny', event.methodArn);
   }
 
-  // Everything looks good.
   return buildAuthorizerResult(auth0Validate.result.userId, 'Allow', event.methodArn);
 }
 
@@ -62,30 +48,91 @@ function extractAccessToken(tokenString: string): null | string {
   return !match || match.length < 2 ? null : match[1];
 }
 
-function validateRequest(auth0UserInfo: Auth0UserInfo, pathParameters: { [name: string]: string }, resource: string, method: string): boolean {
-  // TODO Can we do this better? We need to be able to determine if the resource and method that is being operated on is
-  // accessible to the user for whom the request is being made on behalf of. Hardcoding the resource and methods like
-  // this doesn't seem very good...
-  const userId: string = auth0UserInfo.userId.toString();
-  const targetUserId: string = pathParameters.userId;
+type ResourceAclMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
+type ResourceAclCheckType = 'AND' | 'OR';
+type ResourceAclCheck = (user: Auth0UserInfo, pathParameters: Record<string, string> | null) => boolean;
 
-  if (resource === '/users' && method === 'GET') {
-    return true; // TODO Only accessible to administrators
-  } else if (resource === '/users/{userId}' && (method === 'GET' || method === 'PUT' || method === 'DELETE')) {
-    return userId === targetUserId; // TODO Accessible to both users and administrators
-  } else if (resource === '/users/{userId}/password' && method === 'PUT') {
-    return userId === targetUserId; // TODO Accessible to both users and administrators
-  } else if (resource === '/users/{userId}/send-verification' && method === 'PUT') {
-    return false; // TODO Only accessible to administrators
-  } else if (resource === '/users/{userId}/reset-password' && method === 'PUT') {
-    return false; // TODO Only accessible to administrators
-  } else if (resource === '/users/{userId}/lock' && method === 'PUT') {
-    return false; // TODO Only accessible to administrators
-  } else if (resource === '/users/{userId}/unlock' && method === 'PUT') {
-    return false; // TODO Only accessible to administrators
+type ResourceAcl = {
+  resource: string,
+  methods: ResourceAclMethod[],
+  check: ResourceAclCheck | Array<ResourceAclCheck>,
+  checkType?: ResourceAclCheckType
+};
+
+const isAdministrator = function (user: Auth0UserInfo, pathParameters: Record<string, string> | null): boolean {
+  return false; // @todo
+};
+
+const isSelf = function (user: Auth0UserInfo, pathParameters: Record<string, string> | null): boolean {
+  return pathParameters?.userId === user.userId.toString();
+};
+
+const resourceAcls: ResourceAcl[] = [
+  {
+    resource: '/users',
+    methods: ['GET'],
+    check: isAdministrator
+  },
+  {
+    resource: '/users/{userId}',
+    methods: ['GET', 'PUT', 'DELETE'],
+    check: [isSelf, isAdministrator],
+    checkType: 'OR'
+  },
+  {
+    resource: '/users/{userId}/password',
+    methods: ['PUT'],
+    check: [isSelf, isAdministrator],
+    checkType: 'OR'
+  },
+  {
+    resource: '/users/{userId}/send-verification',
+    methods: ['PUT'],
+    check: isAdministrator,
+  },
+  {
+    resource: '/users/{userId}/reset-password',
+    methods: ['PUT'],
+    check: isAdministrator,
+  },
+  {
+    resource: '/users/{userId}/lock',
+    methods: ['PUT'],
+    check: isAdministrator,
+  },
+  {
+    resource: '/users/{userId}/unlock',
+    methods: ['PUT'],
+    check: isAdministrator,
+  },
+];
+
+function validateRequest(auth0UserInfo: Auth0UserInfo, resource: string, method: ResourceAclMethod, pathParameters: Record<string, string> | null): boolean {
+  let acl = resourceAcls.find(acl => acl.resource === resource && acl.methods.includes(method));
+  if (!acl) {
+    // No ACL found, defensively deny access
+    return false;
   }
 
-  return false;
+  let aclCheckType = acl.checkType ?? 'OR';
+
+  // Start with the ACL flag by default set to the following
+  //   AND: a successful match will keep the flag on, an unsuccessful match will turn it off
+  //   OR: a successful match will OR the flag on, an unsuccessful match will leave it as is.
+  let aclMatched = aclCheckType === 'AND';
+
+  let aclChecks = Array.isArray(acl.check) ? acl.check : [acl.check];
+
+  for (const check of aclChecks) {
+    let matched = check(auth0UserInfo, pathParameters);
+    if (aclCheckType == 'OR') {
+      aclMatched = aclMatched || matched;
+    } else if (aclCheckType == 'AND') {
+      aclMatched = aclMatched && matched;
+    }
+  }
+
+  return aclMatched;
 }
 
 function buildAuthorizerResult(principal: string | number, effect: string, methodArn: string): APIGatewayAuthorizerResult {
