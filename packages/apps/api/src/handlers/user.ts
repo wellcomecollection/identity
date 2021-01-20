@@ -221,9 +221,10 @@ export async function searchUsers(auth0Client: Auth0Client, request: Request, re
 
   const page: number = Number(request.params.page);
   const pageSize: number = Number(request.params.pageSize);
-  const query: string = request.body.query;
   const sort: string = request.body.sort;
-  if (isNaN(page) || isNaN(pageSize) || !isNonBlank(query) || !isNonBlank(sort)) {
+  const sortDir: number = Number(request.params.sortDir);
+  const query: string = request.body.query;
+  if (isNaN(page) || isNaN(pageSize) || !isNonBlank(query) || !isNonBlank(sort) || isNaN(sortDir)) {
     response.status(400).json(toMessage("All fields must be provided and non-blank"));
     return;
   }
@@ -233,7 +234,7 @@ export async function searchUsers(auth0Client: Auth0Client, request: Request, re
     return;
   }
 
-  const userSearch: APIResponse<Auth0SearchResults> = await auth0Client.searchUsers(page, pageSize, sort, query);
+  const userSearch: APIResponse<Auth0SearchResults> = await auth0Client.searchUsers(page, pageSize, sort, sortDir, query);
   if (userSearch.status != ResponseStatus.Success) {
     if (userSearch.status === ResponseStatus.MalformedRequest) {
       response.status(400).json(toMessage(userSearch.message));

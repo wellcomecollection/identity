@@ -190,16 +190,16 @@ export default class Auth0Client {
     });
   }
 
-  async searchUsers(page: number, pageSize: number, sort: string, query: string): Promise<APIResponse<Auth0SearchResults>> {
+  async searchUsers(page: number, pageSize: number, sort: string, sortDir: number, query: string): Promise<APIResponse<Auth0SearchResults>> {
     return this.getMachineToMachineInstance().then(instance => {
       return instance.get('/users', {
         params: {
           page: page,
           per_page: pageSize,
           include_totals: true,
-          sort: Auth0SearchSortFields.get(sort),
+          sort: Auth0SearchSortFields.get(sort) + ':' + sortDir,
           connection: 'Sierra-Connection',
-          q: 'name:' + query + ' OR email:' + query,
+          q: 'name:*' + query + '* OR email:*' + query + '*',
           search_engine: 'v3'
         },
         validateStatus: status => status === 200

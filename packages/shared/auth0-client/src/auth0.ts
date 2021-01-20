@@ -42,6 +42,8 @@ export interface Auth0SearchResults {
   pageSize: number,
   pageCount: number,
   totalResults: number,
+  sort: string,
+  sortDir: number,
   query: string,
   results: Auth0Profile[]
 }
@@ -53,12 +55,14 @@ export const Auth0SearchSortFields = new Map<string, string>([
   ['recordNumber', 'user_id']
 ]);
 
-export function toAuth0SearchResults(page: number, query: string, auth0SearchResults: any): Auth0SearchResults {
+export function toAuth0SearchResults(page: number, sort: string, sortDir: number, query: string, auth0SearchResults: any): Auth0SearchResults {
   return {
     page: page,
     pageSize: auth0SearchResults.length,
     pageCount: Math.ceil(auth0SearchResults.total / auth0SearchResults.limit) - 1,
     totalResults: auth0SearchResults.total,
+    sort: sort,
+    sortDir: sortDir,
     query: query,
     results: auth0SearchResults.users.map((user: any) => toAuth0Profile(user))
   }
