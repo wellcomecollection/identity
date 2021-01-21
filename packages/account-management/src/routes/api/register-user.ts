@@ -9,10 +9,13 @@ export const registerUser: RouteMiddleware<{
   email: string;
   password: string; }, RegisterUserSchema> = async (context) => {
 
+  const getUserResponse = await callRemoteApi('GET', '/users/1103280', context.state);
+  console.log('Get user status: ' + getUserResponse.status);
+
   const body = context.requestBody; // type = RegisterUserSchema
 
   // Make call to API.
-  const registerResponse = await callRemoteApi('POST', '/users', body);
+  const registerResponse = await callRemoteApi('POST', '/users', context.state, body, false);
 
   // Return whatever you want to the user.
   context.response.status = registerResponse.status;
