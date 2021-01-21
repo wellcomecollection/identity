@@ -1,0 +1,3 @@
+{
+  "description": "The keywords to search records for. The search is applied across names and email addresses. A search for `*` returns all records."
+}

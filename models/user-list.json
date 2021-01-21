@@ -3,30 +3,48 @@
   "title": "User List Schema",
   "type": "object",
   "properties": {
-    "search": {
-      "type": "object",
-      "properties": {
-        "page": {
+    "page": {
+      "type": "integer",
+      "minimum": 0,
+      "multipleOf": 1.0
+    },
+    "pageSize": {
+      "type": "integer",
+      "minimum": 0,
+      "multipleOf": 1.0
+    },
+    "pageCount": {
+      "type": "integer",
+      "minimum": 0,
+      "multipleOf": 1.0
+    },
+    "totalResults": {
+      "type": "integer",
+      "minimum": 0,
+      "multipleOf": 1.0
+    },
+    "sort": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sortDir": {
+      "type": "integer",
+      "oneOf": [
+        {
           "type": "integer",
-          "minimum": 0,
-          "multipleOf": 1.0
+          "minimum": -1,
+          "maximum": -1
         },
-        "pageSize": {
+        {
           "type": "integer",
-          "minimum": 0,
-          "multipleOf": 1.0
-        },
-        "query": {
-          "type": "string",
-          "minLength": 1
+          "minimum": 1,
+          "maximum": 1
         }
-      },
-      "required": [
-        "page",
-        "pageSize",
-        "query"
-      ],
-      "additionalProperties": false
+      ]
+    },
+    "query": {
+      "type": "string",
+      "minLength": 1
     },
     "results": {
       "type": "array",
@@ -100,5 +118,16 @@
         "additionalProperties": false
       }
     }
-  }
+  },
+  "required": [
+    "page",
+    "pageSize",
+    "pageCount",
+    "totalResults",
+    "sort",
+    "sortDir",
+    "query",
+    "results"
+  ],
+  "additionalProperties": false
 }

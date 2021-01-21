@@ -183,6 +183,66 @@ resource "aws_api_gateway_documentation_part" "users_get" {
   }
 }
 
+resource "aws_api_gateway_documentation_part" "users_get_param_page" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/get-param-page.json")
+
+  location {
+    type   = "QUERY_PARAMETER"
+    path   = aws_api_gateway_resource.users.path
+    method = aws_api_gateway_method.users_get.http_method
+    name   = "page"
+  }
+}
+
+resource "aws_api_gateway_documentation_part" "users_get_param_pagesize" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/get-param-pagesize.json")
+
+  location {
+    type   = "QUERY_PARAMETER"
+    path   = aws_api_gateway_resource.users.path
+    method = aws_api_gateway_method.users_get.http_method
+    name   = "pageSize"
+  }
+}
+
+resource "aws_api_gateway_documentation_part" "users_get_param_sort" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/get-param-sort.json")
+
+  location {
+    type   = "QUERY_PARAMETER"
+    path   = aws_api_gateway_resource.users.path
+    method = aws_api_gateway_method.users_get.http_method
+    name   = "sort"
+  }
+}
+
+resource "aws_api_gateway_documentation_part" "users_get_param_sortdir" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/get-param-sortdir.json")
+
+  location {
+    type   = "QUERY_PARAMETER"
+    path   = aws_api_gateway_resource.users.path
+    method = aws_api_gateway_method.users_get.http_method
+    name   = "sortDir"
+  }
+}
+
+resource "aws_api_gateway_documentation_part" "users_get_param_query" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/get-param-query.json")
+
+  location {
+    type   = "QUERY_PARAMETER"
+    path   = aws_api_gateway_resource.users.path
+    method = aws_api_gateway_method.users_get.http_method
+    name   = "query"
+  }
+}
+
 # 200 OK
 
 resource "aws_api_gateway_documentation_part" "users_get_200" {
@@ -236,6 +296,20 @@ resource "aws_api_gateway_documentation_part" "users_get_500" {
     path        = aws_api_gateway_resource.users.path
     method      = aws_api_gateway_method.users_get.http_method
     status_code = "500"
+  }
+}
+
+# 503 Service Unavailable
+
+resource "aws_api_gateway_documentation_part" "users_get_503" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/get-503.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users.path
+    method      = aws_api_gateway_method.users_get.http_method
+    status_code = "503"
   }
 }
 
@@ -388,6 +462,18 @@ resource "aws_api_gateway_documentation_part" "users_userid_get" {
   }
 }
 
+resource "aws_api_gateway_documentation_part" "users_userid_get_param_userid" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/get-param-userid.json")
+
+  location {
+    type   = "PATH_PARAMETER"
+    path   = aws_api_gateway_resource.users_userid.path
+    method = aws_api_gateway_method.users_userid_get.http_method
+    name   = "userId"
+  }
+}
+
 # 200 OK
 
 resource "aws_api_gateway_documentation_part" "users_userid_get_200" {
@@ -454,6 +540,18 @@ resource "aws_api_gateway_documentation_part" "users_userid_put" {
     type   = "METHOD"
     path   = aws_api_gateway_resource.users_userid.path
     method = aws_api_gateway_method.users_userid_put.http_method
+  }
+}
+
+resource "aws_api_gateway_documentation_part" "users_userid_put_param_userid" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/put-param-userid.json")
+
+  location {
+    type   = "PATH_PARAMETER"
+    path   = aws_api_gateway_resource.users_userid.path
+    method = aws_api_gateway_method.users_userid_put.http_method
+    name   = "userId"
   }
 }
 
@@ -551,6 +649,18 @@ resource "aws_api_gateway_documentation_part" "users_userid_delete" {
     type   = "METHOD"
     path   = aws_api_gateway_resource.users_userid.path
     method = aws_api_gateway_method.users_userid_delete.http_method
+  }
+}
+
+resource "aws_api_gateway_documentation_part" "users_userid_delete_param_userid" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/delete-param-userid.json")
+
+  location {
+    type   = "PATH_PARAMETER"
+    path   = aws_api_gateway_resource.users_userid.path
+    method = aws_api_gateway_method.users_userid_delete.http_method
+    name   = "userId"
   }
 }
 
@@ -659,6 +769,18 @@ resource "aws_api_gateway_documentation_part" "users_userid_password_put" {
     type   = "METHOD"
     path   = aws_api_gateway_resource.users_userid_password.path
     method = aws_api_gateway_method.users_userid_password_put.http_method
+  }
+}
+
+resource "aws_api_gateway_documentation_part" "users_userid_password_put_param_userid" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/password/put-param-userid.json")
+
+  location {
+    type   = "PATH_PARAMETER"
+    path   = aws_api_gateway_resource.users_userid_password.path
+    method = aws_api_gateway_method.users_userid_password_put.http_method
+    name   = "userId"
   }
 }
 
@@ -798,6 +920,18 @@ resource "aws_api_gateway_documentation_part" "users_userid_reset-password_put" 
   }
 }
 
+resource "aws_api_gateway_documentation_part" "users_userid_reset-password_put_param_userid" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/reset-password/put-param-userid.json")
+
+  location {
+    type   = "PATH_PARAMETER"
+    path   = aws_api_gateway_resource.users_userid_reset-password.path
+    method = aws_api_gateway_method.users_userid_reset-password_put.http_method
+    name   = "userId"
+  }
+}
+
 # 200 OK
 
 resource "aws_api_gateway_documentation_part" "users_userid_reset-password_put_200" {
@@ -903,6 +1037,18 @@ resource "aws_api_gateway_documentation_part" "users_userid_send-verification_pu
     type   = "METHOD"
     path   = aws_api_gateway_resource.users_userid_send-verification.path
     method = aws_api_gateway_method.users_userid_send-verification_put.http_method
+  }
+}
+
+resource "aws_api_gateway_documentation_part" "users_userid_send-verification_put_param_userid" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/send-verification/put-param-userid.json")
+
+  location {
+    type   = "PATH_PARAMETER"
+    path   = aws_api_gateway_resource.users_userid_send-verification.path
+    method = aws_api_gateway_method.users_userid_send-verification_put.http_method
+    name   = "userId"
   }
 }
 
@@ -1014,6 +1160,18 @@ resource "aws_api_gateway_documentation_part" "users_userid_lock_put" {
   }
 }
 
+resource "aws_api_gateway_documentation_part" "users_userid_lock_put_param_userid" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/lock/put-param-userid.json")
+
+  location {
+    type   = "PATH_PARAMETER"
+    path   = aws_api_gateway_resource.users_userid_lock.path
+    method = aws_api_gateway_method.users_userid_lock_put.http_method
+    name   = "userId"
+  }
+}
+
 # 200 OK
 
 resource "aws_api_gateway_documentation_part" "users_userid_lock_put_200" {
@@ -1119,6 +1277,18 @@ resource "aws_api_gateway_documentation_part" "users_userid_unlock_put" {
     type   = "METHOD"
     path   = aws_api_gateway_resource.users_userid_unlock.path
     method = aws_api_gateway_method.users_userid_unlock_put.http_method
+  }
+}
+
+resource "aws_api_gateway_documentation_part" "users_userid_unlock_put_param_userid" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/unlock/put-param-userid.json")
+
+  location {
+    type   = "PATH_PARAMETER"
+    path   = aws_api_gateway_resource.users_userid_unlock.path
+    method = aws_api_gateway_method.users_userid_unlock_put.http_method
+    name   = "userId"
   }
 }
 

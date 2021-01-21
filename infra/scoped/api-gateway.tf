@@ -195,6 +195,8 @@ resource "aws_api_gateway_method" "users_get" {
   request_parameters = {
     "method.request.querystring.page"     = true,
     "method.request.querystring.pageSize" = true,
+    "method.request.querystring.sort"     = true,
+    "method.request.querystring.sortDir"  = true,
     "method.request.querystring.query"    = true
   }
 }
@@ -257,6 +259,23 @@ resource "aws_api_gateway_method_response" "users_get_500" {
   resource_id = aws_api_gateway_resource.users.id
   http_method = aws_api_gateway_method.users_get.http_method
   status_code = "500"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# 503 Service Unavailable
+
+resource "aws_api_gateway_method_response" "users_get_503" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users.id
+  http_method = aws_api_gateway_method.users_get.http_method
+  status_code = "503"
 
   response_models = {
     "application/json" = "Error"

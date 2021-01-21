@@ -1,6 +1,21 @@
-import { APIResponse, errorResponse, responseCodeIs, ResponseStatus, successResponse, unhandledError } from '@weco/identity-common';
+import {
+  APIResponse,
+  errorResponse,
+  responseCodeIs,
+  ResponseStatus,
+  successResponse,
+  unhandledError
+} from '@weco/identity-common';
 import axios, { AxiosInstance } from 'axios';
-import { Auth0Profile, Auth0UserInfo, toAuth0Profile, toAuth0UserInfo } from './auth0';
+import {
+  Auth0Profile,
+  Auth0SearchResults,
+  Auth0SearchSortFields,
+  Auth0UserInfo, generateUserSearchQuery,
+  toAuth0Profile,
+  toAuth0SearchResults,
+  toAuth0UserInfo
+} from './auth0';
 
 export default class Auth0Client {
 
@@ -110,7 +125,7 @@ export default class Auth0Client {
       .then(_ => successResponse(true))
       .catch(error => {
         if (error?.response?.status == 401) {
-          return errorResponse("Invalid credentials", ResponseStatus.InvalidCredentials, error);
+          return errorResponse('Invalid credentials', ResponseStatus.InvalidCredentials, error);
         }
 
         return unhandledError(error);
@@ -170,6 +185,37 @@ export default class Auth0Client {
             }
             case 404:
               return errorResponse('Auth0 user with ID [' + userId + '] not found', ResponseStatus.NotFound, error);
+          }
+        }
+        return unhandledError(error);
+      });
+    });
+  }
+
+  async searchUsers(page: number, pageSize: number, sort: string, sortDir: number, query: string): Promise<APIResponse<Auth0SearchResults>> {
+    return this.getMachineToMachineInstance().then(instance => {
+      return instance.get('/users', {
+        params: {
+          page: page,
+          per_page: pageSize,
+          include_totals: true,
+          sort: Auth0SearchSortFields.get(sort) + ':' + sortDir,
+          connection: 'Sierra-Connection',
+          q: generateUserSearchQuery(query),
+          search_engine: 'v3'
+        },
+        validateStatus: status => status === 200
+      }).then(response =>
+        successResponse(toAuth0SearchResults(page, sort, sortDir, query, response.data))
+      ).catch(error => {
+        if (error.response) {
+          switch (error.response.status) {
+            case 400: {
+              return errorResponse('Malformed or invalid Auth0 user search request', ResponseStatus.MalformedRequest, error);
+            }
+            case 503: {
+              return errorResponse('Auth0 user search query exceeded the timeout', ResponseStatus.QueryTimeout, error);
+            }
           }
         }
         return unhandledError(error);

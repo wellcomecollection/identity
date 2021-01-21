@@ -1,8 +1,8 @@
 import Auth0Client from '@weco/auth0-client';
-import { Auth0Profile } from "@weco/auth0-client/lib/auth0";
+import { Auth0Profile, Auth0SearchResults, Auth0SearchSortFields } from '@weco/auth0-client/lib/auth0';
 import { APIResponse, isNonBlank, ResponseStatus, truncate } from '@weco/identity-common';
 import SierraClient from '@weco/sierra-client';
-import { PatronRecord } from "@weco/sierra-client/lib/patron";
+import { PatronRecord } from '@weco/sierra-client/lib/patron';
 import { Request, Response } from 'express';
 import { toMessage } from '../models/common';
 import { toUser } from '../models/user';
@@ -45,7 +45,7 @@ export async function createUser(sierraClient: SierraClient, auth0Client: Auth0C
   const email: string = request.body.email;
   const password: string = request.body.password;
   if (!isNonBlank(firstName) || !isNonBlank(lastName) || !isNonBlank(email) || !isNonBlank(password)) {
-    response.status(400).json(toMessage("All fields must be provided and non-blank"));
+    response.status(400).json(toMessage('All fields must be provided and non-blank'));
     return;
   }
 
@@ -119,7 +119,7 @@ export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0C
 
   const email: string = request.body.email;
   if (!isNonBlank(email)) {
-    response.status(400).json(toMessage("All fields must be provided and non-blank"));
+    response.status(400).json(toMessage('All fields must be provided and non-blank'));
     return;
   }
 
@@ -182,7 +182,7 @@ export async function changePassword(sierraClient: SierraClient, auth0Client: Au
 
   const password: string = request.body.password;
   if (!isNonBlank(password)) {
-    response.status(400).json(toMessage("All fields must be provided and non-blank"));
+    response.status(400).json(toMessage('All fields must be provided and non-blank'));
     return;
   }
 
@@ -215,4 +215,41 @@ export async function changePassword(sierraClient: SierraClient, auth0Client: Au
   }
 
   response.status(200).json(toUser(sierraUpdate.result, auth0Update.result));
+}
+
+export async function searchUsers(auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
+
+  const page: number = Number(request.query.page);
+  const pageSize: number = Number(request.query.pageSize);
+  const sort: string = request.query.sort as string;
+  const sortDir: number = Number(request.query.sortDir);
+  const query: string = request.query.query as string;
+  if (isNaN(page) || isNaN(pageSize) || !isNonBlank(query) || !isNonBlank(sort) || isNaN(sortDir)) {
+    response.status(400).json(toMessage('All fields must be provided and non-blank'));
+    return;
+  }
+
+  if (!Auth0SearchSortFields.get(sort)) {
+    response.status(400).json(toMessage('Invalid sort field, one of [' + Array.from(Auth0SearchSortFields.keys()) + '] must be provided'));
+    return;
+  }
+
+  if (sortDir !== 1 && sortDir !== -1) {
+    response.status(400).json(toMessage('\'sortDir\' must be \'1\' or \'-1\' to sort ascending and descending respectively'))
+    return;
+  }
+
+  const userSearch: APIResponse<Auth0SearchResults> = await auth0Client.searchUsers(page, pageSize, sort, sortDir, query);
+  if (userSearch.status != ResponseStatus.Success) {
+    if (userSearch.status === ResponseStatus.MalformedRequest) {
+      response.status(400).json(toMessage(userSearch.message));
+    } else if (userSearch.status === ResponseStatus.QueryTimeout) {
+      response.status(503).json(toMessage(userSearch.message));
+    } else {
+      response.status(500).json(toMessage(userSearch.message));
+    }
+    return;
+  }
+
+  response.status(200).json(userSearch.result);
 }
