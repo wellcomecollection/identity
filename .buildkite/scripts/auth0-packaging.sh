@@ -20,7 +20,8 @@ function __package_auth0_html() {
     "/app/html/auth0/login.html" \
     "/app/html/auth0/password_reset.html" \
     "/app/html/auth0/reset_email.html" \
-    "/app/html/auth0/verify_email.html"
+    "/app/html/auth0/verify_email.html" \
+    "/app/html/auth0/welcome_email.html"
 }
 
 function __store_auth0_scripts() {
