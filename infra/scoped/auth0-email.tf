@@ -19,6 +19,7 @@ resource "auth0_email_template" "verify_email" {
   body                    = var.auth0_email_body_placeholder
   syntax                  = "liquid"
   url_lifetime_in_seconds = aws_ssm_parameter.auth0_verify_email_url_ttl.value
+  result_url              = local.ams_validate_uri
 
   lifecycle {
     ignore_changes = [
