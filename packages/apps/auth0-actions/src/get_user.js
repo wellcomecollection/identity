@@ -78,17 +78,17 @@ function getUser(email, callback) {
             return {
                 firstName: '',
                 lastName: ''
-            }
+            };
         }
     }
 
     function getPatronNameMarc(subFields) {
-        const firstName = subFields.find(subField => subField.tag === 'b')
-        const lastName = subFields.find(subField => subField.tag === 'a')
+        const firstName = subFields.find(subField => subField.tag === 'b');
+        const lastName = subFields.find(subField => subField.tag === 'a');
         return {
             firstName: firstName ? firstName.content.trim() : '',
             lastName: lastName ? lastName.content.trim() : ''
-        }
+        };
     }
 
     function getPatronNameNonMarc(content) {

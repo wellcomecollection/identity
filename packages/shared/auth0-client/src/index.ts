@@ -125,7 +125,7 @@ export default class Auth0Client {
       .then(_ => successResponse(true))
       .catch(error => {
         if (error?.response?.status == 401) {
-          return errorResponse("Invalid credentials", ResponseStatus.InvalidCredentials, error);
+          return errorResponse('Invalid credentials', ResponseStatus.InvalidCredentials, error);
         }
 
         return unhandledError(error);

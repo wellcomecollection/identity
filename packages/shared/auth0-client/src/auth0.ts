@@ -27,6 +27,19 @@ export function toAuth0Profile(auth0User: any): Auth0Profile {
   }
 }
 
+export function toAuth0SearchResults(page: number, sort: string, sortDir: number, query: string, auth0SearchResults: any): Auth0SearchResults {
+  return {
+    page: page,
+    pageSize: auth0SearchResults.length,
+    pageCount: Math.ceil(auth0SearchResults.total / auth0SearchResults.limit),
+    totalResults: auth0SearchResults.total,
+    sort: sort,
+    sortDir: sortDir,
+    query: query,
+    results: auth0SearchResults.users.map((user: any) => toAuth0Profile(user))
+  }
+}
+
 // A simple representation of the Auth0 user, using only the attributes we provide to Auth0 to create it.
 export interface Auth0UserInfo {
   userId: number;
@@ -65,16 +78,3 @@ export const Auth0SearchSortFields = new Map<string, string>([
   ['lastLogin', 'last_login'],
   ['locked', 'blocked']
 ]);
-
-export function toAuth0SearchResults(page: number, sort: string, sortDir: number, query: string, auth0SearchResults: any): Auth0SearchResults {
-  return {
-    page: page,
-    pageSize: auth0SearchResults.length,
-    pageCount: Math.ceil(auth0SearchResults.total / auth0SearchResults.limit),
-    totalResults: auth0SearchResults.total,
-    sort: sort,
-    sortDir: sortDir,
-    query: query,
-    results: auth0SearchResults.users.map((user: any) => toAuth0Profile(user))
-  }
-}
