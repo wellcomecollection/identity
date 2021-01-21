@@ -40,6 +40,10 @@ export function toAuth0SearchResults(page: number, sort: string, sortDir: number
   }
 }
 
+export function generateUserSearchQuery(query: string): string {
+  return query.split(' ').map(token => 'name:*' + token + '* OR email:*' + token + '*').join(' ');
+}
+
 // A simple representation of the Auth0 user, using only the attributes we provide to Auth0 to create it.
 export interface Auth0UserInfo {
   userId: number;

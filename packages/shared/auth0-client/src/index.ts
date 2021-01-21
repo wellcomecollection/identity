@@ -11,7 +11,7 @@ import {
   Auth0Profile,
   Auth0SearchResults,
   Auth0SearchSortFields,
-  Auth0UserInfo,
+  Auth0UserInfo, generateUserSearchQuery,
   toAuth0Profile,
   toAuth0SearchResults,
   toAuth0UserInfo
@@ -201,7 +201,7 @@ export default class Auth0Client {
           include_totals: true,
           sort: Auth0SearchSortFields.get(sort) + ':' + sortDir,
           connection: 'Sierra-Connection',
-          q: query.split(' ').map(token => 'name:*' + token + '* OR email:*' + token + '*').join(' '),
+          q: generateUserSearchQuery(query),
           search_engine: 'v3'
         },
         validateStatus: status => status === 200
