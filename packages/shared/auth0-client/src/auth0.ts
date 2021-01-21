@@ -62,7 +62,7 @@ export const Auth0SearchSortFields = new Map<string, string>([
   ['name', 'name'],
   ['email', 'email'],
   ['lastLogin', 'last_login'],
-  ['recordNumber', 'user_id']
+  ['userId', 'user_id']
 ]);
 
 export function toAuth0SearchResults(page: number, sort: string, sortDir: number, query: string, auth0SearchResults: any): Auth0SearchResults {
