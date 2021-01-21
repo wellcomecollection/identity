@@ -59,10 +59,11 @@ export interface Auth0SearchResults {
 }
 
 export const Auth0SearchSortFields = new Map<string, string>([
+  ['userId', 'user_id'],
   ['name', 'name'],
   ['email', 'email'],
   ['lastLogin', 'last_login'],
-  ['userId', 'user_id']
+  ['locked', 'blocked']
 ]);
 
 export function toAuth0SearchResults(page: number, sort: string, sortDir: number, query: string, auth0SearchResults: any): Auth0SearchResults {
