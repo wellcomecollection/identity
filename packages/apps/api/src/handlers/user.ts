@@ -1,8 +1,8 @@
 import Auth0Client from '@weco/auth0-client';
-import { Auth0Profile, Auth0SearchResults, Auth0SearchSortFields } from "@weco/auth0-client/lib/auth0";
+import { Auth0Profile, Auth0SearchResults, Auth0SearchSortFields } from '@weco/auth0-client/lib/auth0';
 import { APIResponse, isNonBlank, ResponseStatus, truncate } from '@weco/identity-common';
 import SierraClient from '@weco/sierra-client';
-import { PatronRecord } from "@weco/sierra-client/lib/patron";
+import { PatronRecord } from '@weco/sierra-client/lib/patron';
 import { Request, Response } from 'express';
 import { toMessage } from '../models/common';
 import { toUser } from '../models/user';
@@ -45,7 +45,7 @@ export async function createUser(sierraClient: SierraClient, auth0Client: Auth0C
   const email: string = request.body.email;
   const password: string = request.body.password;
   if (!isNonBlank(firstName) || !isNonBlank(lastName) || !isNonBlank(email) || !isNonBlank(password)) {
-    response.status(400).json(toMessage("All fields must be provided and non-blank"));
+    response.status(400).json(toMessage('All fields must be provided and non-blank'));
     return;
   }
 
@@ -119,7 +119,7 @@ export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0C
 
   const email: string = request.body.email;
   if (!isNonBlank(email)) {
-    response.status(400).json(toMessage("All fields must be provided and non-blank"));
+    response.status(400).json(toMessage('All fields must be provided and non-blank'));
     return;
   }
 
@@ -182,7 +182,7 @@ export async function changePassword(sierraClient: SierraClient, auth0Client: Au
 
   const password: string = request.body.password;
   if (!isNonBlank(password)) {
-    response.status(400).json(toMessage("All fields must be provided and non-blank"));
+    response.status(400).json(toMessage('All fields must be provided and non-blank'));
     return;
   }
 
@@ -225,12 +225,12 @@ export async function searchUsers(auth0Client: Auth0Client, request: Request, re
   const sortDir: number = Number(request.query.sortDir);
   const query: string = request.query.query as string;
   if (isNaN(page) || isNaN(pageSize) || !isNonBlank(query) || !isNonBlank(sort) || isNaN(sortDir)) {
-    response.status(400).json(toMessage("All fields must be provided and non-blank"));
+    response.status(400).json(toMessage('All fields must be provided and non-blank'));
     return;
   }
 
   if (!Auth0SearchSortFields.get(sort)) {
-    response.status(400).json(toMessage("Invalid sort field, one of [" + Array.from(Auth0SearchSortFields.keys()) + "] must be provided"));
+    response.status(400).json(toMessage('Invalid sort field, one of [' + Array.from(Auth0SearchSortFields.keys()) + '] must be provided'));
     return;
   }
 
