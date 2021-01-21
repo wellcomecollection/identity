@@ -27,6 +27,7 @@ locals {
   # Account Management System
   ams_hostname     = "${aws_ssm_parameter.hostname_prefix.value}.${data.aws_ssm_parameter.hostname.value}"
   ams_redirect_uri = "https://${local.ams_hostname}/callback"
+  ams_error_uri    = "https://${local.ams_hostname}/error"
 }
 
 # Tags
