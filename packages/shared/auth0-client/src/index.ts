@@ -201,7 +201,7 @@ export default class Auth0Client {
           include_totals: true,
           sort: Auth0SearchSortFields.get(sort) + ':' + sortDir,
           connection: 'Sierra-Connection',
-          q: 'name:*' + query + '* OR email:*' + query + '*',
+          q: query.split(' ').map(token => 'name:*' + token + '* OR email:*' + token + '*').join(' '),
           search_engine: 'v3'
         },
         validateStatus: status => status === 200
