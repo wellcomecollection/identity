@@ -60,7 +60,7 @@ type ResourceAcl = {
 };
 
 const isAdministrator = function (user: Auth0UserInfo, pathParameters: Record<string, string> | null): boolean {
-  return true; // @todo
+  return false; // @todo
 };
 
 const isSelf = function (user: Auth0UserInfo, pathParameters: Record<string, string> | null): boolean {
