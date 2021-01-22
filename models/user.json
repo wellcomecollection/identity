@@ -13,26 +13,28 @@
       "minLength": 1
     },
     "firstName": {
-      "type": "string",
-      "minLength": 1
+      "type": "string"
     },
     "lastName": {
-      "type": "string",
-      "minLength": 1
+      "type": "string"
     },
     "email": {
       "type": "string",
-      "format": "email"
+      "format": "email",
+      "minLength": 1
     },
     "emailValidated": {
-      "type": "boolean"
+      "type": "boolean",
+      "minLength": 1
     },
     "locked": {
-      "type": "boolean"
+      "type": "boolean",
+      "minLength": 1
     },
     "creationDate": {
       "type": "string",
-      "format": "date-time"
+      "format": "date-time",
+      "minLength": 1
     },
     "lastLogin": {
       "type": "string",

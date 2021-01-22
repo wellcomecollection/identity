@@ -89,8 +89,8 @@ export interface Auth0Profile extends Auth0UserInfo {
   emailValidated: boolean,
   locked: boolean,
   creationDate: string,
-  lastLogin: string,
-  lastLoginIp: string,
+  lastLogin: string | null,
+  lastLoginIp: string | null,
   totalLogins: number
 }
 
