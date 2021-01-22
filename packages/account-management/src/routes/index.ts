@@ -1,9 +1,12 @@
 import { RouteMiddleware } from '../types/application';
 
+const unAuthenticatedPages: string[] = ['/register'];
+
 export const indexPage: RouteMiddleware = (context) => {
   const bundle = context.routes.url('assets-bundles');
 
-  if (!context.isAuthenticated()) {
+  const isUnauthenticatedPage: boolean = !!context.req.url && unAuthenticatedPages.includes(context.req.url);
+  if (!isUnauthenticatedPage && !context.isAuthenticated()) {
     context.redirect('/login');
     return;
   }
