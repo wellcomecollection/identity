@@ -1,6 +1,6 @@
 import { RouteMiddleware } from '../types/application';
 
-const unAuthenticatedPages: string[] = ['/register'];
+const unAuthenticatedPages: string[] = ['/register', '/validated', '/error'];
 
 export const indexPage: RouteMiddleware = (context) => {
   const bundle = context.routes.url('assets-bundles');
