@@ -16,10 +16,14 @@ function login(email, password, callback) {
                 family_name: patronRecord.lastName
             });
         }).catch(error => {
-            callback(error)
+            callback(error);
         });
     }).catch(error => {
-        callback(error);
+        if (error.response && error.response.status === 404) {
+            callback(null);
+        } else {
+            callback(error);
+        }
     });
 
     async function validateCredentials(barcode, pin) {

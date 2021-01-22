@@ -38,11 +38,11 @@ resource "auth0_connection" "sierra" {
       login    = file("${path.module}/../../packages/apps/auth0-actions/src/login.js"),
       get_user = file("${path.module}/../../packages/apps/auth0-actions/src/get_user.js")
     }
-  }
 
-  lifecycle {
-    ignore_changes = [
-      options["custom_scripts"]
-    ]
+    configuration = {
+      API_ROOT      = aws_ssm_parameter.sierra_api_hostname.value,
+      CLIENT_KEY    = data.external.sierra_api_credentials.result.SierraAPIKey,
+      CLIENT_SECRET = data.external.sierra_api_credentials.result.SierraAPISecret
+    }
   }
 }
