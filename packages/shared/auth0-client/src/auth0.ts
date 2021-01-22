@@ -31,9 +31,8 @@ export function toAuth0Profile(auth0User: any): Auth0Profile {
   const userIdStr: string = auth0User.user_id;
   const name: string = auth0User.name;
   const email: string = auth0User.email;
-  const emailValidated: string = auth0User.email_verified;
   const creationDate: string = auth0User.created_at;
-  if (!isNonBlank(userIdStr) || !isNonBlank(name) || !isNonBlank(email) || !isNonBlank(emailValidated) || !isNonBlank(creationDate)) {
+  if (!isNonBlank(userIdStr) || !isNonBlank(name) || !isNonBlank(email) || !isNonBlank(creationDate)) {
     throw new Error('One or more required UserProfile fields are missing. Have all necessary scopes been requested?')
   }
 
