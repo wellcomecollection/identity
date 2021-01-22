@@ -1,25 +1,56 @@
+import { isNonBlank } from "@weco/identity-common";
+
 export function toAuth0UserInfo(userInfo: any): Auth0UserInfo {
-  const sub = userInfo.sub;
+
+  // Mandatory Auth0 fields
+  const sub: string = userInfo.sub;
+  const name: string = userInfo.name;
+  const email: string = userInfo.email;
+  if (!isNonBlank(sub) || !isNonBlank(name) || !isNonBlank(email)) {
+    throw new Error('One or more required UserInfo fields are missing. Have all necessary scopes been requested?')
+  }
+
+  const userId: number = Number(sub.slice(sub.indexOf('auth0|p') + 'auth0|p'.length));
+  if (isNaN(userId)) {
+    throw new Error('UserInfo provided invalid \'sub\' field: cannot extract numerical ID from [' + sub + ']');
+  }
+
   return {
     // As far as the application is concerned, Auth0 ID's are identical to Sierra ID's. So remove the mandatory Auth0 prefix.
-    userId: sub.slice(sub.indexOf('auth0|p') + 'auth0|p'.length), // Mandatory Auth0 field
-    name: userInfo.name, // Mandatory Auth0 field
+    userId: userId,
+    name: name,
     firstName: userInfo.given_name ? userInfo.given_name : null,
     lastName: userInfo.family_name ? userInfo.family_name : null,
-    email: userInfo.email // Mandatory Auth0 field
+    email: email
   }
 }
 
 export function toAuth0Profile(auth0User: any): Auth0Profile {
+
+  // Mandatory Auth0 fields
+  const userIdStr: string = auth0User.user_id;
+  const name: string = auth0User.name;
+  const email: string = auth0User.email;
+  const emailValidated: string = auth0User.email_verified;
+  const creationDate: string = auth0User.created_at;
+  if (!isNonBlank(userIdStr) || !isNonBlank(name) || !isNonBlank(email) || !isNonBlank(emailValidated) || !isNonBlank(creationDate)) {
+    throw new Error('One or more required UserProfile fields are missing. Have all necessary scopes been requested?')
+  }
+
+  const userId: number = Number(userIdStr.slice(userIdStr.indexOf('auth0|p') + 'auth0|p'.length));
+  if (isNaN(userId)) {
+    throw new Error('UserProfile provided invalid \'user_id\' field: cannot extract numerical ID from [' + userIdStr + ']');
+  }
+
   return {
     // As far as the application is concerned, Auth0 ID's are identical to Sierra ID's. So remove the mandatory Auth0 prefix.
-    userId: auth0User.user_id.slice(auth0User.user_id.indexOf('auth0|p') + 'auth0|p'.length), // Mandatory Auth0 field
-    name: auth0User.name, // Mandatory Auth0 field
+    userId: userId,
+    name: auth0User.name,
     firstName: auth0User.given_name ? auth0User.given_name : null,
     lastName: auth0User.family_name ? auth0User.family_name : null,
-    email: auth0User.email, // Mandatory Auth0 field
-    emailValidated: auth0User.email_verified, // Mandatory Auth0 field
-    creationDate: auth0User.created_at, // Mandatory Auth0 field
+    email: auth0User.email,
+    emailValidated: auth0User.email_verified,
+    creationDate: auth0User.created_at,
     locked: !!(auth0User.blocked), // Auth0 quirk - this attribute doesn't appear on Auth0 responses until it's been toggled off and on at least once.
     lastLogin: auth0User.last_login ? auth0User.last_login : null,
     lastLoginIp: auth0User.last_ip ? auth0User.last_ip : null,
@@ -48,8 +79,8 @@ export function generateUserSearchQuery(query: string): string {
 export interface Auth0UserInfo {
   userId: number;
   name: string;
-  firstName: string;
-  lastName: string;
+  firstName: string | null;
+  lastName: string | null;
   email: string;
 }
 
