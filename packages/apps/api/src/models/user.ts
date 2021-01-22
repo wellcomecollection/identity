@@ -3,7 +3,7 @@ import { PatronRecord } from '@weco/sierra-client/lib/patron';
 
 export function toUser(patronRecord: PatronRecord, auth0Profile: Auth0Profile): User {
   return {
-    patronId: patronRecord.recordNumber,
+    userId: auth0Profile.userId,
     barcode: patronRecord.barcode,
     firstName: auth0Profile.firstName,
     lastName: auth0Profile.lastName,
@@ -18,15 +18,15 @@ export function toUser(patronRecord: PatronRecord, auth0Profile: Auth0Profile): 
 }
 
 interface User {
-  patronId: number,
+  userId: number,
   barcode: string,
-  firstName: string,
-  lastName: string,
+  firstName: string | null,
+  lastName: string | null,
   email: string,
   emailValidated: boolean,
   locked: boolean,
   creationDate: string,
-  lastLogin: string,
-  lastLoginIp: string,
+  lastLogin: string | null,
+  lastLoginIp: string | null,
   totalLogins: number
 }
