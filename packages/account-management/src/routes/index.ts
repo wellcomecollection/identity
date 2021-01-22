@@ -5,8 +5,7 @@ const unAuthenticatedPages: string[] = ['/register', '/validated', '/error'];
 export const indexPage: RouteMiddleware = (context) => {
   const bundle = context.routes.url('assets-bundles');
 
-  const isUnauthenticatedPage: boolean = !!context.req.url && unAuthenticatedPages.includes(context.req.url.split('?')[0]);
-  if (!isUnauthenticatedPage && !context.isAuthenticated()) {
+  if (!unAuthenticatedPages.includes(context.request.URL.pathname) && !context.isAuthenticated()) {
     context.redirect('/login');
     return;
   }
