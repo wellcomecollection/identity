@@ -9,25 +9,32 @@ async function enrichPatronAttributes(user, context, callback) {
     const namespace = 'https://wellcomecollection.org/';
 
     try {
-        const patronId = user.user_id.substr(7); // TODO This isn't very good?
-        const accessToken = await fetchAccessToken();
-        const patronRecord = await fetchPatronRecord(accessToken, patronId);
+        if(context.connection === 'Sierra-Connection' && requestContainsScope(context.request)) {
+            const patronId = user.user_id.substr(7); // TODO This isn't very good?
+            const accessToken = await fetchAccessToken();
+            const patronRecord = await fetchPatronRecord(accessToken, patronId);
 
-        const idToken = context.idToken || {};
-        idToken[namespace] = {
-            record_number: patronRecord.recordNumber,
-            barcode: patronRecord.barcode,
-            email: patronRecord.email,
-            name: patronRecord.firstName + ' ' + patronRecord.lastName,
-            first_names: patronRecord.firstName,
-            last_names: patronRecord.lastName
-        };
-        context.idToken = idToken;
+            const idToken = context.idToken || {};
+            idToken[namespace] = {
+                record_number: patronRecord.recordNumber,
+                barcode: patronRecord.barcode,
+                email: patronRecord.email,
+                name: patronRecord.firstName + ' ' + patronRecord.lastName,
+                first_names: patronRecord.firstName,
+                last_names: patronRecord.lastName
+            };
+            context.idToken = idToken;
+        }
 
         callback(null, user, context);
 
     } catch (error) {
         callback(error);
+    }
+
+    function requestContainsScope(request) {
+        const match = request.query.scope.match(/\bpatron:read\b/);
+        return !match || match.length !== 1 ? null : match[0];
     }
 
     async function fetchAccessToken() {
