@@ -22,7 +22,7 @@ export const indexPage: RouteMiddleware = (context) => {
     `;
     return;
 
-  } else {
-    context.redirect('/login');
   }
+
+  context.redirect('/login');
 };
