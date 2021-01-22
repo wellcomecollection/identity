@@ -24,6 +24,12 @@ resource "auth0_tenant" "tenant" {
     html    = var.auth0_html_placeholder
   }
 
+  error_page {
+    html          = ""
+    show_log_link = false
+    url           = local.ams_error_uri
+  }
+
   lifecycle {
     ignore_changes = [
       change_password.0.html

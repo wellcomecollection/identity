@@ -33,5 +33,16 @@ resource "auth0_connection" "sierra" {
     password_complexity_options {
       min_length = 8
     }
+
+    custom_scripts = {
+      login    = file("${path.module}/../../packages/apps/auth0-actions/src/login.js"),
+      get_user = file("${path.module}/../../packages/apps/auth0-actions/src/get_user.js")
+    }
+  }
+
+  lifecycle {
+    ignore_changes = [
+      options["custom_scripts"]
+    ]
   }
 }

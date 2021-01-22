@@ -9,18 +9,32 @@ async function enrichPatronAttributes(user, context, callback) {
     const namespace = 'https://wellcomecollection.org/';
 
     try {
-        const patronId = user.user_id.substr(7); // TODO This isn't very good?
-        const accessToken = await fetchAccessToken();
-        const patronRecord = await fetchPatronRecord(accessToken, patronId);
+        if(context.connection === 'Sierra-Connection' && requestContainsScope(context.request)) {
+            const patronId = user.user_id.substr(7); // TODO This isn't very good?
+            const accessToken = await fetchAccessToken();
+            const patronRecord = await fetchPatronRecord(accessToken, patronId);
 
-        const idToken = context.idToken || {};
-        idToken[namespace] = patronRecord;
-        context.idToken = idToken;
+            const idToken = context.idToken || {};
+            idToken[namespace] = {
+                record_number: patronRecord.recordNumber,
+                barcode: patronRecord.barcode,
+                email: patronRecord.email,
+                name: patronRecord.firstName + ' ' + patronRecord.lastName,
+                first_names: patronRecord.firstName,
+                last_names: patronRecord.lastName
+            };
+            context.idToken = idToken;
+        }
 
         callback(null, user, context);
 
     } catch (error) {
         callback(error);
+    }
+
+    function requestContainsScope(request) {
+        const match = request.query.scope.match(/\bpatron:read\b/);
+        return !match || match.length !== 1 ? null : match[0];
     }
 
     async function fetchAccessToken() {
@@ -45,43 +59,53 @@ async function enrichPatronAttributes(user, context, callback) {
             },
             validateStatus: status => status === 200
         }).then(response => {
-            return {
-                record_number: patronId,
-                email_address: extractVarField(response.data.varFields, 'z').content,
-                barcode: extractVarField(response.data.varFields, 'b').content,
-                name: getPatronName(response.data.varFields)
-            };
+            return toPatronRecord(response.data);
         });
     }
 
-    function extractVarField(varFields, fieldTag) {
-        const value = varFields.find(varField => varField.fieldTag === fieldTag);
-        if (!value) {
-            throw new Error('[' + fieldTag + '] not found in varFields [' + varFields + ']');
-        }
-        return value;
+    function toPatronRecord(data) {
+        const patronName = getPatronName(data.varFields);
+        return Object.assign(patronName, {
+            recordNumber: data.id,
+            barcode: getVarFieldContent(data.varFields, 'b'),
+            email: getVarFieldContent(data.varFields, 'z')
+        });
+    }
+
+    function getVarFieldContent(varFields, fieldTag) {
+        const found = varFields.find(varField => varField.fieldTag === fieldTag);
+        return found ? found.content || '' : '';
     }
 
     function getPatronName(varFields) {
-        const found = extractVarField(varFields, 'n');
+        const found = varFields.find(varField => varField.fieldTag === 'n');
         if (found && found.content) {
             return getPatronNameNonMarc(found.content);
         } else if (found && found.subfields) {
             return getPatronNameMarc(found.subfields);
         } else {
-            return '';
+            return {
+                firstName: '',
+                lastName: ''
+            };
         }
     }
 
     function getPatronNameMarc(subFields) {
         const firstName = subFields.find(subField => subField.tag === 'b');
         const lastName = subFields.find(subField => subField.tag === 'a');
-        return (firstName ? firstName.content.trim() : '') + ' ' + (lastName ? lastName.content.trim() : '');
+        return {
+            firstName: firstName ? firstName.content.trim() : '',
+            lastName: lastName ? lastName.content.trim() : ''
+        };
     }
 
     function getPatronNameNonMarc(content) {
         if (!content.trim()) {
-            return '';
+            return {
+                firstName: '',
+                lastName: ''
+            };
         }
 
         content = content.replace('100', '').replace('a|', '').replace('_', '');
@@ -98,6 +122,9 @@ async function enrichPatronAttributes(user, context, callback) {
             firstName = content.substring(content.indexOf(',') + 1, content.length);
         }
 
-        return firstName.trim() + ' ' + lastName.trim();
+        return {
+            firstName: firstName.trim(),
+            lastName: lastName.trim()
+        };
     }
 }

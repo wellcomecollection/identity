@@ -76,21 +76,21 @@ export function toCreatePatron(firstName: string, lastName: string, pin: string)
     patronType: 29,
     fixedFields: {
       46: {
-        label: "USER CAT.",
-        value: "13"
+        label: 'USER CAT.',
+        value: '13'
       },
     },
     varFields: [
       {
-        fieldTag: "n",
-        marcTag: "100",
+        fieldTag: 'n',
+        marcTag: '100',
         subfields: [
           {
-            tag: "a",
+            tag: 'a',
             content: lastName
           },
           {
-            tag: "b",
+            tag: 'b',
             content: firstName
           }
         ]

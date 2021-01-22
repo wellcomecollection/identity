@@ -76,7 +76,7 @@ describe('auth0 client', () => {
       equal(response.status, ResponseStatus.Success);
 
       const result = (<SuccessResponse<Auth0Profile>>response).result;
-      equal(result.userId, 'auth0|p' + userId);
+      equal(result.userId, userId);
       equal(result.email, email);
       equal(result.emailValidated, emailValidated);
       equal(result.locked, locked);
@@ -96,7 +96,7 @@ describe('auth0 client', () => {
       equal(response.status, ResponseStatus.Success);
 
       const result = (<SuccessResponse<Auth0Profile>>response).result;
-      equal(result.userId, 'auth0|p' + userId);
+      equal(result.userId, userId);
       equal(result.email, email);
       equal(result.emailValidated, emailValidated);
       equal(result.locked, locked);
@@ -141,7 +141,7 @@ describe('auth0 client', () => {
       equal(response.status, ResponseStatus.Success);
 
       const result = (<SuccessResponse<Auth0Profile>>response).result;
-      equal(result.userId, 'auth0|p' + userId);
+      equal(result.userId, userId);
       equal(result.email, email);
       equal(result.emailValidated, emailValidated);
       equal(result.locked, locked);
@@ -182,7 +182,7 @@ describe('auth0 client', () => {
       equal(response.status, ResponseStatus.Success);
 
       const result = (<SuccessResponse<Auth0Profile>>response).result;
-      equal(result.userId, 'auth0|p' + userId);
+      equal(result.userId, userId);
       equal(result.email, email);
       equal(result.emailValidated, emailValidated);
       equal(result.locked, locked);
@@ -220,11 +220,14 @@ describe('auth0 client', () => {
         response: user
       });
 
-      const response = await client.createUser(userId, email, password);
+      const response = await client.createUser(userId, firstName, lastName, email, password);
       equal(response.status, ResponseStatus.Success);
 
       const result = (<SuccessResponse<Auth0Profile>>response).result;
-      equal(result.userId, 'auth0|p' + userId);
+      equal(result.userId, userId);
+      equal(result.name, name);
+      equal(result.firstName, firstName);
+      equal(result.lastName, lastName);
       equal(result.email, email);
       equal(result.emailValidated, emailValidated);
       equal(result.locked, locked);
@@ -239,7 +242,7 @@ describe('auth0 client', () => {
         status: 409
       });
 
-      const response = await client.createUser(userId, email, password);
+      const response = await client.createUser(userId, firstName, lastName, email, password);
       equal(response.status, ResponseStatus.UserAlreadyExists);
     });
 
@@ -251,7 +254,7 @@ describe('auth0 client', () => {
         }
       });
 
-      const response = await client.createUser(userId, email, password);
+      const response = await client.createUser(userId, firstName, lastName, email, password);
       equal(response.status, ResponseStatus.PasswordTooWeak);
     });
 
@@ -260,7 +263,7 @@ describe('auth0 client', () => {
         status: 400
       });
 
-      const response = await client.createUser(userId, email, password);
+      const response = await client.createUser(userId, firstName, lastName, email, password);
       equal(response.status, ResponseStatus.MalformedRequest);
     });
 
@@ -269,7 +272,7 @@ describe('auth0 client', () => {
         status: 500
       });
 
-      const response = await client.createUser(userId, email, password);
+      const response = await client.createUser(userId, firstName, lastName, email, password);
       equal(response.status, ResponseStatus.UnknownError);
     });
   });
@@ -286,7 +289,7 @@ describe('auth0 client', () => {
       equal(response.status, ResponseStatus.Success);
 
       const result = (<SuccessResponse<Auth0Profile>>response).result;
-      equal(result.userId, 'auth0|p' + userId);
+      equal(result.userId, userId);
       equal(result.email, email);
       equal(result.emailValidated, emailValidated);
       equal(result.locked, locked);
@@ -345,6 +348,9 @@ const clientSecret: string = 'ABCDEFGHIJKLMNOPQRSTUVYWXYZ';
 
 const accessToken: string = 'a1b23c4d5e6f7g8hj';
 const userId: number = 123456;
+const firstName: string = "Test";
+const lastName: string = "User";
+const name: string = firstName + ' ' + lastName;
 const email: string = 'test.user@example.com';
 const password: string = 'superstrongpassword';
 const picture: string = "https://i1.wp.com/cdn.auth0.com/avatars/tu.png?ssl=1";
@@ -360,7 +366,9 @@ const locked: boolean = false;
 const userInfo: any = {
   sub: 'auth0|p' + userId,
   nickname: email.substring(0, email.lastIndexOf('@')),
-  name: email,
+  name: name,
+  given_name: firstName,
+  family_name: lastName,
   picture: picture,
   updated_at: updatedDate,
   email: email,
@@ -378,7 +386,9 @@ const user: any = {
       isSocial: false
     }
   ],
-  name: email,
+  name: name,
+  given_name: firstName,
+  family_name: lastName,
   nickname: email.substring(0, email.lastIndexOf('@')),
   picture: picture,
   updated_at: updatedDate,

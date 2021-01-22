@@ -4,8 +4,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import express, { Application, Request, Response } from 'express';
 import { validateCredentials } from './handlers/auth';
-import { changePassword, createUser, getUser, updateUser } from './handlers/user';
-import { DummyUserOne, DummyUserTwo } from './models/user';
+import { changePassword, createUser, getUser, searchUsers, updateUser } from './handlers/user';
 
 export default createApplication();
 
@@ -52,7 +51,7 @@ function registerUsersResource(app: Application): void {
     origin: process.env.API_ALLOWED_ORIGINS
   }
   app.options('/users', cors(corsOptions));
-  app.get('/users', cors(corsOptions), (request: Request, response: Response) => response.status(200).json([DummyUserOne, DummyUserTwo]));
+  app.get('/users', cors(corsOptions), (request: Request, response: Response) => searchUsers(auth0Client, request, response));
   app.post('/users', cors(corsOptions), (request: Request, response: Response) => createUser(sierraClient, auth0Client, request, response));
 }
 

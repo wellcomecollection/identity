@@ -10,7 +10,10 @@ function login(email, password, callback) {
         validateCredentials(patronRecord.barcode, password).then(() => {
             callback(null, {
                 user_id: 'p' + patronRecord.recordNumber,
-                email: patronRecord.email
+                email: patronRecord.email,
+                name: patronRecord.firstName + ' ' + patronRecord.lastName,
+                given_name: patronRecord.firstName,
+                family_name: patronRecord.lastName
             });
         }).catch(error => {
             callback(error)
@@ -103,17 +106,17 @@ function login(email, password, callback) {
             return {
                 firstName: '',
                 lastName: ''
-            }
+            };
         }
     }
 
     function getPatronNameMarc(subFields) {
-        const firstName = subFields.find(subField => subField.tag === 'b')
-        const lastName = subFields.find(subField => subField.tag === 'a')
+        const firstName = subFields.find(subField => subField.tag === 'b');
+        const lastName = subFields.find(subField => subField.tag === 'a');
         return {
             firstName: firstName ? firstName.content.trim() : '',
             lastName: lastName ? lastName.content.trim() : ''
-        }
+        };
     }
 
     function getPatronNameNonMarc(content) {
