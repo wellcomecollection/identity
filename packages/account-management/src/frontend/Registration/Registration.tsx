@@ -81,6 +81,8 @@ export const Registration: React.FC = () => {
           .catch((error) => {
             switch (error.response.status) {
               case 400:
+                setErrorOccured(true);
+                break;
               case 422:
                 // If the password has flagged on the common password list by Auth0, or the user has used their own name -> prompted to change the password.
                 setCommonPassword(true);
