@@ -9,12 +9,10 @@ module.exports = {
     'eslint:recommended',
     'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
-    'plugin:jest/recommended',
-    'plugin:react/recommended',
     'prettier/@typescript-eslint',
   ],
 
-  plugins: ['@typescript-eslint', 'prettier', 'react-hooks', 'jest', 'react', 'json-format'],
+  plugins: ['@typescript-eslint', 'prettier', 'json-format'],
   parser: '@typescript-eslint/parser',
 
   parserOptions: {
@@ -30,6 +28,19 @@ module.exports = {
       version: 'detect',
     },
   },
+
+  overrides: [
+    {
+      files: ['src/**/*'],
+      plugins: ['jest', 'react-hooks', 'react'],
+      extends: ['plugin:jest/recommended', 'plugin:react/recommended', 'plugin:react-hooks/recommended'],
+    },
+    {
+      files: ['cypress/**/*'],
+      plugins: ['cypress'],
+      extends: ['plugin:cypress/recommended'],
+    },
+  ],
 
   rules: {
     'react/prop-types': OFF,
