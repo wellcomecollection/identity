@@ -282,3 +282,61 @@ resource "aws_ssm_parameter" "network_http_whitelist" {
     }
   )
 }
+
+# Account Management System
+
+resource "aws_ssm_parameter" "account_management_system-auth0_domain" {
+  provider = "aws.experience"
+  name     = "/identity/${terraform.workspace}/account_management_system/auth0_domain"
+  type     = "String"
+  value    = local.auth0_hostname
+
+  tags = merge(
+    local.common_tags,
+    {
+      "Name" = "/identity/${terraform.workspace}/account_management_system/auth0_domain"
+    }
+  )
+}
+
+resource "aws_ssm_parameter" "account_management_system-auth0_client_id" {
+  provider = "aws.experience"
+  name     = "/identity/${terraform.workspace}/account_management_system/auth0_client_id"
+  type     = "String"
+  value    = auth0_client.account_management_system.id
+
+  tags = merge(
+    local.common_tags,
+    {
+      "Name" = "/identity/${terraform.workspace}/account_management_system/auth0_client_id"
+    }
+  )
+}
+
+resource "aws_ssm_parameter" "account_management_system-auth0_callback_url" {
+  provider = "aws.experience"
+  name     = "/identity/${terraform.workspace}/account_management_system/auth0_callback_url"
+  type     = "String"
+  value    = local.ams_redirect_uri
+
+  tags = merge(
+    local.common_tags,
+    {
+      "Name" = "/identity/${terraform.workspace}/account_management_system/auth0_callback_url"
+    }
+  )
+}
+
+resource "aws_ssm_parameter" "account_management_system-api_base_url" {
+  provider = "aws.experience"
+  name     = "/identity/${terraform.workspace}/account_management_system/api_base_url"
+  type     = "String"
+  value    = local.identity_v1_endpoint
+
+  tags = merge(
+    local.common_tags,
+    {
+      "Name" = "/identity/${terraform.workspace}/account_management_system/api_base_url"
+    }
+  )
+}
