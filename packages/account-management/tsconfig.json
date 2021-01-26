@@ -21,5 +21,7 @@
     "noUnusedLocals": true,
     "noFallthroughCasesInSwitch": true
   },
-  "references": []
+  "references": [],
+  "include": ["**/*.ts"],
+  "exclude": ["lib", "node_modules", "**/*.test.ts", "cypress"]
 }
