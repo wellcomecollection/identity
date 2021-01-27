@@ -1,4 +1,4 @@
-import {isNonBlank} from '../src';
+import { isNonBlank } from '../src';
 
 describe('is-non-blank', () => {
     it('should return false for empty strings', () => {

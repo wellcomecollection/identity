@@ -31,9 +31,8 @@ export function toAuth0Profile(auth0User: any): Auth0Profile {
   const userIdStr: string = auth0User.user_id;
   const name: string = auth0User.name;
   const email: string = auth0User.email;
-  const emailValidated: string = auth0User.email_verified;
   const creationDate: string = auth0User.created_at;
-  if (!isNonBlank(userIdStr) || !isNonBlank(name) || !isNonBlank(email) || !isNonBlank(emailValidated) || !isNonBlank(creationDate)) {
+  if (!isNonBlank(userIdStr) || !isNonBlank(name) || !isNonBlank(email) || !isNonBlank(creationDate)) {
     throw new Error('One or more required UserProfile fields are missing. Have all necessary scopes been requested?')
   }
 
@@ -45,12 +44,12 @@ export function toAuth0Profile(auth0User: any): Auth0Profile {
   return {
     // As far as the application is concerned, Auth0 ID's are identical to Sierra ID's. So remove the mandatory Auth0 prefix.
     userId: userId,
-    name: auth0User.name,
+    name: name,
     firstName: auth0User.given_name ? auth0User.given_name : null,
     lastName: auth0User.family_name ? auth0User.family_name : null,
-    email: auth0User.email,
+    email: email,
     emailValidated: auth0User.email_verified,
-    creationDate: auth0User.created_at,
+    creationDate: creationDate,
     locked: !!(auth0User.blocked), // Auth0 quirk - this attribute doesn't appear on Auth0 responses until it's been toggled off and on at least once.
     lastLogin: auth0User.last_login ? auth0User.last_login : null,
     lastLoginIp: auth0User.last_ip ? auth0User.last_ip : null,
