@@ -29,7 +29,7 @@ locals {
     stage = "www-stage.wellcomecollection.org",
     prod  = "wellcomecollection.org"
   }
-  ams_context_path = "identity"
+  ams_context_path = "account"
   ams_redirect_uri = "https://${local.ams_hostnames[terraform.workspace]}/${local.ams_context_path}/callback"
   ams_error_uri    = "https://${local.ams_hostnames[terraform.workspace]}/${local.ams_context_path}/error"
   ams_validate_uri = "https://${local.ams_hostnames[terraform.workspace]}/${local.ams_context_path}/validated"
