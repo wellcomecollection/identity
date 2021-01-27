@@ -264,29 +264,10 @@ resource "aws_ssm_parameter" "smtp_host" {
   )
 }
 
-# Networking
-
-resource "aws_ssm_parameter" "network_http_whitelist" {
-  name  = "identity-network_whitelist_http-${terraform.workspace}"
-  type  = "StringList"
-  value = var.ssm_parameter_placeholder
-
-  lifecycle {
-    ignore_changes = [value]
-  }
-
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-network_whitelist_http-${terraform.workspace}"
-    }
-  )
-}
-
 # Account Management System
 
 resource "aws_ssm_parameter" "account_management_system-auth0_domain" {
-  provider = "aws.experience"
+  provider = aws.experience
   name     = "/identity/${terraform.workspace}/account_management_system/auth0_domain"
   type     = "String"
   value    = local.auth0_hostname
@@ -300,7 +281,7 @@ resource "aws_ssm_parameter" "account_management_system-auth0_domain" {
 }
 
 resource "aws_ssm_parameter" "account_management_system-auth0_client_id" {
-  provider = "aws.experience"
+  provider = aws.experience
   name     = "/identity/${terraform.workspace}/account_management_system/auth0_client_id"
   type     = "String"
   value    = auth0_client.account_management_system.id
@@ -314,7 +295,7 @@ resource "aws_ssm_parameter" "account_management_system-auth0_client_id" {
 }
 
 resource "aws_ssm_parameter" "account_management_system-auth0_callback_url" {
-  provider = "aws.experience"
+  provider = aws.experience
   name     = "/identity/${terraform.workspace}/account_management_system/auth0_callback_url"
   type     = "String"
   value    = local.ams_redirect_uri
@@ -328,7 +309,7 @@ resource "aws_ssm_parameter" "account_management_system-auth0_callback_url" {
 }
 
 resource "aws_ssm_parameter" "account_management_system-api_base_url" {
-  provider = "aws.experience"
+  provider = aws.experience
   name     = "/identity/${terraform.workspace}/account_management_system/api_base_url"
   type     = "String"
   value    = local.identity_v1_endpoint
@@ -337,6 +318,20 @@ resource "aws_ssm_parameter" "account_management_system-api_base_url" {
     local.common_tags,
     {
       "Name" = "/identity/${terraform.workspace}/account_management_system/api_base_url"
+    }
+  )
+}
+
+resource "aws_ssm_parameter" "account_management_system-context_path" {
+  provider = aws.experience
+  name     = "/identity/${terraform.workspace}/account_management_system/context_path"
+  type     = "String"
+  value    = local.ams_context_path
+
+  tags = merge(
+    local.common_tags,
+    {
+      "Name" = "/identity/${terraform.workspace}/account_management_system/context_path"
     }
   )
 }

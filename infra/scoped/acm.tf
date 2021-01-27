@@ -59,26 +59,3 @@ resource "aws_acm_certificate_validation" "swagger_ui_v1" {
   # and a result must be in 'us-east-1'.
   provider = aws.aws_us-east-1
 }
-
-# Account Management System
-
-resource "aws_acm_certificate" "account_management_system" {
-  domain_name       = local.ams_hostname
-  validation_method = "DNS"
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = local.ams_hostname
-    }
-  )
-}
-
-resource "aws_acm_certificate_validation" "account_management_system" {
-  certificate_arn         = aws_acm_certificate.account_management_system.arn
-  validation_record_fqdns = [for record in aws_route53_record.account_management_system_validation : record.fqdn]
-}
