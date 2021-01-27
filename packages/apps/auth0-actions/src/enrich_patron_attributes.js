@@ -9,7 +9,7 @@ async function enrichPatronAttributes(user, context, callback) {
     const namespace = 'https://wellcomecollection.org/';
 
     try {
-        if(context.connection === 'Sierra-Connection' && requestContainsScope(context.request)) {
+        if (context.connection === 'Sierra-Connection' && requestContainsScope(context.request)) {
             const patronId = user.user_id.substr(7); // TODO This isn't very good?
             const accessToken = await fetchAccessToken();
             const patronRecord = await fetchPatronRecord(accessToken, patronId);

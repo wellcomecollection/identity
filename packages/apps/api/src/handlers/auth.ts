@@ -1,7 +1,7 @@
+import Auth0Client from "@weco/auth0-client";
 import { isNonBlank, ResponseStatus } from '@weco/identity-common';
 import { Request, Response } from 'express';
 import { toMessage } from '../models/common';
-import Auth0Client from "@weco/auth0-client";
 
 export async function validateCredentials(auth0Client: Auth0Client, request: Request, response: Response) {
   const email: string = request.body.email;
