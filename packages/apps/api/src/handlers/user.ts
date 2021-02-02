@@ -109,7 +109,19 @@ export async function createUser(sierraClient: SierraClient, auth0Client: Auth0C
   response.status(201).json(toUser(sierraUpdate.result, auth0Create.result));
 }
 
+function userIsAdmin(request: Request) {
+  return false; /* ??? */
+}
+
+
+type UserField = 'firstName' | 'lastName' | 'email';
+type AdminUserField = Omit<UserField, 'email'>;
+
 export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
+  const privilegedUserFields: AdminUserField[] = [
+      'firstName',
+      'lastName'
+  ];
 
   const userId: number = Number(request.params.user_id);
   if (isNaN(userId)) {
@@ -123,13 +135,40 @@ export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0C
     return;
   }
 
+  const fieldsChanged = Object.keys(request.body) as UserField[];
+  const privilegedFieldsChanged = fieldsChanged.filter(el => privilegedUserFields.includes(el));
+
+  if (privilegedFieldsChanged.length > 0 && !userIsAdmin(request)) {
+    response.status(403).json(toMessage(`Only an administrator can change ${privilegedUserFields.join(', ')}`));
+    return;
+  }
+
   const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByEmail(email);
   if (auth0Get.status != ResponseStatus.NotFound) {
     if (auth0Get.status === ResponseStatus.Success && auth0Get.result.userId !== userId) {
       response.status(409).json(toMessage('Auth0 user with email [' + email + '] already exists'));
-    } else {
+      return;
+    } else if (auth0Get.status == ResponseStatus.UnknownError) {
       response.status(500).json(toMessage(auth0Get.message));
+      return;
     }
+  }
+
+  let hasChanged = false;
+  if (auth0Get.status === ResponseStatus.Success) {
+    const profile = auth0Get.result;
+
+    for (const field of fieldsChanged) {
+      if (profile[field] !== request.body[field]) {
+        hasChanged = true;
+      }
+    }
+  } else {
+    hasChanged = true;
+  }
+
+  if (!hasChanged) {
+    response.sendStatus(304);
     return;
   }
 
@@ -142,6 +181,7 @@ export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0C
     }
     return;
   }
+
 
   const auth0Update: APIResponse<Auth0Profile> = await auth0Client.updateUser(userId, email);
   if (auth0Update.status != ResponseStatus.Success) {
