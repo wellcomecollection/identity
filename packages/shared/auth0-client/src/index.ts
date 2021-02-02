@@ -241,7 +241,7 @@ export default class Auth0Client {
         }
         return unhandledError(error);
       });
-    })
+    });
   }
 
   private async getMachineToMachineInstance(): Promise<AxiosInstance> {

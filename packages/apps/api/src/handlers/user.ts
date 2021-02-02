@@ -274,6 +274,7 @@ export async function sendVerificationEmail(auth0Client: Auth0Client, request: R
 
   if (userGet.result.emailValidated) {
     response.status(304).json(toMessage('Email address already validated'));
+    return;
   }
 
   const sendVerification = await auth0Client.sendVerificationEmail(userId);
@@ -286,5 +287,5 @@ export async function sendVerificationEmail(auth0Client: Auth0Client, request: R
     return;
   }
 
-  response.status(200);
+  response.sendStatus(200);
 }
