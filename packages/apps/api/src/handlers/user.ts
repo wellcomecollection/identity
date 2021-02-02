@@ -289,3 +289,34 @@ export async function sendVerificationEmail(auth0Client: Auth0Client, request: R
 
   response.sendStatus(200);
 }
+
+export async function sendPasswordResetEmail(auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
+
+  const userId: number = Number(request.params.user_id);
+  if (isNaN(userId)) {
+    response.status(400).json(toMessage('Invalid user ID [' + userId + ']'));
+    return;
+  }
+
+  const userGet = await auth0Client.getUserByUserId(userId);
+  if (userGet.status !== ResponseStatus.Success) {
+    if (userGet.status === ResponseStatus.NotFound) {
+      response.status(404).json(toMessage(userGet.message));
+    } else {
+      response.status(500).json(toMessage(userGet.message));
+    }
+    return;
+  }
+
+  const sendPasswordReset = await auth0Client.sendPasswordResetEmail(userGet.result.email);
+  if (sendPasswordReset.status !== ResponseStatus.Success) {
+    if (sendPasswordReset.status === ResponseStatus.MalformedRequest) {
+      response.status(400).json(toMessage(sendPasswordReset.message));
+    } else {
+      response.status(500).json(toMessage(sendPasswordReset.message));
+    }
+    return;
+  }
+
+  response.sendStatus(200);
+}
