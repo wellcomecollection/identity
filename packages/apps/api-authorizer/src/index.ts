@@ -88,7 +88,7 @@ const resourceAcls: ResourceAcl[] = [
   {
     resource: '/users/{userId}/send-verification',
     methods: ['PUT'],
-    check: isAdministrator,
+    check: [isSelf, isAdministrator],
   },
   {
     resource: '/users/{userId}/reset-password',
