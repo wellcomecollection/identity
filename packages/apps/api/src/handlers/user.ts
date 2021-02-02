@@ -125,7 +125,7 @@ export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0C
 
   const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByEmail(email);
   if (auth0Get.status != ResponseStatus.NotFound) {
-    if (auth0Get.status === ResponseStatus.Success) {
+    if (auth0Get.status === ResponseStatus.Success && auth0Get.result.userId !== userId) {
       response.status(409).json(toMessage('Auth0 user with email [' + email + '] already exists'));
     } else {
       response.status(500).json(toMessage(auth0Get.message));
