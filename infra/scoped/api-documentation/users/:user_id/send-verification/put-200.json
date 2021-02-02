@@ -1,3 +1,3 @@
 {
-  "description": "The email address verification request was successfully triggered for the target record. Note that this response is returned if the email address is already verified."
+  "description": "The email address verification request was successfully triggered for the target record."
 }
