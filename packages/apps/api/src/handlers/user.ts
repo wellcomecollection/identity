@@ -287,5 +287,6 @@ export async function sendVerificationEmail(auth0Client: Auth0Client, request: R
     return;
   }
 
+  console.log("Sending 200");
   response.sendStatus(200);
 }
