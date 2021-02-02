@@ -6,7 +6,7 @@ export const loginAction: RouteMiddleware = koaPassport.authenticate('auth0', {
 });
 
 export const authCallback: RouteMiddleware = koaPassport.authenticate('auth0', {
-  successRedirect: '/dashboard',
+  successRedirect: '/account',
   failureRedirect: '/',
   scope: 'openid profile email'
 });
