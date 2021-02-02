@@ -929,8 +929,7 @@ resource "aws_api_gateway_method" "users_userid_reset-password_put" {
   rest_api_id          = aws_api_gateway_rest_api.identity.id
   resource_id          = aws_api_gateway_resource.users_userid_reset-password.id
   http_method          = "PUT"
-  authorization        = "CUSTOM"
-  authorizer_id        = aws_api_gateway_authorizer.token_authorizer.id
+  authorization        = "NONE"
   api_key_required     = true
   request_validator_id = aws_api_gateway_request_validator.full.id
 
