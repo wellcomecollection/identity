@@ -223,6 +223,27 @@ export default class Auth0Client {
     });
   }
 
+  async sendVerificationEmail(userId: number): Promise<APIResponse<{}>> {
+    return this.getMachineToMachineInstance().then(instance => {
+      return instance.post('/jobs/verification-email', {
+        user_id: userId
+      }, {
+        validateStatus: status => status === 201
+      }).then(() =>
+        successResponse({})
+      ).catch(error => {
+        if (error.response) {
+          switch (error.response.status) {
+            case 400: {
+              return errorResponse('Malformed or invalid Auth0 email verification request', ResponseStatus.MalformedRequest, error);
+            }
+          }
+        }
+        return unhandledError(error);
+      });
+    })
+  }
+
   private async getMachineToMachineInstance(): Promise<AxiosInstance> {
     return axios.post(this.apiRoot + '/oauth/token', {
       client_id: this.clientId,
