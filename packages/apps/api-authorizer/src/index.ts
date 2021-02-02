@@ -75,10 +75,15 @@ const resourceAcls: ResourceAcl[] = [
   },
   {
     resource: '/users/{userId}',
-    methods: ['GET', 'PUT', 'DELETE'],
+    methods: ['GET', 'PUT'],
     check: [isSelf, isAdministrator],
     checkType: 'OR'
   },
+  {
+    resource: '/users/{userId}',
+    methods: ['DELETE'],
+    check: isAdministrator
+  }
   {
     resource: '/users/{userId}/password',
     methods: ['PUT'],
