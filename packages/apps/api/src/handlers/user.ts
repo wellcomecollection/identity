@@ -253,3 +253,38 @@ export async function searchUsers(auth0Client: Auth0Client, request: Request, re
 
   response.status(200).json(userSearch.result);
 }
+
+export async function sendVerificationEmail(auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
+
+  const userId: number = Number(request.params.user_id);
+  if (isNaN(userId)) {
+    response.status(400).json(toMessage('Invalid user ID [' + userId + ']'));
+    return;
+  }
+
+  const userGet = await auth0Client.getUserByUserId(userId);
+  if (userGet.status !== ResponseStatus.Success) {
+    if (userGet.status === ResponseStatus.NotFound) {
+      response.status(404).json(toMessage(userGet.message));
+    } else {
+      response.status(500).json(toMessage(userGet.message));
+    }
+    return;
+  }
+
+  if (userGet.result.emailValidated) {
+    response.status(304).json(toMessage('Email address already validated'));
+  }
+
+  const sendVerification = await auth0Client.sendVerificationEmail(userId);
+  if (sendVerification.status !== ResponseStatus.Success) {
+    if (sendVerification.status === ResponseStatus.MalformedRequest) {
+      response.status(400).json(toMessage(sendVerification.message));
+    } else {
+      response.status(500).json(toMessage(sendVerification.message));
+    }
+    return;
+  }
+
+  response.status(200);
+}
