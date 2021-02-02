@@ -17,6 +17,8 @@ import {
   toAuth0UserInfo
 } from './auth0';
 
+export type Auth0UserField = 'email' | 'given_name' | 'family_name' | 'name';
+
 export default class Auth0Client {
 
   private readonly apiRoot: string;
@@ -132,11 +134,21 @@ export default class Auth0Client {
       });
   }
 
-  async updateUser(userId: number, email: string): Promise<APIResponse<Auth0Profile>> {
+  async updateUser(userId: number, email?: string, firstName?: string, lastName?: string): Promise<APIResponse<Auth0Profile>> {
+    const fields : Record<Auth0UserField, string|undefined> = {
+      email,
+      'given_name': firstName,
+      'family_name': lastName,
+      name: undefined
+    };
+
+    if (firstName && lastName) {
+      fields.name = firstName + ' ' + lastName;
+    }
+
     return this.getMachineToMachineInstance().then(instance => {
       return instance.patch('/users/auth0|p' + userId, { // Automatically append the mandatory Auth0 prefix to the given user ID.
-        name: email, // Auth0 defaults this to the email address, but we'll provide it here anyway for consistency
-        email: email,
+        ...fields,
         verify_email: true,
         connection: 'Sierra-Connection'
       }, {

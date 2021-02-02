@@ -130,15 +130,24 @@ export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0C
   }
 
   const email: string = request.body.email;
-  if (!isNonBlank(email)) {
-    response.status(400).json(toMessage('All fields must be provided and non-blank'));
+  if (email && !isNonBlank(email)) {
+    response.status(400).json(toMessage('email must be a non-blank string'));
     return;
   }
 
-  const fieldsChanged = Object.keys(request.body) as UserField[];
-  const privilegedFieldsChanged = fieldsChanged.filter(el => privilegedUserFields.includes(el));
+  const firstName: string = request.body.firstName;
+  if (firstName && !isNonBlank(firstName)) {
+    response.status(400).json(toMessage('firstName must be a non-blank string'));
+    return;
+  }
 
-  if (privilegedFieldsChanged.length > 0 && !userIsAdmin(request)) {
+  const lastName: string = request.body.lastName;
+  if (lastName && !isNonBlank(lastName)) {
+    response.status(400).json(toMessage('lastName must be a non-blank string'));
+    return;
+  }
+
+  if ((firstName || lastName) && !userIsAdmin(request)) {
     response.status(403).json(toMessage(`Only an administrator can change ${privilegedUserFields.join(', ')}`));
     return;
   }
@@ -158,11 +167,9 @@ export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0C
   if (auth0Get.status === ResponseStatus.Success) {
     const profile = auth0Get.result;
 
-    for (const field of fieldsChanged) {
-      if (profile[field] !== request.body[field]) {
-        hasChanged = true;
-      }
-    }
+    hasChanged = hasChanged || (!!firstName && firstName !== profile.firstName);
+    hasChanged = hasChanged || (!!lastName && lastName !== profile.lastName);
+    hasChanged = hasChanged || (!!email && email !== profile.email);
   } else {
     hasChanged = true;
   }
@@ -174,16 +181,17 @@ export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0C
 
   const sierraGet: APIResponse<PatronRecord> = await sierraClient.getPatronRecordByEmail(email);
   if (sierraGet.status != ResponseStatus.NotFound) {
-    if (sierraGet.status === ResponseStatus.Success) {
+    if (sierraGet.status === ResponseStatus.Success && sierraGet.result.recordNumber !== userId) {
       response.status(409).json(toMessage('Patron record with email [' + email + '] already exists'));
-    } else {
+      return;
+    } else if (sierraGet.status === ResponseStatus.UnknownError) {
       response.status(500).json(toMessage(sierraGet.message));
+      return;
     }
-    return;
   }
 
 
-  const auth0Update: APIResponse<Auth0Profile> = await auth0Client.updateUser(userId, email);
+  const auth0Update: APIResponse<Auth0Profile> = await auth0Client.updateUser(userId, email, firstName, lastName);
   if (auth0Update.status != ResponseStatus.Success) {
     if (auth0Update.status === ResponseStatus.NotFound) {
       response.status(404).json(toMessage(auth0Update.message));
