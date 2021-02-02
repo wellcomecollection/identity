@@ -226,7 +226,7 @@ export default class Auth0Client {
   async sendVerificationEmail(userId: number): Promise<APIResponse<{}>> {
     return this.getMachineToMachineInstance().then(instance => {
       return instance.post('/jobs/verification-email', {
-        user_id: String(userId) // Auth0 is explicit that this has to be a string value
+        user_id: 'auth0|p' + userId
       }, {
         validateStatus: status => status === 201
       }).then(() =>
