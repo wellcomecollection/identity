@@ -10,13 +10,13 @@ export function toAuth0UserInfo(userInfo: any): Auth0UserInfo {
     throw new Error('One or more required UserInfo fields are missing. Have all necessary scopes been requested?')
   }
 
+  // As far as the application is concerned, Auth0 ID's are identical to Sierra ID's. So remove the mandatory Auth0 prefix.
   const userId: number = Number(sub.slice(sub.indexOf('auth0|p') + 'auth0|p'.length));
   if (isNaN(userId)) {
     throw new Error('UserInfo provided invalid \'sub\' field: cannot extract numerical ID from [' + sub + ']');
   }
 
   return {
-    // As far as the application is concerned, Auth0 ID's are identical to Sierra ID's. So remove the mandatory Auth0 prefix.
     userId: userId,
     name: name,
     firstName: userInfo.given_name ? userInfo.given_name : null,
@@ -36,21 +36,21 @@ export function toAuth0Profile(auth0User: any): Auth0Profile {
     throw new Error('One or more required UserProfile fields are missing. Have all necessary scopes been requested?')
   }
 
+  // As far as the application is concerned, Auth0 ID's are identical to Sierra ID's. So remove the mandatory Auth0 prefix.
   const userId: number = Number(userIdStr.slice(userIdStr.indexOf('auth0|p') + 'auth0|p'.length));
   if (isNaN(userId)) {
     throw new Error('UserProfile provided invalid \'user_id\' field: cannot extract numerical ID from [' + userIdStr + ']');
   }
 
   return {
-    // As far as the application is concerned, Auth0 ID's are identical to Sierra ID's. So remove the mandatory Auth0 prefix.
     userId: userId,
     name: name,
     firstName: auth0User.given_name ? auth0User.given_name : null,
     lastName: auth0User.family_name ? auth0User.family_name : null,
     email: email,
-    emailValidated: auth0User.email_verified,
+    emailValidated: !!(auth0User.email_verified), // Auth0 quirk - this attribute doesn't appear on Auth0 responses until it's been toggled at least once.
     creationDate: creationDate,
-    locked: !!(auth0User.blocked), // Auth0 quirk - this attribute doesn't appear on Auth0 responses until it's been toggled off and on at least once.
+    locked: !!(auth0User.blocked), // Auth0 quirk - this attribute doesn't appear on Auth0 responses until it's been toggled at least once.
     lastLogin: auth0User.last_login ? auth0User.last_login : null,
     lastLoginIp: auth0User.last_ip ? auth0User.last_ip : null,
     totalLogins: auth0User.logins_count ? auth0User.logins_count : 0

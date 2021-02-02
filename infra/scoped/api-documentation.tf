@@ -1066,6 +1066,20 @@ resource "aws_api_gateway_documentation_part" "users_userid_send-verification_pu
   }
 }
 
+# 304 Not Modified
+
+resource "aws_api_gateway_documentation_part" "users_userid_send-verification_put_304" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/send-verification/put-304.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_send-verification.path
+    method      = aws_api_gateway_method.users_userid_send-verification_put.http_method
+    status_code = "304"
+  }
+}
+
 # 403 Forbidden
 
 resource "aws_api_gateway_documentation_part" "users_userid_send-verification_put_403" {
