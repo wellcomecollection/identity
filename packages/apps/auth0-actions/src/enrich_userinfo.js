@@ -13,7 +13,7 @@ async function enrichPatronAttributes(user, context, callback) {
             "patron:read": getPatronAttributes
         },
         "AzureAD-Connection": {
-            "azure:read": getAdminFlag
+            "azure:read": getAzureAdAttributes
         }
     };
 
@@ -59,7 +59,7 @@ async function enrichPatronAttributes(user, context, callback) {
         };
     }
 
-    function getAdminFlag() {
+    function getAzureAdAttributes() {
         return {
             // If the user has managed to authenticate via the Azure AD provider, then they are implicitly
             // an administrator user, as Azure AD is configured to only allow access via a subset of users
