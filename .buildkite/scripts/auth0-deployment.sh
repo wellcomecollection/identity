@@ -28,7 +28,7 @@ function __do_deployment() {
   cp -v /app/.buildkite/build/enrich_patron_attributes.js "/app/.buildkite/build/auth0-export/rules/${AUTH0_ENRICH_PATRON_ATTRIBUTES_RULE_NAME}.js"
 
   azure_ad_profile_script=$(sed -E ':a;N;$!ba;s/\r{0,1}\n/\\n/g' "/app/.buildkite/build/create_azure_ad_profile.js")
-  jq --arg azure_ad_profile_script "${azure_ad_profile_script}" '.options.scripts.fetchUserProfile=$azure_ad_profile_script' "/app/.buildkite/build/auth0-export/connections/AzureAD-Connection.json > /app/.buildkite/build/auth0-export/connections/AzureAD-Connection.json"
+  jq --arg azure_ad_profile_script "${azure_ad_profile_script}" '.options.scripts.fetchUserProfile=$azure_ad_profile_script' "/app/.buildkite/build/auth0-export/connections/AzureAD-Connection.json" | sponge "/app/.buildkite/build/auth0-export/connections/AzureAD-Connection.json"
 
   a0deploy import --input_file "/app/.buildkite/build/auth0-export/"
 }
