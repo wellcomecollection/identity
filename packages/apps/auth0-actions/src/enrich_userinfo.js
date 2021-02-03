@@ -23,7 +23,7 @@ async function enrichPatronAttributes(user, context, callback) {
 
             const attributes = {};
 
-            context.request.scope.split(" ").forEach(function(scope) {
+            context.request.query.scope.split(" ").forEach(function(scope) {
                 if(availableScopes[scope]) {
                     Object.assign(attributes, availableScopes[scope].call(user));
                 }
