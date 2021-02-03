@@ -47,7 +47,7 @@ async function enrichPatronAttributes(user, context, callback) {
         callback(error);
     }
 
-    async function getPatronAttributes(user) {
+    async function getPatronAttributes() {
         const patronId = user.user_id.substr(7); // TODO This isn't very good?
         const accessToken = await fetchAccessToken();
         const patronRecord = await fetchPatronRecord(accessToken, patronId);
@@ -62,7 +62,7 @@ async function enrichPatronAttributes(user, context, callback) {
         };
     }
 
-    function getAdminFlag(user) {
+    function getAdminFlag() {
         return {
             // If the user has managed to authenticate via the Azure AD provider, then they are implicitly
             // an administrator user, as Azure AD is configured to only allow access via a subset of users
