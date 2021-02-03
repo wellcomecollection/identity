@@ -4,7 +4,15 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import express, { Application, Request, Response } from 'express';
 import { validateCredentials } from './handlers/auth';
-import { changePassword, createUser, getUser, searchUsers, sendVerificationEmail, updateUser } from './handlers/user';
+import {
+  changePassword,
+  createUser,
+  getUser,
+  searchUsers,
+  sendPasswordResetEmail,
+  sendVerificationEmail,
+  updateUser
+} from './handlers/user';
 
 export default createApplication();
 
@@ -84,7 +92,7 @@ function registerUsersUserIdResetPasswordResource(app: Application): void {
     origin: process.env.API_ALLOWED_ORIGINS
   }
   app.options('/users/:user_id/reset-password', cors(corsOptions));
-  app.put('/users/:user_id/reset-password', cors(corsOptions), (request: Request, response: Response) => response.status(200).end());
+  app.put('/users/:user_id/reset-password', cors(corsOptions), (request: Request, response: Response) => sendPasswordResetEmail(auth0Client, request, response));
 }
 
 function registerUsersUserIdSendVerificationResource(app: Application): void {
