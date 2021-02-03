@@ -8,22 +8,32 @@ async function enrichPatronAttributes(user, context, callback) {
 
     const namespace = 'https://wellcomecollection.org/';
 
-    try {
-        if (context.connection === 'Sierra-Connection' && requestContainsScope(context.request)) {
-            const patronId = user.user_id.substr(7); // TODO This isn't very good?
-            const accessToken = await fetchAccessToken();
-            const patronRecord = await fetchPatronRecord(accessToken, patronId);
+    const scopeHandlers = {
+        'Sierra-Connection': {
+            "patron:read": getPatronAttributes
+        },
+        "AzureAD-Connection": {
+            "azure:read": getAzureAttributes
+        }
+    };
 
-            const idToken = context.idToken || {};
-            idToken[namespace] = {
-                record_number: patronRecord.recordNumber,
-                barcode: patronRecord.barcode,
-                email: patronRecord.email,
-                name: patronRecord.firstName + ' ' + patronRecord.lastName,
-                first_names: patronRecord.firstName,
-                last_names: patronRecord.lastName
-            };
-            context.idToken = idToken;
+    try {
+        const availableScopes = scopeHandlers[context.connection];
+        if(availableScopes) {
+
+            const attributes = {};
+
+            context.request.scope.split(" ").forEach(function(scope) {
+                if(availableScopes[scope]) {
+                    Object.assign(attributes, availableScopes[scope].call());
+                }
+            });
+
+            if(Object.keys(attributes).length !== 0) {
+                const idToken = context.idToken || {};
+                idToken[namespace] = attributes;
+                context.idToken = idToken;
+            }
         }
 
         callback(null, user, context);
@@ -32,9 +42,28 @@ async function enrichPatronAttributes(user, context, callback) {
         callback(error);
     }
 
-    function requestContainsScope(request) {
-        const match = request.query.scope.match(/\bpatron:read\b/);
-        return !match || match.length !== 1 ? null : match[0];
+    async function getPatronAttributes() {
+        const patronId = user.user_id.substr(7); // TODO This isn't very good?
+        const accessToken = await fetchAccessToken();
+        const patronRecord = await fetchPatronRecord(accessToken, patronId);
+
+        return {
+            record_number: patronRecord.recordNumber,
+            barcode: patronRecord.barcode,
+            email: patronRecord.email,
+            name: patronRecord.firstName + ' ' + patronRecord.lastName,
+            first_names: patronRecord.firstName,
+            last_names: patronRecord.lastName
+        };
+    }
+
+    function getAzureAttributes() {
+        return {
+            // If the user has managed to authenticate via the Azure AD provider, then they are implicitly
+            // an administrator user, as Azure AD is configured to only allow access via a subset of users
+            // and groups.
+            is_admin: true
+        };
     }
 
     async function fetchAccessToken() {

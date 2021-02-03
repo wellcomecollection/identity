@@ -13,7 +13,8 @@ resource "auth0_client" "dummy_test" {
 
   callbacks = [
     "https://${local.auth0_hostname}/login/callback",
-    "https://oauth.pstmn.io/v1/callback"
+    "https://oauth.pstmn.io/v1/callback",
+    "https://oauth.pstmn.io/v1/browser-callback"
   ]
 
   lifecycle {
