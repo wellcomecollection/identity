@@ -19,6 +19,23 @@ data "external" "sierra_api_credentials" {
   program = ["echo", data.aws_secretsmanager_secret_version.sierra_api_credentials-sierra-api-key_version.secret_string]
 }
 
+# Azure AD
+
+resource "aws_secretsmanager_secret" "azure_ad_client_secret" {
+  name = "azure-ad-client-secret-${terraform.workspace}"
+
+  tags = merge(
+    local.common_tags,
+    {
+      "Name" = "azure-ad-client-secret-${terraform.workspace}"
+    }
+  )
+}
+
+data "aws_secretsmanager_secret_version" "azure_ad_client_secret_version" {
+  secret_id = aws_secretsmanager_secret.azure_ad_client_secret.id
+}
+
 # Account Management System
 
 resource "aws_secretsmanager_secret" "account_management_system-auth0_client_secret" {

@@ -17,6 +17,7 @@ function __retrieve_artifacts() {
 function __do_deployment() {
   mkdir -p /app/.buildkite/build/auth0-export/
   a0deploy export --format directory --output_folder /app/.buildkite/build/auth0-export/
+
   cp -v /app/.buildkite/build/get_user.js "/app/.buildkite/build/auth0-export/database-connections/${AUTH0_CONNECTION_NAME}/"
   cp -v /app/.buildkite/build/login.js "/app/.buildkite/build/auth0-export/database-connections/${AUTH0_CONNECTION_NAME}/"
   cp -v /app/.buildkite/build/login.html "/app/.buildkite/build/auth0-export/pages/"
@@ -25,6 +26,10 @@ function __do_deployment() {
   cp -v /app/.buildkite/build/verify_email.html "/app/.buildkite/build/auth0-export/emails/"
   cp -v /app/.buildkite/build/welcome_email.html "/app/.buildkite/build/auth0-export/emails/"
   cp -v /app/.buildkite/build/enrich_patron_attributes.js "/app/.buildkite/build/auth0-export/rules/${AUTH0_ENRICH_PATRON_ATTRIBUTES_RULE_NAME}.js"
+
+  azure_ad_profile_script=$(sed -E ':a;N;$!ba;s/\r{0,1}\n/\\n/g' "/app/.buildkite/build/create_azure_ad_profile.js")
+  jq --arg azure_ad_profile_script "${azure_ad_profile_script}" '.options.scripts.fetchUserProfile=$azure_ad_profile_script' "/app/.buildkite/build/auth0-export/connections/AzureAD-Connection.json"
+
   a0deploy import --input_file "/app/.buildkite/build/auth0-export/"
 }
 

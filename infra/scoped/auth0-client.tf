@@ -160,3 +160,24 @@ resource "auth0_client" "account_management_system" {
     ]
   }
 }
+
+# Account Administration System
+# Lets the Account Administration System component initialise and process OAuth 2.0 / OIDC login requests through Auth0
+
+resource "auth0_client" "account_admin_system" {
+  name                 = "Account Administration System (${terraform.workspace})"
+  app_type             = "regular_web"
+  is_first_party       = true
+  custom_login_page_on = true
+
+  grant_types = [
+    "authorization_code"
+  ]
+
+  lifecycle {
+    ignore_changes = [
+      custom_login_page_preview,
+      custom_login_page
+    ]
+  }
+}
