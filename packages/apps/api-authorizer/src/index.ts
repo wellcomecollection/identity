@@ -83,7 +83,7 @@ const resourceAcls: ResourceAcl[] = [
     resource: '/users/{userId}',
     methods: ['DELETE'],
     check: isAdministrator
-  }
+  },
   {
     resource: '/users/{userId}/password',
     methods: ['PUT'],
