@@ -13,7 +13,7 @@ async function enrichPatronAttributes(user, context, callback) {
             "patron:read": getPatronAttributes
         },
         "AzureAD-Connection": {
-            "azure:read": getAzureAttributes
+            "*": getAdminFlag
         }
     };
 
@@ -22,6 +22,11 @@ async function enrichPatronAttributes(user, context, callback) {
         if(availableScopes) {
 
             const attributes = {};
+
+            // Special case - the wildcard '*' is always added
+            if(availableScopes['*']) {
+                Object.assign(attributes, availableScopes['*'].call(user));
+            }
 
             context.request.query.scope.split(" ").forEach(function(scope) {
                 if(availableScopes[scope]) {
@@ -57,7 +62,7 @@ async function enrichPatronAttributes(user, context, callback) {
         };
     }
 
-    function getAzureAttributes(user) {
+    function getAdminFlag(user) {
         return {
             // If the user has managed to authenticate via the Azure AD provider, then they are implicitly
             // an administrator user, as Azure AD is configured to only allow access via a subset of users
