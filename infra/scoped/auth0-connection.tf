@@ -53,6 +53,7 @@ resource "auth0_connection" "azure_ad" {
   strategy = "oauth2"
 
   enabled_clients = [
+    auth0_client.dummy_test.id,
     auth0_client.account_admin_system.id
   ]
 
