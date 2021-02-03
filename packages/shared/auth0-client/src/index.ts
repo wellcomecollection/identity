@@ -17,10 +17,6 @@ import {
   toAuth0UserInfo
 } from './auth0';
 
-function responseCodeIs(responseCode: number) {
-  return (status: number) => status === responseCode;
-}
-
 export default class Auth0Client {
 
   private readonly apiRoot: string;
