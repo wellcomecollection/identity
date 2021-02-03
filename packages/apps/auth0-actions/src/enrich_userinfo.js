@@ -25,7 +25,7 @@ async function enrichPatronAttributes(user, context, callback) {
 
             context.request.scope.split(" ").forEach(function(scope) {
                 if(availableScopes[scope]) {
-                    Object.assign(attributes, availableScopes[scope].call());
+                    Object.assign(attributes, availableScopes[scope].call(user));
                 }
             });
 
@@ -42,7 +42,7 @@ async function enrichPatronAttributes(user, context, callback) {
         callback(error);
     }
 
-    async function getPatronAttributes() {
+    async function getPatronAttributes(user) {
         const patronId = user.user_id.substr(7); // TODO This isn't very good?
         const accessToken = await fetchAccessToken();
         const patronRecord = await fetchPatronRecord(accessToken, patronId);
@@ -57,7 +57,7 @@ async function enrichPatronAttributes(user, context, callback) {
         };
     }
 
-    function getAzureAttributes() {
+    function getAzureAttributes(user) {
         return {
             // If the user has managed to authenticate via the Azure AD provider, then they are implicitly
             // an administrator user, as Azure AD is configured to only allow access via a subset of users
