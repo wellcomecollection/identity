@@ -13,7 +13,7 @@ async function enrichPatronAttributes(user, context, callback) {
             "patron:read": getPatronAttributes
         },
         "AzureAD-Connection": {
-            "*": getAdminFlag
+            "azure:read": getAdminFlag
         }
     };
 
@@ -23,16 +23,13 @@ async function enrichPatronAttributes(user, context, callback) {
 
             const attributes = {};
 
-            // Special case - the wildcard '*' is always added
-            if(availableScopes['*']) {
-                Object.assign(attributes, availableScopes['*'].call(user));
-            }
-
-            context.request.query.scope.split(" ").forEach(function(scope) {
+            for (const scope of context.request.query.scope.split(" ")) {
                 if(availableScopes[scope]) {
-                    Object.assign(attributes, availableScopes[scope].call(user));
+                    const scopeAttributes = await availableScopes[scope].call(user);
+                    console.log(scopeAttributes);
+                    Object.assign(attributes, scopeAttributes);
                 }
-            });
+            }
 
             if(Object.keys(attributes).length !== 0) {
                 const idToken = context.idToken || {};
