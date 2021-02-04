@@ -100,6 +100,11 @@ const resourceAcls: ResourceAcl[] = [
     methods: ['PUT'],
     check: isAdministrator,
   },
+  {
+    resource: '/users/{userId}/request-delete',
+    methods: ['PUT'],
+    check: isSelf,
+  },
 ];
 
 function validateRequest(auth0UserInfo: Auth0UserInfo, resource: string, method: ResourceAclMethod, pathParameters: Record<string, string> | null): boolean {
