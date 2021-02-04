@@ -31,12 +31,12 @@ export default class Auth0Client {
     this.clientSecret = clientSecret;
   }
 
-  async deleteUser(userId: number): Promise<APIResponse<boolean>> {
+  async deleteUser(userId: number): Promise<APIResponse<{}>> {
     const httpClient = await this.getMachineToMachineInstance();
 
     return httpClient.delete(`/users/auth0|p${userId}`, { validateStatus: responseCodeIs(204), })
       .then(_ => {
-        return successResponse(true);
+        return successResponse({});
       })
       .catch((error: AxiosError) => {
         if (error.response) {
