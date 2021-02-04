@@ -124,8 +124,13 @@ export default class Auth0Client {
     return this.getInstanceWithCredentials(username, password).then(() =>
       successResponse(true)
     ).catch(error => {
-      if (error.response?.status == 403) {
-        return errorResponse('Invalid credentials', ResponseStatus.InvalidCredentials, error);
+      if (error.response) {
+        switch (error.response.status) {
+          case 401:
+          case 403: {
+            return errorResponse('Invalid credentials', ResponseStatus.InvalidCredentials, error);
+          }
+        }
       }
       return unhandledError(error);
     });
