@@ -38,6 +38,7 @@ function createApplication(): Application {
   registerUsersUserIdSendVerificationResource(app);
   registerUsersUserIdLockResource(app);
   registerUsersUserIdUnlockResource(app);
+  registerUsersUserIdRequestDeleteResource(app);
 
   return app;
 }
@@ -123,4 +124,14 @@ function registerUsersUserIdUnlockResource(app: Application): void {
   }
   app.options('/users/:user_id/unlock', cors(corsOptions));
   app.put('/users/:user_id/unlock', cors(corsOptions), (request: Request, response: Response) => response.status(200).end());
+}
+
+function registerUsersUserIdRequestDeleteResource(app: Application): void {
+  const corsOptions: cors.CorsOptions = {
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
+    methods: 'OPTIONS,PUT',
+    origin: process.env.API_ALLOWED_ORIGINS
+  }
+  app.options('/users/:user_id/request-delete', cors(corsOptions));
+  app.put('/users/:user_id/request-delete', cors(corsOptions), (request: Request, response: Response) => response.status(200).end());
 }
