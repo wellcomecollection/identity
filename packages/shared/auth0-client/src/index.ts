@@ -120,16 +120,15 @@ export default class Auth0Client {
     });
   }
 
-  async validateUserCredentials(username: string, password: string): Promise<APIResponse<boolean>> {
-    return this.getInstanceWithCredentials(username, password)
-      .then(_ => successResponse(true))
-      .catch(error => {
-        if (error?.response?.status == 401) {
-          return errorResponse('Invalid credentials', ResponseStatus.InvalidCredentials, error);
-        }
-
-        return unhandledError(error);
-      });
+  async validateUserCredentials(username: string, password: string): Promise<APIResponse<{}>> {
+    return this.getInstanceWithCredentials(username, password).then(() =>
+      successResponse(true)
+    ).catch(error => {
+      if (error.response?.status == 403) {
+        return errorResponse('Invalid credentials', ResponseStatus.InvalidCredentials, error);
+      }
+      return unhandledError(error);
+    });
   }
 
   async updateUser(userId: number, email: string): Promise<APIResponse<Auth0Profile>> {
