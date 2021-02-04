@@ -64,13 +64,11 @@ export default class EmailClient {
     };
 
     return this.ses.sendEmail(sesParams).promise().then(result => {
-      if (result.MessageId) {
-        console.log("Email sent with message ID [" + result.MessageId + "]");
-        return successResponse({})
-      } else {
-        console.log("An error occurred sending email [" + sesParams + "]: [" + result.$response.error + "]");
-        return unhandledError(result.$response.error);
-      }
+      console.log("Email sent with message ID [" + result.MessageId + "]");
+      return successResponse({})
+    }).catch(error => {
+      console.log("An error occurred sending email [" + sesParams + "]: [" + error + "]");
+      return unhandledError(error);
     });
   }
 }
