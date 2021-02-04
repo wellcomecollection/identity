@@ -110,7 +110,8 @@ export async function createUser(sierraClient: SierraClient, auth0Client: Auth0C
 }
 
 function userIsAdmin(request: Request) {
-  return false; /* ??? */
+  // @ts-ignore
+  return request.apiGateway.event.requestContext.authorizer.isAdmin;
 }
 
 

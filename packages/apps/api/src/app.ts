@@ -14,6 +14,8 @@ import {
   updateUser
 } from './handlers/user';
 
+import * as awsServerlessExpressMiddleware from 'aws-serverless-express/middleware';
+
 export default createApplication();
 
 const sierraClient: SierraClient = new SierraClient(
@@ -24,11 +26,13 @@ const auth0Client: Auth0Client = new Auth0Client(
   process.env.AUTH0_API_ROOT!, process.env.AUTH0_API_AUDIENCE!, process.env.AUTH0_CLIENT_ID!, process.env.AUTH0_CLIENT_SECRET!
 );
 
+
 function createApplication(): Application {
   const app: Application = express();
 
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
+  app.use(awsServerlessExpressMiddleware.eventContext());
 
   registerAuthResource(app);
   registerUsersResource(app);
