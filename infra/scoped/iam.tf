@@ -26,23 +26,31 @@ EOF
   )
 }
 
+data "aws_iam_policy_document" "identity_api_gateway_lambda_policy" {
+  statement {
+    actions = [
+      "logs:CreateLogStream",
+      "logs:PutLogEvents"
+    ]
+    resources = [
+      "arn:aws:logs:*:*:*"
+    ]
+    effect = "Allow"
+  }
+
+  statement {
+    actions = [
+      "ses:SendEmail"
+    ]
+    resources = [
+      "arn:aws:ses:eu-west-1:${data.aws_caller_identity.current.account_id}:identity/${data.aws_ssm_parameter.auth0_email_from_domain.value}"
+    ]
+  }
+}
+
 resource "aws_iam_policy" "identity_api_gateway_lambda_policy" {
   name   = "identity-api-gateway-lambda-policy-${terraform.workspace}"
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": [
-        "logs:CreateLogStream",
-        "logs:PutLogEvents"
-      ],
-      "Resource": "arn:aws:logs:*:*:*",
-      "Effect": "Allow"
-    }
-  ]
-}
-EOF
+  policy = data.aws_iam_policy_document.identity_api_gateway_lambda_policy.json
 }
 
 resource "aws_iam_role_policy_attachment" "identity_api_gateway_lambda_policy" {
