@@ -26,7 +26,7 @@ export default class EmailClient {
     });
     const body: string = await this.engine.renderFile('delete-request_admin_body', {
       userId: auth0Profile.userId,
-      email: auth0Profile.emailValidated,
+      email: auth0Profile.email,
       firstName: auth0Profile.firstName,
       lastName: auth0Profile.lastName
     });
@@ -70,7 +70,7 @@ export default class EmailClient {
         console.log(data);
       }
     }
-
+    
     this.ses.sendEmail(sesParams, sesCallback);
   }
 }
