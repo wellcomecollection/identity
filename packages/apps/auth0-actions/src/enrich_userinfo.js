@@ -19,19 +19,19 @@ async function enrichPatronAttributes(user, context, callback) {
 
     try {
         const availableScopes = scopeHandlers[context.connection];
-        if(availableScopes) {
+        if (availableScopes && context.request.query && context.request.query.scope) {
 
             const attributes = {};
 
             for (const scope of context.request.query.scope.split(" ")) {
-                if(availableScopes[scope]) {
+                if (availableScopes[scope]) {
                     const scopeAttributes = await availableScopes[scope].call(user);
                     console.log(scopeAttributes);
                     Object.assign(attributes, scopeAttributes);
                 }
             }
 
-            if(Object.keys(attributes).length !== 0) {
+            if (Object.keys(attributes).length !== 0) {
                 const idToken = context.idToken || {};
                 idToken[namespace] = attributes;
                 context.idToken = idToken;
