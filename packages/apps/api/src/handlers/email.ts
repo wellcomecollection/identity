@@ -70,7 +70,7 @@ export default class EmailClient {
         console.log(data);
       }
     }
-    
+
     this.ses.sendEmail(sesParams, sesCallback);
   }
 }
