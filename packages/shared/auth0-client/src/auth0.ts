@@ -54,7 +54,8 @@ export function toAuth0Profile(auth0User: any): Auth0Profile {
     locked: !!(auth0User.blocked), // Auth0 quirk - this attribute doesn't appear on Auth0 responses until it's been toggled at least once.
     lastLogin: auth0User.last_login ? auth0User.last_login : null,
     lastLoginIp: auth0User.last_ip ? auth0User.last_ip : null,
-    totalLogins: auth0User.logins_count ? auth0User.logins_count : 0
+    totalLogins: auth0User.logins_count ? auth0User.logins_count : 0,
+    metadata: auth0User.app_metadata ? auth0User.app_metadata : null
   }
 }
 
@@ -92,7 +93,8 @@ export interface Auth0Profile extends Auth0UserInfo {
   creationDate: string,
   lastLogin: string | null,
   lastLoginIp: string | null,
-  totalLogins: number
+  totalLogins: number,
+  metadata: {} | null
 }
 
 // A container that represents Auth0 user search results.

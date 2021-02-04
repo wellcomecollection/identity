@@ -4,10 +4,11 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import express, { Application, Request, Response } from 'express';
 import { validateCredentials } from './handlers/auth';
+import EmailClient from "./handlers/email";
 import {
   changePassword,
   createUser,
-  getUser,
+  getUser, requestDelete,
   searchUsers,
   sendPasswordResetEmail,
   sendVerificationEmail,
@@ -23,6 +24,8 @@ const sierraClient: SierraClient = new SierraClient(
 const auth0Client: Auth0Client = new Auth0Client(
   process.env.AUTH0_API_ROOT!, process.env.AUTH0_API_AUDIENCE!, process.env.AUTH0_CLIENT_ID!, process.env.AUTH0_CLIENT_SECRET!
 );
+
+const emailClient: EmailClient = new EmailClient(process.env.EMAIL_FROM_ADDRESS!, process.env.EMAIL_ADMIN_ADDRESS!);
 
 function createApplication(): Application {
   const app: Application = express();
@@ -133,5 +136,5 @@ function registerUsersUserIdRequestDeleteResource(app: Application): void {
     origin: process.env.API_ALLOWED_ORIGINS
   }
   app.options('/users/:user_id/request-delete', cors(corsOptions));
-  app.put('/users/:user_id/request-delete', cors(corsOptions), (request: Request, response: Response) => response.status(200).end());
+  app.put('/users/:user_id/request-delete', cors(corsOptions), (request: Request, response: Response) => requestDelete(auth0Client, sierraClient, emailClient, request, response));
 }

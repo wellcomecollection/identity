@@ -264,6 +264,52 @@ export default class Auth0Client {
     });
   }
 
+  async addAppMetadata(userId: number, metadata: Record<string, any>): Promise<APIResponse<{}>> {
+    return this.getMachineToMachineInstance().then(instance => {
+      return instance.patch('/users/auth0|p' + userId, {
+        app_metadata: metadata
+      }, {
+        validateStatus: status => status === 200
+      }).then(response =>
+        successResponse(toAuth0Profile(response.data))
+      ).catch(error => {
+        if (error.response) {
+          switch (error.response.status) {
+            case 400: {
+              return errorResponse('Malformed or invalid Auth0 user app metadata update request', ResponseStatus.MalformedRequest, error);
+            }
+            case 404:
+              return errorResponse('Auth0 user with ID [' + userId + '] not found', ResponseStatus.NotFound, error);
+          }
+        }
+        return unhandledError(error);
+      });
+    });
+  }
+
+  async blockAccount(userId: number): Promise<APIResponse<{}>> {
+    return this.getMachineToMachineInstance().then(instance => {
+      return instance.patch('/users/auth0|p' + userId, {
+        blocked: true
+      }, {
+        validateStatus: status => status === 200
+      }).then(() =>
+        successResponse({})
+      ).catch(error => {
+        if (error.response) {
+          switch (error.response.status) {
+            case 400: {
+              return errorResponse('Malformed or invalid Auth0 user block request', ResponseStatus.MalformedRequest, error);
+            }
+            case 404:
+              return errorResponse('Auth0 user with ID [' + userId + '] not found', ResponseStatus.NotFound, error);
+          }
+        }
+        return unhandledError(error);
+      });
+    });
+  }
+
   private async getMachineToMachineInstance(): Promise<AxiosInstance> {
     return axios.post(this.apiRoot + '/oauth/token', {
       client_id: this.clientId,

@@ -6,6 +6,7 @@ import { PatronRecord } from '@weco/sierra-client/lib/patron';
 import { Request, Response } from 'express';
 import { toMessage } from '../models/common';
 import { toUser } from '../models/user';
+import EmailClient from "./email";
 
 export async function getUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
 
@@ -317,6 +318,56 @@ export async function sendPasswordResetEmail(auth0Client: Auth0Client, request: 
     }
     return;
   }
+
+  response.sendStatus(200);
+}
+
+export async function requestDelete(auth0Client: Auth0Client, sierraClient: SierraClient, emailClient: EmailClient, request: Request, response: Response): Promise<void> {
+
+  const userId: number = Number(request.params.user_id);
+  if (isNaN(userId)) {
+    response.status(400).json(toMessage('Invalid user ID [' + userId + ']'));
+    return;
+  }
+
+  const auth0Get = await auth0Client.getUserByUserId(userId);
+  if (auth0Get.status !== ResponseStatus.Success) {
+    if (auth0Get.status === ResponseStatus.NotFound) {
+      response.status(404).json(toMessage(auth0Get.message));
+    } else {
+      response.status(500).json(toMessage(auth0Get.message));
+    }
+    return;
+  }
+
+  await emailClient.sendDeleteRequestAdmin(auth0Get.result);
+
+  const auth0Update = await auth0Client.addAppMetadata(userId, {
+    deleteRequested: new Date().toISOString()
+  });
+  if (auth0Update.status !== ResponseStatus.Success) {
+    if (auth0Update.status === ResponseStatus.MalformedRequest) {
+      response.status(400).json(toMessage(auth0Update.message));
+    } else if (auth0Update.status === ResponseStatus.NotFound) {
+      response.status(404).json(toMessage(auth0Update.message));
+    } else {
+      response.status(500).json(toMessage(auth0Update.message));
+    }
+    return;
+  }
+
+  const auth0Block = await auth0Client.blockAccount(userId);
+  if (auth0Block.status !== ResponseStatus.Success) {
+    if (auth0Block.status === ResponseStatus.MalformedRequest) {
+      response.status(400).json(toMessage(auth0Block.message));
+    } else if (auth0Block.status === ResponseStatus.NotFound) {
+      response.status(404).json(toMessage(auth0Block.message));
+    } else {
+      response.status(500).json(toMessage(auth0Block.message));
+    }
+  }
+
+  await emailClient.sendDeleteRequestUser(auth0Get.result)
 
   response.sendStatus(200);
 }
