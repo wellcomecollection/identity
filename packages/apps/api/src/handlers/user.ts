@@ -340,7 +340,11 @@ export async function requestDelete(auth0Client: Auth0Client, sierraClient: Sier
     return;
   }
 
-  await emailClient.sendDeleteRequestAdmin(auth0Get.result);
+  const emailDeleteAdmin = await emailClient.sendDeleteRequestAdmin(auth0Get.result);
+  if (emailDeleteAdmin.status !== ResponseStatus.Success) {
+    response.status(500).json(toMessage(emailDeleteAdmin.message));
+    return;
+  }
 
   const auth0Update = await auth0Client.addAppMetadata(userId, {
     deleteRequested: new Date().toISOString()
@@ -365,9 +369,14 @@ export async function requestDelete(auth0Client: Auth0Client, sierraClient: Sier
     } else {
       response.status(500).json(toMessage(auth0Block.message));
     }
+    return;
   }
 
-  await emailClient.sendDeleteRequestUser(auth0Get.result)
+  const emailDeleteUser = await emailClient.sendDeleteRequestUser(auth0Get.result);
+  if (emailDeleteUser.status !== ResponseStatus.Success) {
+    response.status(500).json(toMessage(emailDeleteUser.message));
+    return;
+  }
 
   response.sendStatus(200);
 }

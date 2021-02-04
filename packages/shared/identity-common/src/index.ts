@@ -1,3 +1,4 @@
+import { AWSError } from "aws-sdk";
 import { AxiosError } from 'axios';
 
 export function isNonBlank(str: string): boolean {
@@ -39,7 +40,7 @@ export function responseCodeIs(responseCode: number) {
   return (status: number) => status === responseCode;
 }
 
-export function unhandledError(error: AxiosError): ErrorResponse {
+export function unhandledError(error: AxiosError | AWSError): ErrorResponse {
   return errorResponse('Unhandled API response [' + error.message + ']', ResponseStatus.UnknownError, error);
 }
 

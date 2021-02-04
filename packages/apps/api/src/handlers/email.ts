@@ -1,6 +1,6 @@
 import { Auth0Profile } from "@weco/auth0-client/lib/auth0";
-import { AWSError, SESV2 } from "aws-sdk";
-import { SendEmailResponse } from "aws-sdk/clients/sesv2";
+import { APIResponse, successResponse, unhandledError } from "@weco/identity-common";
+import { SESV2 } from "aws-sdk";
 import { Liquid } from "liquidjs";
 import * as path from "path";
 
@@ -20,7 +20,7 @@ export default class EmailClient {
     this.adminAddress = adminAddress;
   }
 
-  async sendDeleteRequestAdmin(auth0Profile: Auth0Profile): Promise<void> {
+  async sendDeleteRequestAdmin(auth0Profile: Auth0Profile): Promise<APIResponse<{}>> {
     const subject: string = await this.engine.renderFile('delete-request_admin_subject', {
       userId: auth0Profile.userId
     });
@@ -30,19 +30,19 @@ export default class EmailClient {
       firstName: auth0Profile.firstName,
       lastName: auth0Profile.lastName
     });
-    this.sendEmail(this.adminAddress, subject, body);
+    return this.sendEmail(this.adminAddress, subject, body);
   }
 
-  async sendDeleteRequestUser(auth0Profile: Auth0Profile): Promise<void> {
+  async sendDeleteRequestUser(auth0Profile: Auth0Profile): Promise<APIResponse<{}>> {
     const subject: string = await this.engine.renderFile('delete-request_user_subject', {});
     const body: string = await this.engine.renderFile('delete-request_user_body', {
       firstName: auth0Profile.firstName,
       lastName: auth0Profile.lastName
     });
-    this.sendEmail(auth0Profile.email, subject, body);
+    return this.sendEmail(auth0Profile.email, subject, body);
   }
 
-  private sendEmail(toAddress: string, subject: string, body: string): void {
+  private async sendEmail(toAddress: string, subject: string, body: string): Promise<APIResponse<{}>> {
 
     const sesParams = {
       Content: {
@@ -63,14 +63,14 @@ export default class EmailClient {
       FromEmailAddress: this.fromAddress
     };
 
-    const sesCallback: (error: AWSError, data: SendEmailResponse) => void = function (error: AWSError, data: SendEmailResponse): void {
-      if (error) {
-        console.log(error, error.stack);
+    return this.ses.sendEmail(sesParams).promise().then(result => {
+      if (result.MessageId) {
+        console.log("Email sent with message ID [" + result.MessageId + "]");
+        return successResponse({})
       } else {
-        console.log(data);
+        console.log("An error occurred sending email [" + sesParams + "]: [" + result.$response.error + "]");
+        return unhandledError(result.$response.error);
       }
-    }
-
-    this.ses.sendEmail(sesParams, sesCallback);
+    });
   }
 }
