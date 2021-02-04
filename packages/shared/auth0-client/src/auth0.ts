@@ -21,7 +21,8 @@ export function toAuth0UserInfo(userInfo: any): Auth0UserInfo {
     name: name,
     firstName: userInfo.given_name ? userInfo.given_name : null,
     lastName: userInfo.family_name ? userInfo.family_name : null,
-    email: email
+    email: email,
+    additionalAttributes: userInfo['https://wellcomecollection.org/'] ? userInfo['https://wellcomecollection.org/'] : null
   }
 }
 
@@ -81,6 +82,7 @@ export interface Auth0UserInfo {
   firstName: string | null;
   lastName: string | null;
   email: string;
+  additionalAttributes?: {}
 }
 
 // An enhanced representation of the Auth0 user, it includes the various pieces of metadata which Auth0 provides about the user.
