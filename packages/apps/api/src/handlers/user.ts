@@ -119,37 +119,53 @@ type UserField = 'firstName' | 'lastName' | 'email';
 type AdminUserField = Omit<UserField, 'email'>;
 
 export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
-  const privilegedUserFields: AdminUserField[] = [
-      'firstName',
-      'lastName'
-  ];
-
   const userId: number = Number(request.params.user_id);
   if (isNaN(userId)) {
     response.status(400).json(toMessage('Invalid user ID [' + userId + ']'));
     return;
   }
 
+  const existingUserLookup = await auth0Client.getUserByUserId(userId);
+
+  if (existingUserLookup.status !== ResponseStatus.Success) {
+    if (existingUserLookup.status === ResponseStatus.NotFound) {
+      response.status(404).json(toMessage(existingUserLookup.message));
+    } else {
+      response.status(500).json(toMessage(existingUserLookup.message));
+    }
+
+    return;
+  }
+
+  const profile = existingUserLookup.result;
   const email: string = request.body.email;
-  if (email && !isNonBlank(email)) {
-    response.status(400).json(toMessage('email must be a non-blank string'));
+  if (!isNonBlank(email)) {
+    response.status(400).json(toMessage('email must be provided and non-blank'));
     return;
   }
 
   const firstName: string = request.body.firstName;
-  if (firstName && !isNonBlank(firstName)) {
-    response.status(400).json(toMessage('firstName must be a non-blank string'));
+  if (!isNonBlank(firstName)) {
+    response.status(400).json(toMessage('firstName must be provided and non-blank'));
     return;
   }
 
   const lastName: string = request.body.lastName;
-  if (lastName && !isNonBlank(lastName)) {
-    response.status(400).json(toMessage('lastName must be a non-blank string'));
+  if (!isNonBlank(lastName)) {
+    response.status(400).json(toMessage('lastName must be provided and non-blank'));
     return;
   }
 
-  if ((firstName || lastName) && !userIsAdmin(request)) {
-    response.status(403).json(toMessage(`Only an administrator can change ${privilegedUserFields.join(', ')}`));
+  let nameChanged = (!!firstName && firstName !== profile.firstName) || (!!lastName && lastName !== profile.lastName);
+
+  if (nameChanged && !userIsAdmin(request)) {
+    response.status(403).json(toMessage('Caller does not have permissions to modify: firstName, lastName'));
+    return;
+  }
+
+  let emailChanged = (!!email && email !== profile.email);
+  if (!emailChanged && !nameChanged) {
+    response.sendStatus(304);
     return;
   }
 
@@ -164,22 +180,6 @@ export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0C
     }
   }
 
-  let hasChanged = false;
-  if (auth0Get.status === ResponseStatus.Success) {
-    const profile = auth0Get.result;
-
-    hasChanged = hasChanged || (!!firstName && firstName !== profile.firstName);
-    hasChanged = hasChanged || (!!lastName && lastName !== profile.lastName);
-    hasChanged = hasChanged || (!!email && email !== profile.email);
-  } else {
-    hasChanged = true;
-  }
-
-  if (!hasChanged) {
-    response.sendStatus(304);
-    return;
-  }
-
   const sierraGet: APIResponse<PatronRecord> = await sierraClient.getPatronRecordByEmail(email);
   if (sierraGet.status != ResponseStatus.NotFound) {
     if (sierraGet.status === ResponseStatus.Success && sierraGet.result.recordNumber !== userId) {
@@ -192,7 +192,7 @@ export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0C
   }
 
 
-  const auth0Update: APIResponse<Auth0Profile> = await auth0Client.updateUser(userId, email, firstName, lastName);
+  const auth0Update: APIResponse<Auth0Profile> = await auth0Client.updateUser(userId, email, firstName ?? profile.firstName, lastName ?? profile.lastName);
   if (auth0Update.status != ResponseStatus.Success) {
     if (auth0Update.status === ResponseStatus.NotFound) {
       response.status(404).json(toMessage(auth0Update.message));
