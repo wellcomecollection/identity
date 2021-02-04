@@ -50,7 +50,8 @@ resource "auth0_client_grant" "api_gateway_identity" {
     "read:users",
     "read:user_idp_tokens",
     "create:users",
-    "update:users"
+    "update:users",
+    "delete:users"
   ]
 }
 
