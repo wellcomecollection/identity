@@ -34,7 +34,8 @@ resource "auth0_client" "api_gateway_identity" {
   custom_login_page_on = false
 
   grant_types = [
-    "client_credentials"
+    "client_credentials",
+    "password" // Required for testing of Auth0 credentials via the API
   ]
 
   lifecycle {
