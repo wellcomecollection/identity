@@ -256,6 +256,26 @@ export default class Auth0Client {
     });
   }
 
+  async sendPasswordResetEmail(email: string): Promise<APIResponse<{}>> {
+    return axios.post(this.apiRoot + '/dbconnections/change_password', {
+      email: email,
+      connection: 'Sierra-Connection'
+    }, {
+      validateStatus: status => status === 200
+    }).then(() =>
+      successResponse({})
+    ).catch(error => {
+      if (error.response) {
+        switch (error.response.status) {
+          case 400: {
+            return errorResponse('Malformed or invalid Auth0 password reset request', ResponseStatus.MalformedRequest, error);
+          }
+        }
+      }
+      return unhandledError(error);
+    });
+  }
+
   private async getMachineToMachineInstance(): Promise<AxiosInstance> {
     return axios.post(this.apiRoot + '/oauth/token', {
       client_id: this.clientId,
