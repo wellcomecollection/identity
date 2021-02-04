@@ -1,4 +1,3 @@
-import { AWSError } from "aws-sdk";
 import { AxiosError } from 'axios';
 
 export function isNonBlank(str: string): boolean {
@@ -28,8 +27,19 @@ export function errorResponse(
     | ResponseStatus.PasswordTooWeak
     | ResponseStatus.QueryTimeout
     | ResponseStatus.UnknownError,
-  error?: AxiosError): ErrorResponse {
-  const cause = error ? (error.response ? JSON.stringify(error.response.data) : error.message) : 'unknown';
+  error?: Error): ErrorResponse {
+
+  let cause: string = '';
+  if (error) {
+    if (isAxiosError(error) && error.response) {
+      cause = JSON.stringify(error.response.data);
+    } else {
+      cause = error.message;
+    }
+  } else {
+    cause = 'unknown';
+  }
+
   return {
     message: message + ' (cause: [' + cause + '])',
     status: status
@@ -40,8 +50,12 @@ export function responseCodeIs(responseCode: number) {
   return (status: number) => status === responseCode;
 }
 
-export function unhandledError(error: AxiosError | AWSError): ErrorResponse {
+export function unhandledError(error: Error): ErrorResponse {
   return errorResponse('Unhandled API response [' + error.message + ']', ResponseStatus.UnknownError, error);
+}
+
+function isAxiosError(error?: Error): error is AxiosError {
+  return (error as AxiosError).response !== undefined;
 }
 
 export type SuccessResponse<T> = {
