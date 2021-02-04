@@ -378,3 +378,43 @@ resource "aws_api_gateway_integration" "users_userid_unlock_put" {
     ]
   }
 }
+
+# [OPTIONS] /users/:user_id/request-delete
+
+resource "aws_api_gateway_integration" "users_userid_request-delete_options" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_request-delete.id
+  http_method = aws_api_gateway_method.users_userid_request-delete_options.http_method
+
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.api.invoke_arn
+
+  lifecycle {
+    ignore_changes = [
+      uri
+    ]
+  }
+}
+
+# [PUT] /users/:user_id/request-delete
+
+resource "aws_api_gateway_integration" "users_userid_request-delete_put" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_request-delete.id
+  http_method = aws_api_gateway_method.users_userid_request-delete_put.http_method
+
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.api.invoke_arn
+
+  request_parameters = {
+    "integration.request.path.userId" = "method.request.path.userId"
+  }
+
+  lifecycle {
+    ignore_changes = [
+      uri
+    ]
+  }
+}

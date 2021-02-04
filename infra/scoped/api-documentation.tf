@@ -1361,3 +1361,137 @@ resource "aws_api_gateway_documentation_part" "users_userid_unlock_put_500" {
     status_code = "500"
   }
 }
+
+# /users/:user_id/request-delete
+
+resource "aws_api_gateway_documentation_part" "users_userid_request-delete" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/request-delete/resource.json")
+
+  location {
+    type = "RESOURCE"
+    path = aws_api_gateway_resource.users_userid_request-delete.path
+  }
+}
+
+# [OPTIONS]
+
+resource "aws_api_gateway_documentation_part" "users_userid_request-delete_options" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/request-delete/options.json")
+
+  location {
+    type   = "METHOD"
+    path   = aws_api_gateway_resource.users_userid_request-delete.path
+    method = aws_api_gateway_method.users_userid_request-delete_options.http_method
+  }
+}
+
+# 204 No Content
+
+resource "aws_api_gateway_documentation_part" "users_userid_request-delete_options_204" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/request-delete/options-204.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_request-delete.path
+    method      = aws_api_gateway_method.users_userid_request-delete_options.http_method
+    status_code = "204"
+  }
+}
+
+# [PUT]
+
+resource "aws_api_gateway_documentation_part" "users_userid_request-delete_put" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/request-delete/put.json")
+
+  location {
+    type   = "METHOD"
+    path   = aws_api_gateway_resource.users_userid_request-delete.path
+    method = aws_api_gateway_method.users_userid_request-delete_put.http_method
+  }
+}
+
+resource "aws_api_gateway_documentation_part" "users_userid_request-delete_put_param_userid" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/request-delete/put-param-userid.json")
+
+  location {
+    type   = "PATH_PARAMETER"
+    path   = aws_api_gateway_resource.users_userid_request-delete.path
+    method = aws_api_gateway_method.users_userid_request-delete_put.http_method
+    name   = "userId"
+  }
+}
+
+# 200 OK
+
+resource "aws_api_gateway_documentation_part" "users_userid_request-delete_put_200" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/request-delete/put-200.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_request-delete.path
+    method      = aws_api_gateway_method.users_userid_request-delete_put.http_method
+    status_code = "200"
+  }
+}
+
+# 304 Not Modified
+
+resource "aws_api_gateway_documentation_part" "users_userid_request-delete_put_304" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/request-delete/put-304.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_request-delete.path
+    method      = aws_api_gateway_method.users_userid_request-delete_put.http_method
+    status_code = "304"
+  }
+}
+
+# 403 Forbidden
+
+resource "aws_api_gateway_documentation_part" "users_userid_request-delete_put_403" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/request-delete/put-403.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_request-delete.path
+    method      = aws_api_gateway_method.users_userid_request-delete_put.http_method
+    status_code = "403"
+  }
+}
+
+# 404 Not Found
+
+resource "aws_api_gateway_documentation_part" "users_userid_request-delete_put_404" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/request-delete/put-404.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_request-delete.path
+    method      = aws_api_gateway_method.users_userid_request-delete_put.http_method
+    status_code = "404"
+  }
+}
+
+# 500 Internal Server Error
+
+resource "aws_api_gateway_documentation_part" "users_userid_request-delete_put_500" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/request-delete/put-500.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_request-delete.path
+    method      = aws_api_gateway_method.users_userid_request-delete_put.http_method
+    status_code = "500"
+  }
+}
