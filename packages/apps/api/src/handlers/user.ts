@@ -350,32 +350,17 @@ export async function requestDelete(auth0Client: Auth0Client, sierraClient: Sier
     deleteRequested: new Date().toISOString()
   });
   if (auth0Update.status !== ResponseStatus.Success) {
-    if (auth0Update.status === ResponseStatus.MalformedRequest) {
-      response.status(400).json(toMessage(auth0Update.message));
-    } else if (auth0Update.status === ResponseStatus.NotFound) {
-      response.status(404).json(toMessage(auth0Update.message));
-    } else {
-      response.status(500).json(toMessage(auth0Update.message));
-    }
-    return;
+    console.log("An error occurred applying deletion flag to Auth0 record [" + userId + "]: [" + auth0Update + "]");
   }
 
   const auth0Block = await auth0Client.blockAccount(userId);
   if (auth0Block.status !== ResponseStatus.Success) {
-    if (auth0Block.status === ResponseStatus.MalformedRequest) {
-      response.status(400).json(toMessage(auth0Block.message));
-    } else if (auth0Block.status === ResponseStatus.NotFound) {
-      response.status(404).json(toMessage(auth0Block.message));
-    } else {
-      response.status(500).json(toMessage(auth0Block.message));
-    }
-    return;
+    console.log("An error blocking Auth0 record [" + userId + "]: [" + auth0Block + "]");
   }
 
   const emailDeleteUser = await emailClient.sendDeleteRequestUser(auth0Get.result);
   if (emailDeleteUser.status !== ResponseStatus.Success) {
-    response.status(500).json(toMessage(emailDeleteUser.message));
-    return;
+    console.log("An error notifying Auth0 user [" + userId + "] of the deletion request: [" + emailDeleteUser + "]");
   }
 
   response.sendStatus(200);
