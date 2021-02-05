@@ -5,7 +5,7 @@ import SierraClient from '@weco/sierra-client';
 import { PatronRecord } from '@weco/sierra-client/lib/patron';
 import { Request, Response } from 'express';
 import { toMessage } from '../models/common';
-import { toUser } from '../models/user';
+import { toSearchResults, toUser } from '../models/user';
 import EmailClient from "./email";
 
 export async function getUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
@@ -36,7 +36,7 @@ export async function getUser(sierraClient: SierraClient, auth0Client: Auth0Clie
     return;
   }
 
-  response.status(200).json(toUser(sierraGet.result, auth0Get.result));
+  response.status(200).json(toUser(auth0Get.result, sierraGet.result));
 }
 
 export async function createUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
@@ -107,7 +107,7 @@ export async function createUser(sierraClient: SierraClient, auth0Client: Auth0C
     return;
   }
 
-  response.status(201).json(toUser(sierraUpdate.result, auth0Create.result));
+  response.status(201).json(toUser(auth0Create.result, sierraUpdate.result));
 }
 
 export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
@@ -170,7 +170,7 @@ export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0C
     return;
   }
 
-  response.status(200).json(toUser(sierraUpdate.result, auth0Update.result));
+  response.status(200).json(toUser(auth0Update.result, sierraUpdate.result));
 }
 
 export async function changePassword(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
@@ -215,7 +215,7 @@ export async function changePassword(sierraClient: SierraClient, auth0Client: Au
     return;
   }
 
-  response.status(200).json(toUser(sierraUpdate.result, auth0Update.result));
+  response.sendStatus(200);
 }
 
 export async function searchUsers(auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
@@ -252,7 +252,7 @@ export async function searchUsers(auth0Client: Auth0Client, request: Request, re
     return;
   }
 
-  response.status(200).json(userSearch.result);
+  response.status(200).json(toSearchResults(userSearch.result));
 }
 
 export async function sendVerificationEmail(auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {

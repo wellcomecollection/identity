@@ -1,10 +1,10 @@
-import { Auth0Profile } from '@weco/auth0-client/lib/auth0';
+import { Auth0Profile, Auth0SearchResults } from '@weco/auth0-client/lib/auth0';
 import { PatronRecord } from '@weco/sierra-client/lib/patron';
 
-export function toUser(patronRecord: PatronRecord, auth0Profile: Auth0Profile): User {
+export function toUser(auth0Profile: Auth0Profile, patronRecord?: PatronRecord): User {
   return {
     userId: auth0Profile.userId,
-    barcode: patronRecord.barcode,
+    barcode: patronRecord ? patronRecord.barcode : null,
     firstName: auth0Profile.firstName,
     lastName: auth0Profile.lastName,
     email: auth0Profile.email,
@@ -17,9 +17,22 @@ export function toUser(patronRecord: PatronRecord, auth0Profile: Auth0Profile): 
   }
 }
 
+export function toSearchResults(auth0SearchResults: Auth0SearchResults): SearchResults {
+  return {
+    page: auth0SearchResults.page,
+    pageSize: auth0SearchResults.pageSize,
+    pageCount: auth0SearchResults.pageCount,
+    totalResults: auth0SearchResults.totalResults,
+    sort: auth0SearchResults.sort,
+    sortDir: auth0SearchResults.sortDir,
+    query: auth0SearchResults.query,
+    results: auth0SearchResults.results.map((result: Auth0Profile) => toUser(result))
+  }
+}
+
 interface User {
   userId: number,
-  barcode: string,
+  barcode: string | null,
   firstName: string | null,
   lastName: string | null,
   email: string,
@@ -29,4 +42,15 @@ interface User {
   lastLogin: string | null,
   lastLoginIp: string | null,
   totalLogins: number
+}
+
+interface SearchResults {
+  page: number,
+  pageSize: number,
+  pageCount: number,
+  totalResults: number,
+  sort: string,
+  sortDir: number,
+  query: string,
+  results: User[]
 }
