@@ -153,7 +153,6 @@ export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0C
   }
 
   let nameChanged = (!!firstName && firstName !== profile.firstName) || (!!lastName && lastName !== profile.lastName);
-
   if (nameChanged && !userIsAdmin(request)) {
     response.status(403).json(toMessage('Caller does not have permissions to modify: firstName, lastName'));
     return;
