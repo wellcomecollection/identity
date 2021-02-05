@@ -11,7 +11,7 @@
         "test": "jest --rootDir ."
     },
     "devDependencies": {
-        "axios": "^0.21.0",
-        "@weco/identity-common": "*"
+        "@weco/identity-common": "*",
+        "axios": "^0.21.1"
     }
 }

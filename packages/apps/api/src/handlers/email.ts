@@ -1,12 +1,14 @@
+import { SESv2 } from "@aws-sdk/client-sesv2";
 import { Auth0Profile } from "@weco/auth0-client/lib/auth0";
 import { APIResponse, successResponse, unhandledError } from "@weco/identity-common";
-import { SESV2 } from "aws-sdk";
 import { Liquid } from "liquidjs";
 import * as path from "path";
 
 export default class EmailClient {
 
-  private readonly ses: SESV2 = new SESV2();
+  private readonly ses: SESv2 = new SESv2({
+    region: 'eu-west-1'
+  });
   private readonly engine: Liquid = new Liquid({
     root: path.resolve(__dirname, 'templates/'),
     extname: '.liquid'
@@ -63,7 +65,7 @@ export default class EmailClient {
       FromEmailAddress: this.fromAddress
     };
 
-    return this.ses.sendEmail(sesParams).promise().then(result => {
+    return this.ses.sendEmail(sesParams).then(result => {
       console.log("Email sent with message ID [" + result.MessageId + "]");
       return successResponse({})
     }).catch(error => {

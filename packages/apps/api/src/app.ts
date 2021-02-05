@@ -47,94 +47,94 @@ function createApplication(): Application {
 }
 
 function registerAuthResource(app: Application): void {
-  const corsOptions: cors.CorsOptions = {
+  const corsOptions = cors({
     allowedHeaders: ['Content-Type', 'X-API-Key'],
     methods: 'OPTIONS,POST',
     origin: process.env.API_ALLOWED_ORIGINS
-  }
-  app.options('/auth', cors(corsOptions));
-  app.post('/auth', cors(corsOptions), (request: Request, response: Response) => validateCredentials(auth0Client, request, response));
+  })
+  app.options('/auth', corsOptions);
+  app.post('/auth', corsOptions, (request: Request, response: Response) => validateCredentials(auth0Client, request, response));
 }
 
 function registerUsersResource(app: Application): void {
-  const corsOptions: cors.CorsOptions = {
+  const corsOptions = cors({
     allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
     methods: 'OPTIONS,GET,POST',
     origin: process.env.API_ALLOWED_ORIGINS
-  }
-  app.options('/users', cors(corsOptions));
-  app.get('/users', cors(corsOptions), (request: Request, response: Response) => searchUsers(auth0Client, request, response));
-  app.post('/users', cors(corsOptions), (request: Request, response: Response) => createUser(sierraClient, auth0Client, request, response));
+  });
+  app.options('/users', corsOptions);
+  app.get('/users', corsOptions, (request: Request, response: Response) => searchUsers(auth0Client, request, response));
+  app.post('/users', corsOptions, (request: Request, response: Response) => createUser(sierraClient, auth0Client, request, response));
 }
 
 function registerUsersUserIdResource(app: Application): void {
-  const corsOptions: cors.CorsOptions = {
+  const corsOptions = cors({
     allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
     methods: 'OPTIONS,GET,PUT,DELETE',
     origin: process.env.API_ALLOWED_ORIGINS
-  }
-  app.options('/users/:user_id', cors(corsOptions));
-  app.get('/users/:user_id', cors(corsOptions), (request: Request, response: Response) => getUser(sierraClient, auth0Client, request, response));
-  app.put('/users/:user_id', cors(corsOptions), (request: Request, response: Response) => updateUser(sierraClient, auth0Client, request, response));
-  app.delete('/users/:user_id', cors(corsOptions), (request: Request, response: Response) => response.status(204).end());
+  });
+  app.options('/users/:user_id', corsOptions);
+  app.get('/users/:user_id', corsOptions, (request: Request, response: Response) => getUser(sierraClient, auth0Client, request, response));
+  app.put('/users/:user_id', corsOptions, (request: Request, response: Response) => updateUser(sierraClient, auth0Client, request, response));
+  app.delete('/users/:user_id', corsOptions, (request: Request, response: Response) => response.status(204).end());
 }
 
 function registerUsersUserIdPasswordResource(app: Application): void {
-  const corsOptions: cors.CorsOptions = {
+  const corsOptions = cors({
     allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
     methods: 'OPTIONS,PUT',
     origin: process.env.API_ALLOWED_ORIGINS
-  }
-  app.options('/users/:user_id/password', cors(corsOptions));
-  app.put('/users/:user_id/password', cors(corsOptions), (request: Request, response: Response) => changePassword(sierraClient, auth0Client, request, response));
+  });
+  app.options('/users/:user_id/password', corsOptions);
+  app.put('/users/:user_id/password', corsOptions, (request: Request, response: Response) => changePassword(sierraClient, auth0Client, request, response));
 }
 
 function registerUsersUserIdResetPasswordResource(app: Application): void {
-  const corsOptions: cors.CorsOptions = {
+  const corsOptions = cors({
     allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
     methods: 'OPTIONS,PUT',
     origin: process.env.API_ALLOWED_ORIGINS
-  }
-  app.options('/users/:user_id/reset-password', cors(corsOptions));
-  app.put('/users/:user_id/reset-password', cors(corsOptions), (request: Request, response: Response) => sendPasswordResetEmail(auth0Client, request, response));
+  });
+  app.options('/users/:user_id/reset-password', corsOptions);
+  app.put('/users/:user_id/reset-password', corsOptions, (request: Request, response: Response) => sendPasswordResetEmail(auth0Client, request, response));
 }
 
 function registerUsersUserIdSendVerificationResource(app: Application): void {
-  const corsOptions: cors.CorsOptions = {
+  const corsOptions = cors({
     allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
     methods: 'OPTIONS,PUT',
     origin: process.env.API_ALLOWED_ORIGINS
-  }
-  app.options('/users/:user_id/send-verification', cors(corsOptions));
-  app.put('/users/:user_id/send-verification', cors(corsOptions), (request: Request, response: Response) => sendVerificationEmail(auth0Client, request, response));
+  });
+  app.options('/users/:user_id/send-verification', corsOptions);
+  app.put('/users/:user_id/send-verification', corsOptions, (request: Request, response: Response) => sendVerificationEmail(auth0Client, request, response));
 }
 
 function registerUsersUserIdLockResource(app: Application): void {
-  const corsOptions: cors.CorsOptions = {
+  const corsOptions = cors({
     allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
     methods: 'OPTIONS,PUT',
     origin: process.env.API_ALLOWED_ORIGINS
-  }
-  app.options('/users/:user_id/lock', cors(corsOptions));
-  app.put('/users/:user_id/lock', cors(corsOptions), (request: Request, response: Response) => response.status(200).end());
+  });
+  app.options('/users/:user_id/lock', corsOptions);
+  app.put('/users/:user_id/lock', corsOptions, (request: Request, response: Response) => response.status(200).end());
 }
 
 function registerUsersUserIdUnlockResource(app: Application): void {
-  const corsOptions: cors.CorsOptions = {
+  const corsOptions = cors({
     allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
     methods: 'OPTIONS,PUT',
     origin: process.env.API_ALLOWED_ORIGINS
-  }
-  app.options('/users/:user_id/unlock', cors(corsOptions));
-  app.put('/users/:user_id/unlock', cors(corsOptions), (request: Request, response: Response) => response.status(200).end());
+  });
+  app.options('/users/:user_id/unlock', corsOptions);
+  app.put('/users/:user_id/unlock', corsOptions, (request: Request, response: Response) => response.status(200).end());
 }
 
 function registerUsersUserIdRequestDeleteResource(app: Application): void {
-  const corsOptions: cors.CorsOptions = {
+  const corsOptions = cors({
     allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
     methods: 'OPTIONS,PUT',
     origin: process.env.API_ALLOWED_ORIGINS
-  }
-  app.options('/users/:user_id/request-delete', cors(corsOptions));
-  app.put('/users/:user_id/request-delete', cors(corsOptions), (request: Request, response: Response) => requestDelete(auth0Client, sierraClient, emailClient, request, response));
+  });
+  app.options('/users/:user_id/request-delete', corsOptions);
+  app.put('/users/:user_id/request-delete', corsOptions, (request: Request, response: Response) => requestDelete(auth0Client, sierraClient, emailClient, request, response));
 }
