@@ -35,7 +35,7 @@ resource "auth0_client" "api_gateway_identity" {
 
   grant_types = [
     "client_credentials",
-    "password" // Required for testing of Auth0 credentials via the API
+    "password", "http://auth0.com/oauth/grant-type/password-realm" // Required for testing of Auth0 credentials via the API
   ]
 
   lifecycle {
