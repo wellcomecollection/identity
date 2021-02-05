@@ -1,6 +1,6 @@
 {
   "summary": "Deletes a user",
-  "description": "Deletes the user defined by the `userId` path parameter. Can only be executed by a user with administrator permissions.",
+  "description": "Deletes the user defined by the `userId` path parameter.",
   "tags": [
     "User"
   ]
