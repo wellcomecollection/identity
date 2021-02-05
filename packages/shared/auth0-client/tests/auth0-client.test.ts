@@ -285,7 +285,7 @@ describe('auth0 client', () => {
         response: user
       });
 
-      const response = await client.updateUser(userId, email);
+      const response = await client.updateUser(userId, email, firstName, lastName);
       equal(response.status, ResponseStatus.Success);
 
       const result = (<SuccessResponse<Auth0Profile>>response).result;
@@ -307,7 +307,7 @@ describe('auth0 client', () => {
         }
       });
 
-      const response = await client.updateUser(userId, email);
+      const response = await client.updateUser(userId, email, firstName, lastName);
       equal(response.status, ResponseStatus.UserAlreadyExists);
     });
 
@@ -316,7 +316,7 @@ describe('auth0 client', () => {
         status: 400
       });
 
-      const response = await client.updateUser(userId, email);
+      const response = await client.updateUser(userId, email, firstName, lastName);
       equal(response.status, ResponseStatus.MalformedRequest);
     });
 
@@ -325,7 +325,7 @@ describe('auth0 client', () => {
         status: 404
       });
 
-      const response = await client.updateUser(userId, email);
+      const response = await client.updateUser(userId, email, firstName, lastName);
       equal(response.status, ResponseStatus.NotFound);
     });
 
@@ -334,7 +334,7 @@ describe('auth0 client', () => {
         status: 500
       });
 
-      const response = await client.updateUser(userId, email);
+      const response = await client.updateUser(userId, email, firstName, lastName);
       equal(response.status, ResponseStatus.UnknownError);
     });
   });
