@@ -11,8 +11,6 @@
         "test": "jest --rootDir ."
     },
     "devDependencies": {
-        "@types/node": "^14.14.25",
-        "aws-sdk": "^2.836.0",
         "axios": "^0.21.0"
     }
 }
