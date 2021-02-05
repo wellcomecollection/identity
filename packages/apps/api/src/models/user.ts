@@ -13,7 +13,8 @@ export function toUser(auth0Profile: Auth0Profile, patronRecord?: PatronRecord):
     creationDate: auth0Profile.creationDate,
     lastLogin: auth0Profile.lastLogin,
     lastLoginIp: auth0Profile.lastLoginIp,
-    totalLogins: auth0Profile.totalLogins
+    totalLogins: auth0Profile.totalLogins,
+    deleteRequested: auth0Profile.metadata?.deleteRequested
   }
 }
 
@@ -41,7 +42,8 @@ interface User {
   creationDate: string,
   lastLogin: string | null,
   lastLoginIp: string | null,
-  totalLogins: number
+  totalLogins: number,
+  deleteRequested: string | null
 }
 
 interface SearchResults {
