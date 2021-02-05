@@ -264,6 +264,42 @@ resource "aws_ssm_parameter" "smtp_host" {
   )
 }
 
+# Azure AD
+
+resource "aws_ssm_parameter" "azure_ad_directory_id" {
+  name  = "identity-azure_ad_directory_id-${terraform.workspace}"
+  type  = "String"
+  value = var.ssm_parameter_placeholder
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+
+  tags = merge(
+    local.common_tags,
+    {
+      "Name" = "identity-azure_ad_directory_id-${terraform.workspace}"
+    }
+  )
+}
+
+resource "aws_ssm_parameter" "azure_ad_application_id" {
+  name  = "identity-azure_ad_application_id-${terraform.workspace}"
+  type  = "String"
+  value = var.ssm_parameter_placeholder
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+
+  tags = merge(
+    local.common_tags,
+    {
+      "Name" = "identity-azure_ad_application_id-${terraform.workspace}"
+    }
+  )
+}
+
 # Account Management System
 
 resource "aws_ssm_parameter" "account_management_system-auth0_domain" {
@@ -332,6 +368,25 @@ resource "aws_ssm_parameter" "account_management_system-context_path" {
     local.common_tags,
     {
       "Name" = "/identity/${terraform.workspace}/account_management_system/context_path"
+    }
+  )
+}
+
+# Email
+
+resource "aws_ssm_parameter" "email_admin_address" {
+  name  = "identity-email_admin_address-${terraform.workspace}"
+  type  = "String"
+  value = var.ssm_parameter_placeholder
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+
+  tags = merge(
+    local.common_tags,
+    {
+      "Name" = "identity-email_admin_address-${terraform.workspace}"
     }
   )
 }

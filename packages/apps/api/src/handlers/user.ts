@@ -5,7 +5,8 @@ import SierraClient from '@weco/sierra-client';
 import { PatronRecord } from '@weco/sierra-client/lib/patron';
 import { Request, Response } from 'express';
 import { toMessage } from '../models/common';
-import { toUser } from '../models/user';
+import { toSearchResults, toUser } from '../models/user';
+import EmailClient from "../utils/email";
 
 export async function getUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
 
@@ -35,7 +36,7 @@ export async function getUser(sierraClient: SierraClient, auth0Client: Auth0Clie
     return;
   }
 
-  response.status(200).json(toUser(sierraGet.result, auth0Get.result));
+  response.status(200).json(toUser(auth0Get.result, sierraGet.result));
 }
 
 export async function deleteUser(
@@ -143,7 +144,7 @@ export async function createUser(sierraClient: SierraClient, auth0Client: Auth0C
     return;
   }
 
-  response.status(201).json(toUser(sierraUpdate.result, auth0Create.result));
+  response.status(201).json(toUser(auth0Create.result, sierraUpdate.result));
 }
 
 export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
@@ -206,7 +207,7 @@ export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0C
     return;
   }
 
-  response.status(200).json(toUser(sierraUpdate.result, auth0Update.result));
+  response.status(200).json(toUser(auth0Update.result, sierraUpdate.result));
 }
 
 export async function changePassword(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
@@ -251,7 +252,7 @@ export async function changePassword(sierraClient: SierraClient, auth0Client: Au
     return;
   }
 
-  response.status(200).json(toUser(sierraUpdate.result, auth0Update.result));
+  response.sendStatus(200);
 }
 
 export async function searchUsers(auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
@@ -288,7 +289,7 @@ export async function searchUsers(auth0Client: Auth0Client, request: Request, re
     return;
   }
 
-  response.status(200).json(userSearch.result);
+  response.status(200).json(toSearchResults(userSearch.result));
 }
 
 export async function sendVerificationEmail(auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
@@ -322,6 +323,85 @@ export async function sendVerificationEmail(auth0Client: Auth0Client, request: R
       response.status(500).json(toMessage(sendVerification.message));
     }
     return;
+  }
+
+  response.sendStatus(200);
+}
+
+export async function sendPasswordResetEmail(auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
+
+  const userId: number = Number(request.params.user_id);
+  if (isNaN(userId)) {
+    response.status(400).json(toMessage('Invalid user ID [' + userId + ']'));
+    return;
+  }
+
+  const userGet = await auth0Client.getUserByUserId(userId);
+  if (userGet.status !== ResponseStatus.Success) {
+    if (userGet.status === ResponseStatus.NotFound) {
+      response.status(404).json(toMessage(userGet.message));
+    } else {
+      response.status(500).json(toMessage(userGet.message));
+    }
+    return;
+  }
+
+  const sendPasswordReset = await auth0Client.sendPasswordResetEmail(userGet.result.email);
+  if (sendPasswordReset.status !== ResponseStatus.Success) {
+    if (sendPasswordReset.status === ResponseStatus.MalformedRequest) {
+      response.status(400).json(toMessage(sendPasswordReset.message));
+    } else {
+      response.status(500).json(toMessage(sendPasswordReset.message));
+    }
+    return;
+  }
+
+  response.sendStatus(200);
+}
+
+export async function requestDelete(auth0Client: Auth0Client, sierraClient: SierraClient, emailClient: EmailClient, request: Request, response: Response): Promise<void> {
+
+  const userId: number = Number(request.params.user_id);
+  if (isNaN(userId)) {
+    response.status(400).json(toMessage('Invalid user ID [' + userId + ']'));
+    return;
+  }
+
+  const auth0Get = await auth0Client.getUserByUserId(userId);
+  if (auth0Get.status !== ResponseStatus.Success) {
+    if (auth0Get.status === ResponseStatus.NotFound) {
+      response.status(404).json(toMessage(auth0Get.message));
+    } else {
+      response.status(500).json(toMessage(auth0Get.message));
+    }
+    return;
+  }
+
+  if (auth0Get.result?.metadata?.requestDeleted) {
+    response.status(304).json(toMessage('Deletion request already processing for user with ID [' + userId + ']'));
+  }
+
+  const emailDeleteAdmin = await emailClient.sendDeleteRequestAdmin(auth0Get.result);
+  if (emailDeleteAdmin.status !== ResponseStatus.Success) {
+    response.status(500).json(toMessage(emailDeleteAdmin.message));
+    return;
+  }
+
+  const auth0Update = await auth0Client.addAppMetadata(userId, {
+    deleteRequested: new Date().toISOString()
+  });
+  if (auth0Update.status !== ResponseStatus.Success) {
+    console.log("An error occurred applying deletion flag to Auth0 record [" + userId + "]: [" + auth0Update + "]");
+  }
+
+  const auth0Block = await auth0Client.blockAccount(userId);
+  if (auth0Block.status !== ResponseStatus.Success) {
+    console.log("An error blocking Auth0 record [" + userId + "]: [" + auth0Block + "]");
+  }
+
+  const emailDeleteUser = await emailClient.sendDeleteRequestUser(auth0Get.result);
+  if (emailDeleteUser.status !== ResponseStatus.Success) {
+    console.log("An error notifying Auth0 user [" + userId + "] of the deletion request: [" + emailDeleteUser + "]");
   }
 
   response.sendStatus(200);

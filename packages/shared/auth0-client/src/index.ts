@@ -139,16 +139,20 @@ export default class Auth0Client {
     });
   }
 
-  async validateUserCredentials(username: string, password: string): Promise<APIResponse<boolean>> {
-    return this.getInstanceWithCredentials(username, password)
-      .then(_ => successResponse(true))
-      .catch(error => {
-        if (error?.response?.status == 401) {
-          return errorResponse('Invalid credentials', ResponseStatus.InvalidCredentials, error);
+  async validateUserCredentials(username: string, password: string): Promise<APIResponse<{}>> {
+    return this.getInstanceWithCredentials(username, password).then(() =>
+      successResponse(true)
+    ).catch(error => {
+      if (error.response) {
+        switch (error.response.status) {
+          case 401:
+          case 403: {
+            return errorResponse('Invalid credentials', ResponseStatus.InvalidCredentials, error);
+          }
         }
-
-        return unhandledError(error);
-      });
+      }
+      return unhandledError(error);
+    });
   }
 
   async updateUser(userId: number, email: string): Promise<APIResponse<Auth0Profile>> {
@@ -256,6 +260,72 @@ export default class Auth0Client {
             case 400: {
               return errorResponse('Malformed or invalid Auth0 email verification request', ResponseStatus.MalformedRequest, error);
             }
+          }
+        }
+        return unhandledError(error);
+      });
+    });
+  }
+
+  async sendPasswordResetEmail(email: string): Promise<APIResponse<{}>> {
+    return axios.post(this.apiRoot + '/dbconnections/change_password', {
+      email: email,
+      connection: 'Sierra-Connection'
+    }, {
+      validateStatus: status => status === 200
+    }).then(() =>
+      successResponse({})
+    ).catch(error => {
+      if (error.response) {
+        switch (error.response.status) {
+          case 400: {
+            return errorResponse('Malformed or invalid Auth0 password reset request', ResponseStatus.MalformedRequest, error);
+          }
+        }
+      }
+      return unhandledError(error);
+    });
+  }
+
+  async addAppMetadata(userId: number, metadata: Record<string, any>): Promise<APIResponse<{}>> {
+    return this.getMachineToMachineInstance().then(instance => {
+      return instance.patch('/users/auth0|p' + userId, {
+        app_metadata: metadata
+      }, {
+        validateStatus: status => status === 200
+      }).then(response =>
+        successResponse(toAuth0Profile(response.data))
+      ).catch(error => {
+        if (error.response) {
+          switch (error.response.status) {
+            case 400: {
+              return errorResponse('Malformed or invalid Auth0 user app metadata update request', ResponseStatus.MalformedRequest, error);
+            }
+            case 404:
+              return errorResponse('Auth0 user with ID [' + userId + '] not found', ResponseStatus.NotFound, error);
+          }
+        }
+        return unhandledError(error);
+      });
+    });
+  }
+
+  async blockAccount(userId: number): Promise<APIResponse<{}>> {
+    return this.getMachineToMachineInstance().then(instance => {
+      return instance.patch('/users/auth0|p' + userId, {
+        blocked: true
+      }, {
+        validateStatus: status => status === 200
+      }).then(() =>
+        successResponse({})
+      ).catch(error => {
+        if (error.response) {
+          switch (error.response.status) {
+            case 400: {
+              return errorResponse('Malformed or invalid Auth0 user block request', ResponseStatus.MalformedRequest, error);
+            }
+            case 404:
+              return errorResponse('Auth0 user with ID [' + userId + '] not found', ResponseStatus.NotFound, error);
           }
         }
         return unhandledError(error);

@@ -13,7 +13,8 @@ resource "auth0_client" "dummy_test" {
 
   callbacks = [
     "https://${local.auth0_hostname}/login/callback",
-    "https://oauth.pstmn.io/v1/callback"
+    "https://oauth.pstmn.io/v1/callback",
+    "https://oauth.pstmn.io/v1/browser-callback"
   ]
 
   lifecycle {
@@ -33,7 +34,8 @@ resource "auth0_client" "api_gateway_identity" {
   custom_login_page_on = false
 
   grant_types = [
-    "client_credentials"
+    "client_credentials",
+    "password" // Required for testing of Auth0 credentials via the API
   ]
 
   lifecycle {
@@ -152,6 +154,27 @@ resource "auth0_client" "account_management_system" {
 
   callbacks = [
     local.ams_redirect_uri
+  ]
+
+  lifecycle {
+    ignore_changes = [
+      custom_login_page_preview,
+      custom_login_page
+    ]
+  }
+}
+
+# Account Administration System
+# Lets the Account Administration System component initialise and process OAuth 2.0 / OIDC login requests through Auth0
+
+resource "auth0_client" "account_admin_system" {
+  name                 = "Account Administration System (${terraform.workspace})"
+  app_type             = "regular_web"
+  is_first_party       = true
+  custom_login_page_on = true
+
+  grant_types = [
+    "authorization_code"
   ]
 
   lifecycle {

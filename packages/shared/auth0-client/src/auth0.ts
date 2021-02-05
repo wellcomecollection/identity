@@ -21,7 +21,8 @@ export function toAuth0UserInfo(userInfo: any): Auth0UserInfo {
     name: name,
     firstName: userInfo.given_name ? userInfo.given_name : null,
     lastName: userInfo.family_name ? userInfo.family_name : null,
-    email: email
+    email: email,
+    additionalAttributes: userInfo['https://wellcomecollection.org/'] ? userInfo['https://wellcomecollection.org/'] : null
   }
 }
 
@@ -53,7 +54,8 @@ export function toAuth0Profile(auth0User: any): Auth0Profile {
     locked: !!(auth0User.blocked), // Auth0 quirk - this attribute doesn't appear on Auth0 responses until it's been toggled at least once.
     lastLogin: auth0User.last_login ? auth0User.last_login : null,
     lastLoginIp: auth0User.last_ip ? auth0User.last_ip : null,
-    totalLogins: auth0User.logins_count ? auth0User.logins_count : 0
+    totalLogins: auth0User.logins_count ? auth0User.logins_count : 0,
+    metadata: auth0User.app_metadata ? auth0User.app_metadata : null
   }
 }
 
@@ -81,6 +83,7 @@ export interface Auth0UserInfo {
   firstName: string | null;
   lastName: string | null;
   email: string;
+  additionalAttributes?: { [key: string]: any }
 }
 
 // An enhanced representation of the Auth0 user, it includes the various pieces of metadata which Auth0 provides about the user.
@@ -90,7 +93,8 @@ export interface Auth0Profile extends Auth0UserInfo {
   creationDate: string,
   lastLogin: string | null,
   lastLoginIp: string | null,
-  totalLogins: number
+  totalLogins: number,
+  metadata?: { [key: string]: any }
 }
 
 // A container that represents Auth0 user search results.
