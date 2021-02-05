@@ -371,3 +371,22 @@ resource "aws_ssm_parameter" "account_management_system-context_path" {
     }
   )
 }
+
+# Email
+
+resource "aws_ssm_parameter" "email_admin_address" {
+  name  = "identity-email_admin_address-${terraform.workspace}"
+  type  = "String"
+  value = var.ssm_parameter_placeholder
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+
+  tags = merge(
+    local.common_tags,
+    {
+      "Name" = "identity-email_admin_address-${terraform.workspace}"
+    }
+  )
+}

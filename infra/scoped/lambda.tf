@@ -15,7 +15,9 @@ resource "aws_lambda_function" "authorizer" {
       AUTH0_API_ROOT       = local.auth0_endpoint
       AUTH0_API_AUDIENCE   = auth0_client_grant.api_gateway_identity.audience,
       AUTH0_CLIENT_ID      = auth0_client.api_gateway_identity.client_id,
-      AUTH0_CLIENT_SECRET  = auth0_client.api_gateway_identity.client_secret
+      AUTH0_CLIENT_SECRET  = auth0_client.api_gateway_identity.client_secret,
+      EMAIL_FROM_ADDRESS   = local.auth0_email_from,
+      EMAIL_ADMIN_ADDRESS  = aws_ssm_parameter.email_admin_address.value
     }
   }
 
@@ -64,7 +66,9 @@ resource "aws_lambda_function" "api" {
       AUTH0_API_AUDIENCE   = auth0_client_grant.api_gateway_identity.audience,
       AUTH0_CLIENT_ID      = auth0_client.api_gateway_identity.client_id,
       AUTH0_CLIENT_SECRET  = auth0_client.api_gateway_identity.client_secret,
-      API_ALLOWED_ORIGINS  = local.identity_v1_docs_endpoint
+      API_ALLOWED_ORIGINS  = local.identity_v1_docs_endpoint,
+      EMAIL_FROM_ADDRESS   = local.auth0_email_from,
+      EMAIL_ADMIN_ADDRESS  = aws_ssm_parameter.email_admin_address.value
     }
   }
 
