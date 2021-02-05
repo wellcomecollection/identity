@@ -340,6 +340,10 @@ export async function requestDelete(auth0Client: Auth0Client, sierraClient: Sier
     return;
   }
 
+  if (auth0Get.result?.metadata?.requestDeleted) {
+    response.status(304).json(toMessage('Deletion request already processing for user with ID [' + userId + ']'));
+  }
+
   const emailDeleteAdmin = await emailClient.sendDeleteRequestAdmin(auth0Get.result);
   if (emailDeleteAdmin.status !== ResponseStatus.Success) {
     response.status(500).json(toMessage(emailDeleteAdmin.message));

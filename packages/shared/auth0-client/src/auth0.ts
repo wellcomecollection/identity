@@ -83,7 +83,7 @@ export interface Auth0UserInfo {
   firstName: string | null;
   lastName: string | null;
   email: string;
-  additionalAttributes?: {}
+  additionalAttributes?: { [key: string]: any }
 }
 
 // An enhanced representation of the Auth0 user, it includes the various pieces of metadata which Auth0 provides about the user.
@@ -94,7 +94,7 @@ export interface Auth0Profile extends Auth0UserInfo {
   lastLogin: string | null,
   lastLoginIp: string | null,
   totalLogins: number,
-  metadata: {} | null
+  metadata?: { [key: string]: any }
 }
 
 // A container that represents Auth0 user search results.
