@@ -114,10 +114,6 @@ function userIsAdmin(request: Request) {
   return request.apiGateway.event.requestContext.authorizer.isAdmin;
 }
 
-
-type UserField = 'firstName' | 'lastName' | 'email';
-type AdminUserField = Omit<UserField, 'email'>;
-
 export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
   const userId: number = Number(request.params.user_id);
   if (isNaN(userId)) {
