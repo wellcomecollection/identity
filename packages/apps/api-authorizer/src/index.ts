@@ -51,7 +51,7 @@ function extractAccessToken(tokenString: string): null | string {
 
 type ResourceAclMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 type ResourceAclCheckType = 'AND' | 'OR';
-type ResourceAclCheck = (user: Auth0UserInfo, pathParameters: Record<string, string> | null) => boolean;
+type ResourceAclCheck = (user: Auth0UserInfo, pathParameters: Record<string, string | undefined> | null) => boolean;
 
 type ResourceAcl = {
   resource: string,
@@ -60,12 +60,12 @@ type ResourceAcl = {
   checkType?: ResourceAclCheckType
 };
 
-const isAdministrator = function (user: Auth0UserInfo, pathParameters: Record<string, string> | null): boolean {
+const isAdministrator = function (user: Auth0UserInfo, pathParameters: Record<string, string | undefined> | null): boolean {
   // @ts-ignore is_admin isn't typed on additionalAttributes
   return user.additionalAttributes?.is_admin ?? false;
 };
 
-const isSelf = function (user: Auth0UserInfo, pathParameters: Record<string, string> | null): boolean {
+const isSelf = function (user: Auth0UserInfo, pathParameters: Record<string, string | undefined> | null): boolean {
   return pathParameters?.userId === user.userId.toString();
 };
 
@@ -102,9 +102,14 @@ const resourceAcls: ResourceAcl[] = [
     methods: ['PUT'],
     check: isAdministrator,
   },
+  {
+    resource: '/users/{userId}/request-delete',
+    methods: ['PUT'],
+    check: isSelf,
+  },
 ];
 
-function validateRequest(auth0UserInfo: Auth0UserInfo, resource: string, method: ResourceAclMethod, pathParameters: Record<string, string> | null): boolean {
+function validateRequest(auth0UserInfo: Auth0UserInfo, resource: string, method: ResourceAclMethod, pathParameters: Record<string, string | undefined> | null): boolean {
   let acl = resourceAcls.find(acl => acl.resource === resource && acl.methods.includes(method));
   if (!acl) {
     // No ACL found, defensively deny access

@@ -1382,3 +1382,140 @@ resource "aws_api_gateway_method_response" "users_userid_unlock_put_500" {
     "method.response.header.Access-Control-Allow-Origin" = true
   }
 }
+
+# /users/:user_id/request-delete
+
+resource "aws_api_gateway_resource" "users_userid_request-delete" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  parent_id   = aws_api_gateway_resource.users_userid.id
+  path_part   = "request-delete"
+}
+
+# [OPTIONS]
+
+resource "aws_api_gateway_method" "users_userid_request-delete_options" {
+  rest_api_id   = aws_api_gateway_rest_api.identity.id
+  resource_id   = aws_api_gateway_resource.users_userid_request-delete.id
+  http_method   = "OPTIONS"
+  authorization = "NONE"
+}
+
+# 204 No Content
+
+resource "aws_api_gateway_method_response" "users_userid_request-delete_options_204" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_request-delete.id
+  http_method = aws_api_gateway_method.users_userid_request-delete_options.http_method
+  status_code = "204"
+
+  response_models = {
+    "application/json" = "Empty"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true,
+    "method.response.header.Access-Control-Allow-Methods" = true,
+    "method.response.header.Access-Control-Allow-Origin"  = true
+  }
+}
+
+# [PUT]
+
+resource "aws_api_gateway_method" "users_userid_request-delete_put" {
+  rest_api_id          = aws_api_gateway_rest_api.identity.id
+  resource_id          = aws_api_gateway_resource.users_userid_request-delete.id
+  http_method          = "PUT"
+  authorization        = "CUSTOM"
+  authorizer_id        = aws_api_gateway_authorizer.token_authorizer.id
+  api_key_required     = true
+  request_validator_id = aws_api_gateway_request_validator.full.id
+
+  request_parameters = {
+    "method.request.path.userId" = true
+  }
+}
+
+# 200 OK
+
+resource "aws_api_gateway_method_response" "users_userid_request-delete_put_200" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_request-delete.id
+  http_method = aws_api_gateway_method.users_userid_request-delete_put.http_method
+  status_code = "200"
+
+  response_models = {
+    "application/json" = "Empty"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# 304 Not Modified
+
+resource "aws_api_gateway_method_response" "users_userid_request-delete_put_304" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_request-delete.id
+  http_method = aws_api_gateway_method.users_userid_request-delete_put.http_method
+  status_code = "304"
+
+  response_models = {
+    "application/json" = "Empty"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# 403 Forbidden
+
+resource "aws_api_gateway_method_response" "users_userid_request-delete_put_403" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_request-delete.id
+  http_method = aws_api_gateway_method.users_userid_request-delete_put.http_method
+  status_code = "403"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# 404 Not Found
+
+resource "aws_api_gateway_method_response" "users_userid_request-delete_put_404" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_request-delete.id
+  http_method = aws_api_gateway_method.users_userid_request-delete_put.http_method
+  status_code = "404"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# 500 Internal Server Error
+
+resource "aws_api_gateway_method_response" "users_userid_request-delete_put_500" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_request-delete.id
+  http_method = aws_api_gateway_method.users_userid_request-delete_put.http_method
+  status_code = "500"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}

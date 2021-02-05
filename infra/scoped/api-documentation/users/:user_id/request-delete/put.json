@@ -1,0 +1,7 @@
+{
+  "summary": "Requests deletion of a user",
+  "description": "Requests deletion of the user defined by the `userId` path parameter.",
+  "tags": [
+    "User"
+  ]
+}
