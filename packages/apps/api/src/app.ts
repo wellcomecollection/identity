@@ -4,7 +4,6 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import express, { Application, Request, Response } from 'express';
 import { validateCredentials } from './handlers/auth';
-import EmailClient from "./handlers/email";
 import {
   changePassword,
   createUser,
@@ -14,6 +13,7 @@ import {
   sendVerificationEmail,
   updateUser
 } from './handlers/user';
+import EmailClient from "./utils/email";
 
 export default createApplication();
 

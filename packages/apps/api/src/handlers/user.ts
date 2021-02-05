@@ -6,7 +6,7 @@ import { PatronRecord } from '@weco/sierra-client/lib/patron';
 import { Request, Response } from 'express';
 import { toMessage } from '../models/common';
 import { toSearchResults, toUser } from '../models/user';
-import EmailClient from "./email";
+import EmailClient from "../utils/email";
 
 export async function getUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
 
