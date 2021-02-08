@@ -111,8 +111,8 @@ export async function createUser(sierraClient: SierraClient, auth0Client: Auth0C
 }
 
 function userIsAdmin(request: Request): boolean {
-  console.log(JSON.stringify(request.apiGateway));
-  return request.apiGateway?.event.requestContext.authorizer?.isAdmin;
+  const isAdmin: string | null | undefined = request.apiGateway?.event.requestContext.authorizer?.isAdmin;
+  return !!isAdmin && (/true/i).test(isAdmin);
 }
 
 export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
@@ -161,16 +161,9 @@ export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0C
     return;
   }
 
-  console.log(modifiedFields);
-  console.log(userIsAdmin(request));
-  console.log(!userIsAdmin(request));
-  console.log(((modifiedFields.includes('firstName') || modifiedFields.includes('lastName')) && !userIsAdmin(request)));
   if ((modifiedFields.includes('firstName') || modifiedFields.includes('lastName')) && !userIsAdmin(request)) {
-    console.log("Returning 403");
     response.status(403).json(toMessage('Attempt to modify immutable fields [' + modifiedFields.join(',') + ']'));
     return;
-  } else {
-    console.log("Passing");
   }
 
   if (modifiedFields.includes('email')) {

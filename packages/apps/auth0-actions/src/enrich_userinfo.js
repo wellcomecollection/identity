@@ -8,37 +8,20 @@ async function enrichPatronAttributes(user, context, callback) {
 
     const namespace = 'https://wellcomecollection.org/';
 
-    const scopeHandlers = {
-        'Sierra-Connection': {
-            "patron:read": getPatronAttributes
-        },
-        "AzureAD-Connection": {
-            "azure:read": getAzureAdAttributes
-        }
+    const connectionHandler = {
+        'Sierra-Connection': getPatronAttributes,
+        "AzureAD-Connection": getAzureAdAttributes
     };
 
     try {
-        const availableScopes = scopeHandlers[context.connection];
-        if (availableScopes && context.request.query && context.request.query.scope) {
-
-            const attributes = {};
-
-            for (const scope of context.request.query.scope.split(" ")) {
-                if (availableScopes[scope]) {
-                    const scopeAttributes = await availableScopes[scope].call(user);
-                    Object.assign(attributes, scopeAttributes);
-                }
-            }
-
-            if (Object.keys(attributes).length !== 0) {
-                const idToken = context.idToken || {};
-                idToken[namespace] = attributes;
-                context.idToken = idToken;
-            }
+        const connectionHandler = connectionHandler[context.connection];
+        if (connectionHandler) {
+            const idToken = context.idToken || {};
+            idToken[namespace] = await connectionHandler.call(user);
+            context.idToken = idToken;
         }
 
         callback(null, user, context);
-
     } catch (error) {
         callback(error);
     }
