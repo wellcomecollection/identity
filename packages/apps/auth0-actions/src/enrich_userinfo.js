@@ -26,7 +26,6 @@ async function enrichPatronAttributes(user, context, callback) {
             for (const scope of context.request.query.scope.split(" ")) {
                 if (availableScopes[scope]) {
                     const scopeAttributes = await availableScopes[scope].call(user);
-                    console.log(scopeAttributes);
                     Object.assign(attributes, scopeAttributes);
                 }
             }
@@ -55,7 +54,8 @@ async function enrichPatronAttributes(user, context, callback) {
             email: patronRecord.email,
             name: patronRecord.firstName + ' ' + patronRecord.lastName,
             first_names: patronRecord.firstName,
-            last_names: patronRecord.lastName
+            last_names: patronRecord.lastName,
+            is_admin: false
         };
     }
 
