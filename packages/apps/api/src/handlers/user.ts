@@ -135,57 +135,37 @@ export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0C
   const auth0Profile: Auth0Profile = auth0UserIdGet.result;
 
   const emailModified: boolean = !!request.body.email && request.body.email !== auth0Profile.email;
+  const email: string = emailModified ? request.body.email : auth0Profile.email;
+
   const firstNameModified: boolean = !!request.body.firstName && request.body.firstName !== auth0Profile.firstName;
+  const firstName: string = firstNameModified ? request.body.firstName : auth0Profile.firstName;
+
   const lastNameModified: boolean = !!request.body.lastName && request.body.lastName !== auth0Profile.lastName;
+  const lastName: string = lastNameModified ? request.body.lastName : auth0Profile.lastName;
 
-  console.log("Got emailModified: [" + emailModified + "], firstNameModified: [" + firstNameModified + "], lastNameModified: [" + lastNameModified + "]");
-
-  const fields: { [key: string]: { value: string, modified: boolean } } = {
-    'email': {
-      modified: emailModified,
-      value: emailModified ? request.body.email : auth0Profile.email
-    },
-    'firstName': {
-      modified: firstNameModified,
-      value: firstNameModified ? request.body.firstName : auth0Profile.firstName
-    },
-    'lastName': {
-      modified: lastNameModified,
-      value: lastNameModified ? request.body.lastName : auth0Profile.lastName
-    }
-  };
-
-  console.log("Got fields: [" + JSON.stringify(fields) + "]");
-
-  const modifiedFields: string[] = Object.keys(fields).filter(field => fields[field].modified);
-  if (modifiedFields.length == 0) {
-    console.log("Sending 304");
+  if (!emailModified && !firstNameModified && !lastNameModified) {
     response.sendStatus(304);
   }
 
-  console.log("User is admin: [" + userIsAdmin(request) + "]");
-  console.log((modifiedFields.includes('firstName') || modifiedFields.includes('lastName')) && !userIsAdmin(request));
-
-  if ((modifiedFields.includes('firstName') || modifiedFields.includes('lastName')) && !userIsAdmin(request)) {
-    console.log("Sending 403");
-    response.status(403).json(toMessage('Attempt to modify immutable fields [' + modifiedFields.join(',') + ']'));
+  if ((firstNameModified || lastNameModified) && !userIsAdmin(request)) {
+    response.status(403).json(toMessage('Attempt to modify immutable fields [firstName, lastName]'));
   }
 
-  if (modifiedFields.includes('email')) {
-    const auth0EmailGet: APIResponse<Auth0Profile> = await auth0Client.getUserByEmail(fields.email.value);
+  if (emailModified) {
+    const auth0EmailGet: APIResponse<Auth0Profile> = await auth0Client.getUserByEmail(email);
     if (auth0EmailGet.status !== ResponseStatus.NotFound) {
       if (auth0EmailGet.status === ResponseStatus.Success && auth0EmailGet.result.userId !== userId) {
-        response.status(409).json(toMessage('Auth0 user with email [' + fields.email.value + '] already exists'));
+        response.status(409).json(toMessage('Auth0 user with email [' + email + '] already exists'));
       } else if (auth0EmailGet.status == ResponseStatus.UnknownError) {
         response.status(500).json(toMessage(auth0EmailGet.message));
       }
       return
     }
 
-    const sierraEmailGet: APIResponse<PatronRecord> = await sierraClient.getPatronRecordByEmail(fields.email.value);
+    const sierraEmailGet: APIResponse<PatronRecord> = await sierraClient.getPatronRecordByEmail(email);
     if (sierraEmailGet.status !== ResponseStatus.NotFound) {
       if (sierraEmailGet.status === ResponseStatus.Success && sierraEmailGet.result.recordNumber !== userId) {
-        response.status(409).json(toMessage('Patron record with email [' + fields.email.value + '] already exists'));
+        response.status(409).json(toMessage('Patron record with email [' + email + '] already exists'));
       } else if (sierraEmailGet.status === ResponseStatus.UnknownError) {
         response.status(500).json(toMessage(sierraEmailGet.message));
       }
@@ -193,7 +173,7 @@ export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0C
     }
   }
 
-  const auth0Update: APIResponse<Auth0Profile> = await auth0Client.updateUser(userId, fields.email.value, fields.firstName.value, fields.lastName.value);
+  const auth0Update: APIResponse<Auth0Profile> = await auth0Client.updateUser(userId, email, firstName, lastName);
   if (auth0Update.status !== ResponseStatus.Success) {
     if (auth0Update.status === ResponseStatus.NotFound) {
       response.status(404).json(toMessage(auth0Update.message));
@@ -207,7 +187,7 @@ export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0C
     return;
   }
 
-  const sierraUpdate: APIResponse<PatronRecord> = await sierraClient.updatePatronRecord(userId, fields.email.value);
+  const sierraUpdate: APIResponse<PatronRecord> = await sierraClient.updatePatronRecord(userId, email);
   if (sierraUpdate.status !== ResponseStatus.Success) {
     if (sierraUpdate.status === ResponseStatus.NotFound) {
       response.status(404).json(toMessage(sierraUpdate.message));
