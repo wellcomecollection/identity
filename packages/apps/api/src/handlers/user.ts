@@ -161,9 +161,14 @@ export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0C
     return;
   }
 
+  console.log(modifiedFields);
+  console.log(((modifiedFields.includes('firstName') || modifiedFields.includes('lastName')) && !userIsAdmin(request)));
   if ((modifiedFields.includes('firstName') || modifiedFields.includes('lastName')) && !userIsAdmin(request)) {
+    console.log("Returning 403");
     response.status(403).json(toMessage('Attempt to modify immutable fields [' + modifiedFields.join(',') + ']'));
     return;
+  } else {
+    console.log("Passing");
   }
 
   if (modifiedFields.includes('email')) {
