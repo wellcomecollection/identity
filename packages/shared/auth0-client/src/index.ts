@@ -136,11 +136,13 @@ export default class Auth0Client {
     });
   }
 
-  async updateUser(userId: number, email: string): Promise<APIResponse<Auth0Profile>> {
+  async updateUser(userId: number, email: string, firstName: string, lastName: string): Promise<APIResponse<Auth0Profile>> {
     return this.getMachineToMachineInstance().then(instance => {
       return instance.patch('/users/auth0|p' + userId, { // Automatically append the mandatory Auth0 prefix to the given user ID.
-        name: email, // Auth0 defaults this to the email address, but we'll provide it here anyway for consistency
         email: email,
+        given_name: firstName,
+        family_name: lastName,
+        name: firstName + ' ' + lastName,
         verify_email: true,
         connection: 'Sierra-Connection'
       }, {
@@ -338,8 +340,8 @@ export default class Auth0Client {
       client_secret: this.clientSecret,
       audience: this.apiAudience,
       grant_type: 'password',
-      username,
-      password,
+      username: username,
+      password: password,
     }, {
       validateStatus: responseCodeIs(200)
     }).then(response => {

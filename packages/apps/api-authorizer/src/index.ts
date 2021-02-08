@@ -40,7 +40,8 @@ export async function lambdaHandler(event: APIGatewayRequestAuthorizerEvent): Pr
     return buildAuthorizerResult(auth0Validate.result.userId, 'Deny', event.methodArn);
   }
 
-  return buildAuthorizerResult(auth0Validate.result.userId, 'Allow', event.methodArn);
+
+  return buildAuthorizerResult(auth0Validate.result.userId, 'Allow', event.methodArn, isAdministrator(auth0Validate.result, {}));
 }
 
 function extractAccessToken(tokenString: string): null | string {
@@ -60,7 +61,8 @@ type ResourceAcl = {
 };
 
 const isAdministrator = function (user: Auth0UserInfo, pathParameters: Record<string, string | undefined> | null): boolean {
-  return false; // @todo
+  // @ts-ignore is_admin isn't typed on additionalAttributes
+  return user.additionalAttributes?.is_admin ?? false;
 };
 
 const isSelf = function (user: Auth0UserInfo, pathParameters: Record<string, string | undefined> | null): boolean {
@@ -135,8 +137,11 @@ function validateRequest(auth0UserInfo: Auth0UserInfo, resource: string, method:
   return aclMatched;
 }
 
-function buildAuthorizerResult(principal: string | number, effect: string, methodArn: string): APIGatewayAuthorizerResult {
+function buildAuthorizerResult(principal: string | number, effect: string, methodArn: string, isAdmin: boolean = false): APIGatewayAuthorizerResult {
   return {
+    context: {
+      isAdmin
+    },
     principalId: principal.toString(),
     policyDocument: {
       Version: '2012-10-17',
