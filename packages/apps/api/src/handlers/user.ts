@@ -6,7 +6,7 @@ import { PatronRecord } from '@weco/sierra-client/lib/patron';
 import { Request, Response } from 'express';
 import { toMessage } from '../models/common';
 import { toSearchResults, toUser } from '../models/user';
-import EmailClient from "../utils/email";
+import EmailClient from '../utils/email';
 
 export async function getUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
 
@@ -134,38 +134,53 @@ export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0C
   }
   const auth0Profile: Auth0Profile = auth0UserIdGet.result;
 
-  const emailModified: boolean = !!request.body.email && request.body.email !== auth0Profile.email;
-  const email: string = emailModified ? request.body.email : auth0Profile.email;
+  const fields: { [key: string]: { value: string, modified: boolean } } = {
+    email: {
+      modified: !!request.body.email && request.body.email !== auth0Profile.email,
+      get value() {
+        return this.modified ? request.body.email : auth0Profile.email
+      }
+    },
+    firstName: {
+      modified: !!request.body.firstName && request.body.firstName !== auth0Profile.firstName,
+      get value() {
+        return this.modified ? request.body.firstName : auth0Profile.firstName
+      }
+    },
+    lastName: {
+      modified: !!request.body.lastName && request.body.lastName !== auth0Profile.lastName,
+      get value() {
+        return this.modified ? request.body.lastName : auth0Profile.lastName
+      }
+    }
+  };
 
-  const firstNameModified: boolean = !!request.body.firstName && request.body.firstName !== auth0Profile.firstName;
-  const firstName: string = firstNameModified ? request.body.firstName : auth0Profile.firstName;
-
-  const lastNameModified: boolean = !!request.body.lastName && request.body.lastName !== auth0Profile.lastName;
-  const lastName: string = lastNameModified ? request.body.lastName : auth0Profile.lastName;
-
-  if (!emailModified && !firstNameModified && !lastNameModified) {
+  const modifiedFields: string[] = Object.keys(fields).filter(field => fields[field].modified);
+  if (modifiedFields.length === 0) {
     response.sendStatus(304);
+    return;
   }
 
-  if ((firstNameModified || lastNameModified) && !userIsAdmin(request)) {
-    response.status(403).json(toMessage('Attempt to modify immutable fields [firstName, lastName]'));
+  if ((modifiedFields.includes('firstName') || modifiedFields.includes('lastName')) && !userIsAdmin(request)) {
+    response.status(403).json(toMessage('Attempt to modify immutable fields [' + modifiedFields.join(',') + ']'));
+    return;
   }
 
-  if (emailModified) {
-    const auth0EmailGet: APIResponse<Auth0Profile> = await auth0Client.getUserByEmail(email);
+  if (modifiedFields.includes('email')) {
+    const auth0EmailGet: APIResponse<Auth0Profile> = await auth0Client.getUserByEmail(fields.email.value);
     if (auth0EmailGet.status !== ResponseStatus.NotFound) {
       if (auth0EmailGet.status === ResponseStatus.Success && auth0EmailGet.result.userId !== userId) {
-        response.status(409).json(toMessage('Auth0 user with email [' + email + '] already exists'));
+        response.status(409).json(toMessage('Auth0 user with email [' + fields.email.value + '] already exists'));
       } else if (auth0EmailGet.status == ResponseStatus.UnknownError) {
         response.status(500).json(toMessage(auth0EmailGet.message));
       }
       return
     }
 
-    const sierraEmailGet: APIResponse<PatronRecord> = await sierraClient.getPatronRecordByEmail(email);
+    const sierraEmailGet: APIResponse<PatronRecord> = await sierraClient.getPatronRecordByEmail(fields.email.value);
     if (sierraEmailGet.status !== ResponseStatus.NotFound) {
       if (sierraEmailGet.status === ResponseStatus.Success && sierraEmailGet.result.recordNumber !== userId) {
-        response.status(409).json(toMessage('Patron record with email [' + email + '] already exists'));
+        response.status(409).json(toMessage('Patron record with email [' + fields.email.value + '] already exists'));
       } else if (sierraEmailGet.status === ResponseStatus.UnknownError) {
         response.status(500).json(toMessage(sierraEmailGet.message));
       }
@@ -173,7 +188,7 @@ export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0C
     }
   }
 
-  const auth0Update: APIResponse<Auth0Profile> = await auth0Client.updateUser(userId, email, firstName, lastName);
+  const auth0Update: APIResponse<Auth0Profile> = await auth0Client.updateUser(userId, fields.email.value, fields.firstName.value, fields.lastName.value);
   if (auth0Update.status !== ResponseStatus.Success) {
     if (auth0Update.status === ResponseStatus.NotFound) {
       response.status(404).json(toMessage(auth0Update.message));
@@ -187,7 +202,7 @@ export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0C
     return;
   }
 
-  const sierraUpdate: APIResponse<PatronRecord> = await sierraClient.updatePatronRecord(userId, email);
+  const sierraUpdate: APIResponse<PatronRecord> = await sierraClient.updatePatronRecord(userId, fields.email.value);
   if (sierraUpdate.status !== ResponseStatus.Success) {
     if (sierraUpdate.status === ResponseStatus.NotFound) {
       response.status(404).json(toMessage(sierraUpdate.message));
@@ -383,17 +398,17 @@ export async function requestDelete(auth0Client: Auth0Client, sierraClient: Sier
     deleteRequested: new Date().toISOString()
   });
   if (auth0Update.status !== ResponseStatus.Success) {
-    console.log("An error occurred applying deletion flag to Auth0 record [" + userId + "]: [" + auth0Update + "]");
+    console.log('An error occurred applying deletion flag to Auth0 record [' + userId + ']: [' + auth0Update + ']');
   }
 
   const auth0Block = await auth0Client.blockAccount(userId);
   if (auth0Block.status !== ResponseStatus.Success) {
-    console.log("An error blocking Auth0 record [" + userId + "]: [" + auth0Block + "]");
+    console.log('An error blocking Auth0 record [' + userId + ']: [' + auth0Block + ']');
   }
 
   const emailDeleteUser = await emailClient.sendDeleteRequestUser(auth0Get.result);
   if (emailDeleteUser.status !== ResponseStatus.Success) {
-    console.log("An error notifying Auth0 user [" + userId + "] of the deletion request: [" + emailDeleteUser + "]");
+    console.log('An error notifying Auth0 user [' + userId + '] of the deletion request: [' + emailDeleteUser + ']');
   }
 
   response.sendStatus(200);
