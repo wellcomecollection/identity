@@ -110,11 +110,6 @@ export async function createUser(sierraClient: SierraClient, auth0Client: Auth0C
   response.status(201).json(toUser(auth0Create.result, sierraUpdate.result));
 }
 
-function userIsAdmin(request: Request): boolean {
-  const isAdmin: string | null | undefined = request.apiGateway?.event.requestContext.authorizer?.isAdmin;
-  return !!isAdmin && (/true/i).test(isAdmin);
-}
-
 export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
 
   const userId: number = Number(request.params.user_id);
@@ -412,4 +407,9 @@ export async function requestDelete(auth0Client: Auth0Client, sierraClient: Sier
   }
 
   response.sendStatus(200);
+}
+
+function userIsAdmin(request: Request): boolean {
+  const isAdmin: string | null | undefined = request.apiGateway?.event.requestContext.authorizer?.isAdmin;
+  return !!isAdmin && (/true/i).test(isAdmin);
 }

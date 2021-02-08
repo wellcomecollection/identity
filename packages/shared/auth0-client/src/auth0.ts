@@ -1,4 +1,4 @@
-import { isNonBlank } from "@weco/identity-common";
+import { isNonBlank } from '@weco/identity-common';
 
 export function toAuth0UserInfo(userInfo: any): Auth0UserInfo {
 

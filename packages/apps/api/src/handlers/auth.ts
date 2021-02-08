@@ -1,4 +1,4 @@
-import Auth0Client from "@weco/auth0-client";
+import Auth0Client from '@weco/auth0-client';
 import { isNonBlank, ResponseStatus } from '@weco/identity-common';
 import { Request, Response } from 'express';
 import { toMessage } from '../models/common';
@@ -8,7 +8,7 @@ export async function validateCredentials(auth0Client: Auth0Client, request: Req
   const password: string = request.body.password;
 
   if (!isNonBlank(email) || !isNonBlank(password)) {
-    response.status(400).json(toMessage("All fields must be provided and non-blank"));
+    response.status(400).json(toMessage('All fields must be provided and non-blank'));
     return;
   }
 

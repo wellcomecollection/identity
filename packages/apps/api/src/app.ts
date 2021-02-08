@@ -1,5 +1,6 @@
 import Auth0Client from '@weco/auth0-client';
 import SierraClient from '@weco/sierra-client';
+import * as awsServerlessExpressMiddleware from 'aws-serverless-express/middleware';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express, { Application, Request, Response } from 'express';
@@ -13,9 +14,8 @@ import {
   sendVerificationEmail,
   updateUser
 } from './handlers/user';
-import EmailClient from "./utils/email";
+import EmailClient from './utils/email';
 
-import * as awsServerlessExpressMiddleware from 'aws-serverless-express/middleware';
 
 export default createApplication();
 
