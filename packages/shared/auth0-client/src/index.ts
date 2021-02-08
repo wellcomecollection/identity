@@ -137,10 +137,9 @@ export default class Auth0Client {
   }
 
   async updateUser(userId: number, email: string, firstName: string, lastName: string): Promise<APIResponse<Auth0Profile>> {
-
     return this.getMachineToMachineInstance().then(instance => {
       return instance.patch('/users/auth0|p' + userId, { // Automatically append the mandatory Auth0 prefix to the given user ID.
-        email,
+        email: email,
         given_name: firstName,
         family_name: lastName,
         name: firstName + ' ' + lastName,
@@ -341,8 +340,8 @@ export default class Auth0Client {
       client_secret: this.clientSecret,
       audience: this.apiAudience,
       grant_type: 'password',
-      username,
-      password,
+      username: username,
+      password: password,
     }, {
       validateStatus: responseCodeIs(200)
     }).then(response => {

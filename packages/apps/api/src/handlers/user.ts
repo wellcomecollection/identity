@@ -116,80 +116,76 @@ function userIsAdmin(request: Request) {
 }
 
 export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
+
   const userId: number = Number(request.params.user_id);
   if (isNaN(userId)) {
     response.status(400).json(toMessage('Invalid user ID [' + userId + ']'));
     return;
   }
 
-  const existingUserLookup = await auth0Client.getUserByUserId(userId);
-
-  if (existingUserLookup.status !== ResponseStatus.Success) {
-    if (existingUserLookup.status === ResponseStatus.NotFound) {
-      response.status(404).json(toMessage(existingUserLookup.message));
+  const auth0UserIdGet: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(userId);
+  if (auth0UserIdGet.status !== ResponseStatus.Success) {
+    if (auth0UserIdGet.status === ResponseStatus.NotFound) {
+      response.status(404).json(toMessage(auth0UserIdGet.message));
     } else {
-      response.status(500).json(toMessage(existingUserLookup.message));
+      response.status(500).json(toMessage(auth0UserIdGet.message));
     }
-
     return;
   }
+  const auth0Profile: Auth0Profile = auth0UserIdGet.result;
 
-  const profile = existingUserLookup.result;
-  const email: string = request.body.email;
-  if (!isNonBlank(email)) {
-    response.status(400).json(toMessage('email must be provided and non-blank'));
-    return;
-  }
+  const emailModified: boolean = !!request.body.email && request.body.email !== auth0Profile.email;
+  const firstNameModified: boolean = !!request.body.firstName && request.body.firstName !== auth0Profile.firstName;
+  const lastNameModified: boolean = !!request.body.lastName && request.body.lastName !== auth0Profile.lastName;
 
-  const firstName: string = request.body.firstName;
-  if (!isNonBlank(firstName)) {
-    response.status(400).json(toMessage('firstName must be provided and non-blank'));
-    return;
-  }
+  const fields: { [key: string]: { value: string, modified: boolean } } = {
+    'email': {
+      modified: emailModified,
+      value: emailModified ? request.body.email : auth0Profile.email
+    },
+    'firstName': {
+      modified: firstNameModified,
+      value: firstNameModified ? request.body.firstName : auth0Profile.firstName
+    },
+    'lastName': {
+      modified: lastNameModified,
+      value: lastNameModified ? request.body.lastName : auth0Profile.lastName
+    }
+  };
 
-  const lastName: string = request.body.lastName;
-  if (!isNonBlank(lastName)) {
-    response.status(400).json(toMessage('lastName must be provided and non-blank'));
-    return;
-  }
-
-  let nameChanged = (!!firstName && firstName !== profile.firstName) || (!!lastName && lastName !== profile.lastName);
-  if (nameChanged && !userIsAdmin(request)) {
-    response.status(403).json(toMessage('Caller does not have permissions to modify: firstName, lastName'));
-    return;
-  }
-
-  let emailChanged = (!!email && email !== profile.email);
-  if (!emailChanged && !nameChanged) {
+  const modifiedFields: string[] = Object.keys(fields).filter(field => fields[field].modified);
+  if (modifiedFields.length == 0) {
     response.sendStatus(304);
-    return;
   }
 
-  const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByEmail(email);
-  if (auth0Get.status != ResponseStatus.NotFound) {
-    if (auth0Get.status === ResponseStatus.Success && auth0Get.result.userId !== userId) {
-      response.status(409).json(toMessage('Auth0 user with email [' + email + '] already exists'));
-      return;
-    } else if (auth0Get.status == ResponseStatus.UnknownError) {
-      response.status(500).json(toMessage(auth0Get.message));
+  if ((modifiedFields.indexOf('firstName') || modifiedFields.indexOf('lastName')) && !userIsAdmin(request)) {
+    response.status(403).json(toMessage('Attempt to modify immutable fields [' + modifiedFields.join(',') + ']'));
+  }
+
+  if (modifiedFields.indexOf('email')) {
+    const auth0EmailGet: APIResponse<Auth0Profile> = await auth0Client.getUserByEmail(fields.email.value);
+    if (auth0EmailGet.status !== ResponseStatus.NotFound) {
+      if (auth0EmailGet.status === ResponseStatus.Success) {
+        response.status(409).json(toMessage('Auth0 user with email [' + fields.email.value + '] already exists'));
+      } else if (auth0EmailGet.status == ResponseStatus.UnknownError) {
+        response.status(500).json(toMessage(auth0EmailGet.message));
+      }
+      return
+    }
+
+    const sierraEmailGet: APIResponse<PatronRecord> = await sierraClient.getPatronRecordByEmail(fields.email.value);
+    if (sierraEmailGet.status !== ResponseStatus.NotFound) {
+      if (sierraEmailGet.status === ResponseStatus.Success) {
+        response.status(409).json(toMessage('Patron record with email [' + fields.email.value + '] already exists'));
+      } else if (sierraEmailGet.status === ResponseStatus.UnknownError) {
+        response.status(500).json(toMessage(sierraEmailGet.message));
+      }
       return;
     }
   }
 
-  const sierraGet: APIResponse<PatronRecord> = await sierraClient.getPatronRecordByEmail(email);
-  if (sierraGet.status != ResponseStatus.NotFound) {
-    if (sierraGet.status === ResponseStatus.Success && sierraGet.result.recordNumber !== userId) {
-      response.status(409).json(toMessage('Patron record with email [' + email + '] already exists'));
-      return;
-    } else if (sierraGet.status === ResponseStatus.UnknownError) {
-      response.status(500).json(toMessage(sierraGet.message));
-      return;
-    }
-  }
-
-
-  const auth0Update: APIResponse<Auth0Profile> = await auth0Client.updateUser(userId, email, firstName ?? profile.firstName, lastName ?? profile.lastName);
-  if (auth0Update.status != ResponseStatus.Success) {
+  const auth0Update: APIResponse<Auth0Profile> = await auth0Client.updateUser(userId, fields.email.value, fields.firstName.value, fields.lastName.value);
+  if (auth0Update.status !== ResponseStatus.Success) {
     if (auth0Update.status === ResponseStatus.NotFound) {
       response.status(404).json(toMessage(auth0Update.message));
     } else if (auth0Update.status === ResponseStatus.UserAlreadyExists) {
@@ -202,8 +198,8 @@ export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0C
     return;
   }
 
-  const sierraUpdate: APIResponse<PatronRecord> = await sierraClient.updatePatronRecord(userId, email);
-  if (sierraUpdate.status != ResponseStatus.Success) {
+  const sierraUpdate: APIResponse<PatronRecord> = await sierraClient.updatePatronRecord(userId, fields.email.value);
+  if (sierraUpdate.status !== ResponseStatus.Success) {
     if (sierraUpdate.status === ResponseStatus.NotFound) {
       response.status(404).json(toMessage(sierraUpdate.message));
     } else if (sierraUpdate.status === ResponseStatus.MalformedRequest) {
