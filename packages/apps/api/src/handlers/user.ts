@@ -162,6 +162,8 @@ export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0C
   }
 
   console.log(modifiedFields);
+  console.log(userIsAdmin(request));
+  console.log(!userIsAdmin(request));
   console.log(((modifiedFields.includes('firstName') || modifiedFields.includes('lastName')) && !userIsAdmin(request)));
   if ((modifiedFields.includes('firstName') || modifiedFields.includes('lastName')) && !userIsAdmin(request)) {
     console.log("Returning 403");
