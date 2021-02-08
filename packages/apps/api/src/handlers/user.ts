@@ -39,43 +39,6 @@ export async function getUser(sierraClient: SierraClient, auth0Client: Auth0Clie
   response.status(200).json(toUser(auth0Get.result, sierraGet.result));
 }
 
-export async function deleteUser(
-  sierraClient: SierraClient,
-  auth0Client: Auth0Client,
-  request: Request,
-  response: Response): Promise<void> {
-
-  const userId: number = Number(request.params.user_id);
-  if (isNaN(userId)) {
-    response.status(400).json(toMessage('Invalid user ID [' + userId + ']'));
-  }
-
-  const auth0DeleteResult = await auth0Client.deleteUser(userId);
-  if (auth0DeleteResult.status != ResponseStatus.Success) {
-    if (auth0DeleteResult.status == ResponseStatus.NotFound) {
-      response.status(404).json(toMessage(auth0DeleteResult.message));
-    } else {
-      response.status(500).json(toMessage(auth0DeleteResult.message));
-    }
-
-    return;
-  }
-
-
-  const sierraDeleteResult = await sierraClient.deletePatronRecord(userId);
-  if (sierraDeleteResult.status != ResponseStatus.Success) {
-    if (sierraDeleteResult.status == ResponseStatus.NotFound) {
-      response.status(404).json(toMessage(sierraDeleteResult.message));
-    } else {
-      response.status(500).json(toMessage(sierraDeleteResult.message));
-    }
-
-    return;
-  }
-
-  response.status(204);
-}
-
 export async function createUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
 
   const firstName: string = request.body.firstName;
@@ -405,4 +368,34 @@ export async function requestDelete(auth0Client: Auth0Client, sierraClient: Sier
   }
 
   response.sendStatus(200);
+}
+
+export async function deleteUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
+
+  const userId: number = Number(request.params.user_id);
+  if (isNaN(userId)) {
+    response.status(400).json(toMessage('Invalid user ID [' + userId + ']'));
+  }
+
+  const auth0Delete = await auth0Client.deleteUser(userId);
+  if (auth0Delete.status !== ResponseStatus.Success) {
+    if (auth0Delete.status === ResponseStatus.NotFound) {
+      response.status(404).json(toMessage(auth0Delete.message));
+    } else {
+      response.status(500).json(toMessage(auth0Delete.message));
+    }
+    return;
+  }
+
+  const patronDelete = await sierraClient.deletePatronRecord(userId);
+  if (patronDelete.status !== ResponseStatus.Success) {
+    if (patronDelete.status === ResponseStatus.NotFound) {
+      response.status(404).json(toMessage(patronDelete.message));
+    } else {
+      response.status(500).json(toMessage(patronDelete.message));
+    }
+    return;
+  }
+
+  response.sendStatus(204);
 }

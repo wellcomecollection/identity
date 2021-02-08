@@ -6,7 +6,7 @@ import {
   successResponse,
   unhandledError
 } from '@weco/identity-common';
-import axios, { AxiosInstance, AxiosError } from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import {
   Auth0Profile,
   Auth0SearchResults,
@@ -29,25 +29,6 @@ export default class Auth0Client {
     this.apiAudience = apiAudience;
     this.clientId = clientId;
     this.clientSecret = clientSecret;
-  }
-
-  async deleteUser(userId: number): Promise<APIResponse<{}>> {
-    const httpClient = await this.getMachineToMachineInstance();
-
-    return httpClient.delete(`/users/auth0|p${userId}`, { validateStatus: responseCodeIs(204), })
-      .then(_ => {
-        return successResponse({});
-      })
-      .catch((error: AxiosError) => {
-        if (error.response) {
-          switch (error.response.status) {
-            case 404:
-              return errorResponse(`User with id "auth0|p${userId}" not found`, ResponseStatus.NotFound, error);
-          }
-        }
-
-        return unhandledError(error);
-      });
   }
 
   async validateAccessToken(accessToken: string): Promise<APIResponse<Auth0UserInfo>> {
@@ -324,6 +305,24 @@ export default class Auth0Client {
             case 400: {
               return errorResponse('Malformed or invalid Auth0 user block request', ResponseStatus.MalformedRequest, error);
             }
+            case 404:
+              return errorResponse('Auth0 user with ID [' + userId + '] not found', ResponseStatus.NotFound, error);
+          }
+        }
+        return unhandledError(error);
+      });
+    });
+  }
+
+  async deleteUser(userId: number): Promise<APIResponse<{}>> {
+    return this.getMachineToMachineInstance().then(instance => {
+      return instance.delete('/users/auth0|p' + userId, {
+        validateStatus: responseCodeIs(204)
+      }).then(() => {
+        return successResponse({});
+      }).catch(error => {
+        if (error.response) {
+          switch (error.response.status) {
             case 404:
               return errorResponse('Auth0 user with ID [' + userId + '] not found', ResponseStatus.NotFound, error);
           }
