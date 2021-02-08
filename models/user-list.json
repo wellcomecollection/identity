@@ -103,11 +103,14 @@
             "type": "number",
             "minimum": 0,
             "multipleOf": 1.0
+          },
+          "deleteRequested": {
+            "type": "string",
+            "format": "date-time"
           }
         },
         "required": [
           "patronId",
-          "barcode",
           "firstName",
           "lastName",
           "email",
@@ -118,7 +121,7 @@
           "lastLoginIp",
           "totalLogins"
         ],
-        "additionalProperties": false
+        "additionalProperties": true
       }
     }
   },

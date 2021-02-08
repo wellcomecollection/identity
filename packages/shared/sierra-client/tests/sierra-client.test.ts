@@ -1,9 +1,9 @@
-import { ResponseStatus, SuccessResponse } from "@weco/identity-common";
+import { ResponseStatus, SuccessResponse } from '@weco/identity-common';
 import { equal } from 'assert';
 import axios, { AxiosInstance } from 'axios';
 import moxios from 'moxios';
-import SierraClient from "../lib";
-import { PatronRecord } from "../lib/patron";
+import SierraClient from '../lib';
+import { PatronRecord } from '../lib/patron';
 
 describe('sierra client', () => {
 
@@ -378,35 +378,35 @@ const clientSecret: string = 'ABCDEFGHIJKLMNOPQRSTUVYWXYZ';
 
 const accessToken: string = 'a1b23c4d5e6f7g8hj';
 const recordNumber: number = 123456;
-const barcode: string = "654321";
-const pin: string = "superstrongpassword";
-const firstName: string = "Test";
-const lastName: string = "User";
-const email: string = "test.user@example.com";
+const barcode: string = '654321';
+const pin: string = 'superstrongpassword';
+const firstName: string = 'Test';
+const lastName: string = 'User';
+const email: string = 'test.user@example.com';
 
 const recordMarc: any = {
   id: 123456,
   varFields: [
     {
-      fieldTag: "b",
+      fieldTag: 'b',
       content: barcode
     },
     {
-      fieldTag: "z",
+      fieldTag: 'z',
       content: email
     },
     {
-      fieldTag: "n",
-      marcTag: "100",
-      ind1: " ",
-      ind2: " ",
+      fieldTag: 'n',
+      marcTag: '100',
+      ind1: ' ',
+      ind2: ' ',
       subfields: [
         {
-          tag: "a",
+          tag: 'a',
           content: lastName
         },
         {
-          tag: "b",
+          tag: 'b',
           content: firstName
         }
       ]
@@ -418,16 +418,16 @@ const recordNonMarc: any = {
   id: 123456,
   varFields: [
     {
-      fieldTag: "b",
+      fieldTag: 'b',
       content: barcode
     },
     {
-      fieldTag: "z",
+      fieldTag: 'z',
       content: email
     },
     {
-      fieldTag: "n",
-      content: "a|" + lastName + ", |b" + firstName
+      fieldTag: 'n',
+      content: 'a|' + lastName + ', |b' + firstName
     }
   ]
 }

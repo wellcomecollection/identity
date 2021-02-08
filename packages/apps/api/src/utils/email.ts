@@ -1,8 +1,8 @@
-import { SESv2 } from "@aws-sdk/client-sesv2";
-import { Auth0Profile } from "@weco/auth0-client/lib/auth0";
-import { APIResponse, successResponse, unhandledError } from "@weco/identity-common";
-import { Liquid } from "liquidjs";
-import * as path from "path";
+import { SESv2 } from '@aws-sdk/client-sesv2';
+import { Auth0Profile } from '@weco/auth0-client/lib/auth0';
+import { APIResponse, successResponse, unhandledError } from '@weco/identity-common';
+import { Liquid } from 'liquidjs';
+import * as path from 'path';
 
 export default class EmailClient {
 
@@ -66,10 +66,10 @@ export default class EmailClient {
     };
 
     return this.ses.sendEmail(sesParams).then(result => {
-      console.log("Email sent with message ID [" + result.MessageId + "]");
+      console.log('Email sent with message ID [' + result.MessageId + ']');
       return successResponse({})
     }).catch(error => {
-      console.log("An error occurred sending email [" + sesParams + "]: [" + error + "]");
+      console.log('An error occurred sending email [' + sesParams + ']: [' + error + ']');
       return unhandledError(error);
     });
   }

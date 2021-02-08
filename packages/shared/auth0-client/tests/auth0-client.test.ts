@@ -307,7 +307,7 @@ describe('auth0 client', () => {
         response: user
       });
 
-      const response = await client.updateUser(userId, email);
+      const response = await client.updateUser(userId, email, firstName, lastName);
       equal(response.status, ResponseStatus.Success);
 
       const result = (<SuccessResponse<Auth0Profile>>response).result;
@@ -329,7 +329,7 @@ describe('auth0 client', () => {
         }
       });
 
-      const response = await client.updateUser(userId, email);
+      const response = await client.updateUser(userId, email, firstName, lastName);
       equal(response.status, ResponseStatus.UserAlreadyExists);
     });
 
@@ -338,7 +338,7 @@ describe('auth0 client', () => {
         status: 400
       });
 
-      const response = await client.updateUser(userId, email);
+      const response = await client.updateUser(userId, email, firstName, lastName);
       equal(response.status, ResponseStatus.MalformedRequest);
     });
 
@@ -347,7 +347,7 @@ describe('auth0 client', () => {
         status: 404
       });
 
-      const response = await client.updateUser(userId, email);
+      const response = await client.updateUser(userId, email, firstName, lastName);
       equal(response.status, ResponseStatus.NotFound);
     });
 
@@ -356,7 +356,7 @@ describe('auth0 client', () => {
         status: 500
       });
 
-      const response = await client.updateUser(userId, email);
+      const response = await client.updateUser(userId, email, firstName, lastName);
       equal(response.status, ResponseStatus.UnknownError);
     });
   });
@@ -370,17 +370,17 @@ const clientSecret: string = 'ABCDEFGHIJKLMNOPQRSTUVYWXYZ';
 
 const accessToken: string = 'a1b23c4d5e6f7g8hj';
 const userId: number = 123456;
-const firstName: string = "Test";
-const lastName: string = "User";
+const firstName: string = 'Test';
+const lastName: string = 'User';
 const name: string = firstName + ' ' + lastName;
 const email: string = 'test.user@example.com';
 const password: string = 'superstrongpassword';
-const picture: string = "https://i1.wp.com/cdn.auth0.com/avatars/tu.png?ssl=1";
-const creationDate: string = "2020-11-18T14:27:34.766Z";
-const updatedDate: string = "2020-12-09T09:09:24.042Z";
-const passwordResetDate: string = "2020-11-19T12:03:02.999Z";
-const lastLoginDate: string = "2020-12-09T09:09:24.042Z";
-const lastLoginIp: string = "127.0.0.1";
+const picture: string = 'https://i1.wp.com/cdn.auth0.com/avatars/tu.png?ssl=1';
+const creationDate: string = '2020-11-18T14:27:34.766Z';
+const updatedDate: string = '2020-12-09T09:09:24.042Z';
+const passwordResetDate: string = '2020-11-19T12:03:02.999Z';
+const lastLoginDate: string = '2020-12-09T09:09:24.042Z';
+const lastLoginIp: string = '127.0.0.1';
 const totalLogins: number = 10;
 const emailValidated: boolean = true;
 const locked: boolean = false;

@@ -6,6 +6,6 @@ describe('is-non-blank', () => {
     });
 
     it('should return false for whitespace', () => {
-        expect(isNonBlank("\t ")).toBe(false);
+        expect(isNonBlank('\t ')).toBe(false);
     });
 });
