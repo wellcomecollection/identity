@@ -1,4 +1,4 @@
-import { azureUserIdPrefix, isNonBlank, sierraUserIdPrefix } from '@weco/identity-common';
+import { isNonBlank } from '@weco/identity-common';
 
 export function toAuth0UserInfo(userInfo: any): Auth0UserInfo {
 
@@ -61,14 +61,14 @@ export function toAuth0SearchResults(page: number, sort: string, sortDir: number
 }
 
 function extractUserId(value: string): string {
-  if (value.startsWith(sierraUserIdPrefix)) {
-    const userId: string = value.slice(value.indexOf(sierraUserIdPrefix) + sierraUserIdPrefix.length);
+  if (value.startsWith(SierraUserIdPrefix)) {
+    const userId: string = value.slice(value.indexOf(SierraUserIdPrefix) + SierraUserIdPrefix.length);
     if (isNaN(Number(userId))) {
       throw new Error('Invalid user ID field, cannot extract numerical ID from [' + value + ']');
     }
     return userId;
-  } else if (value.startsWith(azureUserIdPrefix)) {
-    return value.slice(value.indexOf(azureUserIdPrefix) + azureUserIdPrefix.length);
+  } else if (value.startsWith(AzureUserIdPrefix)) {
+    return value.slice(value.indexOf(AzureUserIdPrefix) + AzureUserIdPrefix.length);
   } else {
     throw new Error('Unexpected format for user ID [' + value + ']');
   }
@@ -118,3 +118,8 @@ export const Auth0SearchSortFields = new Map<string, string>([
   ['lastLogin', 'last_login'],
   ['locked', 'blocked']
 ]);
+
+export const SierraConnection = 'Sierra-Connection';
+
+export const SierraUserIdPrefix = 'auth0|p';
+export const AzureUserIdPrefix = 'oauth2|AzureAD-Connection|';

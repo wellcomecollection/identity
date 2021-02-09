@@ -2,7 +2,7 @@ import {
   APIResponse,
   errorResponse,
   responseCodeIs,
-  ResponseStatus, sierraUserIdPrefix,
+  ResponseStatus,
   successResponse,
   unhandledError
 } from '@weco/identity-common';
@@ -11,7 +11,7 @@ import {
   Auth0Profile,
   Auth0SearchResults,
   Auth0SearchSortFields,
-  Auth0UserInfo, generateUserSearchQuery,
+  Auth0UserInfo, generateUserSearchQuery, SierraConnection, SierraUserIdPrefix,
   toAuth0Profile,
   toAuth0SearchResults,
   toAuth0UserInfo
@@ -51,7 +51,7 @@ export default class Auth0Client {
 
   async getUserByUserId(userId: number): Promise<APIResponse<Auth0Profile>> {
     return this.getMachineToMachineInstance().then(instance => {
-      return instance.get('/users/' + sierraUserIdPrefix + userId, { // Automatically append the mandatory Auth0 prefix to the given user ID.
+      return instance.get('/users/' + SierraUserIdPrefix + userId, { // Automatically append the mandatory Auth0 prefix to the given user ID.
         validateStatus: status => status === 200
       }).then(response =>
         successResponse(toAuth0Profile(response.data))
@@ -67,7 +67,7 @@ export default class Auth0Client {
     });
   }
 
-  // @TODO This call should only search users that exist in the 'Sierra-Connection' connection
+  // @TODO This call should only search users that exist in the Sierra connection
   async getUserByEmail(email: string): Promise<APIResponse<Auth0Profile>> {
     return this.getMachineToMachineInstance().then(instance => {
       return instance.get('/users-by-email', {
@@ -99,7 +99,7 @@ export default class Auth0Client {
         email: email,
         password: password,
         email_verified: false,
-        connection: 'Sierra-Connection'
+        connection: SierraConnection
       }, {
         validateStatus: status => status === 201
       }).then(response =>
@@ -123,7 +123,7 @@ export default class Auth0Client {
     });
   }
 
-  // @TODO This call should only handle users that exist in the 'Sierra-Connection' connection
+  // @TODO This call should only handle users that exist in the Sierra connection
   async validateUserCredentials(username: string, password: string): Promise<APIResponse<{}>> {
     return this.getInstanceWithCredentials(username, password).then(() =>
       successResponse(true)
@@ -142,13 +142,13 @@ export default class Auth0Client {
 
   async updateUser(userId: number, email: string, firstName: string, lastName: string): Promise<APIResponse<Auth0Profile>> {
     return this.getMachineToMachineInstance().then(instance => {
-      return instance.patch('/users/' + sierraUserIdPrefix + userId, { // Automatically append the mandatory Auth0 prefix to the given user ID.
+      return instance.patch('/users/' + SierraUserIdPrefix + userId, { // Automatically append the mandatory Auth0 prefix to the given user ID.
         email: email,
         given_name: firstName,
         family_name: lastName,
         name: firstName + ' ' + lastName,
         verify_email: true,
-        connection: 'Sierra-Connection'
+        connection: SierraConnection
       }, {
         validateStatus: status => status === 200
       }).then(response =>
@@ -176,9 +176,9 @@ export default class Auth0Client {
 
   async updatePassword(userId: number, password: string): Promise<APIResponse<Auth0Profile>> {
     return this.getMachineToMachineInstance().then(instance => {
-      return instance.patch('/users/' + sierraUserIdPrefix + userId, {
+      return instance.patch('/users/' + SierraUserIdPrefix + userId, {
         password: password,
-        connection: 'Sierra-Connection'
+        connection: SierraConnection
       }, {
         validateStatus: status => status === 200
       }).then(response =>
@@ -210,7 +210,7 @@ export default class Auth0Client {
           per_page: pageSize,
           include_totals: true,
           sort: Auth0SearchSortFields.get(sort) + ':' + sortDir,
-          connection: 'Sierra-Connection',
+          connection: SierraConnection,
           q: generateUserSearchQuery(query),
           search_engine: 'v3'
         },
@@ -233,11 +233,11 @@ export default class Auth0Client {
     });
   }
 
-  // @TODO This call should only handle users that exist in the 'Sierra-Connection' connection - not sure if this is possible?
+  // @TODO This call should only handle users that exist in the Sierra connection - not sure if this is possible?
   async sendVerificationEmail(userId: number): Promise<APIResponse<{}>> {
     return this.getMachineToMachineInstance().then(instance => {
       return instance.post('/jobs/verification-email', {
-        user_id: sierraUserIdPrefix + userId
+        user_id: SierraUserIdPrefix + userId
       }, {
         validateStatus: status => status === 201
       }).then(() =>
@@ -258,7 +258,7 @@ export default class Auth0Client {
   async sendPasswordResetEmail(email: string): Promise<APIResponse<{}>> {
     return axios.post(this.apiRoot + '/dbconnections/change_password', {
       email: email,
-      connection: 'Sierra-Connection'
+      connection: SierraConnection
     }, {
       validateStatus: status => status === 200
     }).then(() =>
@@ -277,7 +277,7 @@ export default class Auth0Client {
 
   async addAppMetadata(userId: number, metadata: Record<string, any>): Promise<APIResponse<{}>> {
     return this.getMachineToMachineInstance().then(instance => {
-      return instance.patch('/users/' + sierraUserIdPrefix + userId, {
+      return instance.patch('/users/' + SierraUserIdPrefix + userId, {
         app_metadata: metadata
       }, {
         validateStatus: status => status === 200
@@ -300,7 +300,7 @@ export default class Auth0Client {
 
   async blockAccount(userId: number): Promise<APIResponse<{}>> {
     return this.getMachineToMachineInstance().then(instance => {
-      return instance.patch('/users/' + sierraUserIdPrefix + userId, {
+      return instance.patch('/users/' + SierraUserIdPrefix + userId, {
         blocked: true
       }, {
         validateStatus: status => status === 200
@@ -323,7 +323,7 @@ export default class Auth0Client {
 
   async deleteUser(userId: number): Promise<APIResponse<{}>> {
     return this.getMachineToMachineInstance().then(instance => {
-      return instance.delete('/users/' + sierraUserIdPrefix + userId, {
+      return instance.delete('/users/' + SierraUserIdPrefix + userId, {
         validateStatus: responseCodeIs(204)
       }).then(() => {
         return successResponse({});
