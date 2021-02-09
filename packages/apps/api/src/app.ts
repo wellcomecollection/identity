@@ -7,7 +7,7 @@ import express, { Application, Request, Response } from 'express';
 import { validateCredentials } from './handlers/auth';
 import {
   changePassword,
-  createUser,
+  createUser, deleteUser,
   getUser, requestDelete,
   searchUsers,
   sendPasswordResetEmail,
@@ -79,7 +79,7 @@ function registerUsersUserIdResource(app: Application): void {
   app.options('/users/:user_id', corsOptions);
   app.get('/users/:user_id', corsOptions, (request: Request, response: Response) => getUser(sierraClient, auth0Client, request, response));
   app.put('/users/:user_id', corsOptions, (request: Request, response: Response) => updateUser(sierraClient, auth0Client, request, response));
-  app.delete('/users/:user_id', corsOptions, (request: Request, response: Response) => response.status(204).end());
+  app.delete('/users/:user_id', corsOptions, (request: Request, response: Response) => deleteUser(sierraClient, auth0Client, request, response));
 }
 
 function registerUsersUserIdPasswordResource(app: Application): void {
