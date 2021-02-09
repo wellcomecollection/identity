@@ -114,7 +114,7 @@ describe('auth0 client', () => {
         response: user
       });
 
-      const response: APIResponse<Auth0Profile> = await client.getUserByUserId('123456');
+      const response: APIResponse<Auth0Profile> = await client.getUserByUserId(123456);
       equal(response.status, ResponseStatus.Success);
 
       const result = (<SuccessResponse<Auth0Profile>>response).result;
