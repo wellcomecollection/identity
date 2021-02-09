@@ -3,7 +3,7 @@ import { PatronRecord } from '@weco/sierra-client/lib/patron';
 
 export function toUser(auth0Profile: Auth0Profile, patronRecord?: PatronRecord): User {
   return {
-    userId: auth0Profile.userId,
+    userId: Number(auth0Profile.userId), // @TODO is this safe?
     barcode: patronRecord ? patronRecord.barcode : null,
     firstName: auth0Profile.firstName,
     lastName: auth0Profile.lastName,
@@ -32,7 +32,7 @@ export function toSearchResults(auth0SearchResults: Auth0SearchResults): SearchR
 }
 
 interface User {
-  userId: string,
+  userId: number,
   barcode: string | null,
   firstName: string | null,
   lastName: string | null,

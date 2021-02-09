@@ -31,6 +31,8 @@ export default class Auth0Client {
     this.clientSecret = clientSecret;
   }
 
+  // This call intentionally handles access tokens pertaining to any connection. Without this, we wouldn't be able to
+  // test and verify access tokens issued by the Azure AD connection on behalf of administrator users.
   async validateAccessToken(accessToken: string): Promise<APIResponse<Auth0UserInfo>> {
     return this.getInstanceOnBehalfOf(accessToken).get('/userinfo', {
       validateStatus: status => status === 200
@@ -65,6 +67,7 @@ export default class Auth0Client {
     });
   }
 
+  // @TODO This call should only search users that exist in the 'Sierra-Connection' connection
   async getUserByEmail(email: string): Promise<APIResponse<Auth0Profile>> {
     return this.getMachineToMachineInstance().then(instance => {
       return instance.get('/users-by-email', {
@@ -120,6 +123,7 @@ export default class Auth0Client {
     });
   }
 
+  // @TODO This call should only handle users that exist in the 'Sierra-Connection' connection
   async validateUserCredentials(username: string, password: string): Promise<APIResponse<{}>> {
     return this.getInstanceWithCredentials(username, password).then(() =>
       successResponse(true)
@@ -229,6 +233,7 @@ export default class Auth0Client {
     });
   }
 
+  // @TODO This call should only handle users that exist in the 'Sierra-Connection' connection - not sure if this is possible?
   async sendVerificationEmail(userId: number): Promise<APIResponse<{}>> {
     return this.getMachineToMachineInstance().then(instance => {
       return instance.post('/jobs/verification-email', {
