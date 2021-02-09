@@ -25,8 +25,8 @@ export async function lambdaHandler(event: APIGatewayRequestAuthorizerEvent): Pr
   }
 
   const auth0Validate = await auth0Client.validateAccessToken(accessToken);
-  if (auth0Validate.status != ResponseStatus.Success) {
-    if (auth0Validate.status == ResponseStatus.InvalidCredentials) {
+  if (auth0Validate.status !== ResponseStatus.Success) {
+    if (auth0Validate.status === ResponseStatus.InvalidCredentials) {
       console.log('Access token token [' + accessToken + '] rejected by Auth0: ' + auth0Validate.message);
       return buildAuthorizerResult(accessToken, 'Deny', event.methodArn);
     } else {
@@ -77,9 +77,14 @@ const resourceAcls: ResourceAcl[] = [
   },
   {
     resource: '/users/{userId}',
-    methods: ['GET', 'PUT', 'DELETE'],
+    methods: ['GET', 'PUT'],
     check: [isSelf, isAdministrator],
     checkType: 'OR'
+  },
+  {
+    resource: '/users/{userId}',
+    methods: ['DELETE'],
+    check: isAdministrator
   },
   {
     resource: '/users/{userId}/password',
@@ -127,9 +132,9 @@ function validateRequest(auth0UserInfo: Auth0UserInfo, resource: string, method:
 
   for (const check of aclChecks) {
     let matched = check(auth0UserInfo, pathParameters);
-    if (aclCheckType == 'OR') {
+    if (aclCheckType === 'OR') {
       aclMatched = aclMatched || matched;
-    } else if (aclCheckType == 'AND') {
+    } else if (aclCheckType === 'AND') {
       aclMatched = aclMatched && matched;
     }
   }

@@ -17,7 +17,7 @@ export async function getUser(sierraClient: SierraClient, auth0Client: Auth0Clie
   }
 
   const sierraGet: APIResponse<PatronRecord> = await sierraClient.getPatronRecordByRecordNumber(userId);
-  if (sierraGet.status != ResponseStatus.Success) {
+  if (sierraGet.status !== ResponseStatus.Success) {
     if (sierraGet.status === ResponseStatus.NotFound) {
       response.status(404).json(toMessage(sierraGet.message));
     } else {
@@ -27,7 +27,7 @@ export async function getUser(sierraClient: SierraClient, auth0Client: Auth0Clie
   }
 
   const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(userId);
-  if (auth0Get.status != ResponseStatus.Success) {
+  if (auth0Get.status !== ResponseStatus.Success) {
     if (auth0Get.status === ResponseStatus.NotFound) {
       response.status(404).json(toMessage(auth0Get.message));
     } else {
@@ -51,7 +51,7 @@ export async function createUser(sierraClient: SierraClient, auth0Client: Auth0C
   }
 
   const sierraGet: APIResponse<PatronRecord> = await sierraClient.getPatronRecordByEmail(email);
-  if (sierraGet.status != ResponseStatus.NotFound) {
+  if (sierraGet.status !== ResponseStatus.NotFound) {
     if (sierraGet.status === ResponseStatus.Success) {
       response.status(409).json(toMessage('Patron record with email [' + email + '] already exists'));
     } else {
@@ -61,7 +61,7 @@ export async function createUser(sierraClient: SierraClient, auth0Client: Auth0C
   }
 
   const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByEmail(email);
-  if (auth0Get.status != ResponseStatus.NotFound) {
+  if (auth0Get.status !== ResponseStatus.NotFound) {
     if (auth0Get.status === ResponseStatus.Success) {
       response.status(409).json(toMessage('Auth0 user with email [' + email + '] already exists'));
     } else {
@@ -71,7 +71,7 @@ export async function createUser(sierraClient: SierraClient, auth0Client: Auth0C
   }
 
   const sierraCreate: APIResponse<number> = await sierraClient.createPatronRecord(firstName, lastName, truncate(password, 30));
-  if (sierraCreate.status != ResponseStatus.Success) {
+  if (sierraCreate.status !== ResponseStatus.Success) {
     if (sierraCreate.status === ResponseStatus.MalformedRequest) {
       response.status(400).json(toMessage(sierraCreate.message));
     } else if (sierraCreate.status === ResponseStatus.PasswordTooWeak) {
@@ -83,7 +83,7 @@ export async function createUser(sierraClient: SierraClient, auth0Client: Auth0C
   }
 
   const auth0Create: APIResponse<Auth0Profile> = await auth0Client.createUser(sierraCreate.result, firstName, lastName, email, password);
-  if (auth0Create.status != ResponseStatus.Success) {
+  if (auth0Create.status !== ResponseStatus.Success) {
     await sierraClient.deletePatronRecord(sierraCreate.result);
     if (auth0Create.status === ResponseStatus.MalformedRequest) {
       response.status(400).json(toMessage(auth0Create.message));
@@ -98,7 +98,7 @@ export async function createUser(sierraClient: SierraClient, auth0Client: Auth0C
   }
 
   const sierraUpdate: APIResponse<PatronRecord> = await sierraClient.updatePatronPostCreationFields(sierraCreate.result, email);
-  if (sierraUpdate.status != ResponseStatus.Success) {
+  if (sierraUpdate.status !== ResponseStatus.Success) {
     if (sierraUpdate.status === ResponseStatus.MalformedRequest) {
       response.status(400).json(toMessage(sierraUpdate.message));
     } else {
@@ -164,9 +164,9 @@ export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0C
   if (modifiedFields.includes('email')) {
     const auth0EmailGet: APIResponse<Auth0Profile> = await auth0Client.getUserByEmail(fields.email.value);
     if (auth0EmailGet.status !== ResponseStatus.NotFound) {
-      if (auth0EmailGet.status === ResponseStatus.Success && auth0EmailGet.result.userId !== userId) {
+      if (auth0EmailGet.status === ResponseStatus.Success && auth0EmailGet.result.userId !== userId.toString()) {
         response.status(409).json(toMessage('Auth0 user with email [' + fields.email.value + '] already exists'));
-      } else if (auth0EmailGet.status == ResponseStatus.UnknownError) {
+      } else if (auth0EmailGet.status === ResponseStatus.UnknownError) {
         response.status(500).json(toMessage(auth0EmailGet.message));
       }
       return
@@ -227,7 +227,7 @@ export async function changePassword(sierraClient: SierraClient, auth0Client: Au
   }
 
   const auth0Update: APIResponse<Auth0Profile> = await auth0Client.updatePassword(userId, password);
-  if (auth0Update.status != ResponseStatus.Success) {
+  if (auth0Update.status !== ResponseStatus.Success) {
     if (auth0Update.status === ResponseStatus.NotFound) {
       response.status(404).json(toMessage(auth0Update.message));
     } else if (auth0Update.status === ResponseStatus.PasswordTooWeak) {
@@ -241,7 +241,7 @@ export async function changePassword(sierraClient: SierraClient, auth0Client: Au
   }
 
   const sierraUpdate: APIResponse<PatronRecord> = await sierraClient.updatePassword(userId, truncate(password, 30));
-  if (sierraUpdate.status != ResponseStatus.Success) {
+  if (sierraUpdate.status !== ResponseStatus.Success) {
     if (sierraUpdate.status === ResponseStatus.NotFound) {
       response.status(404).json(toMessage(sierraUpdate.message));
     } else if (sierraUpdate.status === ResponseStatus.MalformedRequest) {
@@ -280,7 +280,7 @@ export async function searchUsers(auth0Client: Auth0Client, request: Request, re
   }
 
   const userSearch: APIResponse<Auth0SearchResults> = await auth0Client.searchUsers(page, pageSize, sort, sortDir, query);
-  if (userSearch.status != ResponseStatus.Success) {
+  if (userSearch.status !== ResponseStatus.Success) {
     if (userSearch.status === ResponseStatus.MalformedRequest) {
       response.status(400).json(toMessage(userSearch.message));
     } else if (userSearch.status === ResponseStatus.QueryTimeout) {
@@ -407,6 +407,36 @@ export async function requestDelete(auth0Client: Auth0Client, sierraClient: Sier
   }
 
   response.sendStatus(200);
+}
+
+export async function deleteUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
+
+  const userId: number = Number(request.params.user_id);
+  if (isNaN(userId)) {
+    response.status(400).json(toMessage('Invalid user ID [' + userId + ']'));
+  }
+
+  const auth0Delete = await auth0Client.deleteUser(userId);
+  if (auth0Delete.status !== ResponseStatus.Success) {
+    if (auth0Delete.status === ResponseStatus.NotFound) {
+      response.status(404).json(toMessage(auth0Delete.message));
+    } else {
+      response.status(500).json(toMessage(auth0Delete.message));
+    }
+    return;
+  }
+
+  const patronDelete = await sierraClient.deletePatronRecord(userId);
+  if (patronDelete.status !== ResponseStatus.Success) {
+    if (patronDelete.status === ResponseStatus.NotFound) {
+      response.status(404).json(toMessage(patronDelete.message));
+    } else {
+      response.status(500).json(toMessage(patronDelete.message));
+    }
+    return;
+  }
+
+  response.sendStatus(204);
 }
 
 function userIsAdmin(request: Request): boolean {
