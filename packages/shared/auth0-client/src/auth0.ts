@@ -1,4 +1,4 @@
-import { isNonBlank } from '@weco/identity-common';
+import { azureUserIdPrefix, isNonBlank, sierraUserIdPrefix } from '@weco/identity-common';
 
 export function toAuth0UserInfo(userInfo: any): Auth0UserInfo {
 
@@ -10,14 +10,8 @@ export function toAuth0UserInfo(userInfo: any): Auth0UserInfo {
     throw new Error('One or more required UserInfo fields are missing. Have all necessary scopes been requested?')
   }
 
-  // As far as the application is concerned, Auth0 ID's are identical to Sierra ID's. So remove the mandatory Auth0 prefix.
-  const userId: number = Number(sub.slice(sub.indexOf('auth0|p') + 'auth0|p'.length));
-  if (isNaN(userId)) {
-    throw new Error('UserInfo provided invalid \'sub\' field: cannot extract numerical ID from [' + sub + ']');
-  }
-
   return {
-    userId: userId,
+    userId: extractUserId(sub),
     name: name,
     firstName: userInfo.given_name ? userInfo.given_name : null,
     lastName: userInfo.family_name ? userInfo.family_name : null,
@@ -37,14 +31,8 @@ export function toAuth0Profile(auth0User: any): Auth0Profile {
     throw new Error('One or more required UserProfile fields are missing. Have all necessary scopes been requested?')
   }
 
-  // As far as the application is concerned, Auth0 ID's are identical to Sierra ID's. So remove the mandatory Auth0 prefix.
-  const userId: number = Number(userIdStr.slice(userIdStr.indexOf('auth0|p') + 'auth0|p'.length));
-  if (isNaN(userId)) {
-    throw new Error('UserProfile provided invalid \'user_id\' field: cannot extract numerical ID from [' + userIdStr + ']');
-  }
-
   return {
-    userId: userId,
+    userId: extractUserId(userIdStr),
     name: name,
     firstName: auth0User.given_name ? auth0User.given_name : null,
     lastName: auth0User.family_name ? auth0User.family_name : null,
@@ -72,13 +60,27 @@ export function toAuth0SearchResults(page: number, sort: string, sortDir: number
   }
 }
 
+function extractUserId(value: string): string {
+  if (value.startsWith(sierraUserIdPrefix)) {
+    const userId: string = value.slice(value.indexOf(sierraUserIdPrefix) + sierraUserIdPrefix.length);
+    if (isNaN(Number(userId))) {
+      throw new Error('Invalid user ID field, cannot extract numerical ID from [' + value + ']');
+    }
+    return userId;
+  } else if (value.startsWith(azureUserIdPrefix)) {
+    return value.slice(value.indexOf(azureUserIdPrefix) + azureUserIdPrefix.length);
+  } else {
+    throw new Error('Unexpected format for user ID [' + value + ']');
+  }
+}
+
 export function generateUserSearchQuery(query: string): string {
   return query.split(' ').map(token => 'name:*' + token + '* OR email:*' + token + '*').join(' ');
 }
 
 // A simple representation of the Auth0 user, using only the attributes we provide to Auth0 to create it.
 export interface Auth0UserInfo {
-  userId: number;
+  userId: string;
   name: string;
   firstName: string | null;
   lastName: string | null;

@@ -1,4 +1,4 @@
-import { APIResponse, ResponseStatus, SuccessResponse } from '@weco/identity-common';
+import { APIResponse, ResponseStatus, sierraUserIdPrefix, SuccessResponse } from '@weco/identity-common';
 import { equal, strictEqual } from 'assert';
 import axios, { AxiosInstance } from 'axios';
 import moxios from 'moxios';
@@ -29,7 +29,7 @@ describe('auth0 client', () => {
 
   describe('delete user', () => {
     it('deletes the user with given id', async () => {
-      moxios.stubRequest('/users/auth0|p' + userId, {
+      moxios.stubRequest('/users/' + sierraUserIdPrefix + userId, {
         status: 204
       });
 
@@ -39,7 +39,7 @@ describe('auth0 client', () => {
     });
 
     it('not found on invalid user', async () => {
-      moxios.stubRequest('/users/auth0|p' + userId, {
+      moxios.stubRequest('/users/' + sierraUserIdPrefix + userId, {
         status: 404
       });
 
@@ -87,7 +87,7 @@ describe('auth0 client', () => {
   describe('get user by user id', () => {
 
     it('finds the user with blocked', async () => {
-      moxios.stubRequest('/users/auth0|p' + userId, {
+      moxios.stubRequest('/users/' + sierraUserIdPrefix + userId, {
         status: 200,
         response: Object.assign(user, {
           blocked: false
@@ -109,12 +109,12 @@ describe('auth0 client', () => {
     });
 
     it('finds the user without blocked', async () => {
-      moxios.stubRequest('/users/auth0|p' + userId, {
+      moxios.stubRequest('/users/' + sierraUserIdPrefix + userId, {
         status: 200,
         response: user
       });
 
-      const response: APIResponse<Auth0Profile> = await client.getUserByUserId(123456);
+      const response: APIResponse<Auth0Profile> = await client.getUserByUserId('123456');
       equal(response.status, ResponseStatus.Success);
 
       const result = (<SuccessResponse<Auth0Profile>>response).result;
@@ -129,7 +129,7 @@ describe('auth0 client', () => {
     });
 
     it('does not find the user', async () => {
-      moxios.stubRequest('/users/auth0|p' + userId, {
+      moxios.stubRequest('/users/' + sierraUserIdPrefix + userId, {
         status: 404
       });
 
@@ -138,7 +138,7 @@ describe('auth0 client', () => {
     });
 
     it('returns an unexpected response code', async () => {
-      moxios.stubRequest('/users/auth0|p' + userId, {
+      moxios.stubRequest('/users/' + sierraUserIdPrefix + userId, {
         status: 500
       });
 
@@ -302,7 +302,7 @@ describe('auth0 client', () => {
   describe('updates a user', () => {
 
     it('updates the user', async () => {
-      moxios.stubRequest('/users/auth0|p' + userId, {
+      moxios.stubRequest('/users/' + sierraUserIdPrefix + userId, {
         status: 200,
         response: user
       });
@@ -322,7 +322,7 @@ describe('auth0 client', () => {
     });
 
     it('does not update the user', async () => {
-      moxios.stubRequest('/users/auth0|p' + userId, {
+      moxios.stubRequest('/users/' + sierraUserIdPrefix + userId, {
         status: 400,
         response: {
           message: 'The specified new email already exists'
@@ -334,7 +334,7 @@ describe('auth0 client', () => {
     });
 
     it('receives a malformed request', async () => {
-      moxios.stubRequest('/users/auth0|p' + userId, {
+      moxios.stubRequest('/users/' + sierraUserIdPrefix + userId, {
         status: 400
       });
 
@@ -343,7 +343,7 @@ describe('auth0 client', () => {
     });
 
     it('does not find the user', async () => {
-      moxios.stubRequest('/users/auth0|p' + userId, {
+      moxios.stubRequest('/users/' + sierraUserIdPrefix + userId, {
         status: 404
       });
 
@@ -352,7 +352,7 @@ describe('auth0 client', () => {
     });
 
     it('returns an unexpected response code', async () => {
-      moxios.stubRequest('/users/auth0|p' + userId, {
+      moxios.stubRequest('/users/' + sierraUserIdPrefix + userId, {
         status: 500
       });
 
@@ -386,7 +386,7 @@ const emailValidated: boolean = true;
 const locked: boolean = false;
 
 const userInfo: any = {
-  sub: 'auth0|p' + userId,
+  sub: '' + sierraUserIdPrefix + userId,
   nickname: email.substring(0, email.lastIndexOf('@')),
   name: name,
   given_name: firstName,
@@ -414,7 +414,7 @@ const user: any = {
   nickname: email.substring(0, email.lastIndexOf('@')),
   picture: picture,
   updated_at: updatedDate,
-  user_id: 'auth0|p' + userId,
+  user_id: '' + sierraUserIdPrefix + userId,
   last_password_reset: passwordResetDate,
   email_verified: emailValidated,
   last_ip: lastLoginIp,

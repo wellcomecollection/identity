@@ -32,7 +32,7 @@ export function toSearchResults(auth0SearchResults: Auth0SearchResults): SearchR
 }
 
 interface User {
-  userId: number,
+  userId: string,
   barcode: string | null,
   firstName: string | null,
   lastName: string | null,

@@ -86,3 +86,6 @@ export enum ResponseStatus {
 }
 
 export type APIResponse<T> = SuccessResponse<T> | ErrorResponse;
+
+export const sierraUserIdPrefix = 'auth0|p';
+export const azureUserIdPrefix = 'oauth2|AzureAD-Connection|';

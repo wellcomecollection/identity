@@ -2,7 +2,7 @@ import {
   APIResponse,
   errorResponse,
   responseCodeIs,
-  ResponseStatus,
+  ResponseStatus, sierraUserIdPrefix,
   successResponse,
   unhandledError
 } from '@weco/identity-common';
@@ -49,7 +49,7 @@ export default class Auth0Client {
 
   async getUserByUserId(userId: number): Promise<APIResponse<Auth0Profile>> {
     return this.getMachineToMachineInstance().then(instance => {
-      return instance.get('/users/auth0|p' + userId, { // Automatically append the mandatory Auth0 prefix to the given user ID.
+      return instance.get('/users/' + sierraUserIdPrefix + userId, { // Automatically append the mandatory Auth0 prefix to the given user ID.
         validateStatus: status => status === 200
       }).then(response =>
         successResponse(toAuth0Profile(response.data))
@@ -138,7 +138,7 @@ export default class Auth0Client {
 
   async updateUser(userId: number, email: string, firstName: string, lastName: string): Promise<APIResponse<Auth0Profile>> {
     return this.getMachineToMachineInstance().then(instance => {
-      return instance.patch('/users/auth0|p' + userId, { // Automatically append the mandatory Auth0 prefix to the given user ID.
+      return instance.patch('/users/' + sierraUserIdPrefix + userId, { // Automatically append the mandatory Auth0 prefix to the given user ID.
         email: email,
         given_name: firstName,
         family_name: lastName,
@@ -172,7 +172,7 @@ export default class Auth0Client {
 
   async updatePassword(userId: number, password: string): Promise<APIResponse<Auth0Profile>> {
     return this.getMachineToMachineInstance().then(instance => {
-      return instance.patch('/users/auth0|p' + userId, {
+      return instance.patch('/users/' + sierraUserIdPrefix + userId, {
         password: password,
         connection: 'Sierra-Connection'
       }, {
@@ -232,7 +232,7 @@ export default class Auth0Client {
   async sendVerificationEmail(userId: number): Promise<APIResponse<{}>> {
     return this.getMachineToMachineInstance().then(instance => {
       return instance.post('/jobs/verification-email', {
-        user_id: 'auth0|p' + userId
+        user_id: sierraUserIdPrefix + userId
       }, {
         validateStatus: status => status === 201
       }).then(() =>
@@ -272,7 +272,7 @@ export default class Auth0Client {
 
   async addAppMetadata(userId: number, metadata: Record<string, any>): Promise<APIResponse<{}>> {
     return this.getMachineToMachineInstance().then(instance => {
-      return instance.patch('/users/auth0|p' + userId, {
+      return instance.patch('/users/' + sierraUserIdPrefix + userId, {
         app_metadata: metadata
       }, {
         validateStatus: status => status === 200
@@ -295,7 +295,7 @@ export default class Auth0Client {
 
   async blockAccount(userId: number): Promise<APIResponse<{}>> {
     return this.getMachineToMachineInstance().then(instance => {
-      return instance.patch('/users/auth0|p' + userId, {
+      return instance.patch('/users/' + sierraUserIdPrefix + userId, {
         blocked: true
       }, {
         validateStatus: status => status === 200
@@ -318,7 +318,7 @@ export default class Auth0Client {
 
   async deleteUser(userId: number): Promise<APIResponse<{}>> {
     return this.getMachineToMachineInstance().then(instance => {
-      return instance.delete('/users/auth0|p' + userId, {
+      return instance.delete('/users/' + sierraUserIdPrefix + userId, {
         validateStatus: responseCodeIs(204)
       }).then(() => {
         return successResponse({});
