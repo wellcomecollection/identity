@@ -409,6 +409,48 @@ export async function requestDelete(auth0Client: Auth0Client, sierraClient: Sier
   response.sendStatus(200);
 }
 
+export async function blockUser(auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
+
+  const userId: number = Number(request.params.user_id);
+  if (isNaN(userId)) {
+    response.status(400).json(toMessage('Invalid user ID [' + userId + ']'));
+  }
+
+  const blockUser: APIResponse<{}> = await auth0Client.blockAccount(userId);
+  if (blockUser.status !== ResponseStatus.Success) {
+    if (blockUser.status === ResponseStatus.MalformedRequest) {
+      response.status(400).json(toMessage(blockUser.message));
+    } else if (blockUser.status === ResponseStatus.NotFound) {
+      response.status(404).json(toMessage(blockUser.message));
+    } else {
+      response.status(500).json(toMessage(blockUser.message));
+    }
+  }
+
+  response.sendStatus(200);
+}
+
+export async function unblockUser(auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
+
+  const userId: number = Number(request.params.user_id);
+  if (isNaN(userId)) {
+    response.status(400).json(toMessage('Invalid user ID [' + userId + ']'));
+  }
+
+  const unblockUser: APIResponse<{}> = await auth0Client.unblockAccount(userId);
+  if (unblockUser.status !== ResponseStatus.Success) {
+    if (unblockUser.status === ResponseStatus.MalformedRequest) {
+      response.status(400).json(toMessage(unblockUser.message));
+    } else if (unblockUser.status === ResponseStatus.NotFound) {
+      response.status(404).json(toMessage(unblockUser.message));
+    } else {
+      response.status(500).json(toMessage(unblockUser.message));
+    }
+  }
+
+  response.sendStatus(200);
+}
+
 export async function deleteUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
 
   const userId: number = Number(request.params.user_id);

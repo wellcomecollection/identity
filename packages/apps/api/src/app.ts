@@ -6,12 +6,13 @@ import cors from 'cors';
 import express, { Application, Request, Response } from 'express';
 import { validateCredentials } from './handlers/auth';
 import {
+  blockUser,
   changePassword,
   createUser, deleteUser,
   getUser, requestDelete,
   searchUsers,
   sendPasswordResetEmail,
-  sendVerificationEmail,
+  sendVerificationEmail, unblockUser,
   updateUser
 } from './handlers/user';
 import EmailClient from './utils/email';
@@ -119,7 +120,7 @@ function registerUsersUserIdLockResource(app: Application): void {
     origin: process.env.API_ALLOWED_ORIGINS
   });
   app.options('/users/:user_id/lock', corsOptions);
-  app.put('/users/:user_id/lock', corsOptions, (request: Request, response: Response) => response.status(200).end());
+  app.put('/users/:user_id/lock', corsOptions, (request: Request, response: Response) => blockUser(auth0Client, request, response));
 }
 
 function registerUsersUserIdUnlockResource(app: Application): void {
@@ -129,7 +130,7 @@ function registerUsersUserIdUnlockResource(app: Application): void {
     origin: process.env.API_ALLOWED_ORIGINS
   });
   app.options('/users/:user_id/unlock', corsOptions);
-  app.put('/users/:user_id/unlock', corsOptions, (request: Request, response: Response) => response.status(200).end());
+  app.put('/users/:user_id/unlock', corsOptions, (request: Request, response: Response) => unblockUser(auth0Client, request, response));
 }
 
 function registerUsersUserIdRequestDeleteResource(app: Application): void {
