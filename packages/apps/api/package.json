@@ -6,7 +6,7 @@
     "author": "Daniel Grant <daniel.grant@digirati.com>",
     "license": "MIT",
     "scripts": {
-        "build": "tsc -p tsconfig.build.json && cp -r src/handlers/templates lib/handlers"
+        "build": "tsc -p tsconfig.build.json && cp -r src/utils/templates lib/handlers"
     },
     "dependencies": {
         "aws-serverless-express": "^3.3.8",
