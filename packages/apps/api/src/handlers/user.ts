@@ -361,7 +361,7 @@ export async function sendPasswordResetEmail(auth0Client: Auth0Client, request: 
   response.sendStatus(200);
 }
 
-export async function requestDelete(auth0Client: Auth0Client, sierraClient: SierraClient, emailClient: EmailClient, request: Request, response: Response): Promise<void> {
+export async function requestDelete(auth0Client: Auth0Client, emailClient: EmailClient, request: Request, response: Response): Promise<void> {
 
   const userId: number = Number(request.params.user_id);
   if (isNaN(userId)) {
@@ -379,8 +379,9 @@ export async function requestDelete(auth0Client: Auth0Client, sierraClient: Sier
     return;
   }
 
-  if (auth0Get.result?.metadata?.requestDeleted) {
+  if (!auth0Get.result?.metadata?.requestDeleted) {
     response.status(304).json(toMessage('Deletion request already processing for user with ID [' + userId + ']'));
+    return;
   }
 
   const emailDeleteAdmin = await emailClient.sendDeleteRequestAdmin(auth0Get.result);
@@ -389,7 +390,7 @@ export async function requestDelete(auth0Client: Auth0Client, sierraClient: Sier
     return;
   }
 
-  const auth0Update = await auth0Client.addAppMetadata(userId, {
+  const auth0Update = await auth0Client.setAppMetadata(userId, {
     deleteRequested: new Date().toISOString()
   });
   if (auth0Update.status !== ResponseStatus.Success) {
@@ -407,6 +408,63 @@ export async function requestDelete(auth0Client: Auth0Client, sierraClient: Sier
   }
 
   response.sendStatus(200);
+}
+
+export async function removeDelete(auth0Client: Auth0Client, emailClient: EmailClient, request: Request, response: Response): Promise<void> {
+
+  const userId: number = Number(request.params.user_id);
+  if (isNaN(userId)) {
+    response.status(400).json(toMessage('Invalid user ID [' + userId + ']'));
+  }
+
+  const auth0Get = await auth0Client.getUserByUserId(userId);
+  if (auth0Get.status !== ResponseStatus.Success) {
+    if (auth0Get.status === ResponseStatus.NotFound) {
+      response.status(404).json(toMessage(auth0Get.message));
+    } else {
+      response.status(500).json(toMessage(auth0Get.message));
+    }
+    return;
+  }
+
+  if (!auth0Get.result?.metadata?.requestDeleted) {
+    response.status(304).json(toMessage('No deletion requests for user with ID [' + userId + ']'));
+    return;
+  }
+
+  const metadata: Record<string, string> = auth0Get.result.metadata.requestDeleted;
+  delete metadata.requestDeleted;
+
+  const auth0Update = await auth0Client.setAppMetadata(userId, metadata);
+  if (auth0Update.status !== ResponseStatus.Success) {
+    if (auth0Update.status === ResponseStatus.MalformedRequest) {
+      response.status(400).json(toMessage(auth0Update.message));
+    } else if (auth0Update.status === ResponseStatus.NotFound) {
+      response.status(404).json(toMessage(auth0Update.message));
+    } else {
+      response.status(500).json(toMessage(auth0Update.message));
+    }
+    return;
+  }
+
+  const auth0Unblock = await auth0Client.unblockAccount(userId);
+  if (auth0Unblock.status !== ResponseStatus.Success) {
+    if (auth0Unblock.status === ResponseStatus.MalformedRequest) {
+      response.status(400).json(toMessage(auth0Unblock.message));
+    } else if (auth0Unblock.status === ResponseStatus.NotFound) {
+      response.status(404).json(toMessage(auth0Unblock.message));
+    } else {
+      response.status(500).json(toMessage(auth0Unblock.message));
+    }
+    return;
+  }
+
+  const emailDeleteRemovalUser = await emailClient.sendDeleteRemovalUser(auth0Get.result);
+  if (emailDeleteRemovalUser.status !== ResponseStatus.Success) {
+    console.log('An error notifying Auth0 user [' + userId + '] of the deletion removal request: [' + emailDeleteRemovalUser + ']');
+  }
+
+  response.sendStatus(204);
 }
 
 export async function blockUser(auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {

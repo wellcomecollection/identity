@@ -9,7 +9,7 @@ import {
   blockUser,
   changePassword,
   createUser, deleteUser,
-  getUser, requestDelete,
+  getUser, removeDelete, requestDelete,
   searchUsers,
   sendPasswordResetEmail,
   sendVerificationEmail, unblockUser,
@@ -45,7 +45,7 @@ function createApplication(): Application {
   registerUsersUserIdSendVerificationResource(app);
   registerUsersUserIdLockResource(app);
   registerUsersUserIdUnlockResource(app);
-  registerUsersUserIdRequestDeleteResource(app);
+  registerUsersUserIdDeletionRequestResource(app);
 
   return app;
 }
@@ -133,12 +133,13 @@ function registerUsersUserIdUnlockResource(app: Application): void {
   app.put('/users/:user_id/unlock', corsOptions, (request: Request, response: Response) => unblockUser(auth0Client, request, response));
 }
 
-function registerUsersUserIdRequestDeleteResource(app: Application): void {
+function registerUsersUserIdDeletionRequestResource(app: Application): void {
   const corsOptions = cors({
     allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
     methods: 'OPTIONS,PUT',
     origin: process.env.API_ALLOWED_ORIGINS
   });
   app.options('/users/:user_id/deletion-request', corsOptions);
-  app.put('/users/:user_id/deletion-request', corsOptions, (request: Request, response: Response) => requestDelete(auth0Client, sierraClient, emailClient, request, response));
+  app.put('/users/:user_id/deletion-request', corsOptions, (request: Request, response: Response) => requestDelete(auth0Client, emailClient, request, response));
+  app.delete('/users/:user_id/deletion-request', corsOptions, (request: Request, response: Response) => removeDelete(auth0Client, emailClient, request, response));
 }
