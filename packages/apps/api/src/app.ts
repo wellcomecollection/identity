@@ -139,6 +139,6 @@ function registerUsersUserIdRequestDeleteResource(app: Application): void {
     methods: 'OPTIONS,PUT',
     origin: process.env.API_ALLOWED_ORIGINS
   });
-  app.options('/users/:user_id/request-delete', corsOptions);
-  app.put('/users/:user_id/request-delete', corsOptions, (request: Request, response: Response) => requestDelete(auth0Client, sierraClient, emailClient, request, response));
+  app.options('/users/:user_id/deletion-request', corsOptions);
+  app.put('/users/:user_id/deletion-request', corsOptions, (request: Request, response: Response) => requestDelete(auth0Client, sierraClient, emailClient, request, response));
 }
