@@ -379,7 +379,7 @@ export async function requestDelete(auth0Client: Auth0Client, emailClient: Email
     return;
   }
 
-  if (auth0Get.result?.metadata?.requestDeleted) {
+  if (auth0Get.result?.metadata?.deleteRequested) {
     response.status(304).json(toMessage('Deletion request already processing for user with ID [' + userId + ']'));
     return;
   }
@@ -428,7 +428,7 @@ export async function removeDelete(auth0Client: Auth0Client, emailClient: EmailC
     return;
   }
 
-  if (!auth0Get.result?.metadata?.requestDeleted) {
+  if (!auth0Get.result?.metadata?.deleteRequested) {
     response.status(304).json(toMessage('No deletion requests for user with ID [' + userId + ']'));
     return;
   }
