@@ -433,7 +433,7 @@ export async function removeDelete(auth0Client: Auth0Client, emailClient: EmailC
     return;
   }
 
-  const metadata: Record<string, string> = auth0Get.result.metadata.requestDeleted;
+  const metadata: Record<string, string> = auth0Get.result.metadata;
   delete metadata.requestDeleted;
 
   const auth0Update: APIResponse<{}> = await auth0Client.setAppMetadata(userId, metadata);
