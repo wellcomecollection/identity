@@ -415,6 +415,7 @@ export async function removeDelete(auth0Client: Auth0Client, emailClient: EmailC
   const userId: number = Number(request.params.user_id);
   if (isNaN(userId)) {
     response.status(400).json(toMessage('Invalid user ID [' + userId + ']'));
+    return;
   }
 
   const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(userId);
@@ -472,6 +473,7 @@ export async function blockUser(auth0Client: Auth0Client, request: Request, resp
   const userId: number = Number(request.params.user_id);
   if (isNaN(userId)) {
     response.status(400).json(toMessage('Invalid user ID [' + userId + ']'));
+    return;
   }
 
   const blockUser: APIResponse<{}> = await auth0Client.blockAccount(userId);
@@ -483,6 +485,7 @@ export async function blockUser(auth0Client: Auth0Client, request: Request, resp
     } else {
       response.status(500).json(toMessage(blockUser.message));
     }
+    return;
   }
 
   response.sendStatus(200);
@@ -493,6 +496,7 @@ export async function unblockUser(auth0Client: Auth0Client, request: Request, re
   const userId: number = Number(request.params.user_id);
   if (isNaN(userId)) {
     response.status(400).json(toMessage('Invalid user ID [' + userId + ']'));
+    return;
   }
 
   const unblockUser: APIResponse<{}> = await auth0Client.unblockAccount(userId);
@@ -504,6 +508,7 @@ export async function unblockUser(auth0Client: Auth0Client, request: Request, re
     } else {
       response.status(500).json(toMessage(unblockUser.message));
     }
+    return;
   }
 
   response.sendStatus(200);
@@ -514,6 +519,7 @@ export async function deleteUser(sierraClient: SierraClient, auth0Client: Auth0C
   const userId: number = Number(request.params.user_id);
   if (isNaN(userId)) {
     response.status(400).json(toMessage('Invalid user ID [' + userId + ']'));
+    return;
   }
 
   const auth0Delete: APIResponse<{}> = await auth0Client.deleteUser(userId);
