@@ -1,9 +1,10 @@
 import Auth0Client from '@weco/auth0-client';
-import { isNonBlank, ResponseStatus } from '@weco/identity-common';
+import {APIResponse, isNonBlank, ResponseStatus} from '@weco/identity-common';
 import { Request, Response } from 'express';
 import { toMessage } from '../models/common';
+import {Auth0Profile} from "@weco/auth0-client/lib/auth0";
 
-export async function validateCredentials(auth0Client: Auth0Client, request: Request, response: Response) {
+export async function validateCredentials(auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
 
   const email: string = request.body.email;
   const password: string = request.body.password;
@@ -13,7 +14,7 @@ export async function validateCredentials(auth0Client: Auth0Client, request: Req
     return;
   }
 
-  const userFetchResult = await auth0Client.getUserByEmail(email);
+  const userFetchResult: APIResponse<Auth0Profile> = await auth0Client.getUserByEmail(email);
   if (userFetchResult.status !== ResponseStatus.Success) {
     if (userFetchResult.status === ResponseStatus.NotFound) {
       response.status(404).json(toMessage(userFetchResult.message));
@@ -23,7 +24,7 @@ export async function validateCredentials(auth0Client: Auth0Client, request: Req
     return;
   }
 
-  const validationResult = await auth0Client.validateUserCredentials(email, password);
+  const validationResult: APIResponse<{}> = await auth0Client.validateUserCredentials(email, password);
   if (validationResult.status !== ResponseStatus.Success) {
     if (validationResult.status === ResponseStatus.InvalidCredentials) {
       response.status(401).json(toMessage(validationResult.message));

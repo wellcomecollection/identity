@@ -1,10 +1,11 @@
 import * as http from 'http';
 import * as process from 'process';
 import app from './app';
+import {Server} from "http";
 
-const WECO_IDENTITY_API_PORT = process.env.WECO_IDENTITY_API_PORT ?? 8081;
+const WECO_IDENTITY_API_PORT: number = Number(process.env.WECO_IDENTITY_API_PORT) ?? 8081;
 
-const server = http.createServer(app).listen(WECO_IDENTITY_API_PORT, function () {
+const server: Server = http.createServer(app).listen(WECO_IDENTITY_API_PORT, function () {
     console.log(`Server running on http://localhost:${WECO_IDENTITY_API_PORT}`);
 });
 
