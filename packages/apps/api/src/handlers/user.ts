@@ -8,6 +8,38 @@ import { toMessage } from '../models/common';
 import { toSearchResults, toUser } from '../models/user';
 import EmailClient from '../utils/email';
 
+export async function validatePassword(auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
+
+  const userId: number = getTargetUserId(request);
+  const password: string = request.body.password;
+  if (!isNonBlank(password)) {
+    response.status(400).json(toMessage('All fields must be provided and non-blank'));
+    return;
+  }
+
+  const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(userId);
+  if (auth0Get.status !== ResponseStatus.Success) {
+    if (auth0Get.status === ResponseStatus.NotFound) {
+      response.status(404).json(toMessage(auth0Get.message));
+    } else {
+      response.status(500).json(toMessage(auth0Get.message));
+    }
+    return;
+  }
+
+  const validationResult = await auth0Client.validateUserCredentials(auth0Get.result.email, password);
+  if (validationResult.status !== ResponseStatus.Success) {
+    if (validationResult.status === ResponseStatus.InvalidCredentials) {
+      response.status(401).json(toMessage(validationResult.message));
+    } else {
+      response.status(500).json(toMessage(validationResult.message));
+    }
+    return;
+  }
+
+  response.sendStatus(200);
+}
+
 export async function getUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
 
   const userId: number = getTargetUserId(request);
