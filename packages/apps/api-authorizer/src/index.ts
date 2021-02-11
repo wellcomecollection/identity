@@ -41,7 +41,7 @@ export async function lambdaHandler(event: APIGatewayRequestAuthorizerEvent): Pr
   }
 
 
-  return buildAuthorizerResult(auth0Validate.result.userId, 'Allow', event.methodArn, isAdministrator(auth0Validate.result, {}));
+  return buildAuthorizerResult(auth0Validate.result.userId, 'Allow', event.methodArn, auth0Validate.result.userId, isAdministrator(auth0Validate.result, {}));
 }
 
 function extractAccessToken(tokenString: string): null | string {
@@ -66,7 +66,7 @@ const isAdministrator = function (user: Auth0UserInfo, pathParameters: Record<st
 };
 
 const isSelf = function (user: Auth0UserInfo, pathParameters: Record<string, string | undefined> | null): boolean {
-  return pathParameters?.userId === user.userId.toString();
+  return pathParameters?.userId === 'me' || pathParameters?.userId === user.userId.toString();
 };
 
 const resourceAcls: ResourceAcl[] = [
@@ -142,9 +142,10 @@ function validateRequest(auth0UserInfo: Auth0UserInfo, resource: string, method:
   return aclMatched;
 }
 
-function buildAuthorizerResult(principal: string | number, effect: string, methodArn: string, isAdmin: boolean = false): APIGatewayAuthorizerResult {
+function buildAuthorizerResult(principal: string | number, effect: string, methodArn: string, callerId: string | undefined = undefined, isAdmin: boolean = false): APIGatewayAuthorizerResult {
   return {
     context: {
+      callerId,
       isAdmin
     },
     principalId: principal.toString(),

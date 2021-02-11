@@ -10,11 +10,7 @@ import EmailClient from '../utils/email';
 
 export async function getUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
 
-  const userId: number = Number(request.params.user_id);
-  if (isNaN(userId)) {
-    response.status(400).json(toMessage('Invalid user ID [' + userId + ']'));
-    return;
-  }
+  const userId: number = getTargetUserId(request);
 
   const sierraGet: APIResponse<PatronRecord> = await sierraClient.getPatronRecordByRecordNumber(userId);
   if (sierraGet.status !== ResponseStatus.Success) {
@@ -112,11 +108,7 @@ export async function createUser(sierraClient: SierraClient, auth0Client: Auth0C
 
 export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
 
-  const userId: number = Number(request.params.user_id);
-  if (isNaN(userId)) {
-    response.status(400).json(toMessage('Invalid user ID [' + userId + ']'));
-    return;
-  }
+  const userId: number = getTargetUserId(request);
 
   const auth0UserIdGet: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(userId);
   if (auth0UserIdGet.status !== ResponseStatus.Success) {
@@ -214,11 +206,7 @@ export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0C
 
 export async function changePassword(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
 
-  const userId: number = Number(request.params.user_id);
-  if (isNaN(userId)) {
-    response.status(400).json(toMessage('Invalid user ID [' + userId + ']'));
-    return;
-  }
+  const userId: number = getTargetUserId(request);
 
   const password: string = request.body.password;
   if (!isNonBlank(password)) {
@@ -296,11 +284,7 @@ export async function searchUsers(auth0Client: Auth0Client, request: Request, re
 
 export async function sendVerificationEmail(auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
 
-  const userId: number = Number(request.params.user_id);
-  if (isNaN(userId)) {
-    response.status(400).json(toMessage('Invalid user ID [' + userId + ']'));
-    return;
-  }
+  const userId: number = getTargetUserId(request);
 
   const userGet = await auth0Client.getUserByUserId(userId);
   if (userGet.status !== ResponseStatus.Success) {
@@ -332,11 +316,7 @@ export async function sendVerificationEmail(auth0Client: Auth0Client, request: R
 
 export async function sendPasswordResetEmail(auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
 
-  const userId: number = Number(request.params.user_id);
-  if (isNaN(userId)) {
-    response.status(400).json(toMessage('Invalid user ID [' + userId + ']'));
-    return;
-  }
+  const userId: number = getTargetUserId(request);
 
   const userGet = await auth0Client.getUserByUserId(userId);
   if (userGet.status !== ResponseStatus.Success) {
@@ -363,11 +343,7 @@ export async function sendPasswordResetEmail(auth0Client: Auth0Client, request: 
 
 export async function requestDelete(auth0Client: Auth0Client, sierraClient: SierraClient, emailClient: EmailClient, request: Request, response: Response): Promise<void> {
 
-  const userId: number = Number(request.params.user_id);
-  if (isNaN(userId)) {
-    response.status(400).json(toMessage('Invalid user ID [' + userId + ']'));
-    return;
-  }
+  const userId: number = getTargetUserId(request);
 
   const auth0Get = await auth0Client.getUserByUserId(userId);
   if (auth0Get.status !== ResponseStatus.Success) {
@@ -411,10 +387,7 @@ export async function requestDelete(auth0Client: Auth0Client, sierraClient: Sier
 
 export async function blockUser(auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
 
-  const userId: number = Number(request.params.user_id);
-  if (isNaN(userId)) {
-    response.status(400).json(toMessage('Invalid user ID [' + userId + ']'));
-  }
+  const userId: number = getTargetUserId(request);
 
   const blockUser: APIResponse<{}> = await auth0Client.blockAccount(userId);
   if (blockUser.status !== ResponseStatus.Success) {
@@ -432,10 +405,7 @@ export async function blockUser(auth0Client: Auth0Client, request: Request, resp
 
 export async function unblockUser(auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
 
-  const userId: number = Number(request.params.user_id);
-  if (isNaN(userId)) {
-    response.status(400).json(toMessage('Invalid user ID [' + userId + ']'));
-  }
+  const userId: number = getTargetUserId(request);
 
   const unblockUser: APIResponse<{}> = await auth0Client.unblockAccount(userId);
   if (unblockUser.status !== ResponseStatus.Success) {
@@ -453,10 +423,7 @@ export async function unblockUser(auth0Client: Auth0Client, request: Request, re
 
 export async function deleteUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
 
-  const userId: number = Number(request.params.user_id);
-  if (isNaN(userId)) {
-    response.status(400).json(toMessage('Invalid user ID [' + userId + ']'));
-  }
+  const userId: number = getTargetUserId(request);
 
   const auth0Delete = await auth0Client.deleteUser(userId);
   if (auth0Delete.status !== ResponseStatus.Success) {
@@ -479,6 +446,31 @@ export async function deleteUser(sierraClient: SierraClient, auth0Client: Auth0C
   }
 
   response.sendStatus(204);
+}
+
+function getTargetUserId(request: Request): number {
+
+  const callerId: number = Number(request.apiGateway?.event.requestContext.authorizer?.callerId);
+
+  if(request.params.user_id === 'me') {
+
+    if(userIsAdmin(request)) {
+      throw new Error('Administrator users cannot operate on themselves');
+    }
+
+    if(isNaN(callerId)) {
+      throw new Error('Caller attempted to operate on themself, but provided an invalid user ID: [' + callerId + ']');
+    }
+
+    return callerId;
+  }
+
+  const targetUserId: number = Number(request.params.user_id);
+  if(isNaN(targetUserId)) {
+    throw new Error('Invalid user ID [' + request.params.user_id + ']');
+  }
+
+  return targetUserId;
 }
 
 function userIsAdmin(request: Request): boolean {
