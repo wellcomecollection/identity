@@ -379,7 +379,7 @@ export async function requestDelete(auth0Client: Auth0Client, emailClient: Email
     return;
   }
 
-  if (!auth0Get.result?.metadata?.requestDeleted) {
+  if (auth0Get.result?.metadata?.requestDeleted) {
     response.status(304).json(toMessage('Deletion request already processing for user with ID [' + userId + ']'));
     return;
   }
