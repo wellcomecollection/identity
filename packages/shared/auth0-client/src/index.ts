@@ -321,6 +321,29 @@ export default class Auth0Client {
     });
   }
 
+  async unblockAccount(userId: number): Promise<APIResponse<{}>> {
+    return this.getMachineToMachineInstance().then(instance => {
+      return instance.patch('/users/' + SierraUserIdPrefix + userId, {
+        blocked: false
+      }, {
+        validateStatus: status => status === 200
+      }).then(() =>
+        successResponse({})
+      ).catch(error => {
+        if (error.response) {
+          switch (error.response.status) {
+            case 400: {
+              return errorResponse('Malformed or invalid Auth0 user unblock request', ResponseStatus.MalformedRequest, error);
+            }
+            case 404:
+              return errorResponse('Auth0 user with ID [' + userId + '] not found', ResponseStatus.NotFound, error);
+          }
+        }
+        return unhandledError(error);
+      });
+    });
+  }
+
   async deleteUser(userId: number): Promise<APIResponse<{}>> {
     return this.getMachineToMachineInstance().then(instance => {
       return instance.delete('/users/' + SierraUserIdPrefix + userId, {
