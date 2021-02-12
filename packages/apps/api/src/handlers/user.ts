@@ -420,11 +420,7 @@ export async function requestDelete(auth0Client: Auth0Client, emailClient: Email
 
 export async function removeDelete(auth0Client: Auth0Client, emailClient: EmailClient, request: Request, response: Response): Promise<void> {
 
-  const userId: number = Number(request.params.user_id);
-  if (isNaN(userId)) {
-    response.status(400).json(toMessage('Invalid user ID [' + userId + ']'));
-    return;
-  }
+  const userId: number = getTargetUserId(request);
 
   const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(userId);
   if (auth0Get.status !== ResponseStatus.Success) {
