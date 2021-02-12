@@ -482,14 +482,14 @@ export async function deleteUser(sierraClient: SierraClient, auth0Client: Auth0C
 
 function getTargetUserId(request: Request): number {
 
-  if(request.params.user_id === 'me') {
+  if (request.params.user_id === 'me') {
 
-    if(userIsAdmin(request)) {
+    if (userIsAdmin(request)) {
       throw new Error('Administrator users cannot operate on themselves');
     }
 
     const callerId: number = Number(request.apiGateway?.event.requestContext.authorizer?.callerId);
-    if(isNaN(callerId)) {
+    if (isNaN(callerId)) {
       throw new Error('Caller attempted to operate on themself, but has an invalid user ID: [' + callerId + ']');
     }
 
@@ -497,7 +497,7 @@ function getTargetUserId(request: Request): number {
   }
 
   const targetUserId: number = Number(request.params.user_id);
-  if(isNaN(targetUserId)) {
+  if (isNaN(targetUserId)) {
     throw new Error('Invalid user ID [' + targetUserId + ']');
   }
 
