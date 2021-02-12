@@ -2,7 +2,7 @@ import Auth0Client from '@weco/auth0-client';
 import SierraClient from '@weco/sierra-client';
 import * as awsServerlessExpressMiddleware from 'aws-serverless-express/middleware';
 import bodyParser from 'body-parser';
-import cors, {CorsOptions, CorsRequest} from 'cors';
+import cors from 'cors';
 import express, { Application, Request, Response } from 'express';
 import {
   blockUser,
