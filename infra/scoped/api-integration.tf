@@ -1,39 +1,3 @@
-# [OPTIONS] /auth
-
-resource "aws_api_gateway_integration" "auth_options" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.auth.id
-  http_method = aws_api_gateway_method.auth_options.http_method
-
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.api.invoke_arn
-
-  lifecycle {
-    ignore_changes = [
-      uri
-    ]
-  }
-}
-
-# [POST] /auth
-
-resource "aws_api_gateway_integration" "auth_post" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.auth.id
-  http_method = aws_api_gateway_method.auth_post.http_method
-
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.api.invoke_arn
-
-  lifecycle {
-    ignore_changes = [
-      uri
-    ]
-  }
-}
-
 # [OPTIONS] /users
 
 resource "aws_api_gateway_integration" "users_options" {
@@ -433,6 +397,42 @@ resource "aws_api_gateway_integration" "users_userid_deletion-request_delete" {
   request_parameters = {
     "integration.request.path.userId" = "method.request.path.userId"
   }
+
+  lifecycle {
+    ignore_changes = [
+      uri
+    ]
+  }
+}
+
+# [OPTIONS] /users/:user_id/validate
+
+resource "aws_api_gateway_integration" "users_userid_validate_options" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_validate.id
+  http_method = aws_api_gateway_method.users_userid_validate_options.http_method
+
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.api.invoke_arn
+
+  lifecycle {
+    ignore_changes = [
+      uri
+    ]
+  }
+}
+
+# [POST] /users/:user_id/validate
+
+resource "aws_api_gateway_integration" "users_userid_validate_post" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_validate.id
+  http_method = aws_api_gateway_method.users_userid_validate_post.http_method
+
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.api.invoke_arn
 
   lifecycle {
     ignore_changes = [

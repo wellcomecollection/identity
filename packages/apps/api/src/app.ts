@@ -4,7 +4,6 @@ import * as awsServerlessExpressMiddleware from 'aws-serverless-express/middlewa
 import bodyParser from 'body-parser';
 import cors, {CorsOptions, CorsRequest} from 'cors';
 import express, { Application, Request, Response } from 'express';
-import { validateCredentials } from './handlers/auth';
 import {
   blockUser,
   changePassword,
@@ -13,7 +12,7 @@ import {
   searchUsers,
   sendPasswordResetEmail,
   sendVerificationEmail, unblockUser,
-  updateUser
+  updateUser, validatePassword
 } from './handlers/user';
 import EmailClient from './utils/email';
 
@@ -36,7 +35,6 @@ function createApplication(): Application {
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(awsServerlessExpressMiddleware.eventContext());
 
-  registerAuthResource(app);
   registerUsersResource(app);
   registerUsersUserIdResource(app);
   registerUsersUserIdPasswordResource(app);
@@ -45,18 +43,9 @@ function createApplication(): Application {
   registerUsersUserIdLockResource(app);
   registerUsersUserIdUnlockResource(app);
   registerUsersUserIdDeletionRequestResource(app);
+  registerUsersUserIdValidateResource(app);
 
   return app;
-}
-
-function registerAuthResource(app: Application): void {
-  const corsOptions = cors({
-    allowedHeaders: ['Content-Type', 'X-API-Key'],
-    methods: 'OPTIONS,POST',
-    origin: process.env.API_ALLOWED_ORIGINS
-  })
-  app.options('/auth', corsOptions);
-  app.post('/auth', corsOptions, (request: Request, response: Response) => validateCredentials(auth0Client, request, response));
 }
 
 function registerUsersResource(app: Application): void {
@@ -141,4 +130,14 @@ function registerUsersUserIdDeletionRequestResource(app: Application): void {
   app.options('/users/:user_id/deletion-request', corsOptions);
   app.put('/users/:user_id/deletion-request', corsOptions, (request: Request, response: Response) => requestDelete(auth0Client, emailClient, request, response));
   app.delete('/users/:user_id/deletion-request', corsOptions, (request: Request, response: Response) => removeDelete(auth0Client, emailClient, request, response));
+}
+
+function registerUsersUserIdValidateResource(app: Application): void {
+  const corsOptions = cors({
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
+    methods: 'OPTIONS,POST',
+    origin: process.env.API_ALLOWED_ORIGINS
+  });
+  app.options('/users/:user_id/validate', corsOptions);
+  app.post('/users/:user_id/validate', corsOptions, (request: Request, response: Response) => validatePassword(auth0Client, request, response));
 }

@@ -9,142 +9,6 @@ resource "aws_api_gateway_rest_api" "identity" {
   )
 }
 
-# /auth
-
-resource "aws_api_gateway_resource" "auth" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  parent_id   = aws_api_gateway_rest_api.identity.root_resource_id
-  path_part   = "auth"
-}
-
-# [OPTIONS]
-
-resource "aws_api_gateway_method" "auth_options" {
-  rest_api_id   = aws_api_gateway_rest_api.identity.id
-  resource_id   = aws_api_gateway_resource.auth.id
-  http_method   = "OPTIONS"
-  authorization = "NONE"
-}
-
-# 204 No Content
-
-resource "aws_api_gateway_method_response" "auth_options_204" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.auth.id
-  http_method = aws_api_gateway_method.auth_options.http_method
-  status_code = "204"
-
-  response_models = {
-    "application/json" = "Empty"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers" = true,
-    "method.response.header.Access-Control-Allow-Methods" = true,
-    "method.response.header.Access-Control-Allow-Origin"  = true
-  }
-}
-
-# [POST]
-
-resource "aws_api_gateway_method" "auth_post" {
-  rest_api_id          = aws_api_gateway_rest_api.identity.id
-  resource_id          = aws_api_gateway_resource.auth.id
-  http_method          = "POST"
-  authorization        = "NONE"
-  api_key_required     = true
-  request_validator_id = aws_api_gateway_request_validator.full.id
-
-  request_models = {
-    "application/json" = aws_api_gateway_model.auth.name
-  }
-}
-
-# 200 OK
-
-resource "aws_api_gateway_method_response" "auth_post_200" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.auth.id
-  http_method = aws_api_gateway_method.auth_post.http_method
-  status_code = "200"
-
-  response_models = {
-    "application/json" = "Empty"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
-}
-
-# 401 Unauthorized
-
-resource "aws_api_gateway_method_response" "auth_post_401" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.auth.id
-  http_method = aws_api_gateway_method.auth_post.http_method
-  status_code = "401"
-
-  response_models = {
-    "application/json" = "Error"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
-}
-
-# 403 Forbidden
-
-resource "aws_api_gateway_method_response" "auth_post_403" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.auth.id
-  http_method = aws_api_gateway_method.auth_post.http_method
-  status_code = "403"
-
-  response_models = {
-    "application/json" = "Error"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
-}
-
-# 404 Not Found
-
-resource "aws_api_gateway_method_response" "auth_post_404" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.auth.id
-  http_method = aws_api_gateway_method.auth_post.http_method
-  status_code = "404"
-
-  response_models = {
-    "application/json" = "Error"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
-}
-
-# 500 Internal Server Error
-
-resource "aws_api_gateway_method_response" "auth_post_500" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.auth.id
-  http_method = aws_api_gateway_method.auth_post.http_method
-  status_code = "500"
-
-  response_models = {
-    "application/json" = "Error"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
-}
-
 # /users
 
 resource "aws_api_gateway_resource" "users" {
@@ -1610,6 +1474,143 @@ resource "aws_api_gateway_method_response" "users_userid_deletion-request_delete
   rest_api_id = aws_api_gateway_rest_api.identity.id
   resource_id = aws_api_gateway_resource.users_userid_deletion-request.id
   http_method = aws_api_gateway_method.users_userid_deletion-request_delete.http_method
+  status_code = "500"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# /users/:user_id/validate
+
+resource "aws_api_gateway_resource" "users_userid_validate" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  parent_id   = aws_api_gateway_resource.users_userid.id
+  path_part   = "validate"
+}
+
+# [OPTIONS]
+
+resource "aws_api_gateway_method" "users_userid_validate_options" {
+  rest_api_id   = aws_api_gateway_rest_api.identity.id
+  resource_id   = aws_api_gateway_resource.users_userid_validate.id
+  http_method   = "OPTIONS"
+  authorization = "NONE"
+}
+
+# 204 No Content
+
+resource "aws_api_gateway_method_response" "users_userid_validate_options_204" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_validate.id
+  http_method = aws_api_gateway_method.users_userid_validate_options.http_method
+  status_code = "204"
+
+  response_models = {
+    "application/json" = "Empty"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true,
+    "method.response.header.Access-Control-Allow-Methods" = true,
+    "method.response.header.Access-Control-Allow-Origin"  = true
+  }
+}
+
+# [POST]
+
+resource "aws_api_gateway_method" "users_userid_validate_post" {
+  rest_api_id          = aws_api_gateway_rest_api.identity.id
+  resource_id          = aws_api_gateway_resource.users_userid_validate.id
+  http_method          = "POST"
+  authorization        = "CUSTOM"
+  authorizer_id        = aws_api_gateway_authorizer.token_authorizer.id
+  api_key_required     = true
+  request_validator_id = aws_api_gateway_request_validator.full.id
+
+  request_models = {
+    "application/json" = aws_api_gateway_model.validate.name
+  }
+}
+
+# 200 OK
+
+resource "aws_api_gateway_method_response" "users_userid_validate_post_200" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_validate.id
+  http_method = aws_api_gateway_method.users_userid_validate_post.http_method
+  status_code = "200"
+
+  response_models = {
+    "application/json" = "Empty"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# 401 Unauthorized
+
+resource "aws_api_gateway_method_response" "users_userid_validate_post_401" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_validate.id
+  http_method = aws_api_gateway_method.users_userid_validate_post.http_method
+  status_code = "401"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# 403 Forbidden
+
+resource "aws_api_gateway_method_response" "users_userid_validate_post_403" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_validate.id
+  http_method = aws_api_gateway_method.users_userid_validate_post.http_method
+  status_code = "403"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# 404 Not Found
+
+resource "aws_api_gateway_method_response" "users_userid_validate_post_404" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_validate.id
+  http_method = aws_api_gateway_method.users_userid_validate_post.http_method
+  status_code = "404"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# 500 Internal Server Error
+
+resource "aws_api_gateway_method_response" "users_userid_validate_post_500" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_validate.id
+  http_method = aws_api_gateway_method.users_userid_validate_post.http_method
   status_code = "500"
 
   response_models = {
