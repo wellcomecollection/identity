@@ -1,6 +1,6 @@
 import Auth0Client from '@weco/auth0-client';
 import { Auth0UserInfo } from '@weco/auth0-client/lib/auth0';
-import { ResponseStatus } from '@weco/identity-common';
+import { APIResponse, ResponseStatus } from '@weco/identity-common';
 import { APIGatewayAuthorizerResult, APIGatewayRequestAuthorizerEvent } from 'aws-lambda';
 
 export async function lambdaHandler(event: APIGatewayRequestAuthorizerEvent): Promise<APIGatewayAuthorizerResult> {
@@ -10,21 +10,21 @@ export async function lambdaHandler(event: APIGatewayRequestAuthorizerEvent): Pr
   const AUTH0_CLIENT_ID: string = process.env.AUTH0_CLIENT_ID!;
   const AUTH0_CLIENT_SECRET: string = process.env.AUTH0_CLIENT_SECRET!;
 
-  const auth0Client = new Auth0Client(AUTH0_API_ROOT, AUTH0_API_AUDIENCE, AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET);
+  const auth0Client: Auth0Client = new Auth0Client(AUTH0_API_ROOT, AUTH0_API_AUDIENCE, AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET);
 
   if (!event.headers?.Authorization) {
     console.log('Authorization header is not present on request');
     return buildAuthorizerResult('user', 'Deny', event.methodArn);
   }
 
-  const authorizationHeader = event.headers.Authorization;
-  const accessToken = extractAccessToken(authorizationHeader);
+  const authorizationHeader: string = event.headers.Authorization;
+  const accessToken: string | null = extractAccessToken(authorizationHeader);
   if (!accessToken) {
     console.log('Authorization header [' + authorizationHeader + '] is not a valid bearer token');
     return buildAuthorizerResult(authorizationHeader, 'Deny', event.methodArn);
   }
 
-  const auth0Validate = await auth0Client.validateAccessToken(accessToken);
+  const auth0Validate: APIResponse<Auth0UserInfo> = await auth0Client.validateAccessToken(accessToken);
   if (auth0Validate.status !== ResponseStatus.Success) {
     if (auth0Validate.status === ResponseStatus.InvalidCredentials) {
       console.log('Access token token [' + accessToken + '] rejected by Auth0: ' + auth0Validate.message);
@@ -34,19 +34,67 @@ export async function lambdaHandler(event: APIGatewayRequestAuthorizerEvent): Pr
       return buildAuthorizerResult(accessToken, 'Deny', event.methodArn);
     }
   }
+  const auth0UserInfo: Auth0UserInfo = auth0Validate.result;
 
-  if (!validateRequest(auth0Validate.result, event.resource, <ResourceAclMethod>event.httpMethod, event.pathParameters)) {
+  if (!validateRequest(auth0UserInfo, event.resource, <ResourceAclMethod>event.httpMethod, event.pathParameters)) {
     console.log('Access token [' + accessToken + '] for user [' + JSON.stringify(auth0Validate.result) + '] cannot operate on [' + event.httpMethod + ' ' + event.resource + '] with path parameters [' + event.pathParameters + ']');
-    return buildAuthorizerResult(auth0Validate.result.userId, 'Deny', event.methodArn);
+    return buildAuthorizerResult(auth0UserInfo.userId, 'Deny', event.methodArn);
   }
 
-
-  return buildAuthorizerResult(auth0Validate.result.userId, 'Allow', event.methodArn, isAdministrator(auth0Validate.result, {}));
+  return buildAuthorizerResult(auth0UserInfo.userId, 'Allow', event.methodArn, auth0UserInfo.userId, isAdministrator(auth0UserInfo, {}));
 }
 
 function extractAccessToken(tokenString: string): null | string {
   const match = tokenString.match(/^Bearer (.*)$/);
   return !match || match.length < 2 ? null : match[1];
+}
+
+function validateRequest(auth0UserInfo: Auth0UserInfo, resource: string, method: ResourceAclMethod, pathParameters: Record<string, string | undefined> | null): boolean {
+  let acl: ResourceAcl | undefined = resourceAcls.find(acl => acl.resource === resource && acl.methods.includes(method));
+  if (!acl) {
+    // No ACL found, defensively deny access
+    return false;
+  }
+
+  let aclCheckType: ResourceAclCheckType = acl.checkType ?? 'OR';
+
+  // Start with the ACL flag by default set to the following
+  //   AND: a successful match will keep the flag on, an unsuccessful match will turn it off
+  //   OR: a successful match will OR the flag on, an unsuccessful match will leave it as is.
+  let aclMatched: boolean = aclCheckType === 'AND';
+
+  let aclChecks: ResourceAclCheck[] = Array.isArray(acl.check) ? acl.check : [acl.check];
+
+  for (const check of aclChecks) {
+    let matched: boolean = check(auth0UserInfo, pathParameters);
+    if (aclCheckType === 'OR') {
+      aclMatched = aclMatched || matched;
+    } else if (aclCheckType === 'AND') {
+      aclMatched = aclMatched && matched;
+    }
+  }
+
+  return aclMatched;
+}
+
+function buildAuthorizerResult(principal: string, effect: string, methodArn: string, callerId: string | undefined = undefined, isAdmin: boolean = false): APIGatewayAuthorizerResult {
+  return {
+    context: {
+      callerId,
+      isAdmin
+    },
+    principalId: principal,
+    policyDocument: {
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Action: 'execute-api:Invoke',
+          Effect: effect,
+          Resource: methodArn
+        }
+      ]
+    }
+  }
 }
 
 type ResourceAclMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
@@ -66,7 +114,7 @@ const isAdministrator = function (user: Auth0UserInfo, pathParameters: Record<st
 };
 
 const isSelf = function (user: Auth0UserInfo, pathParameters: Record<string, string | undefined> | null): boolean {
-  return pathParameters?.userId === user.userId.toString();
+  return pathParameters?.userId === 'me' || pathParameters?.userId === user.userId.toString();
 };
 
 const resourceAcls: ResourceAcl[] = [
@@ -112,51 +160,9 @@ const resourceAcls: ResourceAcl[] = [
     methods: ['PUT'],
     check: isSelf,
   },
+  {
+    resource: '/users/{userId}/validate',
+    methods: ['POST'],
+    check: isSelf,
+  },
 ];
-
-function validateRequest(auth0UserInfo: Auth0UserInfo, resource: string, method: ResourceAclMethod, pathParameters: Record<string, string | undefined> | null): boolean {
-  let acl = resourceAcls.find(acl => acl.resource === resource && acl.methods.includes(method));
-  if (!acl) {
-    // No ACL found, defensively deny access
-    return false;
-  }
-
-  let aclCheckType = acl.checkType ?? 'OR';
-
-  // Start with the ACL flag by default set to the following
-  //   AND: a successful match will keep the flag on, an unsuccessful match will turn it off
-  //   OR: a successful match will OR the flag on, an unsuccessful match will leave it as is.
-  let aclMatched = aclCheckType === 'AND';
-
-  let aclChecks = Array.isArray(acl.check) ? acl.check : [acl.check];
-
-  for (const check of aclChecks) {
-    let matched = check(auth0UserInfo, pathParameters);
-    if (aclCheckType === 'OR') {
-      aclMatched = aclMatched || matched;
-    } else if (aclCheckType === 'AND') {
-      aclMatched = aclMatched && matched;
-    }
-  }
-
-  return aclMatched;
-}
-
-function buildAuthorizerResult(principal: string | number, effect: string, methodArn: string, isAdmin: boolean = false): APIGatewayAuthorizerResult {
-  return {
-    context: {
-      isAdmin
-    },
-    principalId: principal.toString(),
-    policyDocument: {
-      Version: '2012-10-17',
-      Statement: [
-        {
-          Action: 'execute-api:Invoke',
-          Effect: effect,
-          Resource: methodArn
-        }
-      ]
-    }
-  }
-}

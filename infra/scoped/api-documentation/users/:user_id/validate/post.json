@@ -1,0 +1,7 @@
+{
+  "summary": "Validates user password",
+  "description": "The provided password will be checked against the user defined by the `userId` parameter.",
+  "tags": [
+    "User"
+  ]
+}
