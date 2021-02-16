@@ -153,4 +153,4 @@ export const SierraConnection = 'Sierra-Connection';
 export const SierraUserIdPrefix = 'auth0|p';
 export const AzureUserIdPrefix = 'oauth2|AzureAD-Connection|';
 
-export const SearchStatuses: string[] = ["any", "active", "locked", "deletePending"];
+export const SearchStatuses: string[] = ["active", "locked", "deletePending"];
