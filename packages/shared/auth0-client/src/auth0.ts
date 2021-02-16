@@ -94,7 +94,9 @@ export function generateUserSearchQuery(name: string | undefined, email: string 
 
   if (status) {
     if (status === 'active') {
-      query.push('blocked:false')
+      // Auth0 again - records that have never been toggled to / from the blocked status, won't have a 'blocked' field
+      // on them, so we test if the flag is either 'false', or if that field doesn't exist.
+      query.push('(blocked:false OR -blocked)')
     } else if (status === 'locked') {
       query.push('blocked:true')
     } else if (status === 'deletePending') {
