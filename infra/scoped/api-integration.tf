@@ -32,7 +32,9 @@ resource "aws_api_gateway_integration" "users_get" {
     "integration.request.path.pageSize" = "method.request.querystring.pageSize",
     "integration.request.path.sort"     = "method.request.querystring.sort"
     "integration.request.path.sortDir"  = "method.request.querystring.sortDir"
-    "integration.request.path.query"    = "method.request.querystring.query"
+    "integration.request.path.name"     = "method.request.querystring.name"
+    "integration.request.path.email"    = "method.request.querystring.email"
+    "integration.request.path.status"   = "method.request.querystring.status"
   }
 
   lifecycle {
