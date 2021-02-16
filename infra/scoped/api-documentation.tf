@@ -109,15 +109,39 @@ resource "aws_api_gateway_documentation_part" "users_get_param_sortdir" {
   }
 }
 
-resource "aws_api_gateway_documentation_part" "users_get_param_query" {
+resource "aws_api_gateway_documentation_part" "users_get_param_name" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  properties  = file("${path.module}/api-documentation/users/get-param-query.json")
+  properties  = file("${path.module}/api-documentation/users/get-param-name.json")
 
   location {
     type   = "QUERY_PARAMETER"
     path   = aws_api_gateway_resource.users.path
     method = aws_api_gateway_method.users_get.http_method
-    name   = "query"
+    name   = "name"
+  }
+}
+
+resource "aws_api_gateway_documentation_part" "users_get_param_email" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/get-param-email.json")
+
+  location {
+    type   = "QUERY_PARAMETER"
+    path   = aws_api_gateway_resource.users.path
+    method = aws_api_gateway_method.users_get.http_method
+    name   = "email"
+  }
+}
+
+resource "aws_api_gateway_documentation_part" "users_get_param_status" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/get-param-status.json")
+
+  location {
+    type   = "QUERY_PARAMETER"
+    path   = aws_api_gateway_resource.users.path
+    method = aws_api_gateway_method.users_get.http_method
+    name   = "status"
   }
 }
 
