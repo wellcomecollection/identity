@@ -299,7 +299,7 @@ export async function searchUsers(auth0Client: Auth0Client, request: Request, re
     return;
   }
 
-  const name: string | undefined = request.query.email as string | undefined;
+  const name: string | undefined = request.query.name as string | undefined;
   if (name && !isNonBlank(name)) {
     response.status(400).json(toMessage('\'name\' was provided but was blank or empty'));
     return;
@@ -311,7 +311,7 @@ export async function searchUsers(auth0Client: Auth0Client, request: Request, re
     return;
   }
 
-  const status: string | undefined = request.query.email as string | undefined;
+  const status: string | undefined = request.query.status as string | undefined;
   if (status && !SearchStatuses.includes(status)) {
     response.status(400).json(toMessage('\'status\' must be one of [' + SearchStatuses + ']'));
     return;
