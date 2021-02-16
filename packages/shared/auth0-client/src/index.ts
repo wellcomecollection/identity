@@ -202,7 +202,7 @@ export default class Auth0Client {
     });
   }
 
-  async searchUsers(page: number, pageSize: number, sort: string, sortDir: number, query: string): Promise<APIResponse<Auth0SearchResults>> {
+  async searchUsers(page: number, pageSize: number, sort: string, sortDir: number, name: string | undefined, email: string | undefined, status: string | undefined): Promise<APIResponse<Auth0SearchResults>> {
     return this.getMachineToMachineInstance().then(instance => {
       return instance.get('/users', {
         params: {
@@ -210,13 +210,12 @@ export default class Auth0Client {
           per_page: pageSize,
           include_totals: true,
           sort: Auth0SearchSortFields.get(sort) + ':' + sortDir,
-          connection: SierraConnection,
-          q: generateUserSearchQuery(query),
+          q: generateUserSearchQuery(name, email, status),
           search_engine: 'v3'
         },
         validateStatus: status => status === 200
       }).then(response =>
-        successResponse(toAuth0SearchResults(page, sort, sortDir, query, response.data))
+        successResponse(toAuth0SearchResults(page, sort, sortDir, name, email, status, response.data))
       ).catch(error => {
         if (error.response) {
           switch (error.response.status) {

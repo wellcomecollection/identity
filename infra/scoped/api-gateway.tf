@@ -61,7 +61,9 @@ resource "aws_api_gateway_method" "users_get" {
     "method.request.querystring.pageSize" = true,
     "method.request.querystring.sort"     = true,
     "method.request.querystring.sortDir"  = true,
-    "method.request.querystring.query"    = true
+    "method.request.querystring.name"     = true,
+    "method.request.querystring.email"    = true,
+    "method.request.querystring.status"   = true
   }
 }
 

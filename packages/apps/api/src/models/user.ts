@@ -26,7 +26,9 @@ export function toSearchResults(auth0SearchResults: Auth0SearchResults): SearchR
     totalResults: auth0SearchResults.totalResults,
     sort: auth0SearchResults.sort,
     sortDir: auth0SearchResults.sortDir,
-    query: auth0SearchResults.query,
+    name: auth0SearchResults.name,
+    email: auth0SearchResults.email,
+    status: auth0SearchResults.status,
     results: auth0SearchResults.results.map((result: Auth0Profile) => toUser(result))
   }
 }
@@ -53,6 +55,8 @@ interface SearchResults {
   totalResults: number,
   sort: string,
   sortDir: number,
-  query: string,
+  name: string | undefined,
+  email: string | undefined,
+  status: string | undefined,
   results: User[]
 }
