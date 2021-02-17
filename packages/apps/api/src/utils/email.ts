@@ -39,7 +39,8 @@ export default class EmailClient {
     const subject: string = await this.engine.renderFile('delete-request_user_subject', {});
     const body: string = await this.engine.renderFile('delete-request_user_body', {
       firstName: auth0Profile.firstName,
-      lastName: auth0Profile.lastName
+      lastName: auth0Profile.lastName,
+      supportUrl: 'https://wellcome.org/about-us/contact-us'
     });
     return this.sendEmail(auth0Profile.email, subject, body);
   }
