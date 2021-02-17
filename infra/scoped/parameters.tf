@@ -144,8 +144,21 @@ resource "aws_ssm_parameter" "auth0_email_from_name" {
   )
 }
 
-data "aws_ssm_parameter" "auth0_email_from_user" {
-  name = "identity-auth0_email_from_user"
+resource "aws_ssm_parameter" "auth0_email_from_user" {
+  name  = "identity-auth0_email_from_user-${terraform.workspace}"
+  type  = "String"
+  value = var.ssm_parameter_placeholder
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+
+  tags = merge(
+    local.common_tags,
+    {
+      "Name" = "identity-auth0_email_from_user-${terraform.workspace}"
+    }
+  )
 }
 
 data "aws_ssm_parameter" "auth0_email_from_domain" {
