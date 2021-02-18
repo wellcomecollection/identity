@@ -26,7 +26,9 @@ const auth0Client: Auth0Client = new Auth0Client(
   process.env.AUTH0_API_ROOT!, process.env.AUTH0_API_AUDIENCE!, process.env.AUTH0_CLIENT_ID!, process.env.AUTH0_CLIENT_SECRET!
 );
 
-const emailClient: EmailClient = new EmailClient(process.env.EMAIL_FROM_ADDRESS!, process.env.EMAIL_ADMIN_ADDRESS!);
+const emailClient: EmailClient = new EmailClient(
+  process.env.EMAIL_FROM_ADDRESS!, process.env.EMAIL_ADMIN_ADDRESS!, process.env.SUPPORT_URL!
+);
 
 function createApplication(): Application {
   const app: Application = express();
