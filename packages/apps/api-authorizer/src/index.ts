@@ -1,22 +1,19 @@
 import Auth0Client from '@weco/auth0-client';
-import { Auth0UserInfo, toAuth0UserInfo } from '@weco/auth0-client/lib/auth0';
+import { Auth0UserInfo } from '@weco/auth0-client/lib/auth0';
 import { APIResponse, ResponseStatus } from '@weco/identity-common';
 import { APIGatewayAuthorizerResult, APIGatewayRequestAuthorizerEvent } from 'aws-lambda';
-import { RedisClient } from "redis";
-import { promisify } from "util";
+import { createNodeRedisClient, WrappedNodeRedisClient } from "handy-redis";
+
+const auth0Client: Auth0Client = new Auth0Client(
+  process.env.AUTH0_API_ROOT!, process.env.AUTH0_API_AUDIENCE!, process.env.AUTH0_CLIENT_ID!, process.env.AUTH0_CLIENT_SECRET!
+);
+
+const redisClient: WrappedNodeRedisClient = createNodeRedisClient({
+  host: process.env.REDIS_HOST!,
+  port: Number(process.env.REDIS_PORT!)
+});
 
 export async function lambdaHandler(event: APIGatewayRequestAuthorizerEvent): Promise<APIGatewayAuthorizerResult> {
-
-  const auth0Client: Auth0Client = new Auth0Client(
-    process.env.AUTH0_API_ROOT!, process.env.AUTH0_API_AUDIENCE!, process.env.AUTH0_CLIENT_ID!, process.env.AUTH0_CLIENT_SECRET!
-  );
-
-  const redisClient: RedisClient = new RedisClient({
-    host: process.env.REDIS_HOST!,
-    port: Number(process.env.REDIS_PORT!)
-  });
-  const redisGet: (key: string) => Promise<string | null> = <(key: string) => Promise<string | null>>promisify(redisClient.get).bind(redisClient);
-  const redisSet: (key: string, value: string, mode: string, duration: number) => Promise<'OK' | undefined> = <(key: string, value: string, mode: string, duration: number) => Promise<'OK' | undefined>>promisify(redisClient.set).bind(redisClient);
 
   if (!event.headers?.Authorization) {
     console.log('Authorization header is not present on request');
@@ -30,18 +27,8 @@ export async function lambdaHandler(event: APIGatewayRequestAuthorizerEvent): Pr
     return buildAuthorizerResult(authorizationHeader, 'Deny', event.methodArn);
   }
 
-  let auth0UserInfo: Auth0UserInfo | null = await redisGet(accessToken).then(data => {
-    if (data) {
-      console.log('Cache hit for access token [' + accessToken + ']: [' + data + ']');
-      return JSON.parse(data) as Auth0UserInfo;
-    } else {
-      return null;
-    }
-  });
-
+  let auth0UserInfo: Auth0UserInfo | null = await cacheLookup(accessToken);
   if (!auth0UserInfo) {
-    console.log('Cache miss for access token [' + accessToken + ']');
-
     const auth0Validate: APIResponse<Auth0UserInfo> = await auth0Client.validateAccessToken(accessToken);
     if (auth0Validate.status !== ResponseStatus.Success) {
       if (auth0Validate.status === ResponseStatus.InvalidCredentials) {
@@ -52,10 +39,8 @@ export async function lambdaHandler(event: APIGatewayRequestAuthorizerEvent): Pr
         return buildAuthorizerResult(accessToken, 'Deny', event.methodArn);
       }
     }
-
     auth0UserInfo = auth0Validate.result;
-    console.log('Cache set for access token [' + accessToken + ']: [' + JSON.stringify(auth0UserInfo) + ']');
-    await redisSet(accessToken, JSON.stringify(auth0UserInfo), 'EX', 60);
+    await cacheInsert(accessToken, auth0UserInfo);
   }
 
   if (!validateRequest(auth0UserInfo, event.resource, <ResourceAclMethod>event.httpMethod, event.pathParameters)) {
@@ -64,6 +49,26 @@ export async function lambdaHandler(event: APIGatewayRequestAuthorizerEvent): Pr
   }
 
   return buildAuthorizerResult(auth0UserInfo.userId, 'Allow', event.methodArn, auth0UserInfo.userId, isAdministrator(auth0UserInfo, {}));
+}
+
+async function cacheLookup(accessToken: string): Promise<Auth0UserInfo | null> {
+  return await redisClient.get(accessToken).then(value => {
+    if (value) {
+      console.log('Cache hit for access token [' + accessToken + '] with value [' + value + ']');
+      return JSON.parse(value) as Auth0UserInfo;
+    } else {
+      console.log('Cache miss for access token [' + accessToken + ']');
+      return null;
+    }
+  });
+}
+
+async function cacheInsert(accessToken: string, auth0UserInfo: Auth0UserInfo): Promise<string | null> {
+  const value = JSON.stringify(auth0UserInfo);
+  return await redisClient.set(accessToken, value).then(result => {
+    console.log('Cache put for access token [' + accessToken + '] with value [' + value + ']: [' + result + ']');
+    return value;
+  });
 }
 
 function extractAccessToken(tokenString: string): null | string {
