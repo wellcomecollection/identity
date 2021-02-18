@@ -45,6 +45,15 @@ export default class EmailClient {
     return this.sendEmail(auth0Profile.email, subject, body);
   }
 
+  async sendDeleteRemovalUser(auth0Profile: Auth0Profile): Promise<APIResponse<{}>> {
+    const subject: string = await this.engine.renderFile('remove-delete-request_user_subject', {});
+    const body: string = await this.engine.renderFile('remove-delete-request_user_body', {
+      firstName: auth0Profile.firstName,
+      lastName: auth0Profile.lastName
+    });
+    return this.sendEmail(auth0Profile.email, subject, body);
+  }
+
   private async sendEmail(toAddress: string, subject: string, body: string): Promise<APIResponse<{}>> {
 
     const sesParams = {

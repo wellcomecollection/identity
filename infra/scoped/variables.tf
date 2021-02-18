@@ -21,7 +21,7 @@ locals {
   # Auth0
   auth0_hostname      = "${aws_ssm_parameter.hostname_prefix.value}.${data.aws_ssm_parameter.hostname.value}"
   auth0_endpoint      = "https://${local.auth0_hostname}"
-  auth0_email_address = "${data.aws_ssm_parameter.auth0_email_from_user.value}@${data.aws_ssm_parameter.auth0_email_from_domain.value}"
+  auth0_email_address = "${aws_ssm_parameter.auth0_email_from_user.value}@${data.aws_ssm_parameter.auth0_email_from_domain.value}"
   auth0_email_from    = "${aws_ssm_parameter.auth0_email_from_name.value} <${local.auth0_email_address}>"
 
   # Account Management System
@@ -43,6 +43,36 @@ variable "tag_project" {
 
 variable "tag_managed_by" {
   default = "Terraform"
+}
+
+# AWS VPC
+
+variable "network_cidr" {
+  default = "10.0.0.0/16"
+}
+
+variable "network_azs" {
+  default = [
+    "eu-west-1a",
+    "eu-west-1b",
+    "eu-west-1c"
+  ]
+}
+
+variable "network_public_cidrs" {
+  default = [
+    "10.0.101.0/24",
+    "10.0.102.0/24",
+    "10.0.103.0/24"
+  ]
+}
+
+variable "network_private_cidrs" {
+  default = [
+    "10.0.1.0/24",
+    "10.0.2.0/24",
+    "10.0.3.0/24"
+  ]
 }
 
 # SSM Parameters

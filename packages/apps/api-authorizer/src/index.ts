@@ -2,21 +2,27 @@ import Auth0Client from '@weco/auth0-client';
 import { Auth0UserInfo } from '@weco/auth0-client/lib/auth0';
 import { APIResponse, ResponseStatus } from '@weco/identity-common';
 import { APIGatewayAuthorizerResult, APIGatewayRequestAuthorizerEvent } from 'aws-lambda';
+import { createNodeRedisClient, WrappedNodeRedisClient } from "handy-redis";
+
+// Place these resources outside of the handler itself, so they can be reused between invocations.
+
+const auth0Client: Auth0Client = new Auth0Client(
+  process.env.AUTH0_API_ROOT!, process.env.AUTH0_API_AUDIENCE!, process.env.AUTH0_CLIENT_ID!, process.env.AUTH0_CLIENT_SECRET!
+);
+
+const redisClient: WrappedNodeRedisClient = createNodeRedisClient({
+  host: process.env.REDIS_HOST!,
+  port: Number(process.env.REDIS_PORT!)
+});
 
 export async function lambdaHandler(event: APIGatewayRequestAuthorizerEvent): Promise<APIGatewayAuthorizerResult> {
-
-  const AUTH0_API_ROOT: string = process.env.AUTH0_API_ROOT!;
-  const AUTH0_API_AUDIENCE: string = process.env.AUTH0_API_AUDIENCE!;
-  const AUTH0_CLIENT_ID: string = process.env.AUTH0_CLIENT_ID!;
-  const AUTH0_CLIENT_SECRET: string = process.env.AUTH0_CLIENT_SECRET!;
-
-  const auth0Client: Auth0Client = new Auth0Client(AUTH0_API_ROOT, AUTH0_API_AUDIENCE, AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET);
 
   if (!event.headers?.Authorization) {
     console.log('Authorization header is not present on request');
     return buildAuthorizerResult('user', 'Deny', event.methodArn);
   }
 
+  // Start by extracting the access token from the 'Authorization' header.
   const authorizationHeader: string = event.headers.Authorization;
   const accessToken: string | null = extractAccessToken(authorizationHeader);
   if (!accessToken) {
@@ -24,24 +30,62 @@ export async function lambdaHandler(event: APIGatewayRequestAuthorizerEvent): Pr
     return buildAuthorizerResult(authorizationHeader, 'Deny', event.methodArn);
   }
 
-  const auth0Validate: APIResponse<Auth0UserInfo> = await auth0Client.validateAccessToken(accessToken);
-  if (auth0Validate.status !== ResponseStatus.Success) {
-    if (auth0Validate.status === ResponseStatus.InvalidCredentials) {
-      console.log('Access token token [' + accessToken + '] rejected by Auth0: ' + auth0Validate.message);
-      return buildAuthorizerResult(accessToken, 'Deny', event.methodArn);
-    } else {
-      console.log('Unknown error processing access token [' + accessToken + ']: ' + auth0Validate.message);
-      return buildAuthorizerResult(accessToken, 'Deny', event.methodArn);
+  /*
+   * 1. Using the given access token, query the Redis cache for an existing entry.
+   * 2. If one is found, we assume the token is still valid and re-use the associated user information.
+   * 3. Otherwise, query the Auth0 API to test for validity and fetch the corresponding user information.
+   * 4. If the query was successful, store the user information in the Redis cache keyed against the access token.
+   *
+   * When the entry is inserted into the cache, it has a TTL defined by 'REDIS_CACHE_TTL'. Essentially, this value
+   * represents the maximum amount of time (in seconds) that a token can be expired / revoked by Auth0 before we detect
+   * that in this Lambda Function.
+   */
+  let auth0UserInfo: Auth0UserInfo | null = await cacheLookup(accessToken);
+  if (!auth0UserInfo) {
+    const auth0Validate: APIResponse<Auth0UserInfo> = await auth0Client.validateAccessToken(accessToken);
+    if (auth0Validate.status !== ResponseStatus.Success) {
+      if (auth0Validate.status === ResponseStatus.InvalidCredentials) {
+        console.log('Access token token [' + accessToken + '] rejected by Auth0: ' + auth0Validate.message);
+        return buildAuthorizerResult(accessToken, 'Deny', event.methodArn);
+      } else {
+        console.log('Unknown error processing access token [' + accessToken + ']: ' + auth0Validate.message);
+        return buildAuthorizerResult(accessToken, 'Deny', event.methodArn);
+      }
     }
+    auth0UserInfo = auth0Validate.result;
+    await cacheInsert(accessToken, auth0UserInfo);
   }
-  const auth0UserInfo: Auth0UserInfo = auth0Validate.result;
 
+  // At this point, we have a valid access token and have a handle on the caller user information. Now we determine if
+  // the user has access to the resource they are operating on.
   if (!validateRequest(auth0UserInfo, event.resource, <ResourceAclMethod>event.httpMethod, event.pathParameters)) {
-    console.log('Access token [' + accessToken + '] for user [' + JSON.stringify(auth0Validate.result) + '] cannot operate on [' + event.httpMethod + ' ' + event.resource + '] with path parameters [' + event.pathParameters + ']');
+    console.log('Access token [' + accessToken + '] for user [' + JSON.stringify(auth0UserInfo) + '] cannot operate on [' + event.httpMethod + ' ' + event.resource + '] with path parameters [' + event.pathParameters + ']');
     return buildAuthorizerResult(auth0UserInfo.userId, 'Deny', event.methodArn);
   }
 
   return buildAuthorizerResult(auth0UserInfo.userId, 'Allow', event.methodArn, auth0UserInfo.userId, isAdministrator(auth0UserInfo, {}));
+}
+
+async function cacheLookup(accessToken: string): Promise<Auth0UserInfo | null> {
+  return redisClient.get(accessToken).then(value => {
+    if (value) {
+      console.log('Cache hit for access token [' + accessToken + '] with value [' + value + ']');
+      return JSON.parse(value) as Auth0UserInfo;
+    } else {
+      console.log('Cache miss for access token [' + accessToken + ']');
+      return null;
+    }
+  });
+}
+
+async function cacheInsert(accessToken: string, auth0UserInfo: Auth0UserInfo): Promise<string | null> {
+  const value: string = JSON.stringify(auth0UserInfo);
+  const ttl: number = Number(process.env.REDIS_CACHE_TTL!);
+  // 'EX' is the expiration (i.e. TTL) in seconds of the cache entry. We could also use 'PX' to provide the value in milliseconds.
+  return redisClient.set(accessToken, value, ['EX', ttl]).then(result => {
+    console.log('Cache put for access token [' + accessToken + '] with value [' + value + ']: [' + result + ']');
+    return value; // AFAICT this is always 'OK' for a successful operation
+  });
 }
 
 function extractAccessToken(tokenString: string): null | string {
@@ -156,9 +200,14 @@ const resourceAcls: ResourceAcl[] = [
     check: isAdministrator,
   },
   {
-    resource: '/users/{userId}/request-delete',
+    resource: '/users/{userId}/deletion-request',
     methods: ['PUT'],
     check: isSelf,
+  },
+  {
+    resource: '/users/{userId}/deletion-request',
+    methods: ['DELETE'],
+    check: isAdministrator,
   },
   {
     resource: '/users/{userId}/validate',

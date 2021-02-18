@@ -36,23 +36,6 @@ resource "aws_ssm_parameter" "auth0_email_from_domain" {
   )
 }
 
-resource "aws_ssm_parameter" "auth0_email_from_user" {
-  name  = "identity-auth0_email_from_user"
-  type  = "String"
-  value = var.ssm_parameter_placeholder
-
-  lifecycle {
-    ignore_changes = [value]
-  }
-
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-auth0_email_from_user"
-    }
-  )
-}
-
 # API Gateway
 
 resource "aws_ssm_parameter" "api_gateway_log_format" {
