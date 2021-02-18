@@ -1247,29 +1247,29 @@ resource "aws_api_gateway_method_response" "users_userid_unlock_put_500" {
   }
 }
 
-# /users/:user_id/request-delete
+# /users/:user_id/deletion-request
 
-resource "aws_api_gateway_resource" "users_userid_request-delete" {
+resource "aws_api_gateway_resource" "users_userid_deletion-request" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
   parent_id   = aws_api_gateway_resource.users_userid.id
-  path_part   = "request-delete"
+  path_part   = "deletion-request"
 }
 
 # [OPTIONS]
 
-resource "aws_api_gateway_method" "users_userid_request-delete_options" {
+resource "aws_api_gateway_method" "users_userid_deletion-request_options" {
   rest_api_id   = aws_api_gateway_rest_api.identity.id
-  resource_id   = aws_api_gateway_resource.users_userid_request-delete.id
+  resource_id   = aws_api_gateway_resource.users_userid_deletion-request.id
   http_method   = "OPTIONS"
   authorization = "NONE"
 }
 
 # 204 No Content
 
-resource "aws_api_gateway_method_response" "users_userid_request-delete_options_204" {
+resource "aws_api_gateway_method_response" "users_userid_deletion-request_options_204" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_request-delete.id
-  http_method = aws_api_gateway_method.users_userid_request-delete_options.http_method
+  resource_id = aws_api_gateway_resource.users_userid_deletion-request.id
+  http_method = aws_api_gateway_method.users_userid_deletion-request_options.http_method
   status_code = "204"
 
   response_models = {
@@ -1285,9 +1285,9 @@ resource "aws_api_gateway_method_response" "users_userid_request-delete_options_
 
 # [PUT]
 
-resource "aws_api_gateway_method" "users_userid_request-delete_put" {
+resource "aws_api_gateway_method" "users_userid_deletion-request_put" {
   rest_api_id          = aws_api_gateway_rest_api.identity.id
-  resource_id          = aws_api_gateway_resource.users_userid_request-delete.id
+  resource_id          = aws_api_gateway_resource.users_userid_deletion-request.id
   http_method          = "PUT"
   authorization        = "CUSTOM"
   authorizer_id        = aws_api_gateway_authorizer.token_authorizer.id
@@ -1301,10 +1301,10 @@ resource "aws_api_gateway_method" "users_userid_request-delete_put" {
 
 # 200 OK
 
-resource "aws_api_gateway_method_response" "users_userid_request-delete_put_200" {
+resource "aws_api_gateway_method_response" "users_userid_deletion-request_put_200" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_request-delete.id
-  http_method = aws_api_gateway_method.users_userid_request-delete_put.http_method
+  resource_id = aws_api_gateway_resource.users_userid_deletion-request.id
+  http_method = aws_api_gateway_method.users_userid_deletion-request_put.http_method
   status_code = "200"
 
   response_models = {
@@ -1318,10 +1318,10 @@ resource "aws_api_gateway_method_response" "users_userid_request-delete_put_200"
 
 # 304 Not Modified
 
-resource "aws_api_gateway_method_response" "users_userid_request-delete_put_304" {
+resource "aws_api_gateway_method_response" "users_userid_deletion-request_put_304" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_request-delete.id
-  http_method = aws_api_gateway_method.users_userid_request-delete_put.http_method
+  resource_id = aws_api_gateway_resource.users_userid_deletion-request.id
+  http_method = aws_api_gateway_method.users_userid_deletion-request_put.http_method
   status_code = "304"
 
   response_models = {
@@ -1335,10 +1335,10 @@ resource "aws_api_gateway_method_response" "users_userid_request-delete_put_304"
 
 # 403 Forbidden
 
-resource "aws_api_gateway_method_response" "users_userid_request-delete_put_403" {
+resource "aws_api_gateway_method_response" "users_userid_deletion-request_put_403" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_request-delete.id
-  http_method = aws_api_gateway_method.users_userid_request-delete_put.http_method
+  resource_id = aws_api_gateway_resource.users_userid_deletion-request.id
+  http_method = aws_api_gateway_method.users_userid_deletion-request_put.http_method
   status_code = "403"
 
   response_models = {
@@ -1352,10 +1352,10 @@ resource "aws_api_gateway_method_response" "users_userid_request-delete_put_403"
 
 # 404 Not Found
 
-resource "aws_api_gateway_method_response" "users_userid_request-delete_put_404" {
+resource "aws_api_gateway_method_response" "users_userid_deletion-request_put_404" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_request-delete.id
-  http_method = aws_api_gateway_method.users_userid_request-delete_put.http_method
+  resource_id = aws_api_gateway_resource.users_userid_deletion-request.id
+  http_method = aws_api_gateway_method.users_userid_deletion-request_put.http_method
   status_code = "404"
 
   response_models = {
@@ -1369,10 +1369,111 @@ resource "aws_api_gateway_method_response" "users_userid_request-delete_put_404"
 
 # 500 Internal Server Error
 
-resource "aws_api_gateway_method_response" "users_userid_request-delete_put_500" {
+resource "aws_api_gateway_method_response" "users_userid_deletion-request_put_500" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_request-delete.id
-  http_method = aws_api_gateway_method.users_userid_request-delete_put.http_method
+  resource_id = aws_api_gateway_resource.users_userid_deletion-request.id
+  http_method = aws_api_gateway_method.users_userid_deletion-request_put.http_method
+  status_code = "500"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# [DELETE]
+
+resource "aws_api_gateway_method" "users_userid_deletion-request_delete" {
+  rest_api_id          = aws_api_gateway_rest_api.identity.id
+  resource_id          = aws_api_gateway_resource.users_userid_deletion-request.id
+  http_method          = "DELETE"
+  authorization        = "CUSTOM"
+  authorizer_id        = aws_api_gateway_authorizer.token_authorizer.id
+  api_key_required     = true
+  request_validator_id = aws_api_gateway_request_validator.full.id
+
+  request_parameters = {
+    "method.request.path.userId" = true
+  }
+}
+
+# 204 No Content
+
+resource "aws_api_gateway_method_response" "users_userid_deletion-request_delete_204" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_deletion-request.id
+  http_method = aws_api_gateway_method.users_userid_deletion-request_delete.http_method
+  status_code = "204"
+
+  response_models = {
+    "application/json" = "Empty"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# 304 Not Modified
+
+resource "aws_api_gateway_method_response" "users_userid_deletion-request_delete_304" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_deletion-request.id
+  http_method = aws_api_gateway_method.users_userid_deletion-request_delete.http_method
+  status_code = "304"
+
+  response_models = {
+    "application/json" = "Empty"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# 403 Forbidden
+
+resource "aws_api_gateway_method_response" "users_userid_deletion-request_delete_403" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_deletion-request.id
+  http_method = aws_api_gateway_method.users_userid_deletion-request_delete.http_method
+  status_code = "403"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# 404 Not Found
+
+resource "aws_api_gateway_method_response" "users_userid_deletion-request_delete_404" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_deletion-request.id
+  http_method = aws_api_gateway_method.users_userid_deletion-request_delete.http_method
+  status_code = "404"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# 500 Internal Server Error
+
+resource "aws_api_gateway_method_response" "users_userid_deletion-request_delete_500" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_deletion-request.id
+  http_method = aws_api_gateway_method.users_userid_deletion-request_delete.http_method
   status_code = "500"
 
   response_models = {

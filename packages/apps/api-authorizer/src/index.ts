@@ -156,9 +156,14 @@ const resourceAcls: ResourceAcl[] = [
     check: isAdministrator,
   },
   {
-    resource: '/users/{userId}/request-delete',
+    resource: '/users/{userId}/deletion-request',
     methods: ['PUT'],
     check: isSelf,
+  },
+  {
+    resource: '/users/{userId}/deletion-request',
+    methods: ['DELETE'],
+    check: isAdministrator,
   },
   {
     resource: '/users/{userId}/validate',

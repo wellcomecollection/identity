@@ -275,7 +275,7 @@ export default class Auth0Client {
     });
   }
 
-  async addAppMetadata(userId: number, metadata: Record<string, any>): Promise<APIResponse<{}>> {
+  async setAppMetadata(userId: number, metadata: Record<string, any>): Promise<APIResponse<{}>> {
     return this.getMachineToMachineInstance().then(instance => {
       return instance.patch('/users/' + SierraUserIdPrefix + userId, {
         app_metadata: metadata

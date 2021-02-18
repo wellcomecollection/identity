@@ -318,7 +318,7 @@ export async function sendVerificationEmail(auth0Client: Auth0Client, request: R
 
   const userId: number = getTargetUserId(request);
 
-  const userGet = await auth0Client.getUserByUserId(userId);
+  const userGet: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(userId);
   if (userGet.status !== ResponseStatus.Success) {
     if (userGet.status === ResponseStatus.NotFound) {
       response.status(404).json(toMessage(userGet.message));
@@ -333,7 +333,7 @@ export async function sendVerificationEmail(auth0Client: Auth0Client, request: R
     return;
   }
 
-  const sendVerification = await auth0Client.sendVerificationEmail(userId);
+  const sendVerification: APIResponse<{}> = await auth0Client.sendVerificationEmail(userId);
   if (sendVerification.status !== ResponseStatus.Success) {
     if (sendVerification.status === ResponseStatus.MalformedRequest) {
       response.status(400).json(toMessage(sendVerification.message));
@@ -350,7 +350,7 @@ export async function sendPasswordResetEmail(auth0Client: Auth0Client, request: 
 
   const userId: number = getTargetUserId(request);
 
-  const userGet = await auth0Client.getUserByUserId(userId);
+  const userGet: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(userId);
   if (userGet.status !== ResponseStatus.Success) {
     if (userGet.status === ResponseStatus.NotFound) {
       response.status(404).json(toMessage(userGet.message));
@@ -360,7 +360,7 @@ export async function sendPasswordResetEmail(auth0Client: Auth0Client, request: 
     return;
   }
 
-  const sendPasswordReset = await auth0Client.sendPasswordResetEmail(userGet.result.email);
+  const sendPasswordReset: APIResponse<{}> = await auth0Client.sendPasswordResetEmail(userGet.result.email);
   if (sendPasswordReset.status !== ResponseStatus.Success) {
     if (sendPasswordReset.status === ResponseStatus.MalformedRequest) {
       response.status(400).json(toMessage(sendPasswordReset.message));
@@ -373,11 +373,11 @@ export async function sendPasswordResetEmail(auth0Client: Auth0Client, request: 
   response.sendStatus(200);
 }
 
-export async function requestDelete(auth0Client: Auth0Client, sierraClient: SierraClient, emailClient: EmailClient, request: Request, response: Response): Promise<void> {
+export async function requestDelete(auth0Client: Auth0Client, emailClient: EmailClient, request: Request, response: Response): Promise<void> {
 
   const userId: number = getTargetUserId(request);
 
-  const auth0Get = await auth0Client.getUserByUserId(userId);
+  const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(userId);
   if (auth0Get.status !== ResponseStatus.Success) {
     if (auth0Get.status === ResponseStatus.NotFound) {
       response.status(404).json(toMessage(auth0Get.message));
@@ -387,34 +387,89 @@ export async function requestDelete(auth0Client: Auth0Client, sierraClient: Sier
     return;
   }
 
-  if (auth0Get.result?.metadata?.requestDeleted) {
+  if (auth0Get.result?.metadata?.deleteRequested) {
     response.status(304).json(toMessage('Deletion request already processing for user with ID [' + userId + ']'));
+    return;
   }
 
-  const emailDeleteAdmin = await emailClient.sendDeleteRequestAdmin(auth0Get.result);
+  const emailDeleteAdmin: APIResponse<{}> = await emailClient.sendDeleteRequestAdmin(auth0Get.result);
   if (emailDeleteAdmin.status !== ResponseStatus.Success) {
     response.status(500).json(toMessage(emailDeleteAdmin.message));
     return;
   }
 
-  const auth0Update = await auth0Client.addAppMetadata(userId, {
+  const auth0Update: APIResponse<{}> = await auth0Client.setAppMetadata(userId, {
     deleteRequested: new Date().toISOString()
   });
   if (auth0Update.status !== ResponseStatus.Success) {
     console.log('An error occurred applying deletion flag to Auth0 record [' + userId + ']: [' + auth0Update + ']');
   }
 
-  const auth0Block = await auth0Client.blockAccount(userId);
+  const auth0Block: APIResponse<{}> = await auth0Client.blockAccount(userId);
   if (auth0Block.status !== ResponseStatus.Success) {
     console.log('An error blocking Auth0 record [' + userId + ']: [' + auth0Block + ']');
   }
 
-  const emailDeleteUser = await emailClient.sendDeleteRequestUser(auth0Get.result);
+  const emailDeleteUser: APIResponse<{}> = await emailClient.sendDeleteRequestUser(auth0Get.result);
   if (emailDeleteUser.status !== ResponseStatus.Success) {
     console.log('An error notifying Auth0 user [' + userId + '] of the deletion request: [' + emailDeleteUser + ']');
   }
 
   response.sendStatus(200);
+}
+
+export async function removeDelete(auth0Client: Auth0Client, emailClient: EmailClient, request: Request, response: Response): Promise<void> {
+
+  const userId: number = getTargetUserId(request);
+
+  const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(userId);
+  if (auth0Get.status !== ResponseStatus.Success) {
+    if (auth0Get.status === ResponseStatus.NotFound) {
+      response.status(404).json(toMessage(auth0Get.message));
+    } else {
+      response.status(500).json(toMessage(auth0Get.message));
+    }
+    return;
+  }
+
+  if (!auth0Get.result?.metadata?.deleteRequested) {
+    response.status(304).json(toMessage('No deletion requests for user with ID [' + userId + ']'));
+    return;
+  }
+
+  const metadata: Record<string, string> = auth0Get.result.metadata;
+  delete metadata.deleteRequested;
+
+  const auth0Update: APIResponse<{}> = await auth0Client.setAppMetadata(userId, metadata);
+  if (auth0Update.status !== ResponseStatus.Success) {
+    if (auth0Update.status === ResponseStatus.MalformedRequest) {
+      response.status(400).json(toMessage(auth0Update.message));
+    } else if (auth0Update.status === ResponseStatus.NotFound) {
+      response.status(404).json(toMessage(auth0Update.message));
+    } else {
+      response.status(500).json(toMessage(auth0Update.message));
+    }
+    return;
+  }
+
+  const auth0Unblock: APIResponse<{}> = await auth0Client.unblockAccount(userId);
+  if (auth0Unblock.status !== ResponseStatus.Success) {
+    if (auth0Unblock.status === ResponseStatus.MalformedRequest) {
+      response.status(400).json(toMessage(auth0Unblock.message));
+    } else if (auth0Unblock.status === ResponseStatus.NotFound) {
+      response.status(404).json(toMessage(auth0Unblock.message));
+    } else {
+      response.status(500).json(toMessage(auth0Unblock.message));
+    }
+    return;
+  }
+
+  const emailDeleteRemovalUser: APIResponse<{}> = await emailClient.sendDeleteRemovalUser(auth0Get.result);
+  if (emailDeleteRemovalUser.status !== ResponseStatus.Success) {
+    console.log('An error notifying Auth0 user [' + userId + '] of the deletion removal request: [' + emailDeleteRemovalUser + ']');
+  }
+
+  response.sendStatus(204);
 }
 
 export async function blockUser(auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
@@ -430,6 +485,7 @@ export async function blockUser(auth0Client: Auth0Client, request: Request, resp
     } else {
       response.status(500).json(toMessage(blockUser.message));
     }
+    return;
   }
 
   response.sendStatus(200);
@@ -448,6 +504,7 @@ export async function unblockUser(auth0Client: Auth0Client, request: Request, re
     } else {
       response.status(500).json(toMessage(unblockUser.message));
     }
+    return;
   }
 
   response.sendStatus(200);
@@ -457,7 +514,7 @@ export async function deleteUser(sierraClient: SierraClient, auth0Client: Auth0C
 
   const userId: number = getTargetUserId(request);
 
-  const auth0Delete = await auth0Client.deleteUser(userId);
+  const auth0Delete: APIResponse<{}> = await auth0Client.deleteUser(userId);
   if (auth0Delete.status !== ResponseStatus.Success) {
     if (auth0Delete.status === ResponseStatus.NotFound) {
       response.status(404).json(toMessage(auth0Delete.message));
@@ -467,7 +524,7 @@ export async function deleteUser(sierraClient: SierraClient, auth0Client: Auth0C
     return;
   }
 
-  const patronDelete = await sierraClient.deletePatronRecord(userId);
+  const patronDelete: APIResponse<{}> = await sierraClient.deletePatronRecord(userId);
   if (patronDelete.status !== ResponseStatus.Success) {
     if (patronDelete.status === ResponseStatus.NotFound) {
       response.status(404).json(toMessage(patronDelete.message));
