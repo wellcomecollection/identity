@@ -47,7 +47,7 @@ export function toAuth0Profile(auth0User: any): Auth0Profile {
   }
 }
 
-export function toAuth0SearchResults(page: number, sort: string, sortDir: number, query: string, auth0SearchResults: any): Auth0SearchResults {
+export function toAuth0SearchResults(page: number, sort: string, sortDir: number, name: string | undefined, email: string | undefined, status: string | undefined, auth0SearchResults: any): Auth0SearchResults {
   return {
     page: page,
     pageSize: auth0SearchResults.length,
@@ -55,7 +55,9 @@ export function toAuth0SearchResults(page: number, sort: string, sortDir: number
     totalResults: auth0SearchResults.total,
     sort: sort,
     sortDir: sortDir,
-    query: query,
+    name: name,
+    email: email,
+    status: status,
     results: auth0SearchResults.users.map((user: any) => toAuth0Profile(user))
   }
 }
@@ -74,8 +76,35 @@ function extractUserId(value: string): string {
   }
 }
 
-export function generateUserSearchQuery(query: string): string {
-  return query.split(' ').map(token => 'name:*' + token + '* OR email:*' + token + '*').join(' ');
+export function generateUserSearchQuery(name: string | undefined, email: string | undefined, status: string | undefined): string {
+
+  let query: string[] = ['identities.connection:"Sierra-Connection"'];
+
+  if (!name && !email && !status) {
+    return ''; // Auth0 API treats this is an unfiltered search - return everything
+  }
+
+  if (name) {
+    query.push(...name.split(' ').map(token => 'name:*' + token + '*'));
+  }
+
+  if (email) {
+    query.push(...email.split(' ').map(token => 'email:*' + token + '*'));
+  }
+
+  if (status) {
+    if (status === 'active') {
+      // Auth0 again - records that have never been toggled to / from the blocked status, won't have a 'blocked' field
+      // on them, so we test if the flag is either 'false', or if that field doesn't exist.
+      query.push('(blocked:false OR -blocked)')
+    } else if (status === 'locked') {
+      query.push('blocked:true')
+    } else if (status === 'deletePending') {
+      query.push('app_metadata.deleteRequested:*')
+    }
+  }
+
+  return query.join(' AND ');
 }
 
 // A simple representation of the Auth0 user, using only the attributes we provide to Auth0 to create it.
@@ -107,7 +136,9 @@ export interface Auth0SearchResults {
   totalResults: number,
   sort: string,
   sortDir: number,
-  query: string,
+  name: string | undefined,
+  email: string | undefined,
+  status: string | undefined,
   results: Auth0Profile[]
 }
 
@@ -123,3 +154,5 @@ export const SierraConnection = 'Sierra-Connection';
 
 export const SierraUserIdPrefix = 'auth0|p';
 export const AzureUserIdPrefix = 'oauth2|AzureAD-Connection|';
+
+export const SearchStatuses: string[] = ["active", "locked", "deletePending"];
