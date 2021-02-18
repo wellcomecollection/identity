@@ -21,7 +21,7 @@ locals {
   # Auth0
   auth0_hostname      = "${aws_ssm_parameter.hostname_prefix.value}.${data.aws_ssm_parameter.hostname.value}"
   auth0_endpoint      = "https://${local.auth0_hostname}"
-  auth0_email_address = "${data.aws_ssm_parameter.auth0_email_from_user.value}@${data.aws_ssm_parameter.auth0_email_from_domain.value}"
+  auth0_email_address = "${aws_ssm_parameter.auth0_email_from_user.value}@${data.aws_ssm_parameter.auth0_email_from_domain.value}"
   auth0_email_from    = "${aws_ssm_parameter.auth0_email_from_name.value} <${local.auth0_email_address}>"
 
   # Account Management System
