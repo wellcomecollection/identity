@@ -15,7 +15,7 @@ export async function lambdaHandler(event: APIGatewayRequestAuthorizerEvent): Pr
     host: process.env.REDIS_HOST!,
     port: Number(process.env.REDIS_PORT!)
   });
-  const redisGet: (key: string) => Promise<string | null> = <(key: string) => Promise<string | null>>promisify(redisClient.get).bind(redisClient);
+  const redisGet: (key: string) => Promise<Auth0UserInfo | null> = <(key: string) => Promise<Auth0UserInfo | null>>promisify(redisClient.get).bind(redisClient);
   const redisSet: (key: string, value: string, mode: string, duration: number) => Promise<'OK' | undefined> = <(key: string, value: string, mode: string, duration: number) => Promise<'OK' | undefined>>promisify(redisClient.set).bind(redisClient);
 
   if (!event.headers?.Authorization) {
@@ -33,7 +33,7 @@ export async function lambdaHandler(event: APIGatewayRequestAuthorizerEvent): Pr
   let auth0UserInfo: Auth0UserInfo | null = await redisGet(accessToken).then(data => {
     if (data) {
       console.log('Cache hit for access token [' + accessToken + ']: [' + data + ']');
-      return toAuth0UserInfo(data);
+      return data;
     } else {
       return null;
     }
