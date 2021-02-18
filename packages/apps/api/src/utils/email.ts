@@ -16,10 +16,12 @@ export default class EmailClient {
 
   private readonly fromAddress: string;
   private readonly adminAddress: string;
+  private readonly supportUrl: string;
 
-  constructor(fromAddress: string, adminAddress: string) {
+  constructor(fromAddress: string, adminAddress: string, supportUrl: string) {
     this.fromAddress = fromAddress;
     this.adminAddress = adminAddress;
+    this.supportUrl = supportUrl;
   }
 
   async sendDeleteRequestAdmin(auth0Profile: Auth0Profile): Promise<APIResponse<{}>> {
@@ -40,7 +42,7 @@ export default class EmailClient {
     const body: string = await this.engine.renderFile('delete-request_user_body', {
       firstName: auth0Profile.firstName,
       lastName: auth0Profile.lastName,
-      supportUrl: 'https://wellcome.org/about-us/contact-us'
+      supportUrl: this.supportUrl
     });
     return this.sendEmail(auth0Profile.email, subject, body);
   }
