@@ -403,3 +403,56 @@ resource "aws_ssm_parameter" "email_admin_address" {
     }
   )
 }
+
+# Redis - Access Token Cache
+
+resource "aws_ssm_parameter" "redis_access_token_cache_node_type" {
+  name  = "identity-redis_access_token_cache_node_type-${terraform.workspace}"
+  type  = "String"
+  value = var.ssm_parameter_placeholder
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+
+  tags = merge(
+    local.common_tags,
+    {
+      "Name" = "identity-redis_access_token_cache_node_type-${terraform.workspace}"
+    }
+  )
+}
+
+resource "aws_ssm_parameter" "redis_access_token_cache_number_cache_clusters" {
+  name  = "identity-redis_access_token_cache_number_cache_clusters-${terraform.workspace}"
+  type  = "String"
+  value = var.ssm_parameter_placeholder
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+
+  tags = merge(
+    local.common_tags,
+    {
+      "Name" = "identity-redis_access_token_cache_number_cache_clusters-${terraform.workspace}"
+    }
+  )
+}
+
+resource "aws_ssm_parameter" "redis_access_token_cache_ttl" {
+  name  = "identity-redis_access_token_cache_ttl-${terraform.workspace}"
+  type  = "String"
+  value = var.ssm_parameter_placeholder
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+
+  tags = merge(
+    local.common_tags,
+    {
+      "Name" = "identity-redis_access_token_cache_ttl-${terraform.workspace}"
+    }
+  )
+}

@@ -58,6 +58,11 @@ resource "aws_iam_role_policy_attachment" "identity_api_gateway_lambda_policy" {
   policy_arn = aws_iam_policy.identity_api_gateway_lambda_policy.arn
 }
 
+resource "aws_iam_role_policy_attachment" "AWSLambdaVPCAccessExecutionRole" {
+  role       = aws_iam_role.identity_api_gateway_lambda_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+}
+
 # SES
 
 resource "aws_iam_user" "auth0_email" {
