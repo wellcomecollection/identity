@@ -16,8 +16,8 @@ resource "aws_elasticache_replication_group" "access_token_cache" {
   engine                = "redis"
   engine_version        = "6.x"
   parameter_group_name  = "default.redis6.x"
-  node_type             = "cache.t2.micro"
-  number_cache_clusters = 2
+  node_type             = aws_ssm_parameter.redis_access_token_cache_node_type.value
+  number_cache_clusters = aws_ssm_parameter.redis_access_token_cache_number_cache_clusters.value
   port                  = 6379
 
   subnet_group_name = aws_elasticache_subnet_group.access_token_cache.name
@@ -28,7 +28,9 @@ resource "aws_elasticache_replication_group" "access_token_cache" {
 
   lifecycle {
     ignore_changes = [
-      engine_version # We have to specify '6.x' above, but after creation this will change to a specific version
+      # We have to specify '6.x' above, but after creation this will change to a specific version and breaks when
+      # `apply'ing.
+      engine_version
     ]
   }
 
