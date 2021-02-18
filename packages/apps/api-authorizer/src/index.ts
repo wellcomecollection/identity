@@ -65,7 +65,7 @@ async function cacheLookup(accessToken: string): Promise<Auth0UserInfo | null> {
 
 async function cacheInsert(accessToken: string, auth0UserInfo: Auth0UserInfo): Promise<string | null> {
   const value = JSON.stringify(auth0UserInfo);
-  return await redisClient.set(accessToken, value).then(result => {
+  return await redisClient.set(accessToken, value, ['EX', 60]).then(result => {
     console.log('Cache put for access token [' + accessToken + '] with value [' + value + ']: [' + result + ']');
     return value;
   });
