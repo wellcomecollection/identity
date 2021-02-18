@@ -1,4 +1,4 @@
-# stubs/authorizer.js
+# packages/apps/api-authorizer
 
 resource "aws_lambda_function" "authorizer" {
   function_name = "identity-authorizer-${terraform.workspace}"
@@ -6,6 +6,19 @@ resource "aws_lambda_function" "authorizer" {
   role          = aws_iam_role.identity_api_gateway_lambda_role.arn
   runtime       = "nodejs12.x"
   filename      = "data/empty.zip"
+
+  vpc_config {
+    subnet_ids = [
+      aws_subnet.private_1.id,
+      aws_subnet.private_2.id,
+      aws_subnet.private_3.id,
+    ]
+
+    security_group_ids = [
+      aws_security_group.local.id,
+      aws_security_group.egress.id
+    ]
+  }
 
   environment {
     variables = {
@@ -56,6 +69,19 @@ resource "aws_lambda_function" "api" {
   runtime       = "nodejs12.x"
   filename      = "data/empty.zip"
   timeout       = 10
+
+  vpc_config {
+    subnet_ids = [
+      aws_subnet.private_1.id,
+      aws_subnet.private_2.id,
+      aws_subnet.private_3.id,
+    ]
+
+    security_group_ids = [
+      aws_security_group.local.id,
+      aws_security_group.egress.id
+    ]
+  }
 
   environment {
     variables = {
