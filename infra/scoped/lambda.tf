@@ -28,6 +28,7 @@ resource "aws_lambda_function" "authorizer" {
       AUTH0_CLIENT_SECRET = auth0_client.api_gateway_identity.client_secret,
       REDIS_HOST          = aws_elasticache_replication_group.access_token_cache.primary_endpoint_address
       REDIS_PORT          = aws_elasticache_replication_group.access_token_cache.port
+      REDIS_CACHE_TTL     = aws_ssm_parameter.redis_access_token_cache_ttl.value
     }
   }
 
