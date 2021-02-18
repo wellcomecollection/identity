@@ -7,16 +7,30 @@ resource "aws_elasticache_subnet_group" "access_token_cache" {
   ]
 }
 
-resource "aws_elasticache_cluster" "access_token_cache" {
-  cluster_id           = "identity-access-token-cache-${terraform.workspace}"
-  engine               = "redis"
-  node_type            = "cache.t2.micro"
-  num_cache_nodes      = 1
-  parameter_group_name = "default.redis6.x"
-  engine_version       = "6.0.5"
-  port                 = 6379
+resource "aws_elasticache_replication_group" "access_token_cache" {
+  replication_group_id          = "identity-access-token-cache-${terraform.workspace}"
+  replication_group_description = "identity-access-token-cache-${terraform.workspace}"
+
+  automatic_failover_enabled = true
+
+  engine                = "redis"
+  engine_version        = "6.x"
+  parameter_group_name  = "default.redis6.x"
+  node_type             = "cache.t2.micro"
+  number_cache_clusters = 2
+  port                  = 6379
 
   subnet_group_name = aws_elasticache_subnet_group.access_token_cache.name
+  security_group_ids = [
+    aws_security_group.local.id,
+    aws_security_group.egress.id
+  ]
+
+  lifecycle {
+    ignore_changes = [
+      engine_version # We have to specify '6.x' above, but after creation this will change to a specific version
+    ]
+  }
 
   tags = merge(
     local.common_tags,

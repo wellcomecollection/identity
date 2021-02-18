@@ -1,16 +1,22 @@
 import Auth0Client from '@weco/auth0-client';
-import { Auth0UserInfo } from '@weco/auth0-client/lib/auth0';
+import { Auth0UserInfo, toAuth0UserInfo } from '@weco/auth0-client/lib/auth0';
 import { APIResponse, ResponseStatus } from '@weco/identity-common';
 import { APIGatewayAuthorizerResult, APIGatewayRequestAuthorizerEvent } from 'aws-lambda';
+import { RedisClient } from "redis";
+import { promisify } from "util";
 
 export async function lambdaHandler(event: APIGatewayRequestAuthorizerEvent): Promise<APIGatewayAuthorizerResult> {
 
-  const AUTH0_API_ROOT: string = process.env.AUTH0_API_ROOT!;
-  const AUTH0_API_AUDIENCE: string = process.env.AUTH0_API_AUDIENCE!;
-  const AUTH0_CLIENT_ID: string = process.env.AUTH0_CLIENT_ID!;
-  const AUTH0_CLIENT_SECRET: string = process.env.AUTH0_CLIENT_SECRET!;
+  const auth0Client: Auth0Client = new Auth0Client(
+    process.env.AUTH0_API_ROOT!, process.env.AUTH0_API_AUDIENCE!, process.env.AUTH0_CLIENT_ID!, process.env.AUTH0_CLIENT_SECRET!
+  );
 
-  const auth0Client: Auth0Client = new Auth0Client(AUTH0_API_ROOT, AUTH0_API_AUDIENCE, AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET);
+  const redisClient: RedisClient = new RedisClient({
+    host: process.env.REDIS_HOST!,
+    port: Number(process.env.REDIS_PORT!)
+  });
+  const redisGet = <(key: string) => Promise<string | null>>promisify(redisClient.get).bind(redisClient);
+  const redisSet = <(key: string, value: string, mode: string, duration: number) => Promise<'OK' | undefined>>promisify(redisClient.set).bind(redisClient);
 
   if (!event.headers?.Authorization) {
     console.log('Authorization header is not present on request');
@@ -24,20 +30,32 @@ export async function lambdaHandler(event: APIGatewayRequestAuthorizerEvent): Pr
     return buildAuthorizerResult(authorizationHeader, 'Deny', event.methodArn);
   }
 
-  const auth0Validate: APIResponse<Auth0UserInfo> = await auth0Client.validateAccessToken(accessToken);
-  if (auth0Validate.status !== ResponseStatus.Success) {
-    if (auth0Validate.status === ResponseStatus.InvalidCredentials) {
-      console.log('Access token token [' + accessToken + '] rejected by Auth0: ' + auth0Validate.message);
-      return buildAuthorizerResult(accessToken, 'Deny', event.methodArn);
-    } else {
-      console.log('Unknown error processing access token [' + accessToken + ']: ' + auth0Validate.message);
-      return buildAuthorizerResult(accessToken, 'Deny', event.methodArn);
+  let auth0UserInfo: Auth0UserInfo = await redisGet(accessToken).then(data => {
+    console.log('Cache hit for access token [' + accessToken + ']: [' + data + ']');
+    return toAuth0UserInfo(data);
+  });
+
+  if (!auth0UserInfo) {
+    console.log('Cache miss for access token [' + accessToken + ']');
+
+    const auth0Validate: APIResponse<Auth0UserInfo> = await auth0Client.validateAccessToken(accessToken);
+    if (auth0Validate.status !== ResponseStatus.Success) {
+      if (auth0Validate.status === ResponseStatus.InvalidCredentials) {
+        console.log('Access token token [' + accessToken + '] rejected by Auth0: ' + auth0Validate.message);
+        return buildAuthorizerResult(accessToken, 'Deny', event.methodArn);
+      } else {
+        console.log('Unknown error processing access token [' + accessToken + ']: ' + auth0Validate.message);
+        return buildAuthorizerResult(accessToken, 'Deny', event.methodArn);
+      }
     }
+
+    auth0UserInfo = auth0Validate.result;
+    console.log('Cache set for access token [' + accessToken + ']: [' + JSON.stringify(auth0UserInfo) + ']');
+    await redisSet(accessToken, JSON.stringify(auth0UserInfo), 'EX', 60);
   }
-  const auth0UserInfo: Auth0UserInfo = auth0Validate.result;
 
   if (!validateRequest(auth0UserInfo, event.resource, <ResourceAclMethod>event.httpMethod, event.pathParameters)) {
-    console.log('Access token [' + accessToken + '] for user [' + JSON.stringify(auth0Validate.result) + '] cannot operate on [' + event.httpMethod + ' ' + event.resource + '] with path parameters [' + event.pathParameters + ']');
+    console.log('Access token [' + accessToken + '] for user [' + JSON.stringify(auth0UserInfo) + '] cannot operate on [' + event.httpMethod + ' ' + event.resource + '] with path parameters [' + event.pathParameters + ']');
     return buildAuthorizerResult(auth0UserInfo.userId, 'Deny', event.methodArn);
   }
 
