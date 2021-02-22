@@ -45,7 +45,6 @@ function createApplication(): Application {
   registerUsersUserIdResetPasswordResource(app);
   registerUsersUserIdSendVerificationResource(app);
   registerUsersUserIdLockResource(app);
-  registerUsersUserIdUnlockResource(app);
   registerUsersUserIdDeletionRequestResource(app);
   registerUsersUserIdValidateResource(app);
 
