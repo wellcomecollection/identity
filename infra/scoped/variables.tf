@@ -29,13 +29,13 @@ locals {
     stage = "www-stage.wellcomecollection.org",
     prod  = "wellcomecollection.org"
   }
-  wellcome_collection_site_uri = "https://${local.wellcome_collection_hostnames[terraform.workspace]}/"
+  wellcome_collection_site_uri = "https://${local.wellcome_collection_hostnames[terraform.workspace]}"
 
   # Account Management System
   ams_context_path = "account"
-  ams_redirect_uri = "https://${local.wellcome_collection_hostnames[terraform.workspace]}/${local.ams_context_path}/callback"
-  ams_error_uri    = "https://${local.wellcome_collection_hostnames[terraform.workspace]}/${local.ams_context_path}/error"
-  ams_validate_uri = "https://${local.wellcome_collection_hostnames[terraform.workspace]}/${local.ams_context_path}/validated"
+  ams_redirect_uri = "https://${local.wellcome_collection_site_uri}/${local.ams_context_path}/callback"
+  ams_error_uri    = "https://${local.wellcome_collection_site_uri}/${local.ams_context_path}/error"
+  ams_validate_uri = "https://${local.wellcome_collection_site_uri}/${local.ams_context_path}/validated"
 }
 
 # Tags
