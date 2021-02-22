@@ -43,7 +43,7 @@
       "format": "date-time"
     },
     "lastLoginIp": {
-      "anyOf": [
+      "oneOf": [
         {
           "type": "string",
           "format": "ipv4"
