@@ -1162,6 +1162,23 @@ resource "aws_api_gateway_method_response" "users_userid_lock_delete_200" {
   }
 }
 
+# 304 Not Modified
+
+resource "aws_api_gateway_method_response" "users_userid_lock_delete_304" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_lock.id
+  http_method = aws_api_gateway_method.users_userid_lock_delete.http_method
+  status_code = "304"
+
+  response_models = {
+    "application/json" = "Empty"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
 # 403 Forbidden
 
 resource "aws_api_gateway_method_response" "users_userid_lock_delete_403" {

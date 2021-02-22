@@ -1183,6 +1183,20 @@ resource "aws_api_gateway_documentation_part" "users_userid_lock_delete_204" {
   }
 }
 
+# 304 Not Modified
+
+resource "aws_api_gateway_documentation_part" "users_userid_lock_delete_304" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/lock/delete-304.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_lock.path
+    method      = aws_api_gateway_method.users_userid_lock_delete.http_method
+    status_code = "304"
+  }
+}
+
 # 403 Forbidden
 
 resource "aws_api_gateway_documentation_part" "users_userid_lock_delete_403" {
