@@ -33,9 +33,9 @@ locals {
 
   # Account Management System
   ams_context_path = "account"
-  ams_redirect_uri = "https://${local.wellcome_collection_site_uri}/${local.ams_context_path}/callback"
-  ams_error_uri    = "https://${local.wellcome_collection_site_uri}/${local.ams_context_path}/error"
-  ams_validate_uri = "https://${local.wellcome_collection_site_uri}/${local.ams_context_path}/validated"
+  ams_redirect_uri = "${local.wellcome_collection_site_uri}/${local.ams_context_path}/callback"
+  ams_error_uri    = "${local.wellcome_collection_site_uri}/${local.ams_context_path}/error"
+  ams_validate_uri = "${local.wellcome_collection_site_uri}/${local.ams_context_path}/validated"
 }
 
 # Tags
