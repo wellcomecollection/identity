@@ -2,6 +2,6 @@
   "summary": "Removes a request to delete a user",
   "description": "Removes a request to delete the user defined by the `userId` path parameter.",
   "tags": [
-    "User"
+    "Administrator"
   ]
 }

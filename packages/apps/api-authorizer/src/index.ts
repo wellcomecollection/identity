@@ -181,13 +181,13 @@ const resourceAcls: ResourceAcl[] = [
   {
     resource: '/users/{userId}/password',
     methods: ['PUT'],
-    check: [isSelf, isAdministrator],
+    check: [isSelf],
     checkType: 'OR'
   },
   {
     resource: '/users/{userId}/send-verification',
     methods: ['PUT'],
-    check: [isSelf, isAdministrator],
+    check: [isAdministrator],
   },
   {
     resource: '/users/{userId}/lock',
