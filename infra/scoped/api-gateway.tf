@@ -1129,48 +1129,12 @@ resource "aws_api_gateway_method_response" "users_userid_lock_put_500" {
   }
 }
 
-# /users/:user_id/unlock
+# [DELETE]
 
-resource "aws_api_gateway_resource" "users_userid_unlock" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  parent_id   = aws_api_gateway_resource.users_userid.id
-  path_part   = "unlock"
-}
-
-# [OPTIONS]
-
-resource "aws_api_gateway_method" "users_userid_unlock_options" {
-  rest_api_id   = aws_api_gateway_rest_api.identity.id
-  resource_id   = aws_api_gateway_resource.users_userid_unlock.id
-  http_method   = "OPTIONS"
-  authorization = "NONE"
-}
-
-# 204 No Content
-
-resource "aws_api_gateway_method_response" "users_userid_unlock_options_204" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_unlock.id
-  http_method = aws_api_gateway_method.users_userid_unlock_options.http_method
-  status_code = "204"
-
-  response_models = {
-    "application/json" = "Empty"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers" = true,
-    "method.response.header.Access-Control-Allow-Methods" = true,
-    "method.response.header.Access-Control-Allow-Origin"  = true
-  }
-}
-
-# [PUT]
-
-resource "aws_api_gateway_method" "users_userid_unlock_put" {
+resource "aws_api_gateway_method" "users_userid_lock_delete" {
   rest_api_id          = aws_api_gateway_rest_api.identity.id
-  resource_id          = aws_api_gateway_resource.users_userid_unlock.id
-  http_method          = "PUT"
+  resource_id          = aws_api_gateway_resource.users_userid_lock.id
+  http_method          = "DELETE"
   authorization        = "CUSTOM"
   authorizer_id        = aws_api_gateway_authorizer.token_authorizer.id
   api_key_required     = true
@@ -1181,13 +1145,13 @@ resource "aws_api_gateway_method" "users_userid_unlock_put" {
   }
 }
 
-# 200 OK
+# 204 No Content
 
-resource "aws_api_gateway_method_response" "users_userid_unlock_put_200" {
+resource "aws_api_gateway_method_response" "users_userid_lock_delete_200" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_unlock.id
-  http_method = aws_api_gateway_method.users_userid_unlock_put.http_method
-  status_code = "200"
+  resource_id = aws_api_gateway_resource.users_userid_lock.id
+  http_method = aws_api_gateway_method.users_userid_lock_delete.http_method
+  status_code = "204"
 
   response_models = {
     "application/json" = "Empty"
@@ -1200,10 +1164,10 @@ resource "aws_api_gateway_method_response" "users_userid_unlock_put_200" {
 
 # 403 Forbidden
 
-resource "aws_api_gateway_method_response" "users_userid_unlock_put_403" {
+resource "aws_api_gateway_method_response" "users_userid_lock_delete_403" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_unlock.id
-  http_method = aws_api_gateway_method.users_userid_unlock_put.http_method
+  resource_id = aws_api_gateway_resource.users_userid_lock.id
+  http_method = aws_api_gateway_method.users_userid_lock_delete.http_method
   status_code = "403"
 
   response_models = {
@@ -1217,10 +1181,10 @@ resource "aws_api_gateway_method_response" "users_userid_unlock_put_403" {
 
 # 404 Not Found
 
-resource "aws_api_gateway_method_response" "users_userid_unlock_put_404" {
+resource "aws_api_gateway_method_response" "users_userid_lock_delete_404" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_unlock.id
-  http_method = aws_api_gateway_method.users_userid_unlock_put.http_method
+  resource_id = aws_api_gateway_resource.users_userid_lock.id
+  http_method = aws_api_gateway_method.users_userid_lock_delete.http_method
   status_code = "404"
 
   response_models = {
@@ -1234,10 +1198,10 @@ resource "aws_api_gateway_method_response" "users_userid_unlock_put_404" {
 
 # 500 Internal Server Error
 
-resource "aws_api_gateway_method_response" "users_userid_unlock_put_500" {
+resource "aws_api_gateway_method_response" "users_userid_lock_delete_500" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_unlock.id
-  http_method = aws_api_gateway_method.users_userid_unlock_put.http_method
+  resource_id = aws_api_gateway_resource.users_userid_lock.id
+  http_method = aws_api_gateway_method.users_userid_lock_delete.http_method
   status_code = "500"
 
   response_models = {

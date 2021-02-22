@@ -1144,122 +1144,83 @@ resource "aws_api_gateway_documentation_part" "users_userid_lock_put_500" {
   }
 }
 
-# /users/:user_id/unlock
+# [DELETE]
 
-resource "aws_api_gateway_documentation_part" "users_userid_unlock" {
+resource "aws_api_gateway_documentation_part" "users_userid_lock_delete" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  properties  = file("${path.module}/api-documentation/users/:user_id/unlock/resource.json")
-
-  location {
-    type = "RESOURCE"
-    path = aws_api_gateway_resource.users_userid_unlock.path
-  }
-}
-
-# [OPTIONS]
-
-resource "aws_api_gateway_documentation_part" "users_userid_unlock_options" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  properties  = file("${path.module}/api-documentation/users/:user_id/unlock/options.json")
+  properties  = file("${path.module}/api-documentation/users/:user_id/lock/delete.json")
 
   location {
     type   = "METHOD"
-    path   = aws_api_gateway_resource.users_userid_unlock.path
-    method = aws_api_gateway_method.users_userid_unlock_options.http_method
+    path   = aws_api_gateway_resource.users_userid_lock.path
+    method = aws_api_gateway_method.users_userid_lock_delete.http_method
+  }
+}
+
+resource "aws_api_gateway_documentation_part" "users_userid_lock_delete_param_userid" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/lock/delete-param-userid.json")
+
+  location {
+    type   = "PATH_PARAMETER"
+    path   = aws_api_gateway_resource.users_userid_lock.path
+    method = aws_api_gateway_method.users_userid_lock_put.http_method
+    name   = "userId"
   }
 }
 
 # 204 No Content
 
-resource "aws_api_gateway_documentation_part" "users_userid_unlock_options_204" {
+resource "aws_api_gateway_documentation_part" "users_userid_lock_delete_204" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  properties  = file("${path.module}/api-documentation/users/:user_id/unlock/options-204.json")
+  properties  = file("${path.module}/api-documentation/users/:user_id/lock/delete-204.json")
 
   location {
     type        = "RESPONSE"
-    path        = aws_api_gateway_resource.users_userid_unlock.path
-    method      = aws_api_gateway_method.users_userid_unlock_options.http_method
+    path        = aws_api_gateway_resource.users_userid_lock.path
+    method      = aws_api_gateway_method.users_userid_lock_delete.http_method
     status_code = "204"
-  }
-}
-
-# [PUT]
-
-resource "aws_api_gateway_documentation_part" "users_userid_unlock_put" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  properties  = file("${path.module}/api-documentation/users/:user_id/unlock/put.json")
-
-  location {
-    type   = "METHOD"
-    path   = aws_api_gateway_resource.users_userid_unlock.path
-    method = aws_api_gateway_method.users_userid_unlock_put.http_method
-  }
-}
-
-resource "aws_api_gateway_documentation_part" "users_userid_unlock_put_param_userid" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  properties  = file("${path.module}/api-documentation/users/:user_id/unlock/put-param-userid.json")
-
-  location {
-    type   = "PATH_PARAMETER"
-    path   = aws_api_gateway_resource.users_userid_unlock.path
-    method = aws_api_gateway_method.users_userid_unlock_put.http_method
-    name   = "userId"
-  }
-}
-
-# 200 OK
-
-resource "aws_api_gateway_documentation_part" "users_userid_unlock_put_200" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  properties  = file("${path.module}/api-documentation/users/:user_id/unlock/put-200.json")
-
-  location {
-    type        = "RESPONSE"
-    path        = aws_api_gateway_resource.users_userid_unlock.path
-    method      = aws_api_gateway_method.users_userid_unlock_put.http_method
-    status_code = "200"
   }
 }
 
 # 403 Forbidden
 
-resource "aws_api_gateway_documentation_part" "users_userid_unlock_put_403" {
+resource "aws_api_gateway_documentation_part" "users_userid_lock_delete_403" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  properties  = file("${path.module}/api-documentation/users/:user_id/unlock/put-403.json")
+  properties  = file("${path.module}/api-documentation/users/:user_id/lock/delete-403.json")
 
   location {
     type        = "RESPONSE"
-    path        = aws_api_gateway_resource.users_userid_unlock.path
-    method      = aws_api_gateway_method.users_userid_unlock_put.http_method
+    path        = aws_api_gateway_resource.users_userid_lock.path
+    method      = aws_api_gateway_method.users_userid_lock_delete.http_method
     status_code = "403"
   }
 }
 
 # 404 Not Found
 
-resource "aws_api_gateway_documentation_part" "users_userid_unlock_put_404" {
+resource "aws_api_gateway_documentation_part" "users_userid_lock_delete_404" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  properties  = file("${path.module}/api-documentation/users/:user_id/unlock/put-404.json")
+  properties  = file("${path.module}/api-documentation/users/:user_id/lock/delete-404.json")
 
   location {
     type        = "RESPONSE"
-    path        = aws_api_gateway_resource.users_userid_unlock.path
-    method      = aws_api_gateway_method.users_userid_unlock_put.http_method
+    path        = aws_api_gateway_resource.users_userid_lock.path
+    method      = aws_api_gateway_method.users_userid_lock_delete.http_method
     status_code = "404"
   }
 }
 
 # 500 Internal Server Error
 
-resource "aws_api_gateway_documentation_part" "users_userid_unlock_put_500" {
+resource "aws_api_gateway_documentation_part" "users_userid_lock_put_500" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  properties  = file("${path.module}/api-documentation/users/:user_id/unlock/put-500.json")
+  properties  = file("${path.module}/api-documentation/users/:user_id/lock/delete-500.json")
 
   location {
     type        = "RESPONSE"
-    path        = aws_api_gateway_resource.users_userid_unlock.path
-    method      = aws_api_gateway_method.users_userid_unlock_put.http_method
+    path        = aws_api_gateway_resource.users_userid_lock.path
+    method      = aws_api_gateway_method.users_userid_lock_delete.http_method
     status_code = "500"
   }
 }
