@@ -156,6 +156,10 @@ resource "auth0_client" "account_management_system" {
     local.ams_redirect_uri
   ]
 
+  allowed_logout_urls = [
+    local.wellcome_collection_site_uri
+  ]
+
   lifecycle {
     ignore_changes = [
       custom_login_page_preview,
