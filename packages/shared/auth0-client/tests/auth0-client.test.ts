@@ -104,7 +104,7 @@ describe('auth0 client', () => {
       equal(result.emailValidated, emailValidated);
       equal(result.locked, locked);
       equal(result.creationDate, creationDate);
-      equal(result.lastLogin, lastLoginDate);
+      equal(result.lastLoginDate, lastLoginDate);
       equal(result.lastLoginIp, lastLoginIp);
       equal(result.totalLogins, totalLogins);
     });
@@ -124,7 +124,7 @@ describe('auth0 client', () => {
       equal(result.emailValidated, emailValidated);
       equal(result.locked, locked);
       equal(result.creationDate, creationDate);
-      equal(result.lastLogin, lastLoginDate);
+      equal(result.lastLoginDate, lastLoginDate);
       equal(result.lastLoginIp, lastLoginIp);
       equal(result.totalLogins, totalLogins);
     });
@@ -169,7 +169,7 @@ describe('auth0 client', () => {
       equal(result.emailValidated, emailValidated);
       equal(result.locked, locked);
       equal(result.creationDate, creationDate);
-      equal(result.lastLogin, lastLoginDate);
+      equal(result.lastLoginDate, lastLoginDate);
       equal(result.lastLoginIp, lastLoginIp);
       equal(result.totalLogins, totalLogins);
     });
@@ -210,7 +210,7 @@ describe('auth0 client', () => {
       equal(result.emailValidated, emailValidated);
       equal(result.locked, locked);
       equal(result.creationDate, creationDate);
-      equal(result.lastLogin, lastLoginDate);
+      equal(result.lastLoginDate, lastLoginDate);
       equal(result.lastLoginIp, lastLoginIp);
       equal(result.totalLogins, totalLogins);
     });
@@ -255,7 +255,7 @@ describe('auth0 client', () => {
       equal(result.emailValidated, emailValidated);
       equal(result.locked, locked);
       equal(result.creationDate, creationDate);
-      equal(result.lastLogin, lastLoginDate);
+      equal(result.lastLoginDate, lastLoginDate);
       equal(result.lastLoginIp, lastLoginIp);
       equal(result.totalLogins, totalLogins);
     });
@@ -317,7 +317,7 @@ describe('auth0 client', () => {
       equal(result.emailValidated, emailValidated);
       equal(result.locked, locked);
       equal(result.creationDate, creationDate);
-      equal(result.lastLogin, lastLoginDate);
+      equal(result.lastLoginDate, lastLoginDate);
       equal(result.lastLoginIp, lastLoginIp);
       equal(result.totalLogins, totalLogins);
     });
