@@ -99,16 +99,8 @@
             "format": "date-time"
           },
           "lastLoginIp": {
-            "oneOf": [
-              {
-                "type": "string",
-                "format": "ipv4"
-              },
-              {
-                "type": "string",
-                "format": "ipv6"
-              }
-            ]
+            "type": "string",
+            "minLength": 1
           },
           "totalLogins": {
             "type": "number",
