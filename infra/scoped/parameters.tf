@@ -385,6 +385,20 @@ resource "aws_ssm_parameter" "account_management_system-context_path" {
   )
 }
 
+resource "aws_ssm_parameter" "account_management_system-logout_redirect_url" {
+  provider = aws.experience
+  name     = "/identity/${terraform.workspace}/account_management_system/logout_redirect_url"
+  type     = "String"
+  value    = local.wellcome_collection_site_uri
+
+  tags = merge(
+    local.common_tags,
+    {
+      "Name" = "/identity/${terraform.workspace}/account_management_system/logout_redirect_url"
+    }
+  )
+}
+
 # Email
 
 resource "aws_ssm_parameter" "email_admin_address" {
