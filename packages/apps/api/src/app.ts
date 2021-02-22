@@ -107,7 +107,7 @@ function registerUsersUserIdSendVerificationResource(app: Application): void {
 function registerUsersUserIdLockResource(app: Application): void {
   const corsOptions = cors({
     allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
-    methods: 'OPTIONS,PUT',
+    methods: 'OPTIONS,PUT,DELETE',
     origin: process.env.API_ALLOWED_ORIGINS
   });
   app.options('/users/:user_id/lock', corsOptions);
@@ -118,7 +118,7 @@ function registerUsersUserIdLockResource(app: Application): void {
 function registerUsersUserIdDeletionRequestResource(app: Application): void {
   const corsOptions = cors({
     allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
-    methods: 'OPTIONS,PUT',
+    methods: 'OPTIONS,PUT,DELETE',
     origin: process.env.API_ALLOWED_ORIGINS
   });
   app.options('/users/:user_id/deletion-request', corsOptions);
