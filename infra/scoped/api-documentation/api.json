@@ -16,10 +16,13 @@
   },
   "tags": [
     {
-      "name": "Authentication"
+      "name": "Public"
     },
     {
       "name": "User"
+    },
+    {
+      "name": "Administrator"
     },
     {
       "name": "Cross-Origin Resource Sharing"

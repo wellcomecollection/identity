@@ -43,10 +43,12 @@
       ]
     },
     "name": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1
     },
     "email": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1
     },
     "status": {
       "type": "string",
@@ -66,49 +68,39 @@
             "minimum": 0,
             "multipleOf": 1.0
           },
-          "barcode": {
+          "firstName": {
             "type": "string",
             "minLength": 1
           },
-          "firstName": {
-            "type": "string"
-          },
           "lastName": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           },
           "email": {
             "type": "string",
-            "format": "email",
-            "minLength": 1
+            "format": "email"
           },
           "emailValidated": {
-            "type": "boolean",
-            "minLength": 1
+            "type": "boolean"
           },
           "locked": {
-            "type": "boolean",
-            "minLength": 1
+            "type": "boolean"
           },
           "creationDate": {
             "type": "string",
-            "format": "date-time",
-            "minLength": 1
+            "format": "date-time"
           },
-          "lastLogin": {
+          "updatedDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastLoginDate": {
             "type": "string",
             "format": "date-time"
           },
           "lastLoginIp": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "ipv4"
-              },
-              {
-                "type": "string",
-                "format": "ipv6"
-              }
-            ]
+            "type": "string",
+            "minLength": 1
           },
           "totalLogins": {
             "type": "number",
@@ -121,16 +113,13 @@
           }
         },
         "required": [
-          "patronId",
+          "userId",
           "firstName",
           "lastName",
           "email",
           "emailValidated",
           "locked",
-          "creationDate",
-          "lastLogin",
-          "lastLoginIp",
-          "totalLogins"
+          "creationDate"
         ],
         "additionalProperties": true
       }

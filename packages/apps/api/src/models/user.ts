@@ -11,7 +11,8 @@ export function toUser(auth0Profile: Auth0Profile, patronRecord?: PatronRecord):
     emailValidated: auth0Profile.emailValidated,
     locked: auth0Profile.locked,
     creationDate: auth0Profile.creationDate,
-    lastLogin: auth0Profile.lastLogin,
+    updatedDate: auth0Profile.updatedDate,
+    lastLoginDate: auth0Profile.lastLoginDate,
     lastLoginIp: auth0Profile.lastLoginIp,
     totalLogins: auth0Profile.totalLogins,
     deleteRequested: auth0Profile.metadata?.deleteRequested
@@ -42,9 +43,10 @@ interface User {
   emailValidated: boolean,
   locked: boolean,
   creationDate: string,
-  lastLogin: string | null,
+  updatedDate: string,
+  lastLoginDate: string | null,
   lastLoginIp: string | null,
-  totalLogins: number,
+  totalLogins: number | null,
   deleteRequested: string | null
 }
 

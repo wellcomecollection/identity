@@ -2,6 +2,7 @@
   "summary": "Fetches a user",
   "description": "Fetches the user defined by the `userId` path parameter.",
   "tags": [
-    "User"
+    "User",
+    "Administrator"
   ]
 }

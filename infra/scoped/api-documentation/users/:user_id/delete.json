@@ -2,6 +2,6 @@
   "summary": "Deletes a user",
   "description": "Deletes the user defined by the `userId` path parameter.",
   "tags": [
-    "User"
+    "Administrator"
   ]
 }
