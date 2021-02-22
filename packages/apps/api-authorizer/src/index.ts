@@ -181,37 +181,31 @@ const resourceAcls: ResourceAcl[] = [
   {
     resource: '/users/{userId}/password',
     methods: ['PUT'],
-    check: [isSelf],
-    checkType: 'OR'
+    check: [isSelf]
   },
   {
     resource: '/users/{userId}/send-verification',
     methods: ['PUT'],
-    check: [isAdministrator],
+    check: [isAdministrator]
   },
   {
     resource: '/users/{userId}/lock',
-    methods: ['PUT'],
-    check: isAdministrator,
-  },
-  {
-    resource: '/users/{userId}/unlock',
-    methods: ['PUT'],
-    check: isAdministrator,
+    methods: ['PUT', 'DELETE'],
+    check: isAdministrator
   },
   {
     resource: '/users/{userId}/deletion-request',
     methods: ['PUT'],
-    check: isSelf,
+    check: isSelf
   },
   {
     resource: '/users/{userId}/deletion-request',
     methods: ['DELETE'],
-    check: isAdministrator,
+    check: isAdministrator
   },
   {
     resource: '/users/{userId}/validate',
     methods: ['POST'],
-    check: isSelf,
+    check: isSelf
   },
 ];
