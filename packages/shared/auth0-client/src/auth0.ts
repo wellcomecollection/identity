@@ -59,14 +59,20 @@ export function toAuth0SearchResults(page: number, sort: string, sortDir: number
     name: name,
     email: email,
     status: status,
-    results: auth0SearchResults.users.map((user: any) => {
-      try {
-        return toAuth0Profile(user)
-      } catch (e) {
-        console.log('An error occurred converting user [' + JSON.stringify(user) + '] to Auth0Profile: [' + e + ']');
-      }
-    })
+    results: toAuth0Profiles(auth0SearchResults.users)
   }
+}
+
+function toAuth0Profiles(users: any[]): Auth0Profile[] {
+  const auth0Profiles: Auth0Profile[] = [];
+  users.forEach(user => {
+    try {
+      auth0Profiles.push(toAuth0Profile(user));
+    } catch (e) {
+      console.log('An error occurred converting Auth0 user [' + JSON.stringify(user) + '] to Auth0Profile: [' + e + ']');
+    }
+  });
+  return auth0Profiles;
 }
 
 function extractUserId(value: string): string {
