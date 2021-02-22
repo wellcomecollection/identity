@@ -93,10 +93,6 @@ export function generateUserSearchQuery(name: string | undefined, email: string 
 
   let query: string[] = ['identities.connection:"Sierra-Connection"'];
 
-  if (!name && !email && !status) {
-    return ''; // Auth0 API treats this is an unfiltered search - return everything
-  }
-
   if (name) {
     query.push(...name.split(' ').map(token => 'name:*' + token + '*'));
   }
