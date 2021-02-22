@@ -10,7 +10,7 @@ import {
   getUser, lockUser,
 
 
-  removeDelete, requestDelete,
+  removeDelete, removeUserLock, requestDelete,
   searchUsers,
   sendPasswordResetEmail,
   sendVerificationEmail,
