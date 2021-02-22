@@ -3,7 +3,7 @@
   "title": "User Schema",
   "type": "object",
   "properties": {
-    "patronId": {
+    "userId": {
       "type": "number",
       "minimum": 0,
       "multipleOf": 1.0
@@ -13,30 +13,32 @@
       "minLength": 1
     },
     "firstName": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1
     },
     "lastName": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1
     },
     "email": {
       "type": "string",
-      "format": "email",
-      "minLength": 1
+      "format": "email"
     },
     "emailValidated": {
-      "type": "boolean",
-      "minLength": 1
+      "type": "boolean"
     },
     "locked": {
-      "type": "boolean",
-      "minLength": 1
+      "type": "boolean"
     },
     "creationDate": {
       "type": "string",
-      "format": "date-time",
-      "minLength": 1
+      "format": "date-time"
     },
-    "lastLogin": {
+    "updatedDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "lastLoginDate": {
       "type": "string",
       "format": "date-time"
     },
@@ -63,17 +65,14 @@
     }
   },
   "required": [
-    "patronId",
+    "userId",
     "barcode",
     "firstName",
     "lastName",
     "email",
     "emailValidated",
     "locked",
-    "creationDate",
-    "lastLogin",
-    "lastLoginIp",
-    "totalLogins"
+    "creationDate"
   ],
   "additionalProperties": true
 }
