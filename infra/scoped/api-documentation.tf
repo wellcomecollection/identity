@@ -1164,7 +1164,7 @@ resource "aws_api_gateway_documentation_part" "users_userid_lock_delete_param_us
   location {
     type   = "PATH_PARAMETER"
     path   = aws_api_gateway_resource.users_userid_lock.path
-    method = aws_api_gateway_method.users_userid_lock_put.http_method
+    method = aws_api_gateway_method.users_userid_lock_delete.http_method
     name   = "userId"
   }
 }
@@ -1227,7 +1227,7 @@ resource "aws_api_gateway_documentation_part" "users_userid_lock_delete_404" {
 
 # 500 Internal Server Error
 
-resource "aws_api_gateway_documentation_part" "users_userid_lock_put_500" {
+resource "aws_api_gateway_documentation_part" "users_userid_lock_delete_500" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
   properties  = file("${path.module}/api-documentation/users/:user_id/lock/delete-500.json")
 
