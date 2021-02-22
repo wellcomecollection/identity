@@ -490,7 +490,7 @@ export async function removeDelete(auth0Client: Auth0Client, emailClient: EmailC
   response.sendStatus(204);
 }
 
-export async function blockUser(auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
+export async function lockUser(auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
 
   const userId: number = getTargetUserId(request);
 
@@ -509,9 +509,24 @@ export async function blockUser(auth0Client: Auth0Client, request: Request, resp
   response.sendStatus(200);
 }
 
-export async function unblockUser(auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
+export async function removeUserLock(auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
 
   const userId: number = getTargetUserId(request);
+
+  const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(userId);
+  if (auth0Get.status !== ResponseStatus.Success) {
+    if (auth0Get.status === ResponseStatus.NotFound) {
+      response.status(404).json(toMessage(auth0Get.message));
+    } else {
+      response.status(500).json(toMessage(auth0Get.message));
+    }
+    return;
+  }
+
+  if (!auth0Get.result.locked) {
+    response.status(304).json(toMessage('User is not locked'));
+    return;
+  }
 
   const unblockUser: APIResponse<{}> = await auth0Client.unblockAccount(userId);
   if (unblockUser.status !== ResponseStatus.Success) {
@@ -525,7 +540,7 @@ export async function unblockUser(auth0Client: Auth0Client, request: Request, re
     return;
   }
 
-  response.sendStatus(200);
+  response.sendStatus(204);
 }
 
 export async function deleteUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {

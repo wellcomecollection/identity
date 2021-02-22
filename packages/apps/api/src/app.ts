@@ -5,13 +5,15 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import express, { Application, Request, Response } from 'express';
 import {
-  blockUser,
   changePassword,
   createUser, deleteUser,
-  getUser, removeDelete, requestDelete,
+  getUser, lockUser,
+
+
+  removeDelete, requestDelete,
   searchUsers,
   sendPasswordResetEmail,
-  sendVerificationEmail, unblockUser,
+  sendVerificationEmail,
   updateUser, validatePassword
 } from './handlers/user';
 import EmailClient from './utils/email';
@@ -110,17 +112,8 @@ function registerUsersUserIdLockResource(app: Application): void {
     origin: process.env.API_ALLOWED_ORIGINS
   });
   app.options('/users/:user_id/lock', corsOptions);
-  app.put('/users/:user_id/lock', corsOptions, (request: Request, response: Response) => blockUser(auth0Client, request, response));
-}
-
-function registerUsersUserIdUnlockResource(app: Application): void {
-  const corsOptions = cors({
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
-    methods: 'OPTIONS,PUT',
-    origin: process.env.API_ALLOWED_ORIGINS
-  });
-  app.options('/users/:user_id/unlock', corsOptions);
-  app.put('/users/:user_id/unlock', corsOptions, (request: Request, response: Response) => unblockUser(auth0Client, request, response));
+  app.put('/users/:user_id/lock', corsOptions, (request: Request, response: Response) => lockUser(auth0Client, request, response));
+  app.delete('/users/:user_id/lock', corsOptions, (request: Request, response: Response) => removeUserLock(auth0Client, request, response));
 }
 
 function registerUsersUserIdDeletionRequestResource(app: Application): void {
