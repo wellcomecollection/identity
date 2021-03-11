@@ -6,6 +6,7 @@ resource "auth0_tenant" "tenant" {
 
   flags {
     enable_custom_domain_in_emails = true
+    universal_login                = true # Enables the 'new' Universal Login experience
   }
 
   universal_login {
