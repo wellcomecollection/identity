@@ -43,3 +43,18 @@ resource "auth0_email_template" "reset_email" {
     ]
   }
 }
+
+resource "auth0_email_template" "welcome_email" {
+  template                = "welcome_email"
+  enabled                 = true
+  from                    = local.auth0_email_from
+  subject                 = aws_ssm_parameter.auth0_reset_email_subject.value
+  body                    = var.auth0_email_body_placeholder
+  syntax                  = "liquid"
+
+  lifecycle {
+    ignore_changes = [
+      body
+    ]
+  }
+}
