@@ -6,6 +6,7 @@ resource "auth0_tenant" "tenant" {
 
   flags {
     enable_custom_domain_in_emails = true
+    universal_login                = true # Enables the 'new' Universal Login experience
   }
 
   universal_login {
@@ -15,24 +16,9 @@ resource "auth0_tenant" "tenant" {
     }
   }
 
-  # The custom "Change Password" UI is enabled on the tenant level, because when the user enters into the change
-  # password flow they are doing so independently of an application (in other words, Auth0 applications are not involved
-  # in the Auth0 change password flow). On the other hand, the login screen are application aware and thus can be
-  # enabled and configured on a per-application basis.
-  change_password {
-    enabled = true
-    html    = var.auth0_html_placeholder
-  }
-
   error_page {
     html          = ""
     show_log_link = false
     url           = local.ams_error_uri
-  }
-
-  lifecycle {
-    ignore_changes = [
-      change_password.0.html
-    ]
   }
 }
