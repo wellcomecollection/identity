@@ -2,7 +2,7 @@
 # For local development / testing of the login flows and stuff ¯\_(ツ)_/¯
 
 resource "auth0_client" "dummy_test" {
-  name                 = "Dummy Test Client (${terraform.workspace})"
+  name                 = "Dummy Test Client${local.environment_qualifier}"
   app_type             = "regular_web"
   is_first_party       = true
   custom_login_page_on = true
@@ -29,7 +29,7 @@ resource "auth0_client" "dummy_test" {
 # Lets the API Gateway and underlying Lambda Functions interact with the Auth0 Management API
 
 resource "auth0_client" "api_gateway_identity" {
-  name                 = "Identity Lambda API (${terraform.workspace})"
+  name                 = "Identity Lambda API${local.environment_qualifier}"
   app_type             = "non_interactive"
   custom_login_page_on = false
 
@@ -62,7 +62,7 @@ resource "auth0_client_grant" "api_gateway_identity" {
 # (https://auth0.com/docs/extensions/deploy-cli-tool)
 
 resource "auth0_client" "buildkite" {
-  name                 = "Buildkite (${terraform.workspace})"
+  name                 = "Buildkite${local.environment_qualifier}"
   app_type             = "non_interactive"
   custom_login_page_on = false
 
@@ -143,7 +143,7 @@ resource "auth0_client_grant" "buildkite" {
 # Lets the Account Management System component initialise and process OAuth 2.0 / OIDC login requests through Auth0
 
 resource "auth0_client" "account_management_system" {
-  name                 = "Account Management System (${terraform.workspace})"
+  name                 = "Account Management System${local.environment_qualifier}"
   app_type             = "regular_web"
   is_first_party       = true
   custom_login_page_on = true
@@ -172,7 +172,7 @@ resource "auth0_client" "account_management_system" {
 # Lets the Account Administration System component initialise and process OAuth 2.0 / OIDC login requests through Auth0
 
 resource "auth0_client" "account_admin_system" {
-  name                 = "Account Administration System (${terraform.workspace})"
+  name                 = "Account Administration System${local.environment_qualifier}"
   app_type             = "regular_web"
   is_first_party       = true
   custom_login_page_on = true

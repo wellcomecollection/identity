@@ -1,5 +1,5 @@
 resource "auth0_tenant" "tenant" {
-  friendly_name = aws_ssm_parameter.auth0_friendly_name.value
+  friendly_name = "${aws_ssm_parameter.auth0_friendly_name.value}${local.environment_qualifier}"
   picture_url   = "https://${aws_s3_bucket.assets.bucket_regional_domain_name}/${aws_s3_bucket_object.assets_images_wellcomecollections-150x50-png.key}"
   support_email = local.auth0_email_address
   support_url   = aws_ssm_parameter.auth0_support_url.value
