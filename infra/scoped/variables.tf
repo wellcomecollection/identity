@@ -8,6 +8,9 @@ locals {
     "ManagedBy"   = var.tag_managed_by
   }
 
+  # Terraform
+  environment_qualifier = terraform.workspace != "prod" ? " (${upper(terraform.workspace)})" : ""
+
   # API Gateway
   api_hostname = "api.${aws_ssm_parameter.hostname_prefix.value}.${data.aws_ssm_parameter.hostname.value}"
 
