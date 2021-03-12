@@ -1,24 +1,34 @@
-import { SESv2 } from '@aws-sdk/client-sesv2';
-import { Auth0Profile } from '@weco/auth0-client/lib/auth0';
-import { APIResponse, successResponse, unhandledError } from '@weco/identity-common';
-import { Liquid } from 'liquidjs';
+import {Auth0Profile} from '@weco/auth0-client/lib/auth0';
+import {APIResponse, successResponse, unhandledError} from '@weco/identity-common';
+import {Liquid} from 'liquidjs';
 import * as path from 'path';
+import * as nodemailer from 'nodemailer';
+import Mail, {Options} from "nodemailer/lib/mailer";
 
-export default class EmailClient {
+export interface SmtpConfiguration {
+  host: string,
+  port: number,
+  secure: boolean,
+  auth: {
+    user: string,
+    pass: string
+  }
+}
 
-  private readonly ses: SESv2 = new SESv2({
-    region: 'eu-west-1'
-  });
+export class EmailClient {
+
   private readonly engine: Liquid = new Liquid({
     root: path.resolve(__dirname, 'templates/'),
     extname: '.liquid'
   });
 
+  private readonly smtp: Mail;
   private readonly fromAddress: string;
   private readonly adminAddress: string;
   private readonly supportUrl: string;
 
-  constructor(fromAddress: string, adminAddress: string, supportUrl: string) {
+  constructor(smtpConfiguration: SmtpConfiguration, fromAddress: string, adminAddress: string, supportUrl: string) {
+    this.smtp = nodemailer.createTransport(smtpConfiguration);
     this.fromAddress = fromAddress;
     this.adminAddress = adminAddress;
     this.supportUrl = supportUrl;
@@ -56,32 +66,20 @@ export default class EmailClient {
     return this.sendEmail(auth0Profile.email, subject, body);
   }
 
-  private async sendEmail(toAddress: string, subject: string, body: string): Promise<APIResponse<{}>> {
+  protected async sendEmail(toAddress: string, subject: string, body: string): Promise<APIResponse<{}>> {
 
-    const sesParams = {
-      Content: {
-        Simple: {
-          Subject: {
-            Data: subject
-          },
-          Body: {
-            Html: {
-              Data: body
-            }
-          }
-        }
-      },
-      Destination: {
-        ToAddresses: [toAddress]
-      },
-      FromEmailAddress: this.fromAddress
+    const smtpParams: Options = {
+      from: this.fromAddress,
+      to: toAddress,
+      subject: subject,
+      html: body
     };
 
-    return this.ses.sendEmail(sesParams).then(result => {
-      console.log('Email sent with message ID [' + result.MessageId + ']');
+    return this.smtp.sendMail(smtpParams).then(result => {
+      console.log('SMTP Email sent with message ID [' + result.messageId + ']');
       return successResponse({})
     }).catch(error => {
-      console.log('An error occurred sending email [' + sesParams + ']: [' + error + ']');
+      console.log('An error occurred sending SMTP email [' + smtpParams + ']: [' + error + ']');
       return unhandledError(error);
     });
   }

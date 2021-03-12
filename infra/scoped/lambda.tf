@@ -91,6 +91,10 @@ resource "aws_lambda_function" "api" {
       AUTH0_CLIENT_ID      = auth0_client.api_gateway_identity.client_id,
       AUTH0_CLIENT_SECRET  = auth0_client.api_gateway_identity.client_secret,
       API_ALLOWED_ORIGINS  = local.identity_v1_docs_endpoint,
+      EMAIL_SMTP_HOSTNAME  = aws_ssm_parameter.email_smtp_hostname.value,
+      EMAIL_SMTP_PORT      = aws_ssm_parameter.email_smtp_port.value,
+      EMAIL_SMTP_USERNAME  = aws_ssm_parameter.email_smtp_username.value,
+      EMAIL_SMTP_PASSWORD  = data.aws_secretsmanager_secret_version.email_smtp_password_secret_version.secret_string,
       EMAIL_FROM_ADDRESS   = local.auth0_email_from,
       EMAIL_ADMIN_ADDRESS  = aws_ssm_parameter.email_admin_address.value,
       SUPPORT_URL          = aws_ssm_parameter.auth0_support_url.value

@@ -29,6 +29,14 @@ output "wellcomecollection_org_ses_dkim_tokens" {
   ]
 }
 
+output "ses_smtp_hostname" {
+  value = "email-smtp.eu-west-1.amazonaws.com"
+}
+
+output "ses_smtp_port" {
+  value = 587
+}
+
 # ECR
 
 output "repository_build" {
