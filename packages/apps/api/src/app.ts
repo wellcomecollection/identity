@@ -19,7 +19,7 @@ import {
   updateUser,
   validatePassword
 } from './handlers/user';
-import {EmailClient} from "./utils/email";
+import EmailClient from "./utils/email";
 
 export default createApplication();
 

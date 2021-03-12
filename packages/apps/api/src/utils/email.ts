@@ -15,7 +15,7 @@ export interface SmtpConfiguration {
   }
 }
 
-export class EmailClient {
+export default class EmailClient {
 
   private readonly engine: Liquid = new Liquid({
     root: path.resolve(__dirname, 'templates/'),
