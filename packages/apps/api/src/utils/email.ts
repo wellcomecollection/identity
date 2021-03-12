@@ -1,9 +1,9 @@
-import {Auth0Profile} from '@weco/auth0-client/lib/auth0';
-import {APIResponse, successResponse, unhandledError} from '@weco/identity-common';
-import {Liquid} from 'liquidjs';
-import * as path from 'path';
+import { Auth0Profile } from '@weco/auth0-client/lib/auth0';
+import { APIResponse, successResponse, unhandledError } from '@weco/identity-common';
+import { Liquid } from 'liquidjs';
 import * as nodemailer from 'nodemailer';
-import Mail, {Options} from "nodemailer/lib/mailer";
+import Mail, { Options } from "nodemailer/lib/mailer";
+import * as path from 'path';
 
 export interface SmtpConfiguration {
   host: string,

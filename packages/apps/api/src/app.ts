@@ -3,7 +3,7 @@ import SierraClient from '@weco/sierra-client';
 import * as awsServerlessExpressMiddleware from 'aws-serverless-express/middleware';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import express, {Application, Request, Response} from 'express';
+import express, { Application, Request, Response } from 'express';
 import {
   changePassword,
   createUser,
@@ -45,7 +45,7 @@ function createApplication(): Application {
   const app: Application = express();
 
   app.use(bodyParser.json());
-  app.use(bodyParser.urlencoded({extended: true}));
+  app.use(bodyParser.urlencoded({ extended: true }));
   app.use(awsServerlessExpressMiddleware.eventContext());
 
   registerUsersResource(app);
