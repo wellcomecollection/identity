@@ -275,25 +275,6 @@ resource "aws_ssm_parameter" "cloudwatch_retention" {
   )
 }
 
-# SMTP
-
-resource "aws_ssm_parameter" "smtp_host" {
-  name  = "identity-smtp_host-${terraform.workspace}"
-  type  = "String"
-  value = var.ssm_parameter_placeholder
-
-  lifecycle {
-    ignore_changes = [value]
-  }
-
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-smtp_host-${terraform.workspace}"
-    }
-  )
-}
-
 # Azure AD
 
 resource "aws_ssm_parameter" "azure_ad_directory_id" {
@@ -431,6 +412,57 @@ resource "aws_ssm_parameter" "email_admin_address" {
     local.common_tags,
     {
       "Name" = "identity-email_admin_address-${terraform.workspace}"
+    }
+  )
+}
+
+resource "aws_ssm_parameter" "email_smtp_hostname" {
+  name  = "identity-email_smtp_hostname-${terraform.workspace}"
+  type  = "String"
+  value = var.ssm_parameter_placeholder
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+
+  tags = merge(
+    local.common_tags,
+    {
+      "Name" = "identity-email_smtp_hostname-${terraform.workspace}"
+    }
+  )
+}
+
+resource "aws_ssm_parameter" "email_smtp_port" {
+  name  = "identity-email_smtp_port-${terraform.workspace}"
+  type  = "String"
+  value = var.ssm_parameter_placeholder
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+
+  tags = merge(
+    local.common_tags,
+    {
+      "Name" = "identity-email_smtp_port-${terraform.workspace}"
+    }
+  )
+}
+
+resource "aws_ssm_parameter" "email_smtp_username" {
+  name  = "identity-email_smtp_username-${terraform.workspace}"
+  type  = "String"
+  value = var.ssm_parameter_placeholder
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+
+  tags = merge(
+    local.common_tags,
+    {
+      "Name" = "identity-email_smtp_username-${terraform.workspace}"
     }
   )
 }

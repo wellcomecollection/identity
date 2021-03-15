@@ -25,6 +25,16 @@ Client Secret: ${auth0_client.dummy_test.client_secret}"
 EOF
 }
 
+# Email
+
+output "smtp_username" {
+  value = aws_iam_access_key.auth0_email.id
+}
+
+output "smtp_password" {
+  value = aws_iam_access_key.auth0_email.ses_smtp_password_v4
+}
+
 # Environment variables (for CI / CD)
 
 output "ci_environment_variables" {

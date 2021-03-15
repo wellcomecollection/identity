@@ -6,17 +6,20 @@ import cors from 'cors';
 import express, { Application, Request, Response } from 'express';
 import {
   changePassword,
-  createUser, deleteUser,
-  getUser, lockUser,
-
-
-  removeDelete, removeUserLock, requestDelete,
+  createUser,
+  deleteUser,
+  getUser,
+  lockUser,
+  removeDelete,
+  removeUserLock,
+  requestDelete,
   searchUsers,
   sendPasswordResetEmail,
   sendVerificationEmail,
-  updateUser, validatePassword
+  updateUser,
+  validatePassword
 } from './handlers/user';
-import EmailClient from './utils/email';
+import EmailClient from "./utils/email";
 
 export default createApplication();
 
@@ -28,9 +31,15 @@ const auth0Client: Auth0Client = new Auth0Client(
   process.env.AUTH0_API_ROOT!, process.env.AUTH0_API_AUDIENCE!, process.env.AUTH0_CLIENT_ID!, process.env.AUTH0_CLIENT_SECRET!
 );
 
-const emailClient: EmailClient = new EmailClient(
-  process.env.EMAIL_FROM_ADDRESS!, process.env.EMAIL_ADMIN_ADDRESS!, process.env.SUPPORT_URL!
-);
+const emailClient: EmailClient = new EmailClient({
+  host: process.env.EMAIL_SMTP_HOSTNAME!,
+  port: Number(process.env.EMAIL_SMTP_PORT!),
+  secure: Boolean(process.env.EMAIL_SMTP_SECURE!),
+  auth: {
+    user: process.env.EMAIL_SMTP_USERNAME!,
+    pass: process.env.EMAIL_SMTP_PASSWORD!
+  }
+}, process.env.EMAIL_FROM_ADDRESS!, process.env.EMAIL_ADMIN_ADDRESS!, process.env.SUPPORT_URL!);
 
 function createApplication(): Application {
   const app: Application = express();

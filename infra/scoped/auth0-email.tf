@@ -4,10 +4,10 @@ resource "auth0_email" "email" {
   default_from_address = local.auth0_email_from
 
   credentials {
-    smtp_host = aws_ssm_parameter.smtp_host.value
+    smtp_host = aws_ssm_parameter.email_smtp_hostname.value
     smtp_port = 587
-    smtp_user = aws_iam_access_key.auth0_email.id
-    smtp_pass = aws_iam_access_key.auth0_email.ses_smtp_password_v4
+    smtp_user = aws_ssm_parameter.email_smtp_username.value
+    smtp_pass = data.aws_secretsmanager_secret_version.email_smtp_password_secret_version.secret_string
   }
 }
 
