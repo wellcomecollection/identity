@@ -86,8 +86,8 @@ function getUser(email, callback) {
         const firstName = subFields.find(subField => subField.tag === 'b');
         const lastName = subFields.find(subField => subField.tag === 'a');
         return {
-            firstName: firstName ? firstName.content.trim() : '',
-            lastName: lastName ? lastName.content.trim() : ''
+            firstName: firstName ? firstName.content.trim().replace(/(,*)$/, '') : '',
+            lastName: lastName ? lastName.content.trim().replace(/(,*)$/, '') : ''
         };
     }
 
