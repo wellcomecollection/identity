@@ -21,6 +21,63 @@ resource "aws_ssm_parameter" "hostname_prefix" {
   )
 }
 
+# Email
+
+resource "aws_ssm_parameter" "email_support_user" {
+  name  = "identity-email_support_user-${terraform.workspace}"
+  type  = "String"
+  value = var.ssm_parameter_placeholder
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+
+  tags = merge(
+    local.common_tags,
+    {
+      "Name" = "identity-email_support_user-${terraform.workspace}"
+    }
+  )
+}
+
+resource "aws_ssm_parameter" "email_noreply_user" {
+  name  = "identity-email_noreply_user-${terraform.workspace}"
+  type  = "String"
+  value = var.ssm_parameter_placeholder
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+
+  tags = merge(
+    local.common_tags,
+    {
+      "Name" = "identity-email_noreply_user-${terraform.workspace}"
+    }
+  )
+}
+
+resource "aws_ssm_parameter" "email_noreply_name" {
+  name  = "identity-email_noreply_name-${terraform.workspace}"
+  type  = "String"
+  value = var.ssm_parameter_placeholder
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+
+  tags = merge(
+    local.common_tags,
+    {
+      "Name" = "identity-email_noreply_name-${terraform.workspace}"
+    }
+  )
+}
+
+data "aws_ssm_parameter" "email_domain" {
+  name = "identity-email_domain"
+}
+
 # Sierra
 
 resource "aws_ssm_parameter" "sierra_api_hostname" {
@@ -125,44 +182,6 @@ resource "aws_ssm_parameter" "auth0_support_url" {
       "Name" = "identity-auth0_support_url-${terraform.workspace}"
     }
   )
-}
-
-resource "aws_ssm_parameter" "auth0_email_from_name" {
-  name  = "identity-auth0_email_from_name-${terraform.workspace}"
-  type  = "String"
-  value = var.ssm_parameter_placeholder
-
-  lifecycle {
-    ignore_changes = [value]
-  }
-
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-auth0_email_from_name-${terraform.workspace}"
-    }
-  )
-}
-
-resource "aws_ssm_parameter" "auth0_email_from_user" {
-  name  = "identity-auth0_email_from_user-${terraform.workspace}"
-  type  = "String"
-  value = var.ssm_parameter_placeholder
-
-  lifecycle {
-    ignore_changes = [value]
-  }
-
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-auth0_email_from_user-${terraform.workspace}"
-    }
-  )
-}
-
-data "aws_ssm_parameter" "auth0_email_from_domain" {
-  name = "identity-auth0_email_from_domain"
 }
 
 resource "aws_ssm_parameter" "auth0_verify_email_subject" {

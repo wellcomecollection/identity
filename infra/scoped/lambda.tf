@@ -95,7 +95,7 @@ resource "aws_lambda_function" "api" {
       EMAIL_SMTP_PORT      = aws_ssm_parameter.email_smtp_port.value,
       EMAIL_SMTP_USERNAME  = aws_ssm_parameter.email_smtp_username.value,
       EMAIL_SMTP_PASSWORD  = data.aws_secretsmanager_secret_version.email_smtp_password_secret_version.secret_string,
-      EMAIL_FROM_ADDRESS   = local.auth0_email_from,
+      EMAIL_FROM_ADDRESS   = local.email_noreply_name_and_address,
       EMAIL_ADMIN_ADDRESS  = aws_ssm_parameter.email_admin_address.value,
       SUPPORT_URL          = aws_ssm_parameter.auth0_support_url.value
     }

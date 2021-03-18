@@ -11,6 +11,11 @@ locals {
   # Terraform
   environment_qualifier = terraform.workspace != "prod" ? " (${upper(terraform.workspace)})" : ""
 
+  # Email
+  email_support_address          = "${aws_ssm_parameter.email_support_user.value}@${data.aws_ssm_parameter.email_domain.value}"
+  email_noreply_address          = "${aws_ssm_parameter.email_noreply_user.value}@${data.aws_ssm_parameter.email_domain.value}"
+  email_noreply_name_and_address = "${aws_ssm_parameter.email_noreply_name.value} <${local.email_noreply_address}>"
+
   # API Gateway
   api_hostname = "api.${aws_ssm_parameter.hostname_prefix.value}.${data.aws_ssm_parameter.hostname.value}"
 
@@ -22,10 +27,8 @@ locals {
   identity_v1_docs_endpoint = "https://${local.identity_v1_docs_hostname}"
 
   # Auth0
-  auth0_hostname      = "${aws_ssm_parameter.hostname_prefix.value}.${data.aws_ssm_parameter.hostname.value}"
-  auth0_endpoint      = "https://${local.auth0_hostname}"
-  auth0_email_address = "${aws_ssm_parameter.auth0_email_from_user.value}@${data.aws_ssm_parameter.auth0_email_from_domain.value}"
-  auth0_email_from    = "${aws_ssm_parameter.auth0_email_from_name.value} <${local.auth0_email_address}>"
+  auth0_hostname = "${aws_ssm_parameter.hostname_prefix.value}.${data.aws_ssm_parameter.hostname.value}"
+  auth0_endpoint = "https://${local.auth0_hostname}"
 
   # Wellcome Collection Site
   wellcome_collection_hostnames = {
