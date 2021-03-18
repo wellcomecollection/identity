@@ -45,6 +45,12 @@ resource "auth0_connection" "sierra" {
       CLIENT_SECRET = data.external.sierra_api_credentials.result.SierraAPISecret
     }
   }
+
+  lifecycle {
+    ignore_changes = [
+      options["custom_scripts"]
+    ]
+  }
 }
 
 resource "auth0_connection" "azure_ad" {
