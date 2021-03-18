@@ -19,8 +19,8 @@ resource "aws_ssm_parameter" "hostname" {
 
 # Auth0
 
-resource "aws_ssm_parameter" "auth0_email_from_domain" {
-  name  = "identity-auth0_email_from_domain"
+resource "aws_ssm_parameter" "email_domain" {
+  name  = "identity-email_domain"
   type  = "String"
   value = var.ssm_parameter_placeholder
 
@@ -31,7 +31,7 @@ resource "aws_ssm_parameter" "auth0_email_from_domain" {
   tags = merge(
     local.common_tags,
     {
-      "Name" = "identity-auth0_email_from_domain"
+      "Name" = "identity-email_domain"
     }
   )
 }
@@ -51,25 +51,6 @@ resource "aws_ssm_parameter" "api_gateway_log_format" {
     local.common_tags,
     {
       "Name" = "identity-api_gateway_log_format"
-    }
-  )
-}
-
-# AWS SES
-
-resource "aws_ssm_parameter" "ses_domain" {
-  name  = "identity-ses_domain"
-  type  = "String"
-  value = var.ssm_parameter_placeholder
-
-  lifecycle {
-    ignore_changes = [value]
-  }
-
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-ses_domain"
     }
   )
 }

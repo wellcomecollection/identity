@@ -43,7 +43,7 @@ data "aws_iam_policy_document" "identity_api_gateway_lambda_policy" {
       "ses:SendEmail"
     ]
     resources = [
-      "arn:aws:ses:eu-west-1:${data.aws_caller_identity.current.account_id}:identity/${data.aws_ssm_parameter.auth0_email_from_domain.value}"
+      "arn:aws:ses:eu-west-1:${data.aws_caller_identity.current.account_id}:identity/${data.aws_ssm_parameter.email_domain.value}"
     ]
   }
 }
