@@ -189,6 +189,10 @@ resource "auth0_client" "account_admin_system" {
     local.wellcome_collection_site_uri
   ]
 
+  jwt_configuration {
+    alg = "RS256"
+  }
+
   lifecycle {
     ignore_changes = [
       custom_login_page_preview,

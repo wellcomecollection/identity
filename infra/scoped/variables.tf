@@ -48,7 +48,7 @@ locals {
     stage = "account-admin-stage.wellcomecollection.org"
     prod  = "account-admin.wellcomecollection.org"
   }
-  aas_redirect_uri = "${local.account_admin_hostnames[terraform.workspace]}/callback"
+  aas_redirect_uri = "https://${local.account_admin_hostnames[terraform.workspace]}/api/auth/callback"
 }
 
 # Tags
