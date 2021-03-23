@@ -90,3 +90,37 @@ resource "aws_secretsmanager_secret_version" "account_management_system-api_key"
   secret_id     = aws_secretsmanager_secret.account_management_system-api_key.id
   secret_string = aws_api_gateway_api_key.account_management_system.value
 }
+
+# Account Admin System
+
+resource "aws_secretsmanager_secret" "account_admin_system-auth0_client_secret" {
+  name = "identity/${terraform.workspace}/account_admin_system/auth0_client_secret"
+
+  tags = merge(
+    local.common_tags,
+    {
+      "Name" = "identity/${terraform.workspace}/account_admin_system/auth0_client_secret"
+    }
+  )
+}
+
+resource "aws_secretsmanager_secret_version" "account_admin_system-auth0_client_secret" {
+  secret_id     = aws_secretsmanager_secret.account_admin_system-auth0_client_secret.id
+  secret_string = auth0_client.account_admin_system.client_secret
+}
+
+resource "aws_secretsmanager_secret" "account_admin_system-api_key" {
+  name = "identity/${terraform.workspace}/account_admin_system/api_key"
+
+  tags = merge(
+    local.common_tags,
+    {
+      "Name" = "identity/${terraform.workspace}/account_admin_system/api_key"
+    }
+  )
+}
+
+resource "aws_secretsmanager_secret_version" "account_admin_system-api_key" {
+  secret_id     = aws_secretsmanager_secret.account_admin_system-api_key.id
+  secret_string = aws_api_gateway_api_key.account_admin_system.value
+}

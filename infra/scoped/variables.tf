@@ -42,6 +42,13 @@ locals {
   ams_redirect_uri = "${local.wellcome_collection_site_uri}/${local.ams_context_path}/callback"
   ams_error_uri    = "${local.wellcome_collection_site_uri}/${local.ams_context_path}/error"
   ams_validate_uri = "${local.wellcome_collection_site_uri}/${local.ams_context_path}/validated"
+
+  # Account Admin System
+  account_admin_hostnames = {
+    stage = "account-admin-stage.wellcomecollection.org"
+    prod  = "account-admin.wellcomecollection.org"
+  }
+  aas_redirect_uri = "${local.account_admin_hostnames[terraform.workspace]}/callback"
 }
 
 # Tags

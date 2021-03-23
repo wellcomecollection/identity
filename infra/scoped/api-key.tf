@@ -56,3 +56,22 @@ resource "aws_api_gateway_usage_plan_key" "account_management_system" {
   usage_plan_id = aws_api_gateway_usage_plan.basic.id
   key_type      = "API_KEY"
 }
+
+# Account Admin System
+
+resource "aws_api_gateway_api_key" "account_admin_system" {
+  name = "account admin system"
+
+  tags = merge(
+    local.common_tags,
+    {
+      "Name" = "account admin system"
+    }
+  )
+}
+
+resource "aws_api_gateway_usage_plan_key" "account_admin_system" {
+  key_id        = aws_api_gateway_api_key.account_admin_system.id
+  usage_plan_id = aws_api_gateway_usage_plan.basic.id
+  key_type      = "API_KEY"
+}
