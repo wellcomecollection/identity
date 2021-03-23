@@ -49,6 +49,7 @@ locals {
     prod  = "account-admin.wellcomecollection.org"
   }
   aas_redirect_uri = "https://${local.account_admin_hostnames[terraform.workspace]}/api/auth/callback"
+  aas_logout_uri   = "https://${local.account_admin_hostnames[terraform.workspace]}"
 }
 
 # Tags

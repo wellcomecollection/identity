@@ -186,7 +186,7 @@ resource "auth0_client" "account_admin_system" {
   ]
 
   allowed_logout_urls = [
-    local.wellcome_collection_site_uri
+    local.aas_logout_uri
   ]
 
   jwt_configuration {
