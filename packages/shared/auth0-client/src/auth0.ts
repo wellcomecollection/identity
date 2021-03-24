@@ -4,18 +4,16 @@ export function toAuth0UserInfo(userInfo: any): Auth0UserInfo {
 
   // Mandatory Auth0 fields
   const sub: string = userInfo.sub;
-  const name: string = userInfo.name;
-  const email: string = userInfo.email;
-  if (!isNonBlank(sub) || !isNonBlank(name) || !isNonBlank(email)) {
+  if (!isNonBlank(sub)) {
     throw new Error('One or more required UserInfo fields are missing. Have all necessary scopes been requested?')
   }
 
   return {
     userId: extractUserId(sub),
-    name: name,
+    name: userInfo.name ? userInfo.name : null,
     firstName: userInfo.given_name ? userInfo.given_name : null,
     lastName: userInfo.family_name ? userInfo.family_name : null,
-    email: email,
+    email: userInfo.email ? userInfo.email : null,
     additionalAttributes: userInfo['https://wellcomecollection.org/'] ? userInfo['https://wellcomecollection.org/'] : null
   }
 }
