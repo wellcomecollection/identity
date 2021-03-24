@@ -103,7 +103,7 @@ export function generateUserSearchQuery(name: string | undefined, email: string 
     if (status === 'active') {
       // Auth0 again - records that have never been toggled to / from the blocked status, won't have a 'blocked' field
       // on them, so we test if the flag is either 'false', or if that field doesn't exist.
-      query.push('(blocked:false OR -blocked)')
+      query.push('!blocked:true')
     } else if (status === 'locked') {
       query.push('blocked:true')
     } else if (status === 'deletePending') {
@@ -154,8 +154,7 @@ export const Auth0SearchSortFields = new Map<string, string>([
   ['userId', 'user_id'],
   ['name', 'name'],
   ['email', 'email'],
-  ['lastLogin', 'last_login'],
-  ['locked', 'blocked']
+  ['lastLogin', 'last_login']
 ]);
 
 export const SierraConnection = 'Sierra-Connection';
