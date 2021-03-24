@@ -143,7 +143,7 @@ function buildAuthorizerResult(principal: string, effect: string, methodArn: str
 
 type ResourceAclMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 type ResourceAclCheckType = 'AND' | 'OR';
-type ResourceAclCheck = (user: Auth0UserInfo, pathParameters: Record<string, string | undefined> | null) => boolean;
+type ResourceAclCheck = (auth0UserInfo: Auth0UserInfo, pathParameters: Record<string, string | undefined> | null) => boolean;
 
 type ResourceAcl = {
   resource: string,
@@ -152,13 +152,13 @@ type ResourceAcl = {
   checkType?: ResourceAclCheckType
 };
 
-const isAdministrator = function (user: Auth0UserInfo, pathParameters: Record<string, string | undefined> | null): boolean {
+const isAdministrator = function (auth0UserInfo: Auth0UserInfo, pathParameters: Record<string, string | undefined> | null): boolean {
   // @ts-ignore is_admin isn't typed on additionalAttributes
-  return user.additionalAttributes?.is_admin ?? false;
+  return auth0UserInfo.additionalAttributes?.is_admin ?? false;
 };
 
-const isSelf = function (user: Auth0UserInfo, pathParameters: Record<string, string | undefined> | null): boolean {
-  return pathParameters?.userId === 'me' || pathParameters?.userId === user.userId.toString();
+const isSelf = function (auth0UserInfo: Auth0UserInfo, pathParameters: Record<string, string | undefined> | null): boolean {
+  return pathParameters?.userId === 'me' || pathParameters?.userId === auth0UserInfo.userId.toString();
 };
 
 const resourceAcls: ResourceAcl[] = [
