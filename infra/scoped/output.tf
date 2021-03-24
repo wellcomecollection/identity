@@ -27,11 +27,11 @@ EOF
 
 # Email
 
-output "smtp_username" {
+output "ses_smtp_username" {
   value = aws_iam_access_key.auth0_email.id
 }
 
-output "smtp_password" {
+output "ses_smtp_password" {
   value = aws_iam_access_key.auth0_email.ses_smtp_password_v4
 }
 
@@ -48,6 +48,6 @@ output "ci_environment_variables" {
     "export API_GATEWAY_AUTHORIZER_ID=${aws_api_gateway_authorizer.token_authorizer.id}",
     "export AWS_ACCOUNT_ID=${data.aws_caller_identity.current.account_id}",
     "export CLOUDFRONT_SWAGGER_UI_DISTRIBUTION_ID=${aws_cloudfront_distribution.swagger_ui_v1.id}",
-    "export SMTP_PASS=${aws_iam_access_key.auth0_email.ses_smtp_password_v4}"
+    "export SMTP_PASS=${data.aws_secretsmanager_secret_version.email_smtp_password_secret_version.secret_string}"
   ]
 }
