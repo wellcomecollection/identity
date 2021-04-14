@@ -2,6 +2,9 @@
 # For local development / testing of the login flows and stuff ¯\_(ツ)_/¯
 
 resource "auth0_client" "dummy_test" {
+  # Only deploy the dummy client if it's a non-production environment...
+  count = lower(terraform.workspace) != "prod" ? 1 : 0
+
   name                 = "Dummy Test Client${local.environment_qualifier}"
   app_type             = "regular_web"
   is_first_party       = true
@@ -35,7 +38,8 @@ resource "auth0_client" "api_gateway_identity" {
 
   grant_types = [
     "client_credentials",
-    "password", "http://auth0.com/oauth/grant-type/password-realm" // Required for testing of Auth0 credentials via the API
+    "password",
+    "http://auth0.com/oauth/grant-type/password-realm" // Required for testing of Auth0 credentials via the API
   ]
 
   lifecycle {

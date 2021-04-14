@@ -1,5 +1,6 @@
-data "aws_route53_zone" "identity" {
-  name = data.aws_ssm_parameter.hostname.value
+data "aws_route53_zone" "root" {
+  provider = aws.dns
+  name     = "wellcomecollection.org"
 }
 
 # Identity Auth0
@@ -18,19 +19,21 @@ locals {
 resource "aws_route53_record" "identity_auth0" {
   count = length(local.identity_auth0_verification)
 
-  name    = auth0_custom_domain.identity.domain
-  records = [local.identity_auth0_verification[count.index].record]
-  ttl     = 60
-  type    = local.identity_auth0_verification[count.index].type
-  zone_id = data.aws_route53_zone.identity.id
+  provider = aws.dns
+  name     = auth0_custom_domain.identity.domain
+  records  = [local.identity_auth0_verification[count.index].record]
+  ttl      = 60
+  type     = local.identity_auth0_verification[count.index].type
+  zone_id  = data.aws_route53_zone.root.id
 }
 
 # Identity API
 
 resource "aws_route53_record" "identity_api_v1" {
-  name    = aws_api_gateway_domain_name.identity_v1.domain_name
-  type    = "A"
-  zone_id = data.aws_route53_zone.identity.id
+  provider = aws.dns
+  name     = aws_api_gateway_domain_name.identity_v1.domain_name
+  type     = "A"
+  zone_id  = data.aws_route53_zone.root.id
 
   alias {
     evaluate_target_health = true
@@ -48,20 +51,22 @@ resource "aws_route53_record" "identity_api_v1_validation" {
     }
   }
 
+  provider        = aws.dns
   allow_overwrite = true
   name            = each.value.name
   records         = [each.value.record]
   ttl             = 60
   type            = each.value.type
-  zone_id         = data.aws_route53_zone.identity.zone_id
+  zone_id         = data.aws_route53_zone.root.zone_id
 }
 
 # S3 Swagger UI
 
 resource "aws_route53_record" "swagger_ui_v1" {
-  name    = local.identity_v1_docs_hostname
-  type    = "A"
-  zone_id = data.aws_route53_zone.identity.id
+  provider = aws.dns
+  name     = local.identity_v1_docs_hostname
+  type     = "A"
+  zone_id  = data.aws_route53_zone.root.id
 
   alias {
     evaluate_target_health = false
@@ -79,10 +84,11 @@ resource "aws_route53_record" "swagger_ui_v1_validation" {
     }
   }
 
+  provider        = aws.dns
   allow_overwrite = true
   name            = each.value.name
   records         = [each.value.record]
   ttl             = 60
   type            = each.value.type
-  zone_id         = data.aws_route53_zone.identity.zone_id
+  zone_id         = data.aws_route53_zone.root.zone_id
 }
