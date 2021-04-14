@@ -64,6 +64,8 @@ export default class SierraClient {
 
   async getPatronRecordByBarcode(barcode: string): Promise<APIResponse<PatronRecord>> {
     return this.getInstance().then(instance => {
+      // Varfield tag 'b' is used for the patron's barcode
+      // See https://documentation.iii.com/sierrahelp/Default.htm#sril/sril_records_varfld_types_patron.html
       return instance.get('/patrons/find', {
         params: {
           varFieldTag: 'b',
@@ -87,6 +89,8 @@ export default class SierraClient {
 
   async getPatronRecordByEmail(email: string): Promise<APIResponse<PatronRecord>> {
     return this.getInstance().then(instance => {
+      // Varfield tag 'z' is used for the patron's email address
+      // See https://documentation.iii.com/sierrahelp/Default.htm#sril/sril_records_varfld_types_patron.html
       return instance.get('/patrons/find', {
         params: {
           varFieldTag: 'z',
@@ -99,6 +103,7 @@ export default class SierraClient {
       ).catch(error => {
         if (error.response) {
           switch (error.response.status) {
+            // TODO: Do email addresses count as PII?  Will this response be logged anywhere?
             case 404:
               return errorResponse('Patron record with email address [' + email + '] not found', ResponseStatus.NotFound, error);
           }
@@ -118,6 +123,10 @@ export default class SierraClient {
         if (error.response) {
           switch (error.response.status) {
             case 400: {
+              // I think this is referring to API error code 136 "PIN is not valid"
+              // See https://techdocs.iii.com/sierraapi/Content/zReference/errorHandling.htm
+              // TODO: Check this is what's being tested here.
+              // TODO: What is specificCode == 3 for?
               if (error.response.data?.code === 136 && error.response.data?.specificCode === 3) {
                 return errorResponse('Password does not meet Sierra policy', ResponseStatus.PasswordTooWeak, error);
               } else {
@@ -206,6 +215,10 @@ export default class SierraClient {
         if (error.response) {
           switch (error.response.status) {
             case 400:
+              // I think this is referring to API error code 136 "PIN is not valid"
+              // See https://techdocs.iii.com/sierraapi/Content/zReference/errorHandling.htm
+              // TODO: Check this is what's being tested here.
+              // TODO: What is specificCode == 3 for?
               if (error.response.data?.code === 136 && error.response.data?.specificCode === 3) {
                 return errorResponse('Password does not meet Sierra policy', ResponseStatus.PasswordTooWeak, error);
               } else {
