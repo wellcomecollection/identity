@@ -117,7 +117,7 @@ export default class Auth0Client {
               }
             }
             case 409:
-              return errorResponse('AUth0 user with email [' + email + '] already exists', ResponseStatus.UserAlreadyExists, error);
+              return errorResponse('Auth0 user with email [' + email + '] already exists', ResponseStatus.UserAlreadyExists, error);
           }
         }
         return unhandledError(error);
