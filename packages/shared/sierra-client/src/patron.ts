@@ -82,6 +82,11 @@ export function toCreatePatron(firstName: string, lastName: string, pin: string)
     },
     varFields: [
       {
+        // Field tag 'n' is used for the patron name.
+        // See https://documentation.iii.com/sierrahelp/Default.htm#sril/sril_records_varfld_types_patron.html
+        //
+        // MARC tag 100 is used for the personal name.
+        // See https://www.loc.gov/marc/bibliographic/bd100.html
         fieldTag: 'n',
         marcTag: '100',
         subfields: [
