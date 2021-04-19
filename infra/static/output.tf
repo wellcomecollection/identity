@@ -1,9 +1,3 @@
-# DNS
-
-output "account_zone_name_servers" {
-  value = aws_route53_zone.account.name_servers
-}
-
 # SES
 
 output "wellcomecollection_org_ses_vertification_token" {

@@ -40,8 +40,12 @@ variable "network_private_cidrs" {
 
 # SSM Parameters
 
-variable "ssm_parameter_placeholder" {
+variable "ssm_parameter_placeholder_string" {
   default = "unset"
+}
+
+variable "ssm_parameter_placeholder_number" {
+  default = 0
 }
 
 # Auth0 Email

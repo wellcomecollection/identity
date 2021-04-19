@@ -16,15 +16,21 @@ output "auth0_endpoint" {
 
 # Auth0 clients
 
-output "auth0_client_dummy-test" {
-  value = <<EOF
-Client Name: ${auth0_client.dummy_test.name}
-API Key: ${aws_api_gateway_api_key.dummy.value}
-Client ID: ${auth0_client.dummy_test.client_id}
-Client Secret: ${auth0_client.dummy_test.client_secret}"
-EOF
+output "auth0_client_dummy_name" {
+  value = auth0_client.dummy_test.*.name
 }
 
+output "auth0_client_dummy_api_key" {
+  value = aws_api_gateway_api_key.dummy.*.value
+}
+
+output "auth0_client_dummy_client_id" {
+  value = auth0_client.dummy_test.*.client_id
+}
+
+output "auth0_client_dummy_client_secret" {
+  value = auth0_client.dummy_test.*.client_secret
+}
 # Email
 
 output "ses_smtp_username" {
