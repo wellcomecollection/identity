@@ -161,7 +161,8 @@ resource "auth0_client" "account_management_system" {
   ]
 
   allowed_logout_urls = [
-    local.wellcome_collection_site_uri
+    local.wellcome_collection_site_uri,
+    local.ams_delete_requested_uri
   ]
 
   lifecycle {
