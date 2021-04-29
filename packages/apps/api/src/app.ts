@@ -5,6 +5,10 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import express, { Application, Request, Response } from 'express';
 import {
+  createItemRequest,
+  getItemRequests
+} from './handlers/requests';
+import {
   changePassword,
   createUser,
   deleteUser,
@@ -143,4 +147,23 @@ function registerUsersUserIdValidateResource(app: Application): void {
   });
   app.options('/users/:user_id/validate', corsOptions);
   app.post('/users/:user_id/validate', corsOptions, (request: Request, response: Response) => validatePassword(auth0Client, request, response));
+}
+
+function registerUsersManageRequests(app: Application): void {
+  const corsOptions = cors({
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
+    methods: 'OPTIONS,POST,GET',
+    origin: process.env.API_ALLOWED_ORIGINS
+  });
+  app.options('/users/:user_id/item-requests', corsOptions);
+  app.post(
+    '/users/:user_id/item-requests', corsOptions,
+    (request: Request, response: Response) =>
+      postItemRequest(auth0Client, request, response)
+  );
+  app.get(
+    '/users/:user_id/item-requests', corsOptions,
+    (request: Request, response: Response) =>
+      getItemRequests(sierraClient, auth0Client, request, response)
+  );
 }

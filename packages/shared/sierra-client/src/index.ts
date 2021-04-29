@@ -220,6 +220,53 @@ export default class SierraClient {
     });
   }
 
+  async getPatronHolds(recordNumber: number): Promise<APIResponse<HoldResultSet>> {
+    return this.getInstance().then(instance => {
+      return instance.get('/patrons/' + recordNumber + '/holds', {
+        params: {
+          limit: 100,
+          offset: 0,
+          fields: "record"
+        },
+        validateStatus: status => status === 200
+      }).then(response =>
+        successResponse(toHoldResultSet(response.data))
+      ).catch(error => {
+        if (error.response) {
+          switch (error.response.status) {
+            case 404:
+              return errorResponse('Patron record with ID [' + recordNumber + '] not found', ResponseStatus.NotFound, error);
+          }
+        }
+        return unhandledError(error)
+      });
+    });
+  }
+
+  async getPatronRecordByEmail(email: string): Promise<APIResponse<PatronRecord>> {
+    return this.getInstance().then(instance => {
+      return instance.get('/patrons/find', {
+        params: {
+          varFieldTag: 'z',
+          varFieldContent: email.toLowerCase(),
+          fields: 'varFields'
+        },
+        validateStatus: status => status === 200
+      }).then(response =>
+        successResponse(toPatronRecord(response.data))
+      ).catch(error => {
+        if (error.response) {
+          switch (error.response.status) {
+            case 404:
+              return errorResponse('Patron record with email address [' + email + '] not found', ResponseStatus.NotFound, error);
+          }
+        }
+        return unhandledError(error);
+      });
+    });
+  }
+
+
   private async getInstance(): Promise<AxiosInstance> {
     return axios.post(this.apiRoot + '/token', {}, {
       auth: {
