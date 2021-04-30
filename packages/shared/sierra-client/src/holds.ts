@@ -3,7 +3,7 @@ export interface Location {
   name: string;
 }
 
-export interface Hold {
+export interface HoldStatus {
   code: string;
   name: string;
 }

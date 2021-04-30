@@ -392,7 +392,7 @@ describe('sierra client', () => {
 
   describe('get list of holds', () => {
     it('returns an empty list of holds', async () => {
-      moxios.stubRequest('/patrons/' + recordNumber + '/holds', {
+      moxios.stubRequest('/patrons/' + recordNumber + '/holds?fields=frozen,placed,pickupByDate,pickupLocation,status', {
         status: 200,
         response: {
           entries: [],
@@ -407,22 +407,19 @@ describe('sierra client', () => {
       const result = (<SuccessResponse<HoldResultSet>>response).result;
       equal(result.total, 0);
       equal(result.start, 0);
-      equal(result.entries, []);
+      equal(result.entries.length, 0);
     })
 
     it('returns a list of holds', async () => {
-      moxios.stubRequest('/patrons/' + recordNumber + '/holds', {
+      moxios.stubRequest('/patrons/' + recordNumber + '/holds?fields=frozen,placed,pickupByDate,pickupLocation,status', {
         status: 200,
         response: {
           total: 2,
           entries: [
             {
-              id: 'https://libsys.wellcomelibrary.org/iii/sierra-api/v5/patrons/holds/111111',
-              record: 'https://libsys.wellcomelibrary.org/iii/sierra-api/v5/items/1234567',
-              patron: 'https://libsys.wellcomelibrary.org/iii/sierra-api/v5/patrons/' + recordNumber,
+              id: 'https://libsys.wellcomelibrary.org/iii/sierra-api/v5/patrons/holds/1111111',
               frozen: false,
               placed: '2001-01-01',
-              notWantedBeforeDate: '2019-11-19',
               pickupByDate: '2019-12-03T04:00:00Z',
               pickupLocation: {
                 code: 'sepbb',
@@ -431,17 +428,12 @@ describe('sierra client', () => {
               status: {
                 code: 'i',
                 name: 'item hold ready for pickup.'
-              },
-              recordType: 'i',
-              priority: 1
+              }
             },
             {
-              id: 'https://libsys.wellcomelibrary.org/iii/sierra-api/v5/patrons/holds/222222',
-              record: 'https://libsys.wellcomelibrary.org/iii/sierra-api/v5/items/7654321',
-              patron: 'https://libsys.wellcomelibrary.org/iii/sierra-api/v5/patrons/' + recordNumber,
+              id: 'https://libsys.wellcomelibrary.org/iii/sierra-api/v5/patrons/holds/2222222',
               frozen: false,
               placed: '2002-02-02',
-              notWantedBeforeDate: '2019-11-19',
               pickupByDate: '2019-12-03T04:00:00Z',
               pickupLocation: {
                 code: 'sepbb',
@@ -450,9 +442,7 @@ describe('sierra client', () => {
               status: {
                 code: 'i',
                 name: 'item hold ready for pickup.'
-              },
-              recordType: 'i',
-              priority: 1
+              }
             }
           ]
         }
@@ -462,11 +452,11 @@ describe('sierra client', () => {
       equal(response.status, ResponseStatus.Success)
 
       const result = (<SuccessResponse<HoldResultSet>>response).result;
-      equal(result.total, 0);
-      equal(result.start, 0);
+      equal(result.total, 2);
+      equal(result.start, undefined);
       equal(result.entries, [
         {
-          id: 'https://libsys.wellcomelibrary.org/iii/sierra-api/v5/patrons/holds/111111',
+          id: 'https://libsys.wellcomelibrary.org/iii/sierra-api/v5/patrons/holds/1111111',
           frozen: false,
           placed: '2001-01-01',
           pickupByDate: '2019-12-03T04:00:00Z',
@@ -497,7 +487,7 @@ describe('sierra client', () => {
     })
 
     it('returns an unexpected response code', async () => {
-      moxios.stubRequest('/patrons/' + recordNumber + '/holds', {
+      moxios.stubRequest('/patrons/' + recordNumber + '/holds?fields=frozen,placed,pickupByDate,pickupLocation,status', {
         status: 500,
       });
 

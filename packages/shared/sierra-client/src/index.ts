@@ -222,7 +222,19 @@ export default class SierraClient {
   }
 
   async getPatronHolds(recordNumber: number): Promise<APIResponse<HoldResultSet>> {
-    // boom
+    return this.getInstance().then(instance => {
+      return instance.get('/patrons/' + recordNumber + '/holds', {
+        params: {
+          fields: 'frozen,placed,pickupByDate,pickupLocation,status'
+        }
+      }).then(response => {
+        return successResponse(response.data);
+      }).catch(error => {
+        // Note: In testing, the Sierra API never returns a 404 here,
+        // even if asked to look up holds for a non-existent user.
+        return unhandledError(error);
+      });
+    });
   }
 
   private async getInstance(): Promise<AxiosInstance> {
