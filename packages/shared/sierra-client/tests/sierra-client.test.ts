@@ -319,6 +319,15 @@ describe('sierra client', () => {
 
     });
 
+    it('returns a 404 if there is no user', async () => {
+      moxios.stubRequest('/patrons/' + recordNumber, {
+        status: 404
+      });
+
+      const response = await client.updatePatronPostCreationFields(recordNumber, email);
+      equal(response.status, ResponseStatus.NotFound)
+    })
+
     it('returns an unexpected response code', async () => {
       moxios.stubRequest('/patrons/' + recordNumber, {
         status: 500
@@ -360,6 +369,15 @@ describe('sierra client', () => {
       equal(response.status, ResponseStatus.MalformedRequest)
 
     });
+
+    it('returns a 404 if there is no user', async () => {
+      moxios.stubRequest('/patrons/' + recordNumber, {
+        status: 404
+      });
+
+      const response = await client.updatePatronRecord(recordNumber, email);
+      equal(response.status, ResponseStatus.NotFound)
+    })
 
     it('returns an unexpected response code', async () => {
       moxios.stubRequest('/patrons/' + recordNumber, {
