@@ -454,36 +454,8 @@ describe('sierra client', () => {
       const result = (<SuccessResponse<HoldResultSet>>response).result;
       equal(result.total, 2);
       equal(result.start, undefined);
-      equal(result.entries, [
-        {
-          id: 'https://libsys.wellcomelibrary.org/iii/sierra-api/v5/patrons/holds/1111111',
-          frozen: false,
-          placed: '2001-01-01',
-          pickupByDate: '2019-12-03T04:00:00Z',
-          pickupLocation: {
-            code: 'sepbb',
-            name: 'Rare Materials Room'
-          },
-          status: {
-            code: 'i',
-            name: 'item hold ready for pickup.'
-          }
-        },
-        {
-          id: 'https://libsys.wellcomelibrary.org/iii/sierra-api/v5/patrons/holds/2222222',
-          frozen: false,
-          placed: '2002-02-02',
-          pickupByDate: '2019-12-03T04:00:00Z',
-          pickupLocation: {
-            code: 'sepbb',
-            name: 'Rare Materials Room'
-          },
-          status: {
-            code: 'i',
-            name: 'item hold ready for pickup.'
-          }
-        }
-      ]);
+      equal(result.entries[0].id, 'https://libsys.wellcomelibrary.org/iii/sierra-api/v5/patrons/holds/1111111');
+      equal(result.entries[1].id, 'https://libsys.wellcomelibrary.org/iii/sierra-api/v5/patrons/holds/2222222');
     })
 
     it('returns an unexpected response code', async () => {
