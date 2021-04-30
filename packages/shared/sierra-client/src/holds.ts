@@ -10,7 +10,6 @@ export interface Hold {
 
 export interface Hold {
   id: string;
-  patron: string;
   frozen?: boolean;
   placed: string;
   pickupByDate: string;

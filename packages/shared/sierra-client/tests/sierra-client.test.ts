@@ -3,6 +3,7 @@ import { equal } from 'assert';
 import axios, { AxiosInstance } from 'axios';
 import moxios from 'moxios';
 import SierraClient from '../lib';
+import { HoldResultSet } from '../lib/holds';
 import { PatronRecord } from '../lib/patron';
 
 describe('sierra client', () => {
@@ -390,6 +391,111 @@ describe('sierra client', () => {
   });
 
   describe('get list of holds', () => {
+    it('returns an empty list of holds', async () => {
+      moxios.stubRequest('/patrons/' + recordNumber + '/holds', {
+        status: 200,
+        response: {
+          entries: [],
+          start: 0,
+          total: 0
+        }
+      });
+
+      const response = await client.getPatronHolds(recordNumber);
+      equal(response.status, ResponseStatus.Success)
+
+      const result = (<SuccessResponse<HoldResultSet>>response).result;
+      equal(result.total, 0);
+      equal(result.start, 0);
+      equal(result.entries, []);
+    })
+
+    it('returns a list of holds', async () => {
+      moxios.stubRequest('/patrons/' + recordNumber + '/holds', {
+        status: 200,
+        response: {
+          total: 2,
+          entries: [
+            {
+              id: 'https://libsys.wellcomelibrary.org/iii/sierra-api/v5/patrons/holds/111111',
+              record: 'https://libsys.wellcomelibrary.org/iii/sierra-api/v5/items/1234567',
+              patron: 'https://libsys.wellcomelibrary.org/iii/sierra-api/v5/patrons/' + recordNumber,
+              frozen: false,
+              placed: '2001-01-01',
+              notWantedBeforeDate: '2019-11-19',
+              pickupByDate: '2019-12-03T04:00:00Z',
+              pickupLocation: {
+                code: 'sepbb',
+                name: 'Rare Materials Room'
+              },
+              status: {
+                code: 'i',
+                name: 'item hold ready for pickup.'
+              },
+              recordType: 'i',
+              priority: 1
+            },
+            {
+              id: 'https://libsys.wellcomelibrary.org/iii/sierra-api/v5/patrons/holds/222222',
+              record: 'https://libsys.wellcomelibrary.org/iii/sierra-api/v5/items/7654321',
+              patron: 'https://libsys.wellcomelibrary.org/iii/sierra-api/v5/patrons/' + recordNumber,
+              frozen: false,
+              placed: '2002-02-02',
+              notWantedBeforeDate: '2019-11-19',
+              pickupByDate: '2019-12-03T04:00:00Z',
+              pickupLocation: {
+                code: 'sepbb',
+                name: 'Rare Materials Room'
+              },
+              status: {
+                code: 'i',
+                name: 'item hold ready for pickup.'
+              },
+              recordType: 'i',
+              priority: 1
+            }
+          ]
+        }
+      });
+
+      const response = await client.getPatronHolds(recordNumber);
+      equal(response.status, ResponseStatus.Success)
+
+      const result = (<SuccessResponse<HoldResultSet>>response).result;
+      equal(result.total, 0);
+      equal(result.start, 0);
+      equal(result.entries, [
+        {
+          id: 'https://libsys.wellcomelibrary.org/iii/sierra-api/v5/patrons/holds/111111',
+          frozen: false,
+          placed: '2001-01-01',
+          pickupByDate: '2019-12-03T04:00:00Z',
+          pickupLocation: {
+            code: 'sepbb',
+            name: 'Rare Materials Room'
+          },
+          status: {
+            code: 'i',
+            name: 'item hold ready for pickup.'
+          }
+        },
+        {
+          id: 'https://libsys.wellcomelibrary.org/iii/sierra-api/v5/patrons/holds/2222222',
+          frozen: false,
+          placed: '2002-02-02',
+          pickupByDate: '2019-12-03T04:00:00Z',
+          pickupLocation: {
+            code: 'sepbb',
+            name: 'Rare Materials Room'
+          },
+          status: {
+            code: 'i',
+            name: 'item hold ready for pickup.'
+          }
+        }
+      ]);
+    })
+
     it('returns an unexpected response code', async () => {
       moxios.stubRequest('/patrons/' + recordNumber + '/holds', {
         status: 500,
