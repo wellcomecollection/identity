@@ -208,4 +208,9 @@ const resourceAcls: ResourceAcl[] = [
     methods: ['POST'],
     check: isSelf
   },
+  {
+    resource: '/users/{userId}/item-requests',
+    methods: ['POST', 'GET'],
+    check: isSelf
+  },
 ];
