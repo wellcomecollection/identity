@@ -388,6 +388,17 @@ describe('sierra client', () => {
       equal(response.status, ResponseStatus.UnknownError)
     });
   });
+
+  describe('get list of holds', () => {
+    it('returns an unexpected response code', async () => {
+      moxios.stubRequest('/patrons/' + recordNumber + '/holds', {
+        status: 500,
+      });
+
+      const response = await client.getPatronHolds(recordNumber);
+      equal(response.status, ResponseStatus.UnknownError)
+    })
+  })
 });
 
 const apiRoot: string = 'https://localhost';

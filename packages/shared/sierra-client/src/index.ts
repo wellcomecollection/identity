@@ -2,6 +2,7 @@ import { APIResponse, errorResponse, ResponseStatus, successResponse, unhandledE
 import type { AxiosInstance } from 'axios';
 import axios from 'axios';
 import { extractRecordNumberFromLink, PatronRecord, toCreatePatron, toPatronRecord } from './patron';
+import { HoldResultSet } from './holds';
 
 export default class SierraClient {
 
@@ -218,6 +219,10 @@ export default class SierraClient {
         return unhandledError(error);
       });
     });
+  }
+
+  async getPatronHolds(recordNumber: number): Promise<APIResponse<HoldResultSet>> {
+    // boom
   }
 
   private async getInstance(): Promise<AxiosInstance> {
