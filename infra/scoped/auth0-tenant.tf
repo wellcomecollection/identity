@@ -4,6 +4,9 @@ resource "auth0_tenant" "tenant" {
   support_email = local.email_support_address
   support_url   = aws_ssm_parameter.auth0_support_url.value
 
+  # This is required for the 'password' grant type that is used when testing user credentials
+  default_directory = auth0_connection.sierra.name
+
   flags {
     enable_custom_domain_in_emails = true
     universal_login                = true # Enables the 'new' Universal Login experience
