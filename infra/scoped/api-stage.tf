@@ -40,7 +40,7 @@ resource "aws_api_gateway_method_settings" "identity_v1" {
   settings {
     metrics_enabled    = true
     logging_level      = "INFO"
-    data_trace_enabled = true
+    data_trace_enabled = false
   }
 
   depends_on = [
