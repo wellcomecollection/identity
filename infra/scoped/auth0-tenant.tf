@@ -24,12 +24,12 @@ resource "auth0_tenant" "tenant" {
   # the 'a0deploy' utility (which our CI / CD pipeline uses) throws an error.
   change_password {
     enabled = false
-    html = ""
+    html    = "unset"
   }
 
   guardian_mfa_page {
     enabled = false
-    html = ""
+    html    = "unset"
   }
 
   error_page {
