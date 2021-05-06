@@ -19,9 +19,13 @@ resource "auth0_tenant" "tenant" {
     }
   }
 
-  # We use the "new" Universal Login Experience and so don't require either the 'change_password' or 'guardian_mfa_page'
-  # resources (which refer to the Legacy Experience), but if we don't have them and explicitly set them to 'false' then
-  # the 'a0deploy' utility (which our CI / CD pipeline uses) throws an error.
+  # The auth-deploy-cli tool queries the Auth0 Management API to fetch the current HTML customisations for the three
+  # pages supported by the Legacy Experience. It queries the API and gets JSON response, and then uses the names of the
+  # three pages (which are hardcoded in the tool) to look up the objects in the JSON. The code appears to assume that,
+  # if the key is present in the JSON, then the corresponding HTML must be there too inside the object. That isn't the
+  # case, and in fact if you've never toggled the customisations on / off, they appear as empty objects {}. The tool
+  # can't handle this and errors out.
+
   change_password {
     enabled = false
     html    = "unset"
@@ -33,7 +37,7 @@ resource "auth0_tenant" "tenant" {
   }
 
   error_page {
-    html          = ""
+    html          = "unset"
     show_log_link = false
     url           = local.ams_error_uri
   }
