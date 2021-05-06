@@ -8,8 +8,6 @@
       "minLength": 1
     }
   },
-  "required": [
-    "password"
-  ],
+  "required": ["password"],
   "additionalProperties": false
 }

@@ -1,6 +1,16 @@
 import Auth0Client from '@weco/auth0-client';
-import { Auth0Profile, Auth0SearchResults, Auth0SearchSortFields, SearchStatuses } from '@weco/auth0-client/lib/auth0';
-import { APIResponse, isNonBlank, ResponseStatus, truncate } from '@weco/identity-common';
+import {
+  Auth0Profile,
+  Auth0SearchResults,
+  Auth0SearchSortFields,
+  SearchStatuses,
+} from '@weco/auth0-client/lib/auth0';
+import {
+  APIResponse,
+  isNonBlank,
+  ResponseStatus,
+  truncate,
+} from '@weco/identity-common';
 import SierraClient from '@weco/sierra-client';
 import { PatronRecord } from '@weco/sierra-client/lib/patron';
 import { Request, Response } from 'express';
@@ -8,16 +18,23 @@ import { toMessage } from '../models/common';
 import { toSearchResults, toUser } from '../models/user';
 import EmailClient from '../utils/email';
 
-export async function validatePassword(auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
-
+export async function validatePassword(
+  auth0Client: Auth0Client,
+  request: Request,
+  response: Response
+): Promise<void> {
   const userId: number = getTargetUserId(request);
   const password: string = request.body.password;
   if (!isNonBlank(password)) {
-    response.status(400).json(toMessage('All fields must be provided and non-blank'));
+    response
+      .status(400)
+      .json(toMessage('All fields must be provided and non-blank'));
     return;
   }
 
-  const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(userId);
+  const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(
+    userId
+  );
   if (auth0Get.status !== ResponseStatus.Success) {
     if (auth0Get.status === ResponseStatus.NotFound) {
       response.status(404).json(toMessage(auth0Get.message));
@@ -27,7 +44,10 @@ export async function validatePassword(auth0Client: Auth0Client, request: Reques
     return;
   }
 
-  const validationResult = await auth0Client.validateUserCredentials(auth0Get.result.email, password);
+  const validationResult = await auth0Client.validateUserCredentials(
+    auth0Get.result.email,
+    password
+  );
   if (validationResult.status !== ResponseStatus.Success) {
     if (validationResult.status === ResponseStatus.InvalidCredentials) {
       response.status(401).json(toMessage(validationResult.message));
@@ -40,11 +60,17 @@ export async function validatePassword(auth0Client: Auth0Client, request: Reques
   response.sendStatus(200);
 }
 
-export async function getUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
-
+export async function getUser(
+  sierraClient: SierraClient,
+  auth0Client: Auth0Client,
+  request: Request,
+  response: Response
+): Promise<void> {
   const userId: number = getTargetUserId(request);
 
-  const sierraGet: APIResponse<PatronRecord> = await sierraClient.getPatronRecordByRecordNumber(userId);
+  const sierraGet: APIResponse<PatronRecord> = await sierraClient.getPatronRecordByRecordNumber(
+    userId
+  );
   if (sierraGet.status !== ResponseStatus.Success) {
     if (sierraGet.status === ResponseStatus.NotFound) {
       response.status(404).json(toMessage(sierraGet.message));
@@ -54,7 +80,9 @@ export async function getUser(sierraClient: SierraClient, auth0Client: Auth0Clie
     return;
   }
 
-  const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(userId);
+  const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(
+    userId
+  );
   if (auth0Get.status !== ResponseStatus.Success) {
     if (auth0Get.status === ResponseStatus.NotFound) {
       response.status(404).json(toMessage(auth0Get.message));
@@ -67,38 +95,65 @@ export async function getUser(sierraClient: SierraClient, auth0Client: Auth0Clie
   response.status(200).json(toUser(auth0Get.result, sierraGet.result));
 }
 
-export async function createUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
-
+export async function createUser(
+  sierraClient: SierraClient,
+  auth0Client: Auth0Client,
+  request: Request,
+  response: Response
+): Promise<void> {
   const firstName: string = request.body.firstName;
   const lastName: string = request.body.lastName;
   const email: string = request.body.email;
   const password: string = request.body.password;
-  if (!isNonBlank(firstName) || !isNonBlank(lastName) || !isNonBlank(email) || !isNonBlank(password)) {
-    response.status(400).json(toMessage('All fields must be provided and non-blank'));
+  if (
+    !isNonBlank(firstName) ||
+    !isNonBlank(lastName) ||
+    !isNonBlank(email) ||
+    !isNonBlank(password)
+  ) {
+    response
+      .status(400)
+      .json(toMessage('All fields must be provided and non-blank'));
     return;
   }
 
-  const sierraGet: APIResponse<PatronRecord> = await sierraClient.getPatronRecordByEmail(email);
+  const sierraGet: APIResponse<PatronRecord> = await sierraClient.getPatronRecordByEmail(
+    email
+  );
   if (sierraGet.status !== ResponseStatus.NotFound) {
     if (sierraGet.status === ResponseStatus.Success) {
-      response.status(409).json(toMessage('Patron record with email [' + email + '] already exists'));
+      response
+        .status(409)
+        .json(
+          toMessage('Patron record with email [' + email + '] already exists')
+        );
     } else {
       response.status(500).json(toMessage(sierraGet.message));
     }
     return;
   }
 
-  const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByEmail(email);
+  const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByEmail(
+    email
+  );
   if (auth0Get.status !== ResponseStatus.NotFound) {
     if (auth0Get.status === ResponseStatus.Success) {
-      response.status(409).json(toMessage('Auth0 user with email [' + email + '] already exists'));
+      response
+        .status(409)
+        .json(
+          toMessage('Auth0 user with email [' + email + '] already exists')
+        );
     } else {
       response.status(500).json(toMessage(auth0Get.message));
     }
     return;
   }
 
-  const sierraCreate: APIResponse<number> = await sierraClient.createPatronRecord(firstName, lastName, truncate(password, 30));
+  const sierraCreate: APIResponse<number> = await sierraClient.createPatronRecord(
+    firstName,
+    lastName,
+    truncate(password, 30)
+  );
   if (sierraCreate.status !== ResponseStatus.Success) {
     if (sierraCreate.status === ResponseStatus.MalformedRequest) {
       response.status(400).json(toMessage(sierraCreate.message));
@@ -110,7 +165,13 @@ export async function createUser(sierraClient: SierraClient, auth0Client: Auth0C
     return;
   }
 
-  const auth0Create: APIResponse<Auth0Profile> = await auth0Client.createUser(sierraCreate.result, firstName, lastName, email, password);
+  const auth0Create: APIResponse<Auth0Profile> = await auth0Client.createUser(
+    sierraCreate.result,
+    firstName,
+    lastName,
+    email,
+    password
+  );
   if (auth0Create.status !== ResponseStatus.Success) {
     await sierraClient.deletePatronRecord(sierraCreate.result);
     if (auth0Create.status === ResponseStatus.MalformedRequest) {
@@ -125,7 +186,10 @@ export async function createUser(sierraClient: SierraClient, auth0Client: Auth0C
     return;
   }
 
-  const sierraUpdate: APIResponse<PatronRecord> = await sierraClient.updatePatronPostCreationFields(sierraCreate.result, email);
+  const sierraUpdate: APIResponse<PatronRecord> = await sierraClient.updatePatronPostCreationFields(
+    sierraCreate.result,
+    email
+  );
   if (sierraUpdate.status !== ResponseStatus.Success) {
     if (sierraUpdate.status === ResponseStatus.MalformedRequest) {
       response.status(400).json(toMessage(sierraUpdate.message));
@@ -138,11 +202,17 @@ export async function createUser(sierraClient: SierraClient, auth0Client: Auth0C
   response.status(201).json(toUser(auth0Create.result, sierraUpdate.result));
 }
 
-export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
-
+export async function updateUser(
+  sierraClient: SierraClient,
+  auth0Client: Auth0Client,
+  request: Request,
+  response: Response
+): Promise<void> {
   const userId: number = getTargetUserId(request);
 
-  const auth0UserIdGet: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(userId);
+  const auth0UserIdGet: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(
+    userId
+  );
   if (auth0UserIdGet.status !== ResponseStatus.Success) {
     if (auth0UserIdGet.status === ResponseStatus.NotFound) {
       response.status(404).json(toMessage(auth0UserIdGet.message));
@@ -153,53 +223,98 @@ export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0C
   }
   const auth0Profile: Auth0Profile = auth0UserIdGet.result;
 
-  const fields: { [key: string]: { value: string, modified: boolean } } = {
+  const fields: { [key: string]: { value: string; modified: boolean } } = {
     email: {
-      modified: !!request.body.email && request.body.email !== auth0Profile.email,
+      modified:
+        !!request.body.email && request.body.email !== auth0Profile.email,
       get value() {
-        return this.modified ? request.body.email : auth0Profile.email
-      }
+        return this.modified ? request.body.email : auth0Profile.email;
+      },
     },
     firstName: {
-      modified: !!request.body.firstName && request.body.firstName !== auth0Profile.firstName,
+      modified:
+        !!request.body.firstName &&
+        request.body.firstName !== auth0Profile.firstName,
       get value() {
-        return this.modified ? request.body.firstName : auth0Profile.firstName
-      }
+        return this.modified ? request.body.firstName : auth0Profile.firstName;
+      },
     },
     lastName: {
-      modified: !!request.body.lastName && request.body.lastName !== auth0Profile.lastName,
+      modified:
+        !!request.body.lastName &&
+        request.body.lastName !== auth0Profile.lastName,
       get value() {
-        return this.modified ? request.body.lastName : auth0Profile.lastName
-      }
-    }
+        return this.modified ? request.body.lastName : auth0Profile.lastName;
+      },
+    },
   };
 
-  const modifiedFields: string[] = Object.keys(fields).filter(field => fields[field].modified);
+  const modifiedFields: string[] = Object.keys(fields).filter(
+    (field) => fields[field].modified
+  );
   if (modifiedFields.length === 0) {
     response.sendStatus(304);
     return;
   }
 
-  if ((modifiedFields.includes('firstName') || modifiedFields.includes('lastName')) && !userIsAdmin(request)) {
-    response.status(403).json(toMessage('Attempt to modify immutable fields [' + modifiedFields.join(',') + ']'));
+  if (
+    (modifiedFields.includes('firstName') ||
+      modifiedFields.includes('lastName')) &&
+    !userIsAdmin(request)
+  ) {
+    response
+      .status(403)
+      .json(
+        toMessage(
+          'Attempt to modify immutable fields [' +
+            modifiedFields.join(',') +
+            ']'
+        )
+      );
     return;
   }
 
   if (modifiedFields.includes('email')) {
-    const auth0EmailGet: APIResponse<Auth0Profile> = await auth0Client.getUserByEmail(fields.email.value);
+    const auth0EmailGet: APIResponse<Auth0Profile> = await auth0Client.getUserByEmail(
+      fields.email.value
+    );
     if (auth0EmailGet.status !== ResponseStatus.NotFound) {
-      if (auth0EmailGet.status === ResponseStatus.Success && auth0EmailGet.result.userId !== userId.toString()) {
-        response.status(409).json(toMessage('Auth0 user with email [' + fields.email.value + '] already exists'));
+      if (
+        auth0EmailGet.status === ResponseStatus.Success &&
+        auth0EmailGet.result.userId !== userId.toString()
+      ) {
+        response
+          .status(409)
+          .json(
+            toMessage(
+              'Auth0 user with email [' +
+                fields.email.value +
+                '] already exists'
+            )
+          );
       } else if (auth0EmailGet.status === ResponseStatus.UnknownError) {
         response.status(500).json(toMessage(auth0EmailGet.message));
       }
-      return
+      return;
     }
 
-    const sierraEmailGet: APIResponse<PatronRecord> = await sierraClient.getPatronRecordByEmail(fields.email.value);
+    const sierraEmailGet: APIResponse<PatronRecord> = await sierraClient.getPatronRecordByEmail(
+      fields.email.value
+    );
     if (sierraEmailGet.status !== ResponseStatus.NotFound) {
-      if (sierraEmailGet.status === ResponseStatus.Success && sierraEmailGet.result.recordNumber !== userId) {
-        response.status(409).json(toMessage('Patron record with email [' + fields.email.value + '] already exists'));
+      if (
+        sierraEmailGet.status === ResponseStatus.Success &&
+        sierraEmailGet.result.recordNumber !== userId
+      ) {
+        response
+          .status(409)
+          .json(
+            toMessage(
+              'Patron record with email [' +
+                fields.email.value +
+                '] already exists'
+            )
+          );
       } else if (sierraEmailGet.status === ResponseStatus.UnknownError) {
         response.status(500).json(toMessage(sierraEmailGet.message));
       }
@@ -207,7 +322,12 @@ export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0C
     }
   }
 
-  const auth0Update: APIResponse<Auth0Profile> = await auth0Client.updateUser(userId, fields.email.value, fields.firstName.value, fields.lastName.value);
+  const auth0Update: APIResponse<Auth0Profile> = await auth0Client.updateUser(
+    userId,
+    fields.email.value,
+    fields.firstName.value,
+    fields.lastName.value
+  );
   if (auth0Update.status !== ResponseStatus.Success) {
     if (auth0Update.status === ResponseStatus.NotFound) {
       response.status(404).json(toMessage(auth0Update.message));
@@ -221,7 +341,10 @@ export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0C
     return;
   }
 
-  const sierraUpdate: APIResponse<PatronRecord> = await sierraClient.updatePatronRecord(userId, fields.email.value);
+  const sierraUpdate: APIResponse<PatronRecord> = await sierraClient.updatePatronRecord(
+    userId,
+    fields.email.value
+  );
   if (sierraUpdate.status !== ResponseStatus.Success) {
     if (sierraUpdate.status === ResponseStatus.NotFound) {
       response.status(404).json(toMessage(sierraUpdate.message));
@@ -236,17 +359,26 @@ export async function updateUser(sierraClient: SierraClient, auth0Client: Auth0C
   response.status(200).json(toUser(auth0Update.result, sierraUpdate.result));
 }
 
-export async function changePassword(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
-
+export async function changePassword(
+  sierraClient: SierraClient,
+  auth0Client: Auth0Client,
+  request: Request,
+  response: Response
+): Promise<void> {
   const userId: number = getTargetUserId(request);
 
   const password: string = request.body.password;
   if (!isNonBlank(password)) {
-    response.status(400).json(toMessage('All fields must be provided and non-blank'));
+    response
+      .status(400)
+      .json(toMessage('All fields must be provided and non-blank'));
     return;
   }
 
-  const auth0Update: APIResponse<Auth0Profile> = await auth0Client.updatePassword(userId, password);
+  const auth0Update: APIResponse<Auth0Profile> = await auth0Client.updatePassword(
+    userId,
+    password
+  );
   if (auth0Update.status !== ResponseStatus.Success) {
     if (auth0Update.status === ResponseStatus.NotFound) {
       response.status(404).json(toMessage(auth0Update.message));
@@ -260,7 +392,10 @@ export async function changePassword(sierraClient: SierraClient, auth0Client: Au
     return;
   }
 
-  const sierraUpdate: APIResponse<PatronRecord> = await sierraClient.updatePassword(userId, truncate(password, 30));
+  const sierraUpdate: APIResponse<PatronRecord> = await sierraClient.updatePassword(
+    userId,
+    truncate(password, 30)
+  );
   if (sierraUpdate.status !== ResponseStatus.Success) {
     if (sierraUpdate.status === ResponseStatus.NotFound) {
       response.status(404).json(toMessage(sierraUpdate.message));
@@ -277,47 +412,84 @@ export async function changePassword(sierraClient: SierraClient, auth0Client: Au
   response.sendStatus(200);
 }
 
-export async function searchUsers(auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
-
+export async function searchUsers(
+  auth0Client: Auth0Client,
+  request: Request,
+  response: Response
+): Promise<void> {
   const page: number = Number(request.query.page);
   const pageSize: number = Number(request.query.pageSize);
   const sort: string = request.query.sort as string;
   const sortDir: number = Number(request.query.sortDir);
 
   if (isNaN(page) || isNaN(pageSize) || !isNonBlank(sort) || isNaN(sortDir)) {
-    response.status(400).json(toMessage('All fields [page, pageSize, sort, sortDir] must be provided and non-blank'));
+    response
+      .status(400)
+      .json(
+        toMessage(
+          'All fields [page, pageSize, sort, sortDir] must be provided and non-blank'
+        )
+      );
     return;
   }
 
   if (!Auth0SearchSortFields.get(sort)) {
-    response.status(400).json(toMessage('Invalid sort field, one of [' + Array.from(Auth0SearchSortFields.keys()) + '] must be provided'));
+    response
+      .status(400)
+      .json(
+        toMessage(
+          'Invalid sort field, one of [' +
+            Array.from(Auth0SearchSortFields.keys()) +
+            '] must be provided'
+        )
+      );
     return;
   }
 
   if (sortDir !== 1 && sortDir !== -1) {
-    response.status(400).json(toMessage('\'sortDir\' must be \'1\' or \'-1\' to sort ascending and descending respectively'));
+    response
+      .status(400)
+      .json(
+        toMessage(
+          "'sortDir' must be '1' or '-1' to sort ascending and descending respectively"
+        )
+      );
     return;
   }
 
   const name: string | undefined = request.query.name as string | undefined;
   if (name && !isNonBlank(name)) {
-    response.status(400).json(toMessage('\'name\' was provided but was blank or empty'));
+    response
+      .status(400)
+      .json(toMessage("'name' was provided but was blank or empty"));
     return;
   }
 
   const email: string | undefined = request.query.email as string | undefined;
   if (email && !isNonBlank(email)) {
-    response.status(400).json(toMessage('\'email\' was provided but was blank or empty'));
+    response
+      .status(400)
+      .json(toMessage("'email' was provided but was blank or empty"));
     return;
   }
 
   const status: string | undefined = request.query.status as string | undefined;
   if (status && !SearchStatuses.includes(status)) {
-    response.status(400).json(toMessage('\'status\' must be one of [' + SearchStatuses + ']'));
+    response
+      .status(400)
+      .json(toMessage("'status' must be one of [" + SearchStatuses + ']'));
     return;
   }
 
-  const userSearch: APIResponse<Auth0SearchResults> = await auth0Client.searchUsers(page, pageSize, sort, sortDir, name, email, status);
+  const userSearch: APIResponse<Auth0SearchResults> = await auth0Client.searchUsers(
+    page,
+    pageSize,
+    sort,
+    sortDir,
+    name,
+    email,
+    status
+  );
   if (userSearch.status !== ResponseStatus.Success) {
     if (userSearch.status === ResponseStatus.MalformedRequest) {
       response.status(400).json(toMessage(userSearch.message));
@@ -332,11 +504,16 @@ export async function searchUsers(auth0Client: Auth0Client, request: Request, re
   response.status(200).json(toSearchResults(userSearch.result));
 }
 
-export async function sendVerificationEmail(auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
-
+export async function sendVerificationEmail(
+  auth0Client: Auth0Client,
+  request: Request,
+  response: Response
+): Promise<void> {
   const userId: number = getTargetUserId(request);
 
-  const userGet: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(userId);
+  const userGet: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(
+    userId
+  );
   if (userGet.status !== ResponseStatus.Success) {
     if (userGet.status === ResponseStatus.NotFound) {
       response.status(404).json(toMessage(userGet.message));
@@ -351,7 +528,9 @@ export async function sendVerificationEmail(auth0Client: Auth0Client, request: R
     return;
   }
 
-  const sendVerification: APIResponse<{}> = await auth0Client.sendVerificationEmail(userId);
+  const sendVerification: APIResponse<{}> = await auth0Client.sendVerificationEmail(
+    userId
+  );
   if (sendVerification.status !== ResponseStatus.Success) {
     if (sendVerification.status === ResponseStatus.MalformedRequest) {
       response.status(400).json(toMessage(sendVerification.message));
@@ -364,11 +543,16 @@ export async function sendVerificationEmail(auth0Client: Auth0Client, request: R
   response.sendStatus(200);
 }
 
-export async function sendPasswordResetEmail(auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
-
+export async function sendPasswordResetEmail(
+  auth0Client: Auth0Client,
+  request: Request,
+  response: Response
+): Promise<void> {
   const userId: number = getTargetUserId(request);
 
-  const userGet: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(userId);
+  const userGet: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(
+    userId
+  );
   if (userGet.status !== ResponseStatus.Success) {
     if (userGet.status === ResponseStatus.NotFound) {
       response.status(404).json(toMessage(userGet.message));
@@ -378,7 +562,9 @@ export async function sendPasswordResetEmail(auth0Client: Auth0Client, request: 
     return;
   }
 
-  const sendPasswordReset: APIResponse<{}> = await auth0Client.sendPasswordResetEmail(userGet.result.email);
+  const sendPasswordReset: APIResponse<{}> = await auth0Client.sendPasswordResetEmail(
+    userGet.result.email
+  );
   if (sendPasswordReset.status !== ResponseStatus.Success) {
     if (sendPasswordReset.status === ResponseStatus.MalformedRequest) {
       response.status(400).json(toMessage(sendPasswordReset.message));
@@ -391,11 +577,17 @@ export async function sendPasswordResetEmail(auth0Client: Auth0Client, request: 
   response.sendStatus(200);
 }
 
-export async function requestDelete(auth0Client: Auth0Client, emailClient: EmailClient, request: Request, response: Response): Promise<void> {
-
+export async function requestDelete(
+  auth0Client: Auth0Client,
+  emailClient: EmailClient,
+  request: Request,
+  response: Response
+): Promise<void> {
   const userId: number = getTargetUserId(request);
 
-  const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(userId);
+  const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(
+    userId
+  );
   if (auth0Get.status !== ResponseStatus.Success) {
     if (auth0Get.status === ResponseStatus.NotFound) {
       response.status(404).json(toMessage(auth0Get.message));
@@ -406,41 +598,76 @@ export async function requestDelete(auth0Client: Auth0Client, emailClient: Email
   }
 
   if (auth0Get.result?.metadata?.deleteRequested) {
-    response.status(304).json(toMessage('Deletion request already processing for user with ID [' + userId + ']'));
+    response
+      .status(304)
+      .json(
+        toMessage(
+          'Deletion request already processing for user with ID [' +
+            userId +
+            ']'
+        )
+      );
     return;
   }
 
-  const emailDeleteAdmin: APIResponse<{}> = await emailClient.sendDeleteRequestAdmin(auth0Get.result);
+  const emailDeleteAdmin: APIResponse<{}> = await emailClient.sendDeleteRequestAdmin(
+    auth0Get.result
+  );
   if (emailDeleteAdmin.status !== ResponseStatus.Success) {
     response.status(500).json(toMessage(emailDeleteAdmin.message));
     return;
   }
 
-  const auth0Update: APIResponse<{}> = await auth0Client.setAppMetadata(userId, {
-    deleteRequested: new Date().toISOString()
-  });
+  const auth0Update: APIResponse<{}> = await auth0Client.setAppMetadata(
+    userId,
+    {
+      deleteRequested: new Date().toISOString(),
+    }
+  );
   if (auth0Update.status !== ResponseStatus.Success) {
-    console.log('An error occurred applying deletion flag to Auth0 record [' + userId + ']: [' + auth0Update + ']');
+    console.log(
+      'An error occurred applying deletion flag to Auth0 record [' +
+        userId +
+        ']: [' +
+        auth0Update +
+        ']'
+    );
   }
 
   const auth0Block: APIResponse<{}> = await auth0Client.blockAccount(userId);
   if (auth0Block.status !== ResponseStatus.Success) {
-    console.log('An error blocking Auth0 record [' + userId + ']: [' + auth0Block + ']');
+    console.log(
+      'An error blocking Auth0 record [' + userId + ']: [' + auth0Block + ']'
+    );
   }
 
-  const emailDeleteUser: APIResponse<{}> = await emailClient.sendDeleteRequestUser(auth0Get.result);
+  const emailDeleteUser: APIResponse<{}> = await emailClient.sendDeleteRequestUser(
+    auth0Get.result
+  );
   if (emailDeleteUser.status !== ResponseStatus.Success) {
-    console.log('An error notifying Auth0 user [' + userId + '] of the deletion request: [' + emailDeleteUser + ']');
+    console.log(
+      'An error notifying Auth0 user [' +
+        userId +
+        '] of the deletion request: [' +
+        emailDeleteUser +
+        ']'
+    );
   }
 
   response.sendStatus(200);
 }
 
-export async function removeDelete(auth0Client: Auth0Client, emailClient: EmailClient, request: Request, response: Response): Promise<void> {
-
+export async function removeDelete(
+  auth0Client: Auth0Client,
+  emailClient: EmailClient,
+  request: Request,
+  response: Response
+): Promise<void> {
   const userId: number = getTargetUserId(request);
 
-  const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(userId);
+  const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(
+    userId
+  );
   if (auth0Get.status !== ResponseStatus.Success) {
     if (auth0Get.status === ResponseStatus.NotFound) {
       response.status(404).json(toMessage(auth0Get.message));
@@ -451,14 +678,21 @@ export async function removeDelete(auth0Client: Auth0Client, emailClient: EmailC
   }
 
   if (!auth0Get.result?.metadata?.deleteRequested) {
-    response.status(304).json(toMessage('No deletion requests for user with ID [' + userId + ']'));
+    response
+      .status(304)
+      .json(
+        toMessage('No deletion requests for user with ID [' + userId + ']')
+      );
     return;
   }
 
   const metadata: Record<string, string> = auth0Get.result.metadata;
   delete metadata.deleteRequested;
 
-  const auth0Update: APIResponse<{}> = await auth0Client.setAppMetadata(userId, metadata);
+  const auth0Update: APIResponse<{}> = await auth0Client.setAppMetadata(
+    userId,
+    metadata
+  );
   if (auth0Update.status !== ResponseStatus.Success) {
     if (auth0Update.status === ResponseStatus.MalformedRequest) {
       response.status(400).json(toMessage(auth0Update.message));
@@ -470,7 +704,9 @@ export async function removeDelete(auth0Client: Auth0Client, emailClient: EmailC
     return;
   }
 
-  const auth0Unblock: APIResponse<{}> = await auth0Client.unblockAccount(userId);
+  const auth0Unblock: APIResponse<{}> = await auth0Client.unblockAccount(
+    userId
+  );
   if (auth0Unblock.status !== ResponseStatus.Success) {
     if (auth0Unblock.status === ResponseStatus.MalformedRequest) {
       response.status(400).json(toMessage(auth0Unblock.message));
@@ -482,16 +718,27 @@ export async function removeDelete(auth0Client: Auth0Client, emailClient: EmailC
     return;
   }
 
-  const emailDeleteRemovalUser: APIResponse<{}> = await emailClient.sendDeleteRemovalUser(auth0Get.result);
+  const emailDeleteRemovalUser: APIResponse<{}> = await emailClient.sendDeleteRemovalUser(
+    auth0Get.result
+  );
   if (emailDeleteRemovalUser.status !== ResponseStatus.Success) {
-    console.log('An error notifying Auth0 user [' + userId + '] of the deletion removal request: [' + emailDeleteRemovalUser + ']');
+    console.log(
+      'An error notifying Auth0 user [' +
+        userId +
+        '] of the deletion removal request: [' +
+        emailDeleteRemovalUser +
+        ']'
+    );
   }
 
   response.sendStatus(204);
 }
 
-export async function lockUser(auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
-
+export async function lockUser(
+  auth0Client: Auth0Client,
+  request: Request,
+  response: Response
+): Promise<void> {
   const userId: number = getTargetUserId(request);
 
   const blockUser: APIResponse<{}> = await auth0Client.blockAccount(userId);
@@ -509,11 +756,16 @@ export async function lockUser(auth0Client: Auth0Client, request: Request, respo
   response.sendStatus(200);
 }
 
-export async function removeUserLock(auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
-
+export async function removeUserLock(
+  auth0Client: Auth0Client,
+  request: Request,
+  response: Response
+): Promise<void> {
   const userId: number = getTargetUserId(request);
 
-  const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(userId);
+  const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(
+    userId
+  );
   if (auth0Get.status !== ResponseStatus.Success) {
     if (auth0Get.status === ResponseStatus.NotFound) {
       response.status(404).json(toMessage(auth0Get.message));
@@ -543,8 +795,12 @@ export async function removeUserLock(auth0Client: Auth0Client, request: Request,
   response.sendStatus(204);
 }
 
-export async function deleteUser(sierraClient: SierraClient, auth0Client: Auth0Client, request: Request, response: Response): Promise<void> {
-
+export async function deleteUser(
+  sierraClient: SierraClient,
+  auth0Client: Auth0Client,
+  request: Request,
+  response: Response
+): Promise<void> {
   const userId: number = getTargetUserId(request);
 
   const auth0Delete: APIResponse<{}> = await auth0Client.deleteUser(userId);
@@ -557,7 +813,9 @@ export async function deleteUser(sierraClient: SierraClient, auth0Client: Auth0C
     return;
   }
 
-  const patronDelete: APIResponse<{}> = await sierraClient.deletePatronRecord(userId);
+  const patronDelete: APIResponse<{}> = await sierraClient.deletePatronRecord(
+    userId
+  );
   if (patronDelete.status !== ResponseStatus.Success) {
     if (patronDelete.status === ResponseStatus.NotFound) {
       response.status(404).json(toMessage(patronDelete.message));
@@ -571,16 +829,20 @@ export async function deleteUser(sierraClient: SierraClient, auth0Client: Auth0C
 }
 
 function getTargetUserId(request: Request): number {
-
   if (request.params.user_id === 'me') {
-
     if (userIsAdmin(request)) {
       throw new Error('Administrator users cannot operate on themselves');
     }
 
-    const callerId: number = Number(request.apiGateway?.event.requestContext.authorizer?.callerId);
+    const callerId: number = Number(
+      request.apiGateway?.event.requestContext.authorizer?.callerId
+    );
     if (isNaN(callerId)) {
-      throw new Error('Caller attempted to operate on themself, but has an invalid user ID: [' + callerId + ']');
+      throw new Error(
+        'Caller attempted to operate on themself, but has an invalid user ID: [' +
+          callerId +
+          ']'
+      );
     }
 
     return callerId;
@@ -595,6 +857,7 @@ function getTargetUserId(request: Request): number {
 }
 
 function userIsAdmin(request: Request): boolean {
-  const isAdmin: string | null | undefined = request.apiGateway?.event.requestContext.authorizer?.isAdmin;
-  return !!isAdmin && (/true/i).test(isAdmin);
+  const isAdmin: string | null | undefined =
+    request.apiGateway?.event.requestContext.authorizer?.isAdmin;
+  return !!isAdmin && /true/i.test(isAdmin);
 }
