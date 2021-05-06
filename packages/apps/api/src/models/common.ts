@@ -1,9 +1,9 @@
 export function toMessage(reason: string): Message {
   return {
-    message: reason
-  }
+    message: reason,
+  };
 }
 
 interface Message {
-  message: string
+  message: string;
 }

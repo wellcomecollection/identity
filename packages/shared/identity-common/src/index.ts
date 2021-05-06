@@ -14,21 +14,22 @@ export function truncate(str: string, length: number): string {
 export function successResponse<T>(result: T): SuccessResponse<T> {
   return {
     result: result,
-    status: ResponseStatus.Success
-  }
+    status: ResponseStatus.Success,
+  };
 }
 
 export function errorResponse(
   message: string,
-  status: ResponseStatus.NotFound
+  status:
+    | ResponseStatus.NotFound
     | ResponseStatus.InvalidCredentials
     | ResponseStatus.UserAlreadyExists
     | ResponseStatus.MalformedRequest
     | ResponseStatus.PasswordTooWeak
     | ResponseStatus.QueryTimeout
     | ResponseStatus.UnknownError,
-  error?: Error): ErrorResponse {
-
+  error?: Error
+): ErrorResponse {
   let cause: string = '';
   if (error) {
     if (isAxiosError(error) && error.response) {
@@ -42,8 +43,8 @@ export function errorResponse(
 
   return {
     message: message + ' (cause: [' + cause + '])',
-    status: status
-  }
+    status: status,
+  };
 }
 
 export function responseCodeIs(responseCode: number) {
@@ -51,7 +52,11 @@ export function responseCodeIs(responseCode: number) {
 }
 
 export function unhandledError(error: Error): ErrorResponse {
-  return errorResponse('Unhandled API response [' + error.message + ']', ResponseStatus.UnknownError, error);
+  return errorResponse(
+    'Unhandled API response [' + error.message + ']',
+    ResponseStatus.UnknownError,
+    error
+  );
 }
 
 function isAxiosError(error?: Error): error is AxiosError {
@@ -59,20 +64,21 @@ function isAxiosError(error?: Error): error is AxiosError {
 }
 
 export type SuccessResponse<T> = {
-  result: T,
-  status: ResponseStatus.Success
-}
+  result: T;
+  status: ResponseStatus.Success;
+};
 
 export type ErrorResponse = {
-  message: string,
-  status: ResponseStatus.NotFound
-  | ResponseStatus.InvalidCredentials
-  | ResponseStatus.UserAlreadyExists
-  | ResponseStatus.MalformedRequest
-  | ResponseStatus.PasswordTooWeak
-  | ResponseStatus.QueryTimeout
-  | ResponseStatus.UnknownError
-}
+  message: string;
+  status:
+    | ResponseStatus.NotFound
+    | ResponseStatus.InvalidCredentials
+    | ResponseStatus.UserAlreadyExists
+    | ResponseStatus.MalformedRequest
+    | ResponseStatus.PasswordTooWeak
+    | ResponseStatus.QueryTimeout
+    | ResponseStatus.UnknownError;
+};
 
 export enum ResponseStatus {
   Success,
@@ -82,7 +88,7 @@ export enum ResponseStatus {
   MalformedRequest,
   PasswordTooWeak,
   QueryTimeout,
-  UnknownError
+  UnknownError,
 }
 
 export type APIResponse<T> = SuccessResponse<T> | ErrorResponse;

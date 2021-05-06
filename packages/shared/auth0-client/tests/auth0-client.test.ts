@@ -1,13 +1,16 @@
-import { APIResponse, ResponseStatus, SuccessResponse } from '@weco/identity-common';
+import {
+  APIResponse,
+  ResponseStatus,
+  SuccessResponse,
+} from '@weco/identity-common';
 import { equal, strictEqual } from 'assert';
 import axios, { AxiosInstance } from 'axios';
 import moxios from 'moxios';
-import { SierraUserIdPrefix } from "../lib/auth0";
+import { SierraUserIdPrefix } from '../lib/auth0';
 import Auth0Client from '../src';
 import { Auth0Profile, Auth0UserInfo, SierraConnection } from '../src/auth0';
 
 describe('auth0 client', () => {
-
   let client: Auth0Client;
 
   beforeEach(() => {
@@ -16,8 +19,8 @@ describe('auth0 client', () => {
     moxios.stubRequest(apiRoot + '/oauth/token', {
       status: 200,
       response: {
-        access_token: accessToken
-      }
+        access_token: accessToken,
+      },
     });
 
     client = new Auth0Client(apiRoot, apiAudience, clientId, clientSecret);
@@ -31,7 +34,7 @@ describe('auth0 client', () => {
   describe('delete user', () => {
     it('deletes the user with given id', async () => {
       moxios.stubRequest('/users/' + SierraUserIdPrefix + userId, {
-        status: 204
+        status: 204,
       });
 
       const response = await client.deleteUser(userId);
@@ -41,7 +44,7 @@ describe('auth0 client', () => {
 
     it('not found on invalid user', async () => {
       moxios.stubRequest('/users/' + SierraUserIdPrefix + userId, {
-        status: 404
+        status: 404,
       });
 
       const response = await client.deleteUser(userId);
@@ -51,11 +54,10 @@ describe('auth0 client', () => {
   });
 
   describe('validate access token', () => {
-
     it('validates', async () => {
       moxios.stubRequest('/userinfo', {
         status: 200,
-        response: userInfo
+        response: userInfo,
       });
 
       const response = await client.validateAccessToken(accessToken);
@@ -68,7 +70,7 @@ describe('auth0 client', () => {
 
     it('does not validate', async () => {
       moxios.stubRequest('/userinfo', {
-        status: 401
+        status: 401,
       });
 
       const response = await client.validateAccessToken(accessToken);
@@ -77,7 +79,7 @@ describe('auth0 client', () => {
 
     it('returns an unexpected response code', async () => {
       moxios.stubRequest('/userinfo', {
-        status: 500
+        status: 500,
       });
 
       const response = await client.validateAccessToken(accessToken);
@@ -86,16 +88,17 @@ describe('auth0 client', () => {
   });
 
   describe('get user by user id', () => {
-
     it('finds the user with blocked', async () => {
       moxios.stubRequest('/users/' + SierraUserIdPrefix + userId, {
         status: 200,
         response: Object.assign(user, {
-          blocked: false
-        })
+          blocked: false,
+        }),
       });
 
-      const response: APIResponse<Auth0Profile> = await client.getUserByUserId(userId);
+      const response: APIResponse<Auth0Profile> = await client.getUserByUserId(
+        userId
+      );
       equal(response.status, ResponseStatus.Success);
 
       const result = (<SuccessResponse<Auth0Profile>>response).result;
@@ -112,10 +115,12 @@ describe('auth0 client', () => {
     it('finds the user without blocked', async () => {
       moxios.stubRequest('/users/' + SierraUserIdPrefix + userId, {
         status: 200,
-        response: user
+        response: user,
       });
 
-      const response: APIResponse<Auth0Profile> = await client.getUserByUserId(123456);
+      const response: APIResponse<Auth0Profile> = await client.getUserByUserId(
+        123456
+      );
       equal(response.status, ResponseStatus.Success);
 
       const result = (<SuccessResponse<Auth0Profile>>response).result;
@@ -131,7 +136,7 @@ describe('auth0 client', () => {
 
     it('does not find the user', async () => {
       moxios.stubRequest('/users/' + SierraUserIdPrefix + userId, {
-        status: 404
+        status: 404,
       });
 
       const response = await client.getUserByUserId(userId);
@@ -140,7 +145,7 @@ describe('auth0 client', () => {
 
     it('returns an unexpected response code', async () => {
       moxios.stubRequest('/users/' + SierraUserIdPrefix + userId, {
-        status: 500
+        status: 500,
       });
 
       const response = await client.getUserByUserId(userId);
@@ -149,15 +154,14 @@ describe('auth0 client', () => {
   });
 
   describe('get user by email', () => {
-
     it('finds the user with blocked', async () => {
       moxios.stubRequest('/users-by-email?email=' + email, {
         status: 200,
         response: [
           Object.assign(user, {
-            blocked: false
-          })
-        ]
+            blocked: false,
+          }),
+        ],
       });
 
       const response = await client.getUserByEmail(email);
@@ -177,7 +181,7 @@ describe('auth0 client', () => {
     it('does not find the user', async () => {
       moxios.stubRequest('/users-by-email?email=' + email, {
         status: 200,
-        response: []
+        response: [],
       });
 
       const response = await client.getUserByEmail(email);
@@ -186,7 +190,7 @@ describe('auth0 client', () => {
 
     it('returns an unexpected response code', async () => {
       moxios.stubRequest('/users-by-email?email=' + email, {
-        status: 500
+        status: 500,
       });
 
       const response = await client.getUserByEmail(email);
@@ -196,9 +200,7 @@ describe('auth0 client', () => {
     it('finds the user without blocked', async () => {
       moxios.stubRequest('/users-by-email?email=' + email, {
         status: 200,
-        response: [
-          user
-        ]
+        response: [user],
       });
 
       const response = await client.getUserByEmail(email);
@@ -218,7 +220,7 @@ describe('auth0 client', () => {
     it('does not find the user', async () => {
       moxios.stubRequest('/users-by-email?email=' + email, {
         status: 200,
-        response: []
+        response: [],
       });
 
       const response = await client.getUserByEmail(email);
@@ -227,7 +229,7 @@ describe('auth0 client', () => {
 
     it('returns an unexpected response code', async () => {
       moxios.stubRequest('/users-by-email?email=' + email, {
-        status: 500
+        status: 500,
       });
 
       const response = await client.getUserByEmail(email);
@@ -236,14 +238,19 @@ describe('auth0 client', () => {
   });
 
   describe('creates a user', () => {
-
     it('creates the user', async () => {
       moxios.stubRequest('/users', {
         status: 201,
-        response: user
+        response: user,
       });
 
-      const response = await client.createUser(userId, firstName, lastName, email, password);
+      const response = await client.createUser(
+        userId,
+        firstName,
+        lastName,
+        email,
+        password
+      );
       equal(response.status, ResponseStatus.Success);
 
       const result = (<SuccessResponse<Auth0Profile>>response).result;
@@ -262,10 +269,16 @@ describe('auth0 client', () => {
 
     it('does not create the user', async () => {
       moxios.stubRequest('/users', {
-        status: 409
+        status: 409,
       });
 
-      const response = await client.createUser(userId, firstName, lastName, email, password);
+      const response = await client.createUser(
+        userId,
+        firstName,
+        lastName,
+        email,
+        password
+      );
       equal(response.status, ResponseStatus.UserAlreadyExists);
     });
 
@@ -273,42 +286,64 @@ describe('auth0 client', () => {
       moxios.stubRequest('/users', {
         status: 400,
         response: {
-          message: 'PasswordStrengthError'
-        }
+          message: 'PasswordStrengthError',
+        },
       });
 
-      const response = await client.createUser(userId, firstName, lastName, email, password);
+      const response = await client.createUser(
+        userId,
+        firstName,
+        lastName,
+        email,
+        password
+      );
       equal(response.status, ResponseStatus.PasswordTooWeak);
     });
 
     it('receives a malformed request', async () => {
       moxios.stubRequest('/users', {
-        status: 400
+        status: 400,
       });
 
-      const response = await client.createUser(userId, firstName, lastName, email, password);
+      const response = await client.createUser(
+        userId,
+        firstName,
+        lastName,
+        email,
+        password
+      );
       equal(response.status, ResponseStatus.MalformedRequest);
     });
 
     it('returns an unexpected response code', async () => {
       moxios.stubRequest('/users', {
-        status: 500
+        status: 500,
       });
 
-      const response = await client.createUser(userId, firstName, lastName, email, password);
+      const response = await client.createUser(
+        userId,
+        firstName,
+        lastName,
+        email,
+        password
+      );
       equal(response.status, ResponseStatus.UnknownError);
     });
   });
 
   describe('updates a user', () => {
-
     it('updates the user', async () => {
       moxios.stubRequest('/users/' + SierraUserIdPrefix + userId, {
         status: 200,
-        response: user
+        response: user,
       });
 
-      const response = await client.updateUser(userId, email, firstName, lastName);
+      const response = await client.updateUser(
+        userId,
+        email,
+        firstName,
+        lastName
+      );
       equal(response.status, ResponseStatus.Success);
 
       const result = (<SuccessResponse<Auth0Profile>>response).result;
@@ -326,43 +361,62 @@ describe('auth0 client', () => {
       moxios.stubRequest('/users/' + SierraUserIdPrefix + userId, {
         status: 400,
         response: {
-          message: 'The specified new email already exists'
-        }
+          message: 'The specified new email already exists',
+        },
       });
 
-      const response = await client.updateUser(userId, email, firstName, lastName);
+      const response = await client.updateUser(
+        userId,
+        email,
+        firstName,
+        lastName
+      );
       equal(response.status, ResponseStatus.UserAlreadyExists);
     });
 
     it('receives a malformed request', async () => {
       moxios.stubRequest('/users/' + SierraUserIdPrefix + userId, {
-        status: 400
+        status: 400,
       });
 
-      const response = await client.updateUser(userId, email, firstName, lastName);
+      const response = await client.updateUser(
+        userId,
+        email,
+        firstName,
+        lastName
+      );
       equal(response.status, ResponseStatus.MalformedRequest);
     });
 
     it('does not find the user', async () => {
       moxios.stubRequest('/users/' + SierraUserIdPrefix + userId, {
-        status: 404
+        status: 404,
       });
 
-      const response = await client.updateUser(userId, email, firstName, lastName);
+      const response = await client.updateUser(
+        userId,
+        email,
+        firstName,
+        lastName
+      );
       equal(response.status, ResponseStatus.NotFound);
     });
 
     it('returns an unexpected response code', async () => {
       moxios.stubRequest('/users/' + SierraUserIdPrefix + userId, {
-        status: 500
+        status: 500,
       });
 
-      const response = await client.updateUser(userId, email, firstName, lastName);
+      const response = await client.updateUser(
+        userId,
+        email,
+        firstName,
+        lastName
+      );
       equal(response.status, ResponseStatus.UnknownError);
     });
   });
 });
-
 
 const apiRoot: string = 'http://localhost';
 const apiAudience: string = 'http://my-api.localhost';
@@ -395,8 +449,8 @@ const userInfo: any = {
   picture: picture,
   updated_at: updatedDate,
   email: email,
-  email_verified: emailValidated
-}
+  email_verified: emailValidated,
+};
 
 const user: any = {
   created_at: creationDate,
@@ -406,8 +460,8 @@ const user: any = {
       user_id: 'p' + userId,
       provider: 'auth0',
       connection: SierraConnection,
-      isSocial: false
-    }
+      isSocial: false,
+    },
   ],
   name: name,
   given_name: firstName,
@@ -420,5 +474,5 @@ const user: any = {
   email_verified: emailValidated,
   last_ip: lastLoginIp,
   last_login: lastLoginDate,
-  logins_count: totalLogins
-}
+  logins_count: totalLogins,
+};
