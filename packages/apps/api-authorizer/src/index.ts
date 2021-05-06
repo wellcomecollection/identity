@@ -25,7 +25,7 @@ export async function lambdaHandler(
   event: APIGatewayRequestAuthorizerEvent
 ): Promise<APIGatewayAuthorizerResult> {
   if (!event.headers?.Authorization) {
-    console.log('Authorization header is not present on request');
+    console.debug('Authorization header is not present on request');
     return buildAuthorizerResult('user', 'Deny', event.methodArn);
   }
 
@@ -33,10 +33,8 @@ export async function lambdaHandler(
   const authorizationHeader: string = event.headers.Authorization;
   const accessToken: string | null = extractAccessToken(authorizationHeader);
   if (!accessToken) {
-    console.log(
-      'Authorization header [' +
-        authorizationHeader +
-        '] is not a valid bearer token'
+    console.debug(
+      `Authorization header [${authorizationHeader}] is not a valid bearer token`
     );
     return buildAuthorizerResult(authorizationHeader, 'Deny', event.methodArn);
   }
@@ -58,19 +56,13 @@ export async function lambdaHandler(
     );
     if (auth0Validate.status !== ResponseStatus.Success) {
       if (auth0Validate.status === ResponseStatus.InvalidCredentials) {
-        console.log(
-          'Access token token [' +
-            accessToken +
-            '] rejected by Auth0: ' +
-            auth0Validate.message
+        console.debug(
+          `Access token [${accessToken}] rejected by Auth0: ${auth0Validate.message}`
         );
         return buildAuthorizerResult(accessToken, 'Deny', event.methodArn);
       } else {
-        console.log(
-          'Unknown error processing access token [' +
-            accessToken +
-            ']: ' +
-            auth0Validate.message
+        console.error(
+          `Unknown error processing access token [${accessToken}]: ${auth0Validate.message}`
         );
         return buildAuthorizerResult(accessToken, 'Deny', event.methodArn);
       }
@@ -89,18 +81,11 @@ export async function lambdaHandler(
       event.pathParameters
     )
   ) {
-    console.log(
-      'Access token [' +
-        accessToken +
-        '] for user [' +
-        JSON.stringify(auth0UserInfo) +
-        '] cannot operate on [' +
-        event.httpMethod +
-        ' ' +
-        event.resource +
-        '] with path parameters [' +
-        event.pathParameters +
-        ']'
+    console.debug(
+      `Access token [${accessToken}] for user [${JSON.stringify(
+        auth0UserInfo
+      )}]` +
+        `cannot operate on [${event.httpMethod} ${event.resource}] with path parameters [${event.pathParameters}]`
     );
     return buildAuthorizerResult(auth0UserInfo.userId, 'Deny', event.methodArn);
   }
@@ -117,16 +102,12 @@ export async function lambdaHandler(
 async function cacheLookup(accessToken: string): Promise<Auth0UserInfo | null> {
   return redisClient.get(accessToken).then((value) => {
     if (value) {
-      console.log(
-        'Cache hit for access token [' +
-          accessToken +
-          '] with value [' +
-          value +
-          ']'
+      console.debug(
+        `Cache hit for access token [${accessToken}] with value [${value}]`
       );
       return JSON.parse(value) as Auth0UserInfo;
     } else {
-      console.log('Cache miss for access token [' + accessToken + ']');
+      console.debug(`Cache miss for access token [${accessToken}]`);
       return null;
     }
   });
@@ -140,14 +121,8 @@ async function cacheInsert(
   const ttl: number = Number(process.env.REDIS_CACHE_TTL!);
   // 'EX' is the expiration (i.e. TTL) in seconds of the cache entry. We could also use 'PX' to provide the value in milliseconds.
   return redisClient.set(accessToken, value, ['EX', ttl]).then((result) => {
-    console.log(
-      'Cache put for access token [' +
-        accessToken +
-        '] with value [' +
-        value +
-        ']: [' +
-        result +
-        ']'
+    console.debug(
+      `Cache put for access token [${accessToken}] with value [${value}]: [${result}]`
     );
     return value; // AFAICT this is always 'OK' for a successful operation
   });

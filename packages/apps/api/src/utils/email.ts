@@ -113,18 +113,13 @@ export default class EmailClient {
     return this.smtp
       .sendMail(smtpParams)
       .then((result) => {
-        console.log(
-          'SMTP Email sent with message ID [' + result.messageId + ']'
-        );
+        console.log(`SMTP Email sent with message ID [${result.messageId}]`);
         return successResponse({});
       })
       .catch((error) => {
-        console.log(
-          'An error occurred sending SMTP email [' +
-            smtpParams +
-            ']: [' +
-            error +
-            ']'
+        console.error(
+          `An error occurred sending SMTP email [${smtpParams}]`,
+          error
         );
         return unhandledError(error);
       });

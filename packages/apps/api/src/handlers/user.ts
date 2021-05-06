@@ -625,19 +625,15 @@ export async function requestDelete(
     }
   );
   if (auth0Update.status !== ResponseStatus.Success) {
-    console.log(
-      'An error occurred applying deletion flag to Auth0 record [' +
-        userId +
-        ']: [' +
-        auth0Update +
-        ']'
+    console.error(
+      `An error occurred applying deletion flag to Auth0 record [${userId}]: [${auth0Update}]`
     );
   }
 
   const auth0Block: APIResponse<{}> = await auth0Client.blockAccount(userId);
   if (auth0Block.status !== ResponseStatus.Success) {
-    console.log(
-      'An error blocking Auth0 record [' + userId + ']: [' + auth0Block + ']'
+    console.error(
+      `An error occurred blocking Auth0 record [${userId}]: [${auth0Block}]`
     );
   }
 
@@ -645,12 +641,8 @@ export async function requestDelete(
     auth0Get.result
   );
   if (emailDeleteUser.status !== ResponseStatus.Success) {
-    console.log(
-      'An error notifying Auth0 user [' +
-        userId +
-        '] of the deletion request: [' +
-        emailDeleteUser +
-        ']'
+    console.error(
+      `An error occurred notifying Auth0 user [${userId}] of the deletion request: [${emailDeleteUser}]`
     );
   }
 
@@ -722,12 +714,8 @@ export async function removeDelete(
     auth0Get.result
   );
   if (emailDeleteRemovalUser.status !== ResponseStatus.Success) {
-    console.log(
-      'An error notifying Auth0 user [' +
-        userId +
-        '] of the deletion removal request: [' +
-        emailDeleteRemovalUser +
-        ']'
+    console.error(
+      `An error occurred notifying Auth0 user [${userId}] of the deletion removal request: [${emailDeleteRemovalUser}]`
     );
   }
 
@@ -839,9 +827,7 @@ function getTargetUserId(request: Request): number {
     );
     if (isNaN(callerId)) {
       throw new Error(
-        'Caller attempted to operate on themself, but has an invalid user ID: [' +
-          callerId +
-          ']'
+        `Caller attempted to operate on themself, but has an invalid user ID: [${callerId}]`
       );
     }
 
@@ -850,7 +836,7 @@ function getTargetUserId(request: Request): number {
 
   const targetUserId: number = Number(request.params.user_id);
   if (isNaN(targetUserId)) {
-    throw new Error('Invalid user ID [' + targetUserId + ']');
+    throw new Error(`Invalid user ID [${targetUserId}]`);
   }
 
   return targetUserId;

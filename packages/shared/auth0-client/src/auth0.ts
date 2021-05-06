@@ -84,12 +84,11 @@ function toAuth0Profiles(users: any[]): Auth0Profile[] {
     try {
       auth0Profiles.push(toAuth0Profile(user));
     } catch (e) {
-      console.log(
-        'An error occurred converting Auth0 user [' +
-          JSON.stringify(user) +
-          '] to Auth0Profile: [' +
-          e +
-          ']'
+      console.error(
+        `An error occurred converting Auth0 user [${JSON.stringify(
+          user
+        )}] to Auth0Profile`,
+        e
       );
     }
   });
