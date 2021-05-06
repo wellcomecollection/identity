@@ -19,6 +19,19 @@ resource "auth0_tenant" "tenant" {
     }
   }
 
+  # We use the "new" Universal Login Experience and so don't require either the 'change_password' or 'guardian_mfa_page'
+  # resources (which refer to the Legacy Experience), but if we don't have them and explicitly set them to 'false' then
+  # the 'a0deploy' utility (which our CI / CD pipeline uses) throws an error.
+  change_password {
+    enabled = false
+    html = ""
+  }
+
+  guardian_mfa_page {
+    enabled = false
+    html = ""
+  }
+
   error_page {
     html          = ""
     show_log_link = false
