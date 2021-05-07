@@ -6,7 +6,8 @@
   "author": "Daniel Grant <daniel.grant@digirati.com>",
   "license": "MIT",
   "scripts": {
-    "build": "tsc -p tsconfig.build.json"
+    "build": "tsc --build tsconfig.build.json",
+    "clean": "rimraf ./lib tsconfig.build.tsbuildinfo"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.71",
