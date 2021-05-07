@@ -1,4 +1,4 @@
-import { Auth0Profile } from '@weco/auth0-client/lib/auth0';
+import { Auth0Profile } from '@weco/auth0-client';
 import {
   APIResponse,
   successResponse,

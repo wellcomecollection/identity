@@ -1,22 +1,23 @@
 {
   "references": [
     {
-      "path": "packages/apps/api"
+      "path": "./packages/apps/api"
     },
     {
-      "path": "packages/apps/api-authorizer"
+      "path": "./packages/apps/api-authorizer"
     },
     {
-      "path": "packages/apps/auth0-actions"
+      "path": "./packages/apps/auth0-actions"
     },
     {
-      "path": "packages/shared/auth0-client"
+      "path": "./packages/shared/auth0-client"
     },
     {
-      "path": "packages/shared/sierra-client"
+      "path": "./packages/shared/sierra-client"
     },
     {
-      "path": "packages/shared/identity-common"
+      "path": "./packages/shared/identity-common"
     }
-  ]
+  ],
+  "files": []
 }

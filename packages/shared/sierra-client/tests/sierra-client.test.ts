@@ -1,9 +1,8 @@
-import { ResponseStatus, SuccessResponse } from '@weco/identity-common';
 import { equal } from 'assert';
 import axios, { AxiosInstance } from 'axios';
 import moxios from 'moxios';
-import SierraClient from '../lib';
-import { PatronRecord } from '../lib/patron';
+import { ResponseStatus, SuccessResponse } from '@weco/identity-common';
+import SierraClient, { PatronRecord } from '../src';
 
 describe('sierra client', () => {
   let client: SierraClient;

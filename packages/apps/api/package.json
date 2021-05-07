@@ -23,6 +23,7 @@
     "@types/nodemailer-smtp-transport": "^2.7.4",
     "@weco/auth0-client": "*",
     "@weco/sierra-client": "*",
+    "@weco/identity-common": "*",
     "cors": "^2.8.5",
     "liquidjs": "^9.22.0",
     "nodemailer": "^6.5.0",

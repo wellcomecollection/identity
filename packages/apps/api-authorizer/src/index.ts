@@ -1,5 +1,4 @@
-import Auth0Client from '@weco/auth0-client';
-import { Auth0UserInfo } from '@weco/auth0-client/lib/auth0';
+import Auth0Client, { Auth0UserInfo } from '@weco/auth0-client';
 import { APIResponse, ResponseStatus } from '@weco/identity-common';
 import {
   APIGatewayAuthorizerResult,

@@ -1,5 +1,5 @@
-import { Auth0Profile, Auth0SearchResults } from '@weco/auth0-client/lib/auth0';
-import { PatronRecord } from '@weco/sierra-client/lib/patron';
+import { Auth0Profile, Auth0SearchResults } from '@weco/auth0-client';
+import { PatronRecord } from '@weco/sierra-client';
 
 export function toUser(
   auth0Profile: Auth0Profile,
