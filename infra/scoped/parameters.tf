@@ -269,6 +269,23 @@ resource "aws_ssm_parameter" "auth0_welcome_email_subject" {
   )
 }
 
+resource "aws_ssm_parameter" "auth0_blocked_email_subject" {
+  name  = "identity-auth0_blocked_email_subject-${terraform.workspace}"
+  type  = "String"
+  value = var.ssm_parameter_placeholder_string
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+
+  tags = merge(
+    local.common_tags,
+    {
+      "Name" = "identity-auth0_blocked_email_subject-${terraform.workspace}"
+    }
+  )
+}
+
 # API Gateway
 
 data "aws_ssm_parameter" "api_gateway_log_format" {
