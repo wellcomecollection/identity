@@ -45,12 +45,15 @@ export async function validatePassword(
   }
 
   const validationResult = await auth0Client.validateUserCredentials(
+    request.ip,
     auth0Get.result.email,
     password
   );
   if (validationResult.status !== ResponseStatus.Success) {
     if (validationResult.status === ResponseStatus.InvalidCredentials) {
       response.status(401).json(toMessage(validationResult.message));
+    } else if (validationResult.status === ResponseStatus.RateLimited) {
+      response.status(429).json(toMessage(validationResult.message));
     } else {
       response.status(500).json(toMessage(validationResult.message));
     }

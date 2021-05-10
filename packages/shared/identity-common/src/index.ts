@@ -27,6 +27,7 @@ export function errorResponse(
     | ResponseStatus.MalformedRequest
     | ResponseStatus.PasswordTooWeak
     | ResponseStatus.QueryTimeout
+    | ResponseStatus.RateLimited
     | ResponseStatus.UnknownError,
   error?: Error
 ): ErrorResponse {
@@ -77,6 +78,7 @@ export type ErrorResponse = {
     | ResponseStatus.MalformedRequest
     | ResponseStatus.PasswordTooWeak
     | ResponseStatus.QueryTimeout
+    | ResponseStatus.RateLimited
     | ResponseStatus.UnknownError;
 };
 
@@ -88,6 +90,7 @@ export enum ResponseStatus {
   MalformedRequest,
   PasswordTooWeak,
   QueryTimeout,
+  RateLimited,
   UnknownError,
 }
 
