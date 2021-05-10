@@ -45,7 +45,7 @@ export async function validatePassword(
   }
 
   const validationResult = await auth0Client.validateUserCredentials(
-    request.ip,
+    extractSourceIp(request),
     auth0Get.result.email,
     password
   );
@@ -817,6 +817,15 @@ export async function deleteUser(
   }
 
   response.sendStatus(204);
+}
+
+function extractSourceIp(request: Request): string {
+  if (!request.apiGateway) {
+    throw new Error(
+      "API Gateway event and context data doesn't exist on request"
+    );
+  }
+  return request.apiGateway?.event.requestContext.identity.sourceIp;
 }
 
 function getTargetUserId(request: Request): number {
