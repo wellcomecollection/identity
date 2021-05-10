@@ -820,12 +820,6 @@ export async function deleteUser(
 }
 
 function extractSourceIp(request: Request): string {
-  console.log(JSON.stringify(request.headers));
-  console.log(JSON.stringify(request.apiGateway?.event.headers));
-  console.log(
-    JSON.stringify(request.apiGateway?.event.requestContext.identity)
-  );
-  console.log(JSON.stringify(request.apiGateway?.event.requestContext));
   if (!request.apiGateway) {
     throw new Error(
       "API Gateway event and context data doesn't exist on request"
