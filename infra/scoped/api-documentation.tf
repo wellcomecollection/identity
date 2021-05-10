@@ -1576,6 +1576,20 @@ resource "aws_api_gateway_documentation_part" "users_userid_validate_post_404" {
   }
 }
 
+# 429 Too Many Requests
+
+resource "aws_api_gateway_documentation_part" "users_userid_validate_post_429" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/validate/post-429.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_validate.path
+    method      = aws_api_gateway_method.users_userid_validate_post.http_method
+    status_code = "429"
+  }
+}
+
 # 500 Internal Server Error
 
 resource "aws_api_gateway_documentation_part" "users_userid_validate_post_500" {

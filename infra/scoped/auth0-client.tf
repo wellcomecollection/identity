@@ -42,6 +42,10 @@ resource "auth0_client" "api_gateway_identity" {
     "http://auth0.com/oauth/grant-type/password-realm" // Required for testing of Auth0 credentials via the API
   ]
 
+  # Allows us to provide the 'Auth0-Forwarded-For' header to requests, which causes the token endpoint to use the users
+  # real IP address for brute-force-protection, instead of the backend API IP address.
+  is_token_endpoint_ip_header_trusted = true
+
   lifecycle {
     ignore_changes = [
       custom_login_page_preview
