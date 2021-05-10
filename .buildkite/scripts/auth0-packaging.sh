@@ -23,7 +23,7 @@ function __package_auth0_html() {
     "/app/html/auth0/reset_email.html" \
     "/app/html/auth0/verify_email.html" \
     "/app/html/auth0/welcome_email.html" \
-    "/app/html/auth0/blocked_email.html"
+    "/app/html/auth0/blocked_account.html"
 }
 
 function __store_auth0_scripts() {
