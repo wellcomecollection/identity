@@ -44,6 +44,7 @@ export async function validatePassword(
     return;
   }
 
+  console.log(JSON.stringify(request));
   const validationResult = await auth0Client.validateUserCredentials(
     extractSourceIp(request),
     auth0Get.result.email,
