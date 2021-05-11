@@ -188,10 +188,11 @@ export default class Auth0Client {
 
   // @TODO This call should only handle users that exist in the Sierra connection
   async validateUserCredentials(
+    sourceIp: string,
     username: string,
     password: string
   ): Promise<APIResponse<{}>> {
-    return this.getInstanceWithCredentials(username, password)
+    return this.getInstanceWithCredentials(sourceIp, username, password)
       .then(() => successResponse(true))
       .catch((error) => {
         if (error.response) {
@@ -201,6 +202,13 @@ export default class Auth0Client {
               return errorResponse(
                 'Invalid credentials',
                 ResponseStatus.InvalidCredentials,
+                error
+              );
+            }
+            case 429: {
+              return errorResponse(
+                'Too many unsuccessful login requests, brute force protection is enabled',
+                ResponseStatus.RateLimited,
                 error
               );
             }
@@ -613,6 +621,7 @@ export default class Auth0Client {
   }
 
   private getInstanceWithCredentials(
+    sourceIp: string,
     username: string,
     password: string
   ): Promise<AxiosInstance> {
@@ -628,6 +637,9 @@ export default class Auth0Client {
           password: password,
         },
         {
+          headers: {
+            'Auth0-Forwarded-For': sourceIp,
+          },
           validateStatus: responseCodeIs(200),
         }
       )
