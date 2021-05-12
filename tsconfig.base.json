@@ -10,9 +10,9 @@
     "sourceMap": true,
     "strict": true,
     "target": "es2017",
-    "baseUrl": ".",
+    "baseUrl": "./packages/shared",
     "paths": {
-      "@weco/*": ["../../shared/*/src"]
+      "@weco/*": ["./*/src"]
     }
   }
 }

@@ -7,9 +7,6 @@
       "path": "./packages/apps/api-authorizer"
     },
     {
-      "path": "./packages/apps/auth0-actions"
-    },
-    {
       "path": "./packages/shared/auth0-client"
     },
     {

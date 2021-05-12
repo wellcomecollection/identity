@@ -13,6 +13,7 @@
     "@types/aws-lambda": "^8.10.71",
     "@types/node": "^14.14.25",
     "@weco/auth0-client": "*",
+    "@weco/identity-common": "*",
     "handy-redis": "^2.2.1",
     "redis": "^3.0.2",
     "ts-node": "^9.1.1",

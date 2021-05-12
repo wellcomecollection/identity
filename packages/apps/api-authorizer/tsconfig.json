@@ -1,10 +1,9 @@
 {
   "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "lib",
-    "rootDir": "src"
+    "outDir": "lib"
   },
-  "include": ["src", "test"],
+  "include": ["src", "tests"],
   "references": [
     {
       "path": "../../shared/auth0-client"

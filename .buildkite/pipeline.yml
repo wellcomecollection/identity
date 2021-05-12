@@ -20,8 +20,8 @@ steps:
     command:
       - ". /app/.buildkite/scripts/init-environment.sh"
       - "yarn install"
-      - "yarn run -- lerna run build"
-      - "yarn run test"
+      - "yarn build"
+      - "yarn test"
     plugins:
       - wellcomecollection/aws-assume-role#v0.2.2:
           role: "arn:aws:iam::770700576653:role/identity-ci"
@@ -62,7 +62,7 @@ steps:
     command:
       - ". /app/.buildkite/scripts/init-environment.sh"
       - "yarn install"
-      - "yarn run -- lerna run build"
+      - "yarn build"
       - "/app/.buildkite/scripts/aws-lambda-packaging.sh"
     plugins:
       - wellcomecollection/aws-assume-role#v0.2.2:
