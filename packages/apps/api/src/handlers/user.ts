@@ -44,12 +44,15 @@ export async function validatePassword(
   }
 
   const validationResult = await auth0Client.validateUserCredentials(
+    extractSourceIp(request),
     auth0Get.result.email,
     password
   );
   if (validationResult.status !== ResponseStatus.Success) {
     if (validationResult.status === ResponseStatus.InvalidCredentials) {
       response.status(401).json(toMessage(validationResult.message));
+    } else if (validationResult.status === ResponseStatus.RateLimited) {
+      response.status(429).json(toMessage(validationResult.message));
     } else {
       response.status(500).json(toMessage(validationResult.message));
     }
@@ -813,6 +816,15 @@ export async function deleteUser(
   }
 
   response.sendStatus(204);
+}
+
+function extractSourceIp(request: Request): string {
+  if (!request.apiGateway) {
+    throw new Error(
+      "API Gateway event and context data doesn't exist on request"
+    );
+  }
+  return request.apiGateway?.event.requestContext.identity.sourceIp;
 }
 
 function getTargetUserId(request: Request): number {

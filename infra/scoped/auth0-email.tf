@@ -70,3 +70,22 @@ resource "auth0_email_template" "welcome_email" {
     ]
   }
 }
+
+resource "auth0_email_template" "blocked_email" {
+  template = "blocked_account"
+  enabled  = true
+  from     = local.email_noreply_name_and_address
+  subject  = aws_ssm_parameter.auth0_blocked_email_subject.value
+  body     = var.auth0_email_body_placeholder
+  syntax   = "liquid"
+
+  depends_on = [
+    auth0_email.email
+  ]
+
+  lifecycle {
+    ignore_changes = [
+      body
+    ]
+  }
+}

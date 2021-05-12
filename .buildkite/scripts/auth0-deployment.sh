@@ -23,6 +23,7 @@ function __do_deployment() {
   cp -v /app/.buildkite/build/reset_email.html "/app/.buildkite/build/auth0-export/emails/"
   cp -v /app/.buildkite/build/verify_email.html "/app/.buildkite/build/auth0-export/emails/"
   cp -v /app/.buildkite/build/welcome_email.html "/app/.buildkite/build/auth0-export/emails/"
+  cp -v /app/.buildkite/build/blocked_account.html "/app/.buildkite/build/auth0-export/emails/"
   cp -v /app/.buildkite/build/enrich_userinfo.js "/app/.buildkite/build/auth0-export/rules/${AUTH0_ENRICH_USERINFO_RULE_NAME}.js"
 
   azure_ad_profile_script=$(cat "/app/.buildkite/build/create_azure_ad_profile.js")
