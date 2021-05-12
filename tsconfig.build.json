@@ -1,0 +1,20 @@
+{
+  "references": [
+    {
+      "path": "./packages/apps/api/tsconfig.build.json"
+    },
+    {
+      "path": "./packages/apps/api-authorizer/tsconfig.build.json"
+    },
+    {
+      "path": "./packages/shared/auth0-client/tsconfig.build.json"
+    },
+    {
+      "path": "./packages/shared/sierra-client/tsconfig.build.json"
+    },
+    {
+      "path": "./packages/shared/identity-common/tsconfig.build.json"
+    }
+  ],
+  "files": []
+}

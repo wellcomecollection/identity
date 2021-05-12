@@ -3,7 +3,7 @@
   "exclude": ["**/*.spec.ts", "**/*.test.ts"],
   "references": [
     {
-      "path": "../identity-common"
+      "path": "../identity-common/tsconfig.build.json"
     }
   ]
 }
