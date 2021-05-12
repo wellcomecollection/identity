@@ -2,7 +2,7 @@ import {
   APIGatewayEventRequestContextWithAuthorizer,
   APIGatewayRequestAuthorizerEvent,
 } from 'aws-lambda';
-import { createLambdaHandler } from '../src';
+import { createLambdaHandler } from '../src/handler';
 import { ResponseStatus } from '@weco/identity-common';
 import Auth0Client, { Auth0UserInfo } from '@weco/auth0-client';
 import { WrappedNodeRedisClient } from 'handy-redis';
@@ -150,7 +150,9 @@ describe('API Authorizer', () => {
 
     expect(result).toHaveProperty('policyDocument.Statement.0.Effect', 'Allow');
     expect(mockAuth0Client.validateAccessToken).not.toHaveBeenCalled();
-    mockRedis.get.mockReset();
+
+    // Reset the mock :(
+    mockRedis.get.mockResolvedValue(null);
   });
 
   it('returns the caller ID and admin status in the result context', async () => {
