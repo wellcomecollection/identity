@@ -1,24 +1,19 @@
-import { Auth0UserInfo } from '@weco/auth0-client';
+import { Auth0UserInfo } from '@weco/auth0-client/src/auth0';
 
 export type ResourceAclMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
-export type ResourceAclCheckType = 'AND' | 'OR';
 export type ResourceAclCheck = (
   auth0UserInfo: Auth0UserInfo,
   pathParameters: Record<string, string | undefined> | null
 ) => boolean;
-
-export type ResourceAcl = {
-  resource: string;
-  methods: ResourceAclMethod[];
-  check: ResourceAclCheck | Array<ResourceAclCheck>;
-  checkType?: ResourceAclCheckType;
-};
+type ResourceAcls = Record<
+  string,
+  Partial<Record<ResourceAclMethod, ResourceAclCheck>>
+>;
 
 export const isAdministrator = function (
   auth0UserInfo: Auth0UserInfo,
   pathParameters: Record<string, string | undefined> | null
 ): boolean {
-  // @ts-ignore is_admin isn't typed on additionalAttributes
   return auth0UserInfo.additionalAttributes?.is_admin ?? false;
 };
 
@@ -32,53 +27,41 @@ export const isSelf = function (
   );
 };
 
-const resourceAcls: ResourceAcl[] = [
-  {
-    resource: '/users',
-    methods: ['GET'],
-    check: isAdministrator,
+const anyOf = (...checks: ResourceAclCheck[]): ResourceAclCheck => (
+  info,
+  params
+) => checks.some((check) => check(info, params));
+
+const resourceAcls: ResourceAcls = {
+  '/users': {
+    GET: isAdministrator,
   },
-  {
-    resource: '/users/{userId}',
-    methods: ['GET', 'PUT'],
-    check: [isSelf, isAdministrator],
-    checkType: 'OR',
+  '/users/{userId}': {
+    GET: anyOf(isSelf, isAdministrator),
+    PUT: anyOf(isSelf, isAdministrator),
+    DELETE: isAdministrator,
   },
-  {
-    resource: '/users/{userId}',
-    methods: ['DELETE'],
-    check: isAdministrator,
+  '/users/{userId}/password': {
+    PUT: isSelf,
   },
-  {
-    resource: '/users/{userId}/password',
-    methods: ['PUT'],
-    check: [isSelf],
+  '/users/{userId}/send-verification': {
+    PUT: isAdministrator,
   },
-  {
-    resource: '/users/{userId}/send-verification',
-    methods: ['PUT'],
-    check: [isAdministrator],
+  '/users/{userId}/lock': {
+    PUT: isAdministrator,
+    DELETE: isAdministrator,
   },
-  {
-    resource: '/users/{userId}/lock',
-    methods: ['PUT', 'DELETE'],
-    check: isAdministrator,
+  '/users/{userId}/deletion-request': {
+    PUT: isSelf,
+    DELETE: isAdministrator,
   },
-  {
-    resource: '/users/{userId}/deletion-request',
-    methods: ['PUT'],
-    check: isSelf,
+  '/users/{userId}/validate': {
+    POST: isSelf,
   },
-  {
-    resource: '/users/{userId}/deletion-request',
-    methods: ['DELETE'],
-    check: isAdministrator,
+  '/users/{userId}/item-requests': {
+    POST: isSelf,
+    GET: isSelf,
   },
-  {
-    resource: '/users/{userId}/validate',
-    methods: ['POST'],
-    check: isSelf,
-  },
-];
+};
 
 export default resourceAcls;

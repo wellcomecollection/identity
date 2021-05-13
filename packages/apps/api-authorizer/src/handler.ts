@@ -7,9 +7,6 @@ import {
 import { APIResponse, ResponseStatus } from '@weco/identity-common';
 import resourceAcls, {
   isAdministrator,
-  ResourceAcl,
-  ResourceAclCheck,
-  ResourceAclCheckType,
   ResourceAclMethod,
 } from './resourceAcls';
 
@@ -146,35 +143,12 @@ function validateRequest(
   method: ResourceAclMethod,
   pathParameters: Record<string, string | undefined> | null
 ): boolean {
-  let acl: ResourceAcl | undefined = resourceAcls.find(
-    (acl) => acl.resource === resource && acl.methods.includes(method)
-  );
-  if (!acl) {
+  const check = resourceAcls[resource]?.[method];
+  if (!check) {
     // No ACL found, defensively deny access
     return false;
   }
-
-  let aclCheckType: ResourceAclCheckType = acl.checkType ?? 'OR';
-
-  // Start with the ACL flag by default set to the following
-  //   AND: a successful match will keep the flag on, an unsuccessful match will turn it off
-  //   OR: a successful match will OR the flag on, an unsuccessful match will leave it as is.
-  let aclMatched: boolean = aclCheckType === 'AND';
-
-  let aclChecks: ResourceAclCheck[] = Array.isArray(acl.check)
-    ? acl.check
-    : [acl.check];
-
-  for (const check of aclChecks) {
-    let matched: boolean = check(auth0UserInfo, pathParameters);
-    if (aclCheckType === 'OR') {
-      aclMatched = aclMatched || matched;
-    } else if (aclCheckType === 'AND') {
-      aclMatched = aclMatched && matched;
-    }
-  }
-
-  return aclMatched;
+  return check(auth0UserInfo, pathParameters);
 }
 
 function buildAuthorizerResult(
