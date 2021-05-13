@@ -36,7 +36,7 @@ function login(email, password, callback) {
           '/v6/patrons/validate',
           {
             barcode: barcode,
-            pin: pin,
+            pin: encodeURI(pin),
           },
           {
             validateStatus: (status) => status === 204,
