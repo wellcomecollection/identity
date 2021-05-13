@@ -29,6 +29,9 @@ function login(email, password, callback) {
       }
     });
 
+  // The /v6/patrons/validate expects passwords encoded using the encodeURIComponent scheme.
+  // See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI
+  // For example the password ;,/?:@&=+$-_.!~*'()# must be encoded as %3B%2C%2F%3F%3A%40%26%3D%2B%24-_.!~*%27()%23
   async function validateCredentials(barcode, pin) {
     return getInstance().then((instance) => {
       return instance
@@ -36,7 +39,7 @@ function login(email, password, callback) {
           '/v6/patrons/validate',
           {
             barcode: barcode,
-            pin: encodeURI(pin),
+            pin: encodeURIComponent(pin),
           },
           {
             validateStatus: (status) => status === 204,
