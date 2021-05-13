@@ -6,8 +6,5 @@
   "license": "MIT",
   "devDependencies": {
     "axios": "^0.21.1"
-  },
-  "scripts": {
-    "test": "jest --silent --rootDir ."
   }
 }
