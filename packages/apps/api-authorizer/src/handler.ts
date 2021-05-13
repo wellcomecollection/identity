@@ -17,17 +17,16 @@ export const createLambdaHandler = (
   async function cacheLookup(
     accessToken: string
   ): Promise<Auth0UserInfo | null> {
-    return redisClient.get(accessToken).then((value) => {
-      if (value) {
-        console.debug(
-          `Cache hit for access token [${accessToken}] with value [${value}]`
-        );
-        return JSON.parse(value) as Auth0UserInfo;
-      } else {
-        console.debug(`Cache miss for access token [${accessToken}]`);
-        return null;
-      }
-    });
+    const value = await redisClient.get(accessToken);
+    if (value) {
+      console.debug(
+        `Cache hit for access token [${accessToken}] with value [${value}]`
+      );
+      return JSON.parse(value) as Auth0UserInfo;
+    } else {
+      console.debug(`Cache miss for access token [${accessToken}]`);
+      return null;
+    }
   }
 
   async function cacheInsert(
@@ -37,12 +36,12 @@ export const createLambdaHandler = (
     const value: string = JSON.stringify(auth0UserInfo);
     const ttl: number = Number(process.env.REDIS_CACHE_TTL!);
     // 'EX' is the expiration (i.e. TTL) in seconds of the cache entry. We could also use 'PX' to provide the value in milliseconds.
-    return redisClient.set(accessToken, value, ['EX', ttl]).then((result) => {
-      console.debug(
-        `Cache put for access token [${accessToken}] with value [${value}]: [${result}]`
-      );
-      return value; // AFAICT this is always 'OK' for a successful operation
-    });
+    // AFAICT this is always 'OK' for a successful operation
+    const result = await redisClient.set(accessToken, value, ['EX', ttl]);
+    console.debug(
+      `Cache put for access token [${accessToken}] with value [${value}]: [${result}]`
+    );
+    return value;
   }
 
   return async (
@@ -153,7 +152,7 @@ function validateRequest(
 
 function buildAuthorizerResult(
   principal: string,
-  effect: string,
+  effect: 'Allow' | 'Deny',
   methodArn: string,
   callerId: string | undefined = undefined,
   isAdmin: boolean = false
