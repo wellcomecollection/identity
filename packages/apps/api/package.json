@@ -6,7 +6,8 @@
   "author": "Daniel Grant <daniel.grant@digirati.com>",
   "license": "MIT",
   "scripts": {
-    "build": "tsc -p tsconfig.build.json && cp -r src/utils/templates lib/utils"
+    "build": "tsc --build tsconfig.build.json && cp -r src/utils/templates lib/utils",
+    "clean": "rimraf ./lib tsconfig.build.tsbuildinfo"
   },
   "dependencies": {
     "aws-serverless-express": "^3.3.8",
@@ -23,6 +24,7 @@
     "@types/nodemailer-smtp-transport": "^2.7.4",
     "@weco/auth0-client": "*",
     "@weco/sierra-client": "*",
+    "@weco/identity-common": "*",
     "cors": "^2.8.5",
     "liquidjs": "^9.22.0",
     "nodemailer": "^6.5.0",

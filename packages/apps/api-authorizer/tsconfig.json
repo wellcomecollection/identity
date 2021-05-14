@@ -1,22 +1,16 @@
 {
+  "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
-    "composite": true,
-    "declaration": true,
-    "declarationMap": true,
-    "esModuleInterop": true,
-    "module": "CommonJS",
-    "moduleResolution": "node",
-    "noImplicitAny": true,
     "outDir": "lib",
-    "rootDir": "src",
-    "sourceMap": true,
-    "strict": true,
-    "target": "es2017"
+    "rootDir": "src"
   },
-  "include": ["src", "test"],
+  "include": ["src", "tests"],
   "references": [
     {
       "path": "../../shared/auth0-client"
+    },
+    {
+      "path": "../../shared/identity-common"
     }
   ]
 }

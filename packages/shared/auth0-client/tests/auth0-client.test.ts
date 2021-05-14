@@ -6,7 +6,7 @@ import {
 import { equal, strictEqual } from 'assert';
 import axios, { AxiosInstance } from 'axios';
 import moxios from 'moxios';
-import { SierraUserIdPrefix } from '../lib/auth0';
+import { SierraUserIdPrefix } from '../src/auth0';
 import Auth0Client from '../src';
 import { Auth0Profile, Auth0UserInfo, SierraConnection } from '../src/auth0';
 

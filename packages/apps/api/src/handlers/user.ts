@@ -4,15 +4,14 @@ import {
   Auth0SearchResults,
   Auth0SearchSortFields,
   SearchStatuses,
-} from '@weco/auth0-client/lib/auth0';
+} from '@weco/auth0-client';
 import {
   APIResponse,
   isNonBlank,
   ResponseStatus,
   truncate,
 } from '@weco/identity-common';
-import SierraClient from '@weco/sierra-client';
-import { PatronRecord } from '@weco/sierra-client/lib/patron';
+import SierraClient, { PatronRecord } from '@weco/sierra-client';
 import { Request, Response } from 'express';
 import { toMessage } from '../models/common';
 import { toSearchResults, toUser } from '../models/user';
