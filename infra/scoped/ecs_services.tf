@@ -21,19 +21,19 @@ module "requests" {
     sierra_base_url   = "https://libsys.wellcomelibrary.org/iii/sierra-api"
   }
   secrets = {
-    es_host           = "???/es_host"
-    es_port           = "???/es_port"
-    es_protocol       = "???/es_protocol"
-    es_username       = "???/es_username"
-    es_password       = "???/es_password"
-    sierra_api_key    = "???/sierra_api_key"
-    sierra_api_secret = "???/sierra_api_secret"
+    es_host           = "elasticsearch/catalogue/private_host"
+    es_port           = "identity/requests/es_port"
+    es_protocol       = "identity/requests/es_protocol"
+    es_username       = "identity/requests/es_username"
+    es_password       = "identity/requests/es_password"
+    sierra_api_key    = "sierra-api-credentials-${terraform.workspace}:SierraAPIKey"
+    sierra_api_secret = "sierra-api-credentials-${terraform.workspace}:SierraAPISecret"
   }
 
   load_balancer_arn           = aws_lb.identity_api.arn
   load_balancer_listener_port = local.requests_lb_port
 
-  cluster_arn = aws_ecs_cluster.identity
+  cluster_arn = aws_ecs_cluster.identity.arn
   vpc_id      = aws_vpc.main.id
   subnets     = local.private_subnets
 
