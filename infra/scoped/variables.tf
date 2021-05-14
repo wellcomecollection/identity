@@ -1,3 +1,10 @@
+# Provider config
+
+variable "provider_role" {
+  type    = string
+  default = "identity-developer"
+}
+
 # Tags
 
 variable "tag_project" {
