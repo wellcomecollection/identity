@@ -1,3 +1,10 @@
+# Provider config
+
+variable "provider_role_arn" {
+  type    = string
+  default = "arn:aws:iam::770700576653:role/identity-developer"
+}
+
 # Tags
 
 variable "tag_project" {
