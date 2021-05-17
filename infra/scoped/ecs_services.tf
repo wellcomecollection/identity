@@ -15,9 +15,8 @@ module "requests" {
 
   environment = {
     app_port          = local.requests_container_port
-    app_base_url      = "???"
     metrics_namespace = "requests"
-    context_url       = "???"
+    app_base_url      = local.identity_v1_endpoint
     sierra_base_url   = "https://libsys.wellcomelibrary.org/iii/sierra-api"
   }
   secrets = {
