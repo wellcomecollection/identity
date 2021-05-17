@@ -1,0 +1,7 @@
+{
+  "summary": "Fetches a user's item requests",
+  "description": "Fetches a list of item requests associated with the user specified in the `userId` path parameter.",
+  "tags": [
+    "User"
+  ]
+}

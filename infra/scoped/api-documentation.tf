@@ -1603,3 +1603,176 @@ resource "aws_api_gateway_documentation_part" "users_userid_validate_post_500" {
     status_code = "500"
   }
 }
+
+# /users/:user_id/item-requests
+
+resource "aws_api_gateway_documentation_part" "users_userid_item-requests" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/item-requests/resource.json")
+
+  location {
+    type = "RESOURCE"
+    path = aws_api_gateway_resource.users_userid_item-requests.path
+  }
+}
+
+# [OPTIONS]
+
+resource "aws_api_gateway_documentation_part" "users_userid_item-requests_options" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/item-requests/options.json")
+
+  location {
+    type   = "METHOD"
+    path   = aws_api_gateway_resource.users_userid_item-requests.path
+    method = aws_api_gateway_method.users_userid_item-requests_options.http_method
+  }
+}
+
+# 204 No Content
+
+resource "aws_api_gateway_documentation_part" "users_userid_item-requests_options_204" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/item-requests/options-204.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_item-requests.path
+    method      = aws_api_gateway_method.users_userid_item-requests_options.http_method
+    status_code = "204"
+  }
+}
+
+# [POST]
+
+resource "aws_api_gateway_documentation_part" "users_userid_item-requests_post" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/item-requests/post.json")
+
+  location {
+    type   = "METHOD"
+    path   = aws_api_gateway_resource.users_userid_item-requests.path
+    method = aws_api_gateway_method.users_userid_item-requests_post.http_method
+  }
+}
+
+resource "aws_api_gateway_documentation_part" "users_userid_item-requests_post_202" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/item-requests/post-202.json")
+
+  location {
+    type        = "METHOD"
+    path        = aws_api_gateway_resource.users_userid_item-requests.path
+    method      = aws_api_gateway_method.users_userid_item-requests_post.http_method
+    status_code = "202"
+  }
+}
+
+resource "aws_api_gateway_documentation_part" "users_userid_item-requests_post_403" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/item-requests/post-403.json")
+
+  location {
+    type        = "METHOD"
+    path        = aws_api_gateway_resource.users_userid_item-requests.path
+    method      = aws_api_gateway_method.users_userid_item-requests_post.http_method
+    status_code = "403"
+  }
+}
+
+resource "aws_api_gateway_documentation_part" "users_userid_item-requests_post_404" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/item-requests/post-404.json")
+
+  location {
+    type        = "METHOD"
+    path        = aws_api_gateway_resource.users_userid_item-requests.path
+    method      = aws_api_gateway_method.users_userid_item-requests_post.http_method
+    status_code = "404"
+  }
+}
+
+resource "aws_api_gateway_documentation_part" "users_userid_item-requests_post_409" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/item-requests/post-409.json")
+
+  location {
+    type        = "METHOD"
+    path        = aws_api_gateway_resource.users_userid_item-requests.path
+    method      = aws_api_gateway_method.users_userid_item-requests_post.http_method
+    status_code = "409"
+  }
+}
+
+resource "aws_api_gateway_documentation_part" "users_userid_item-requests_post_500" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/item-requests/post-500.json")
+
+  location {
+    type        = "METHOD"
+    path        = aws_api_gateway_resource.users_userid_item-requests.path
+    method      = aws_api_gateway_method.users_userid_item-requests_post.http_method
+    status_code = "500"
+  }
+}
+
+# [GET]
+
+resource "aws_api_gateway_documentation_part" "users_userid_item-requests_get" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/item-requests/get.json")
+
+  location {
+    type   = "METHOD"
+    path   = aws_api_gateway_resource.users_userid_item-requests.path
+    method = aws_api_gateway_method.users_userid_item-requests_get.http_method
+  }
+}
+
+resource "aws_api_gateway_documentation_part" "users_userid_item-requests_get_200" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/item-requests/get-200.json")
+
+  location {
+    type        = "METHOD"
+    path        = aws_api_gateway_resource.users_userid_item-requests.path
+    method      = aws_api_gateway_method.users_userid_item-requests_get.http_method
+    status_code = "200"
+  }
+}
+
+resource "aws_api_gateway_documentation_part" "users_userid_item-requests_get_403" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/item-requests/get-403.json")
+
+  location {
+    type        = "METHOD"
+    path        = aws_api_gateway_resource.users_userid_item-requests.path
+    method      = aws_api_gateway_method.users_userid_item-requests_get.http_method
+    status_code = "403"
+  }
+}
+
+resource "aws_api_gateway_documentation_part" "users_userid_item-requests_get_404" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/item-requests/get-404.json")
+
+  location {
+    type        = "METHOD"
+    path        = aws_api_gateway_resource.users_userid_item-requests.path
+    method      = aws_api_gateway_method.users_userid_item-requests_get.http_method
+    status_code = "404"
+  }
+}
+
+resource "aws_api_gateway_documentation_part" "users_userid_item-requests_get_500" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/item-requests/get-500.json")
+
+  location {
+    type        = "METHOD"
+    path        = aws_api_gateway_resource.users_userid_item-requests.path
+    method      = aws_api_gateway_method.users_userid_item-requests_get.http_method
+    status_code = "500"
+  }
+}
