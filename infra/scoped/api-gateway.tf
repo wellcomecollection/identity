@@ -1670,7 +1670,7 @@ resource "aws_api_gateway_method" "users_userid_item-requests_post" {
   request_validator_id = aws_api_gateway_request_validator.full.id
 
   request_models = {
-    "application/json" = aws_api_gateway_model.item-request
+    "application/json" = aws_api_gateway_model.item-request.name
   }
 
   request_parameters = {
