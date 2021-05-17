@@ -1621,3 +1621,245 @@ resource "aws_api_gateway_method_response" "users_userid_validate_post_500" {
     "method.response.header.Access-Control-Allow-Origin" = true
   }
 }
+
+# /users/:user_id/item-requests
+
+resource "aws_api_gateway_resource" "users_userid_item-requests" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  parent_id   = aws_api_gateway_resource.users_userid.id
+  path_part   = "item-requests"
+}
+
+# [OPTIONS]
+
+resource "aws_api_gateway_method" "users_userid_item-requests_options" {
+  rest_api_id   = aws_api_gateway_rest_api.identity.id
+  resource_id   = aws_api_gateway_resource.users_userid_item-requests.id
+  http_method   = "OPTIONS"
+  authorization = "NONE"
+}
+
+# 204 No Content
+
+resource "aws_api_gateway_method_response" "users_userid_item-requests_options_204" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_item-requests.id
+  http_method = aws_api_gateway_method.users_userid_item-requests_options.http_method
+  status_code = "204"
+
+  response_models = {
+    "application/json" = "Empty"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true,
+    "method.response.header.Access-Control-Allow-Methods" = true,
+    "method.response.header.Access-Control-Allow-Origin"  = true
+  }
+}
+
+# [POST]
+
+resource "aws_api_gateway_method" "users_userid_item-requests_post" {
+  rest_api_id          = aws_api_gateway_rest_api.identity.id
+  resource_id          = aws_api_gateway_resource.users_userid_item-requests.id
+  http_method          = "POST"
+  authorization        = "CUSTOM"
+  authorizer_id        = aws_api_gateway_authorizer.token_authorizer.id
+  api_key_required     = true
+  request_validator_id = aws_api_gateway_request_validator.full.id
+
+  request_models = {
+    "application/json" = aws_api_gateway_model.item-request
+  }
+
+  request_parameters = {
+    "method.request.path.userId" = true
+  }
+}
+
+# 202 Accepted
+
+resource "aws_api_gateway_method_response" "users_userid_item-requests_post_200" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_item-requests.id
+  http_method = aws_api_gateway_method.users_userid_item-requests_post.http_method
+  status_code = "202"
+
+  response_models = {
+    "application/json" = "Empty"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# 400 Bad Request
+
+resource "aws_api_gateway_method_response" "users_userid_item-requests_post_400" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_item-requests.id
+  http_method = aws_api_gateway_method.users_userid_item-requests_post.http_method
+  status_code = "400"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# 403 Forbidden
+
+resource "aws_api_gateway_method_response" "users_userid_item-requests_post_403" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_item-requests.id
+  http_method = aws_api_gateway_method.users_userid_item-requests_post.http_method
+  status_code = "403"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# 404 Not Found
+
+resource "aws_api_gateway_method_response" "users_userid_item-requests_post_404" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_item-requests.id
+  http_method = aws_api_gateway_method.users_userid_item-requests_post.http_method
+  status_code = "404"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# 409 Conflict
+
+resource "aws_api_gateway_method_response" "users_userid_item-requests_post_409" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_item-requests.id
+  http_method = aws_api_gateway_method.users_userid_item-requests_post.http_method
+  status_code = "409"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# 500 Internal Server Error
+
+resource "aws_api_gateway_method_response" "users_userid_item-requests_post_500" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_item-requests.id
+  http_method = aws_api_gateway_method.users_userid_item-requests_post.http_method
+  status_code = "500"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# [GET]
+
+resource "aws_api_gateway_method" "users_userid_item-requests_get" {
+  rest_api_id          = aws_api_gateway_rest_api.identity.id
+  resource_id          = aws_api_gateway_resource.users_userid_item-requests.id
+  http_method          = "GET"
+  authorization        = "CUSTOM"
+  authorizer_id        = aws_api_gateway_authorizer.token_authorizer.id
+  api_key_required     = true
+  request_validator_id = aws_api_gateway_request_validator.full.id
+
+  request_parameters = {
+    "method.request.path.userId" = true
+  }
+}
+
+# 200 OK
+
+resource "aws_api_gateway_method_response" "users_userid_item-requests_get_200" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_item-requests.id
+  http_method = aws_api_gateway_method.users_userid_item-requests_get.http_method
+  status_code = "200"
+
+  response_models = {
+    "application/json" = aws_api_gateway_model.item-request-list.name
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# 403 Forbidden
+
+resource "aws_api_gateway_method_response" "users_userid_item-requests_get_403" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_item-requests.id
+  http_method = aws_api_gateway_method.users_userid_item-requests_get.http_method
+  status_code = "403"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# 404 Not Found
+
+resource "aws_api_gateway_method_response" "users_userid_item-requests_get_404" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_item-requests.id
+  http_method = aws_api_gateway_method.users_userid_item-requests_get.http_method
+  status_code = "404"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# 500 Internal Server Error
+
+resource "aws_api_gateway_method_response" "users_userid_get_item-requests_500" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_item-requests.id
+  http_method = aws_api_gateway_method.users_userid_item-requests_get.http_method
+  status_code = "500"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
