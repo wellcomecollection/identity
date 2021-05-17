@@ -2,7 +2,7 @@ provider "aws" {
   region = "eu-west-1"
 
   assume_role {
-    role_arn = "arn:aws:iam::770700576653:role/${var.provider_role}"
+    role_arn = var.provider_role_arn
   }
 
   # Ignore deployment tags on services
@@ -16,7 +16,7 @@ provider "aws" {
   region = "us-east-1"
 
   assume_role {
-    role_arn = "arn:aws:iam::770700576653:role/${var.provider_role}"
+    role_arn = var.provider_role_arn
   }
 }
 

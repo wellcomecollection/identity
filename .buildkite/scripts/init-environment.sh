@@ -10,7 +10,7 @@ TF_BACKEND_ROLE_ARN="arn:aws:iam::770700576653:role/identity-ci"
 
 function __process_environment_variables() {
   export AWS_DEFAULT_REGION=eu-west-1
-  export TF_VAR_provider_role=identity-ci
+  export TF_VAR_provider_role_arn=${TF_BACKEND_ROLE_ARN}
   export NORMALIZED_BRANCH_NAME="${BUILDKITE_BRANCH/\//-}"
 }
 
