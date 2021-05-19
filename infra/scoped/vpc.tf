@@ -5,12 +5,9 @@ resource "aws_vpc" "main" {
   enable_dns_hostnames = true
   enable_dns_support   = true
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-vpc-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-vpc-${terraform.workspace}"
+  }
 }
 
 # Internet Gateway
@@ -18,12 +15,9 @@ resource "aws_vpc" "main" {
 resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-internet-gateway-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-internet-gateway-${terraform.workspace}"
+  }
 }
 
 # NAT Gateway
@@ -31,24 +25,18 @@ resource "aws_internet_gateway" "main" {
 resource "aws_eip" "nat_gateway" {
   vpc = true
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-nat-gateway-ip-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-nat-gateway-ip-${terraform.workspace}"
+  }
 }
 
 resource "aws_nat_gateway" "main" {
   allocation_id = aws_eip.nat_gateway.id
   subnet_id     = aws_subnet.public_1.id
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-nat-gateway-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-nat-gateway-${terraform.workspace}"
+  }
 }
 
 # Public Routes
@@ -56,12 +44,9 @@ resource "aws_nat_gateway" "main" {
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-public-route-table-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-public-route-table-${terraform.workspace}"
+  }
 }
 
 resource "aws_route" "public" {
@@ -79,12 +64,9 @@ resource "aws_route" "public" {
 resource "aws_route_table" "private" {
   vpc_id = aws_vpc.main.id
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-private-route-table-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-private-route-table-${terraform.workspace}"
+  }
 }
 
 resource "aws_route" "private" {
@@ -101,12 +83,9 @@ resource "aws_subnet" "public_1" {
   availability_zone       = var.network_azs[0]
   map_public_ip_on_launch = true
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-public-subnet-1-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-public-subnet-1-${terraform.workspace}"
+  }
 }
 
 resource "aws_route_table_association" "public_1" {
@@ -120,12 +99,9 @@ resource "aws_subnet" "public_2" {
   availability_zone       = var.network_azs[1]
   map_public_ip_on_launch = true
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-public-subnet-2-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-public-subnet-2-${terraform.workspace}"
+  }
 }
 
 resource "aws_route_table_association" "public_2" {
@@ -139,12 +115,9 @@ resource "aws_subnet" "public_3" {
   availability_zone       = var.network_azs[2]
   map_public_ip_on_launch = true
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-public-subnet-3-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-public-subnet-3-${terraform.workspace}"
+  }
 }
 
 resource "aws_route_table_association" "public_3" {
@@ -160,12 +133,9 @@ resource "aws_subnet" "private_1" {
   availability_zone       = var.network_azs[0]
   map_public_ip_on_launch = false
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-private-subnet-1-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-private-subnet-1-${terraform.workspace}"
+  }
 }
 
 resource "aws_route_table_association" "private_1" {
@@ -179,12 +149,9 @@ resource "aws_subnet" "private_2" {
   availability_zone       = var.network_azs[1]
   map_public_ip_on_launch = false
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-private-subnet-2-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-private-subnet-2-${terraform.workspace}"
+  }
 }
 
 resource "aws_route_table_association" "private_2" {
@@ -198,12 +165,9 @@ resource "aws_subnet" "private_3" {
   availability_zone       = var.network_azs[2]
   map_public_ip_on_launch = false
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-private-subnet-3-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-private-subnet-3-${terraform.workspace}"
+  }
 }
 
 resource "aws_route_table_association" "private_3" {

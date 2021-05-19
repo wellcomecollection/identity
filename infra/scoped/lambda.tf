@@ -42,12 +42,9 @@ resource "aws_lambda_function" "authorizer" {
     ]
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "name" = "identity-authorizer-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "name" = "identity-authorizer-${terraform.workspace}"
+  }
 }
 
 resource "aws_lambda_permission" "authorizer" {
@@ -111,12 +108,9 @@ resource "aws_lambda_function" "api" {
     ]
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "name" = "identity-authorizer-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "name" = "identity-authorizer-${terraform.workspace}"
+  }
 }
 
 resource "aws_lambda_permission" "api" {

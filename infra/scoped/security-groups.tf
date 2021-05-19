@@ -12,12 +12,9 @@ resource "aws_security_group" "local" {
     cidr_blocks = [aws_vpc.main.cidr_block]
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-local-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-local-${terraform.workspace}"
+  }
 }
 
 # Egress
@@ -33,10 +30,7 @@ resource "aws_security_group" "egress" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-egress-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-egress-${terraform.workspace}"
+  }
 }

@@ -13,4 +13,8 @@ provider "aws" {
   assume_role {
     role_arn = "arn:aws:iam::770700576653:role/identity-developer"
   }
+
+  default_tags {
+    tags = local.common_tags
+  }
 }
