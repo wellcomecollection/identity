@@ -11,7 +11,9 @@ resource "auth0_client" "dummy_test" {
   custom_login_page_on = true
 
   grant_types = [
-    "authorization_code"
+    "authorization_code",
+    "password",
+    "http://auth0.com/oauth/grant-type/password-realm"
   ]
 
   callbacks = [
