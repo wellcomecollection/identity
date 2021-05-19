@@ -124,3 +124,15 @@ resource "aws_secretsmanager_secret_version" "account_admin_system-api_key" {
   secret_id     = aws_secretsmanager_secret.account_admin_system-api_key.id
   secret_string = aws_api_gateway_api_key.account_admin_system.value
 }
+
+locals {
+  elasticsearch_apps  = ["requests"]
+  elasticsearch_creds = ["es_username", "es_password", "es_protocol", "es_port"]
+}
+
+resource "aws_secretsmanager_secret" "es_credentials" {
+  for_each = toset([
+    for path in setproduct(local.elasticsearch_apps, local.elasticsearch_creds) : "${path[0]}/${path[1]}"
+  ])
+  name = "identity/${each.value}"
+}
