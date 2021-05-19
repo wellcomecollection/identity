@@ -17,8 +17,7 @@ variable "secrets" {
 }
 
 variable "container_port" {
-  type    = number
-  default = 9001
+  type = number
 }
 
 variable "use_fargate_spot" {
