@@ -8,11 +8,7 @@ resource "aws_lambda_function" "authorizer" {
   filename      = "data/empty.zip"
 
   vpc_config {
-    subnet_ids = [
-      aws_subnet.private_1.id,
-      aws_subnet.private_2.id,
-      aws_subnet.private_3.id,
-    ]
+    subnet_ids = local.private_subnets
 
     security_group_ids = [
       aws_security_group.local.id,
@@ -66,11 +62,7 @@ resource "aws_lambda_function" "api" {
   timeout       = 10
 
   vpc_config {
-    subnet_ids = [
-      aws_subnet.private_1.id,
-      aws_subnet.private_2.id,
-      aws_subnet.private_3.id,
-    ]
+    subnet_ids = local.private_subnets
 
     security_group_ids = [
       aws_security_group.local.id,
