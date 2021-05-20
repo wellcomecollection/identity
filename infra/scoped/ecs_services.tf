@@ -38,7 +38,7 @@ module "requests" {
   load_balancer_listener_port = local.requests_lb_port
 
   cluster_arn = aws_ecs_cluster.identity.arn
-  vpc_id      = aws_vpc.main.id
+  vpc_id      = local.vpc_id
   subnets     = local.routable_private_subnets
 
   security_group_ids = [
