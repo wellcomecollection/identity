@@ -13,7 +13,7 @@ terraform {
     }
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 3.14.0" # Any non-beta version >= 3.14.0 and <3.15.0, i.e. 3.14.X
+      version = "~> 3.41.0" # Any non-beta version >= 3.41.0 and <3.42.0, i.e. 3.41.X
     }
     template = {
       source  = "hashicorp/template"
@@ -50,6 +50,18 @@ data "terraform_remote_state" "catalogue_api_shared" {
 
     bucket = "wellcomecollection-catalogue-infra-delta"
     key    = "terraform/catalogue/api/shared.tfstate"
+    region = "eu-west-1"
+  }
+}
+
+data "terraform_remote_state" "accounts_identity" {
+  backend = "s3"
+
+  config = {
+    role_arn = "arn:aws:iam::760097843905:role/platform-read_only"
+
+    bucket = "wellcomecollection-platform-infra"
+    key    = "terraform/platform-infrastructure/accounts/identity.tfstate"
     region = "eu-west-1"
   }
 }

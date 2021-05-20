@@ -50,15 +50,13 @@ locals {
   aas_redirect_uri = "https://${local.account_admin_hostnames[terraform.workspace]}/api/auth/callback"
   aas_logout_uri   = "https://${local.account_admin_hostnames[terraform.workspace]}"
 
-  # General networking config
-  private_subnets = [
-    aws_subnet.private_1.id,
-    aws_subnet.private_2.id,
-    aws_subnet.private_3.id,
-  ]
+  # Identity account VPC
+  identity_account_state = data.terraform_remote_state.accounts_identity.outputs
+  vpc_id                 = local.identity_account_state["identity_vpc_id"]
+  private_subnets        = local.identity_account_state["identity_vpc_private_subnets"]
 
   # ECS services
-  elastic_cloud_vpce_sg_id = data.terraform_remote_state.infra_critical.outputs["ec_catalogue_privatelink_sg_id"]
+  elastic_cloud_vpce_sg_id = data.terraform_remote_state.infra_critical.outputs["ec_identity_privatelink_sg_id"]
   requests_lb_port         = 8000
   requests_repository      = data.terraform_remote_state.catalogue_api_shared.outputs["ecr_requests_repository_url"]
 }

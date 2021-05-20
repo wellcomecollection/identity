@@ -4,12 +4,9 @@ resource "aws_s3_bucket" "assets" {
   bucket = "identity-public-assets-${terraform.workspace}"
   acl    = "private"
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-public-assets-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-public-assets-${terraform.workspace}"
+  }
 }
 
 resource "aws_s3_bucket_object" "assets_images_wellcomecollections-150x50-png" {
@@ -19,12 +16,9 @@ resource "aws_s3_bucket_object" "assets_images_wellcomecollections-150x50-png" {
   etag   = filemd5("${path.module}/assets/images/wellcomecollections-150x50.png")
   acl    = "public-read"
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "images/wellcomecollections-150x50.png"
-    }
-  )
+  tags = {
+    "Name" = "images/wellcomecollections-150x50.png"
+  }
 }
 
 # Public Facing Swagger UI
@@ -39,12 +33,9 @@ resource "aws_s3_bucket" "swagger_ui_v1" {
     error_document = "error.html"
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-public-swagger-ui-v1-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-public-swagger-ui-v1-${terraform.workspace}"
+  }
 }
 
 resource "aws_s3_bucket_object" "swagger_ui-favicon-16x16_png" {

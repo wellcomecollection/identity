@@ -18,12 +18,9 @@ resource "aws_iam_role" "api_gateway_role" {
 }
 EOF
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-api-gateway-role-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-api-gateway-role-${terraform.workspace}"
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "api_gateway_role" {
