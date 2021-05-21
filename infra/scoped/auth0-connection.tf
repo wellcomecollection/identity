@@ -45,6 +45,12 @@ resource "auth0_connection" "sierra" {
       CLIENT_SECRET = data.external.sierra_api_credentials.result.SierraAPISecret
     }
   }
+
+  lifecycle {
+    ignore_changes = [
+      options["scripts"]
+    ]
+  }
 }
 
 resource "auth0_connection" "azure_ad" {
@@ -71,11 +77,5 @@ resource "auth0_connection" "azure_ad" {
     scripts = {
       fetchUserProfile = file("${path.module}/../../packages/apps/auth0-actions/src/create_azure_ad_profile.js")
     }
-  }
-
-  lifecycle {
-    ignore_changes = [
-      options["scripts"]
-    ]
   }
 }

@@ -11,12 +11,9 @@ resource "aws_api_gateway_usage_plan" "basic" {
     burst_limit = 5
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "Basic"
-    }
-  )
+  tags = {
+    "Name" = "Basic"
+  }
 }
 
 # Dummy
@@ -27,12 +24,9 @@ resource "aws_api_gateway_api_key" "dummy" {
 
   name = "dummy"
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "dummy"
-    }
-  )
+  tags = {
+    "Name" = "dummy"
+  }
 }
 
 resource "aws_api_gateway_usage_plan_key" "dummy" {
@@ -49,12 +43,9 @@ resource "aws_api_gateway_usage_plan_key" "dummy" {
 resource "aws_api_gateway_api_key" "account_management_system" {
   name = "account management system"
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "account management system"
-    }
-  )
+  tags = {
+    "Name" = "account management system"
+  }
 }
 
 resource "aws_api_gateway_usage_plan_key" "account_management_system" {
@@ -68,12 +59,9 @@ resource "aws_api_gateway_usage_plan_key" "account_management_system" {
 resource "aws_api_gateway_api_key" "account_admin_system" {
   name = "account admin system"
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "account admin system"
-    }
-  )
+  tags = {
+    "Name" = "account admin system"
+  }
 }
 
 resource "aws_api_gateway_usage_plan_key" "account_admin_system" {

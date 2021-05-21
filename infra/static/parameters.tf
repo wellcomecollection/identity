@@ -9,12 +9,9 @@ resource "aws_ssm_parameter" "hostname" {
     ignore_changes = [value]
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-hostname"
-    }
-  )
+  tags = {
+    "Name" = "identity-hostname"
+  }
 }
 
 # Auth0
@@ -28,12 +25,9 @@ resource "aws_ssm_parameter" "email_domain" {
     ignore_changes = [value]
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-email_domain"
-    }
-  )
+  tags = {
+    "Name" = "identity-email_domain"
+  }
 }
 
 # API Gateway
@@ -47,10 +41,7 @@ resource "aws_ssm_parameter" "api_gateway_log_format" {
     ignore_changes = [value]
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-api_gateway_log_format"
-    }
-  )
+  tags = {
+    "Name" = "identity-api_gateway_log_format"
+  }
 }

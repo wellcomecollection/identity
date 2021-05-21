@@ -54,10 +54,7 @@ resource "aws_cloudfront_distribution" "swagger_ui_v1" {
 
   price_class = "PriceClass_100" # USA and Europe
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = local.identity_v1_docs_hostname
-    }
-  )
+  tags = {
+    "Name" = local.identity_v1_docs_hostname
+  }
 }

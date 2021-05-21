@@ -3,12 +3,9 @@
 resource "aws_secretsmanager_secret" "sierra_api_credentials" {
   name = "sierra-api-credentials-${terraform.workspace}"
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "sierra-api-credentials-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "sierra-api-credentials-${terraform.workspace}"
+  }
 }
 
 data "aws_secretsmanager_secret_version" "sierra_api_credentials-sierra-api-key_version" {
@@ -24,12 +21,9 @@ data "external" "sierra_api_credentials" {
 resource "aws_secretsmanager_secret" "azure_ad_client_secret" {
   name = "azure-ad-client-secret-${terraform.workspace}"
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "azure-ad-client-secret-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "azure-ad-client-secret-${terraform.workspace}"
+  }
 }
 
 data "aws_secretsmanager_secret_version" "azure_ad_client_secret_version" {
@@ -41,12 +35,9 @@ data "aws_secretsmanager_secret_version" "azure_ad_client_secret_version" {
 resource "aws_secretsmanager_secret" "email_smtp_password_secret" {
   name = "email-smtp-password-secret-${terraform.workspace}"
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "email-smtp-password-secret-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "email-smtp-password-secret-${terraform.workspace}"
+  }
 }
 
 data "aws_secretsmanager_secret_version" "email_smtp_password_secret_version" {
@@ -59,12 +50,9 @@ resource "aws_secretsmanager_secret" "account_management_system-auth0_client_sec
   provider = aws.experience
   name     = "identity/${terraform.workspace}/account_management_system/auth0_client_secret"
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity/${terraform.workspace}/account_management_system/auth0_client_secret"
-    }
-  )
+  tags = {
+    "Name" = "identity/${terraform.workspace}/account_management_system/auth0_client_secret"
+  }
 }
 
 resource "aws_secretsmanager_secret_version" "account_management_system-auth0_client_secret" {
@@ -77,12 +65,9 @@ resource "aws_secretsmanager_secret" "account_management_system-api_key" {
   provider = aws.experience
   name     = "identity/${terraform.workspace}/account_management_system/api_key"
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity/${terraform.workspace}/account_management_system/api_key"
-    }
-  )
+  tags = {
+    "Name" = "identity/${terraform.workspace}/account_management_system/api_key"
+  }
 }
 
 resource "aws_secretsmanager_secret_version" "account_management_system-api_key" {
@@ -96,12 +81,9 @@ resource "aws_secretsmanager_secret_version" "account_management_system-api_key"
 resource "aws_secretsmanager_secret" "account_admin_system-auth0_client_secret" {
   name = "identity/${terraform.workspace}/account_admin_system/auth0_client_secret"
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity/${terraform.workspace}/account_admin_system/auth0_client_secret"
-    }
-  )
+  tags = {
+    "Name" = "identity/${terraform.workspace}/account_admin_system/auth0_client_secret"
+  }
 }
 
 resource "aws_secretsmanager_secret_version" "account_admin_system-auth0_client_secret" {
@@ -112,15 +94,29 @@ resource "aws_secretsmanager_secret_version" "account_admin_system-auth0_client_
 resource "aws_secretsmanager_secret" "account_admin_system-api_key" {
   name = "identity/${terraform.workspace}/account_admin_system/api_key"
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity/${terraform.workspace}/account_admin_system/api_key"
-    }
-  )
+  tags = {
+    "Name" = "identity/${terraform.workspace}/account_admin_system/api_key"
+  }
 }
 
 resource "aws_secretsmanager_secret_version" "account_admin_system-api_key" {
   secret_id     = aws_secretsmanager_secret.account_admin_system-api_key.id
   secret_string = aws_api_gateway_api_key.account_admin_system.value
+}
+
+locals {
+  elasticsearch_apps  = ["requests"]
+  elasticsearch_creds = ["es_username", "es_password", "es_protocol", "es_port"]
+}
+
+resource "aws_secretsmanager_secret" "es_credentials" {
+  for_each = toset([
+    for path in setproduct(local.elasticsearch_apps, local.elasticsearch_creds) : "${path[0]}/${path[1]}"
+  ])
+
+  name = "identity/${each.value}"
+  tags = {
+    // These secrets are currently environment-independent
+    "Environment" = "common"
+  }
 }
