@@ -11,7 +11,7 @@ resource "aws_lb_target_group" "tcp" {
 
   # The default deregistration delay is 5 minutes, which means that ECS
   # takes around 5–7 mins to fully drain connections to and deregister
-  # the old task in the course of its blue/green. deployment of an
+  # the old task in the course of its blue/green deployment of an
   # updated service.  Reducing this parameter to 90s makes deployments faster.
   deregistration_delay = 90
 

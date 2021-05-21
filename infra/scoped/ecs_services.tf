@@ -1,5 +1,10 @@
 locals {
   requests_container_port = 9001
+
+  n_private_subnets        = length(local.private_subnets)
+  desired_task_count       = terraform.workspace == "prod" ? 3 : 1
+  clamped_n_subnets        = min(local.n_private_subnets, local.desired_task_count)
+  routable_private_subnets = slice(local.private_subnets, 0, local.clamped_n_subnets)
 }
 
 module "requests" {
@@ -11,7 +16,10 @@ module "requests" {
   container_image        = "${local.requests_repository}:env.${terraform.workspace}"
   container_port         = local.requests_container_port
   deployment_service_env = terraform.workspace
-  desired_task_count     = 1
+  desired_task_count     = local.desired_task_count
+
+  app_cpu    = 1024
+  app_memory = 2048
 
   environment = {
     app_port          = local.requests_container_port
@@ -33,8 +41,8 @@ module "requests" {
   load_balancer_listener_port = local.requests_lb_port
 
   cluster_arn = aws_ecs_cluster.identity.arn
-  vpc_id      = aws_vpc.main.id
-  subnets     = local.private_subnets
+  vpc_id      = local.vpc_id
+  subnets     = local.routable_private_subnets
 
   security_group_ids = [
     aws_security_group.local.id,

@@ -30,10 +30,7 @@ resource "aws_elasticache_replication_group" "access_token_cache" {
     ]
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "name" = "identity-access-token-cache-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "name" = "identity-access-token-cache-${terraform.workspace}"
+  }
 }

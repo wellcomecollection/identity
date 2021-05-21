@@ -17,8 +17,17 @@ variable "secrets" {
 }
 
 variable "container_port" {
+  type = number
+}
+
+variable "app_cpu" {
   type    = number
-  default = 9001
+  default = 1024
+}
+
+variable "app_memory" {
+  type    = number
+  default = 2048
 }
 
 variable "use_fargate_spot" {

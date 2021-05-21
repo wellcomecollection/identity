@@ -13,12 +13,9 @@ resource "aws_ssm_parameter" "hostname_prefix" {
     ignore_changes = [value]
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-hostname_prefix-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-hostname_prefix-${terraform.workspace}"
+  }
 }
 
 # Email
@@ -32,12 +29,9 @@ resource "aws_ssm_parameter" "email_support_user" {
     ignore_changes = [value]
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-email_support_user-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-email_support_user-${terraform.workspace}"
+  }
 }
 
 resource "aws_ssm_parameter" "email_noreply_user" {
@@ -49,12 +43,9 @@ resource "aws_ssm_parameter" "email_noreply_user" {
     ignore_changes = [value]
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-email_noreply_user-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-email_noreply_user-${terraform.workspace}"
+  }
 }
 
 resource "aws_ssm_parameter" "email_noreply_name" {
@@ -66,12 +57,9 @@ resource "aws_ssm_parameter" "email_noreply_name" {
     ignore_changes = [value]
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-email_noreply_name-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-email_noreply_name-${terraform.workspace}"
+  }
 }
 
 data "aws_ssm_parameter" "email_domain" {
@@ -89,12 +77,9 @@ resource "aws_ssm_parameter" "sierra_api_hostname" {
     ignore_changes = [value]
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-sierra_api_hostname-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-sierra_api_hostname-${terraform.workspace}"
+  }
 }
 
 # Auth0
@@ -108,12 +93,9 @@ resource "aws_ssm_parameter" "auth0_friendly_name" {
     ignore_changes = [value]
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-auth0_friendly_name-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-auth0_friendly_name-${terraform.workspace}"
+  }
 }
 
 resource "aws_ssm_parameter" "auth0_universal_login_primary_colour" {
@@ -125,12 +107,9 @@ resource "aws_ssm_parameter" "auth0_universal_login_primary_colour" {
     ignore_changes = [value]
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-auth0_universal_login_primary_colour-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-auth0_universal_login_primary_colour-${terraform.workspace}"
+  }
 }
 
 resource "aws_ssm_parameter" "auth0_universal_login_background_colour" {
@@ -142,12 +121,9 @@ resource "aws_ssm_parameter" "auth0_universal_login_background_colour" {
     ignore_changes = [value]
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-auth0_universal_login_background_colour-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-auth0_universal_login_background_colour-${terraform.workspace}"
+  }
 }
 
 resource "aws_ssm_parameter" "auth0_domain" {
@@ -159,12 +135,9 @@ resource "aws_ssm_parameter" "auth0_domain" {
     ignore_changes = [value]
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-auth0_domain-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-auth0_domain-${terraform.workspace}"
+  }
 }
 
 resource "aws_ssm_parameter" "auth0_support_url" {
@@ -176,12 +149,9 @@ resource "aws_ssm_parameter" "auth0_support_url" {
     ignore_changes = [value]
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-auth0_support_url-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-auth0_support_url-${terraform.workspace}"
+  }
 }
 
 resource "aws_ssm_parameter" "auth0_verify_email_subject" {
@@ -193,12 +163,9 @@ resource "aws_ssm_parameter" "auth0_verify_email_subject" {
     ignore_changes = [value]
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-auth0_verify_email_subject-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-auth0_verify_email_subject-${terraform.workspace}"
+  }
 }
 
 resource "aws_ssm_parameter" "auth0_verify_email_url_ttl" {
@@ -210,12 +177,9 @@ resource "aws_ssm_parameter" "auth0_verify_email_url_ttl" {
     ignore_changes = [value]
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-auth0_verify_email_url_ttl-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-auth0_verify_email_url_ttl-${terraform.workspace}"
+  }
 }
 
 resource "aws_ssm_parameter" "auth0_reset_email_subject" {
@@ -227,12 +191,9 @@ resource "aws_ssm_parameter" "auth0_reset_email_subject" {
     ignore_changes = [value]
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-auth0_reset_email_subject-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-auth0_reset_email_subject-${terraform.workspace}"
+  }
 }
 
 resource "aws_ssm_parameter" "auth0_reset_email_url_ttl" {
@@ -244,12 +205,9 @@ resource "aws_ssm_parameter" "auth0_reset_email_url_ttl" {
     ignore_changes = [value]
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-auth0_reset_email_url_ttl-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-auth0_reset_email_url_ttl-${terraform.workspace}"
+  }
 }
 
 resource "aws_ssm_parameter" "auth0_welcome_email_subject" {
@@ -261,12 +219,9 @@ resource "aws_ssm_parameter" "auth0_welcome_email_subject" {
     ignore_changes = [value]
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-auth0_welcome_email_subject-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-auth0_welcome_email_subject-${terraform.workspace}"
+  }
 }
 
 resource "aws_ssm_parameter" "auth0_blocked_email_subject" {
@@ -278,12 +233,9 @@ resource "aws_ssm_parameter" "auth0_blocked_email_subject" {
     ignore_changes = [value]
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-auth0_blocked_email_subject-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-auth0_blocked_email_subject-${terraform.workspace}"
+  }
 }
 
 # API Gateway
@@ -303,12 +255,9 @@ resource "aws_ssm_parameter" "cloudwatch_retention" {
     ignore_changes = [value]
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-cloudwatch_retention-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-cloudwatch_retention-${terraform.workspace}"
+  }
 }
 
 # Azure AD
@@ -322,12 +271,9 @@ resource "aws_ssm_parameter" "azure_ad_directory_id" {
     ignore_changes = [value]
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-azure_ad_directory_id-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-azure_ad_directory_id-${terraform.workspace}"
+  }
 }
 
 resource "aws_ssm_parameter" "azure_ad_application_id" {
@@ -339,12 +285,9 @@ resource "aws_ssm_parameter" "azure_ad_application_id" {
     ignore_changes = [value]
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-azure_ad_application_id-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-azure_ad_application_id-${terraform.workspace}"
+  }
 }
 
 # Account Management System
@@ -355,12 +298,9 @@ resource "aws_ssm_parameter" "account_management_system-auth0_domain" {
   type     = "String"
   value    = local.auth0_hostname
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "/identity/${terraform.workspace}/account_management_system/auth0_domain"
-    }
-  )
+  tags = {
+    "Name" = "/identity/${terraform.workspace}/account_management_system/auth0_domain"
+  }
 }
 
 resource "aws_ssm_parameter" "account_management_system-auth0_client_id" {
@@ -369,12 +309,9 @@ resource "aws_ssm_parameter" "account_management_system-auth0_client_id" {
   type     = "String"
   value    = auth0_client.account_management_system.id
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "/identity/${terraform.workspace}/account_management_system/auth0_client_id"
-    }
-  )
+  tags = {
+    "Name" = "/identity/${terraform.workspace}/account_management_system/auth0_client_id"
+  }
 }
 
 resource "aws_ssm_parameter" "account_management_system-auth0_callback_url" {
@@ -383,12 +320,9 @@ resource "aws_ssm_parameter" "account_management_system-auth0_callback_url" {
   type     = "String"
   value    = local.ams_redirect_uri
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "/identity/${terraform.workspace}/account_management_system/auth0_callback_url"
-    }
-  )
+  tags = {
+    "Name" = "/identity/${terraform.workspace}/account_management_system/auth0_callback_url"
+  }
 }
 
 resource "aws_ssm_parameter" "account_management_system-api_base_url" {
@@ -397,12 +331,9 @@ resource "aws_ssm_parameter" "account_management_system-api_base_url" {
   type     = "String"
   value    = local.identity_v1_endpoint
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "/identity/${terraform.workspace}/account_management_system/api_base_url"
-    }
-  )
+  tags = {
+    "Name" = "/identity/${terraform.workspace}/account_management_system/api_base_url"
+  }
 }
 
 resource "aws_ssm_parameter" "account_management_system-context_path" {
@@ -411,12 +342,9 @@ resource "aws_ssm_parameter" "account_management_system-context_path" {
   type     = "String"
   value    = local.ams_context_path
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "/identity/${terraform.workspace}/account_management_system/context_path"
-    }
-  )
+  tags = {
+    "Name" = "/identity/${terraform.workspace}/account_management_system/context_path"
+  }
 }
 
 resource "aws_ssm_parameter" "account_management_system-logout_redirect_url" {
@@ -425,12 +353,9 @@ resource "aws_ssm_parameter" "account_management_system-logout_redirect_url" {
   type     = "String"
   value    = local.wellcome_collection_site_uri
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "/identity/${terraform.workspace}/account_management_system/logout_redirect_url"
-    }
-  )
+  tags = {
+    "Name" = "/identity/${terraform.workspace}/account_management_system/logout_redirect_url"
+  }
 }
 
 # Account Admin System
@@ -440,12 +365,9 @@ resource "aws_ssm_parameter" "account_admin_system-auth0_domain" {
   type  = "String"
   value = local.auth0_hostname
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "/identity/${terraform.workspace}/account_admin_system/auth0_domain"
-    }
-  )
+  tags = {
+    "Name" = "/identity/${terraform.workspace}/account_admin_system/auth0_domain"
+  }
 }
 
 resource "aws_ssm_parameter" "account_admin_system-auth0_client_id" {
@@ -453,12 +375,9 @@ resource "aws_ssm_parameter" "account_admin_system-auth0_client_id" {
   type  = "String"
   value = auth0_client.account_admin_system.id
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "/identity/${terraform.workspace}/account_admin_system/auth0_client_id"
-    }
-  )
+  tags = {
+    "Name" = "/identity/${terraform.workspace}/account_admin_system/auth0_client_id"
+  }
 }
 
 resource "aws_ssm_parameter" "account_admin_system-auth0_callback_url" {
@@ -466,12 +385,9 @@ resource "aws_ssm_parameter" "account_admin_system-auth0_callback_url" {
   type  = "String"
   value = local.aas_redirect_uri
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "/identity/${terraform.workspace}/account_admin_system/auth0_callback_url"
-    }
-  )
+  tags = {
+    "Name" = "/identity/${terraform.workspace}/account_admin_system/auth0_callback_url"
+  }
 }
 
 resource "aws_ssm_parameter" "account_admin_system-api_base_url" {
@@ -479,12 +395,9 @@ resource "aws_ssm_parameter" "account_admin_system-api_base_url" {
   type  = "String"
   value = local.identity_v1_endpoint
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "/identity/${terraform.workspace}/account_admin_system/api_base_url"
-    }
-  )
+  tags = {
+    "Name" = "/identity/${terraform.workspace}/account_admin_system/api_base_url"
+  }
 }
 
 resource "aws_ssm_parameter" "account_admin_system-logout_redirect_url" {
@@ -492,12 +405,9 @@ resource "aws_ssm_parameter" "account_admin_system-logout_redirect_url" {
   type  = "String"
   value = local.wellcome_collection_site_uri
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "/identity/${terraform.workspace}/account_admin_system/logout_redirect_url"
-    }
-  )
+  tags = {
+    "Name" = "/identity/${terraform.workspace}/account_admin_system/logout_redirect_url"
+  }
 }
 
 # Email
@@ -511,12 +421,9 @@ resource "aws_ssm_parameter" "email_admin_address" {
     ignore_changes = [value]
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-email_admin_address-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-email_admin_address-${terraform.workspace}"
+  }
 }
 
 resource "aws_ssm_parameter" "email_smtp_hostname" {
@@ -528,12 +435,9 @@ resource "aws_ssm_parameter" "email_smtp_hostname" {
     ignore_changes = [value]
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-email_smtp_hostname-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-email_smtp_hostname-${terraform.workspace}"
+  }
 }
 
 resource "aws_ssm_parameter" "email_smtp_port" {
@@ -545,12 +449,9 @@ resource "aws_ssm_parameter" "email_smtp_port" {
     ignore_changes = [value]
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-email_smtp_port-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-email_smtp_port-${terraform.workspace}"
+  }
 }
 
 resource "aws_ssm_parameter" "email_smtp_username" {
@@ -562,12 +463,9 @@ resource "aws_ssm_parameter" "email_smtp_username" {
     ignore_changes = [value]
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-email_smtp_username-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-email_smtp_username-${terraform.workspace}"
+  }
 }
 
 # Redis - Access Token Cache
@@ -581,12 +479,9 @@ resource "aws_ssm_parameter" "redis_access_token_cache_node_type" {
     ignore_changes = [value]
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-redis_access_token_cache_node_type-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-redis_access_token_cache_node_type-${terraform.workspace}"
+  }
 }
 
 resource "aws_ssm_parameter" "redis_access_token_cache_number_cache_clusters" {
@@ -598,12 +493,9 @@ resource "aws_ssm_parameter" "redis_access_token_cache_number_cache_clusters" {
     ignore_changes = [value]
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-redis_access_token_cache_number_cache_clusters-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-redis_access_token_cache_number_cache_clusters-${terraform.workspace}"
+  }
 }
 
 resource "aws_ssm_parameter" "redis_access_token_cache_ttl" {
@@ -615,10 +507,7 @@ resource "aws_ssm_parameter" "redis_access_token_cache_ttl" {
     ignore_changes = [value]
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-redis_access_token_cache_ttl-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-redis_access_token_cache_ttl-${terraform.workspace}"
+  }
 }

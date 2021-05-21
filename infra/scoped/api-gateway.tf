@@ -1,12 +1,9 @@
 resource "aws_api_gateway_rest_api" "identity" {
   name = "identity-${terraform.workspace}"
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "identity-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "Name" = "identity-${terraform.workspace}"
+  }
 }
 
 # /users
