@@ -18,6 +18,9 @@ module "requests" {
   deployment_service_env = terraform.workspace
   desired_task_count     = local.desired_task_count
 
+  app_cpu    = 1024
+  app_memory = 2048
+
   environment = {
     app_port          = local.requests_container_port
     metrics_namespace = "requests"
