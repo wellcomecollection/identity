@@ -120,3 +120,28 @@ resource "aws_secretsmanager_secret" "es_credentials" {
     "Environment" = "common"
   }
 }
+
+# Smoke test client
+# TODO: These should be together?
+resource "aws_secretsmanager_secret" "smoke_test-auth0_client_secret" {
+  name = "identity/${terraform.workspace}/smoke_test/auth0_client_secret"
+
+  tags = {
+    "Name" = "identity/${terraform.workspace}/smoke_test/auth0_client_secret"
+  }
+}
+
+resource "aws_secretsmanager_secret_version" "smoke_test-auth0_client_secret" {
+  secret_id     = aws_secretsmanager_secret.smoke_test-auth0_client_secret.id
+  secret_string = auth0_client.smoke_test.client_secret
+}
+
+resource "aws_ssm_parameter" "smoke_test-auth0_client_id" {
+  name  = "/identity/${terraform.workspace}/smoke_test/auth0_client_id"
+  type  = "String"
+  value = auth0_client.smoke_test.id
+
+  tags = {
+    "Name" = "/identity/${terraform.workspace}/smoke_test/auth0_client_id"
+  }
+}
