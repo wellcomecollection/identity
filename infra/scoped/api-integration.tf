@@ -424,3 +424,67 @@ resource "aws_api_gateway_integration" "users_userid_validate_post" {
     ]
   }
 }
+
+resource "aws_api_gateway_vpc_link" "requests" {
+  name        = "requests-lb-link-${terraform.workspace}"
+  target_arns = [aws_lb.identity_api.arn]
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+locals {
+  requests_integration_uri = "http://${local.identity_v1_hostname}:${local.requests_lb_port}/users/{userId}/item-requests"
+}
+
+# [OPTIONS] /users/:user_id/item-requests
+
+resource "aws_api_gateway_integration" "users_userid_item-requests_options" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_item-requests.id
+  http_method = aws_api_gateway_method.users_userid_item-requests_options.http_method
+
+  integration_http_method = aws_api_gateway_method.users_userid_item-requests_options.http_method
+  type                    = "HTTP_PROXY"
+  connection_type         = "VPC_LINK"
+  connection_id           = aws_api_gateway_vpc_link.requests.id
+  uri                     = local.requests_integration_uri
+}
+
+
+# [POST] /users/:user_id/item-requests
+
+resource "aws_api_gateway_integration" "users_userid_item-requests_post" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_item-requests.id
+  http_method = aws_api_gateway_method.users_userid_item-requests_post.http_method
+
+  integration_http_method = aws_api_gateway_method.users_userid_item-requests_post.http_method
+  type                    = "HTTP_PROXY"
+  connection_type         = "VPC_LINK"
+  connection_id           = aws_api_gateway_vpc_link.requests.id
+  uri                     = local.requests_integration_uri
+
+  request_parameters = {
+    "integration.request.path.userId" = "method.request.path.userId"
+  }
+}
+
+# [GET] /users/:user_id/item-requests
+
+resource "aws_api_gateway_integration" "users_userid_item-requests_get" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_item-requests.id
+  http_method = aws_api_gateway_method.users_userid_item-requests_get.http_method
+
+  integration_http_method = aws_api_gateway_method.users_userid_item-requests_get.http_method
+  type                    = "HTTP_PROXY"
+  connection_type         = "VPC_LINK"
+  connection_id           = aws_api_gateway_vpc_link.requests.id
+  uri                     = local.requests_integration_uri
+
+  request_parameters = {
+    "integration.request.path.userId" = "method.request.path.userId"
+  }
+}
