@@ -8,7 +8,7 @@ set -o errexit
 
 function __update_alias_for_bundle() {
   local bundle_name="${1}"
-  local zip_file="${bundle_name}-${NORMALIZED_BRANCH_NAME}.zip"
+  local zip_file="${bundle_name}-${BUILDKITE_COMMIT}.zip"
   local function_name="${bundle_name}-${DEPLOY_ENVIRONMENT}"
 
   local lambda_version
