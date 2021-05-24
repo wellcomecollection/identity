@@ -1661,7 +1661,7 @@ resource "aws_api_gateway_documentation_part" "users_userid_item-requests_post_2
   properties  = file("${path.module}/api-documentation/users/:user_id/item-requests/post-202.json")
 
   location {
-    type        = "METHOD"
+    type        = "RESPONSE"
     path        = aws_api_gateway_resource.users_userid_item-requests.path
     method      = aws_api_gateway_method.users_userid_item-requests_post.http_method
     status_code = "202"
@@ -1673,7 +1673,7 @@ resource "aws_api_gateway_documentation_part" "users_userid_item-requests_post_4
   properties  = file("${path.module}/api-documentation/users/:user_id/item-requests/post-403.json")
 
   location {
-    type        = "METHOD"
+    type        = "RESPONSE"
     path        = aws_api_gateway_resource.users_userid_item-requests.path
     method      = aws_api_gateway_method.users_userid_item-requests_post.http_method
     status_code = "403"
@@ -1685,7 +1685,7 @@ resource "aws_api_gateway_documentation_part" "users_userid_item-requests_post_4
   properties  = file("${path.module}/api-documentation/users/:user_id/item-requests/post-404.json")
 
   location {
-    type        = "METHOD"
+    type        = "RESPONSE"
     path        = aws_api_gateway_resource.users_userid_item-requests.path
     method      = aws_api_gateway_method.users_userid_item-requests_post.http_method
     status_code = "404"
@@ -1697,7 +1697,7 @@ resource "aws_api_gateway_documentation_part" "users_userid_item-requests_post_4
   properties  = file("${path.module}/api-documentation/users/:user_id/item-requests/post-409.json")
 
   location {
-    type        = "METHOD"
+    type        = "RESPONSE"
     path        = aws_api_gateway_resource.users_userid_item-requests.path
     method      = aws_api_gateway_method.users_userid_item-requests_post.http_method
     status_code = "409"
@@ -1709,7 +1709,7 @@ resource "aws_api_gateway_documentation_part" "users_userid_item-requests_post_5
   properties  = file("${path.module}/api-documentation/users/:user_id/item-requests/post-500.json")
 
   location {
-    type        = "METHOD"
+    type        = "RESPONSE"
     path        = aws_api_gateway_resource.users_userid_item-requests.path
     method      = aws_api_gateway_method.users_userid_item-requests_post.http_method
     status_code = "500"
@@ -1734,7 +1734,7 @@ resource "aws_api_gateway_documentation_part" "users_userid_item-requests_get_20
   properties  = file("${path.module}/api-documentation/users/:user_id/item-requests/get-200.json")
 
   location {
-    type        = "METHOD"
+    type        = "RESPONSE"
     path        = aws_api_gateway_resource.users_userid_item-requests.path
     method      = aws_api_gateway_method.users_userid_item-requests_get.http_method
     status_code = "200"
@@ -1746,7 +1746,7 @@ resource "aws_api_gateway_documentation_part" "users_userid_item-requests_get_40
   properties  = file("${path.module}/api-documentation/users/:user_id/item-requests/get-403.json")
 
   location {
-    type        = "METHOD"
+    type        = "RESPONSE"
     path        = aws_api_gateway_resource.users_userid_item-requests.path
     method      = aws_api_gateway_method.users_userid_item-requests_get.http_method
     status_code = "403"
@@ -1758,7 +1758,7 @@ resource "aws_api_gateway_documentation_part" "users_userid_item-requests_get_40
   properties  = file("${path.module}/api-documentation/users/:user_id/item-requests/get-404.json")
 
   location {
-    type        = "METHOD"
+    type        = "RESPONSE"
     path        = aws_api_gateway_resource.users_userid_item-requests.path
     method      = aws_api_gateway_method.users_userid_item-requests_get.http_method
     status_code = "404"
@@ -1770,7 +1770,7 @@ resource "aws_api_gateway_documentation_part" "users_userid_item-requests_get_50
   properties  = file("${path.module}/api-documentation/users/:user_id/item-requests/get-500.json")
 
   location {
-    type        = "METHOD"
+    type        = "RESPONSE"
     path        = aws_api_gateway_resource.users_userid_item-requests.path
     method      = aws_api_gateway_method.users_userid_item-requests_get.http_method
     status_code = "500"
