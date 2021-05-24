@@ -1,0 +1,7 @@
+{
+  "summary": "Creates an item request for a user",
+  "description": "Creates a request for a given item, for the user specified in the `userId` path parameter.",
+  "tags": [
+    "User"
+  ]
+}
