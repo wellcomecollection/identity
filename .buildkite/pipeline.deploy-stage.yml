@@ -13,6 +13,8 @@ steps:
         BUILDKITE_PULL_REQUEST_BASE_BRANCH: "${BUILDKITE_PULL_REQUEST_BASE_BRANCH}"
         BUILDKITE_PULL_REQUEST_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"
 
+  - wait
+
   - name: "smoke test stage"
     #branches: "main"
     plugins:
@@ -26,6 +28,8 @@ steps:
             - AWS_SECRET_ACCESS_KEY
             - AWS_SESSION_TOKEN
             - AWS_REGION=eu-west-1
+
+  - wait
 
   - name: "deploy prod"
     #branches: "main"

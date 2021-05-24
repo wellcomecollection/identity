@@ -2,6 +2,8 @@ steps:
   - block: ":rocket: deploy to prod"
     prompt: "Deploying ref.$BUILDKITE_COMMIT: Have you checked staging?"
 
+  - wait
+
   - name: "deploy prod"
     branches: "main"
     trigger: "identity-deployment"
@@ -15,6 +17,8 @@ steps:
         BUILDKITE_PULL_REQUEST: "${BUILDKITE_PULL_REQUEST}"
         BUILDKITE_PULL_REQUEST_BASE_BRANCH: "${BUILDKITE_PULL_REQUEST_BASE_BRANCH}"
         BUILDKITE_PULL_REQUEST_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"
+
+  - wait
 
   - name: "smoke test prod"
     #branches: "main"
