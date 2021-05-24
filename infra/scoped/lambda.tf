@@ -51,6 +51,16 @@ resource "aws_lambda_permission" "authorizer" {
   source_arn    = "${aws_api_gateway_rest_api.identity.execution_arn}/*/*"
 }
 
+resource "aws_lambda_alias" "authorizer_current" {
+  name             = "current"
+  function_name    = aws_lambda_function.authorizer.function_name
+  function_version = aws_lambda_function.authorizer.version
+
+  lifecycle {
+    ignore_changes = [function_version]
+  }
+}
+
 # packages/apps/api
 
 resource "aws_lambda_function" "api" {
@@ -111,4 +121,14 @@ resource "aws_lambda_permission" "api" {
   function_name = aws_lambda_function.api.function_name
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_api_gateway_rest_api.identity.execution_arn}/*/*"
+}
+
+resource "aws_lambda_alias" "api_current" {
+  name             = "current"
+  function_name    = aws_lambda_function.api.function_name
+  function_version = aws_lambda_function.api.version
+
+  lifecycle {
+    ignore_changes = [function_version]
+  }
 }
