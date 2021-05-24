@@ -107,6 +107,7 @@ resource "auth0_client_grant" "buildkite" {
     "update:connections",
     "delete:connections",
     "create:connections",
+    "read:custom_domains",
     "read:resource_servers",
     "update:resource_servers",
     "delete:resource_servers",
@@ -216,9 +217,6 @@ resource "auth0_client" "account_admin_system" {
 # For automated smoke testing after deployment
 
 resource "auth0_client" "smoke_test" {
-  # Only deploy the dummy client if it's a non-production environment...
-  count = lower(terraform.workspace) != "prod" ? 1 : 0
-
   name           = "Smoke Test Client${local.environment_qualifier}"
   app_type       = "regular_web"
   is_first_party = true
