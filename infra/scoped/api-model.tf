@@ -48,7 +48,7 @@ resource "aws_api_gateway_model" "item-request" {
 }
 
 resource "aws_api_gateway_model" "item-request-list" {
-  name         = "ItemRequest"
+  name         = "ItemRequestList"
   rest_api_id  = aws_api_gateway_rest_api.identity.id
   content_type = "application/json"
   schema       = file("${path.module}/../../models/item-request-list.json")
