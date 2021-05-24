@@ -465,6 +465,10 @@ resource "aws_api_gateway_integration" "users_userid_item-requests_post" {
   connection_type         = "VPC_LINK"
   connection_id           = aws_api_gateway_vpc_link.requests.id
   uri                     = local.requests_integration_uri
+
+  request_parameters = {
+    "integration.request.path.userId" = "method.request.path.userId"
+  }
 }
 
 # [GET] /users/:user_id/item-requests
@@ -479,4 +483,8 @@ resource "aws_api_gateway_integration" "users_userid_item-requests_get" {
   connection_type         = "VPC_LINK"
   connection_id           = aws_api_gateway_vpc_link.requests.id
   uri                     = local.requests_integration_uri
+
+  request_parameters = {
+    "integration.request.path.userId" = "method.request.path.userId"
+  }
 }
