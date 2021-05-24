@@ -12,7 +12,8 @@
       "minLength": 1
     },
     "type": {
-      "const": "ItemRequest"
+      "type": "string",
+      "minLength": 1
     }
   },
   "required": ["workId", "itemId"],
