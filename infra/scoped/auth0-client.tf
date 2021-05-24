@@ -107,6 +107,7 @@ resource "auth0_client_grant" "buildkite" {
     "update:connections",
     "delete:connections",
     "create:connections",
+    "read:custom_domains",
     "read:resource_servers",
     "update:resource_servers",
     "delete:resource_servers",
