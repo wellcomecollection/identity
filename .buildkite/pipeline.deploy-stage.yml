@@ -16,7 +16,7 @@ steps:
   - wait
 
   - name: "smoke test stage"
-    #branches: "main"
+    branches: "main"
     plugins:
       - wellcomecollection/aws-assume-role#v0.2.2:
           role: "arn:aws:iam::770700576653:role/identity-ci"
@@ -32,7 +32,7 @@ steps:
   - wait
 
   - name: "deploy prod"
-    #branches: "main"
+    branches: "main"
     trigger: "identity-deploy-prod"
     build:
       message: "${BUILDKITE_MESSAGE}"

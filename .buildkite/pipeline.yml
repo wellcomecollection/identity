@@ -82,7 +82,7 @@ steps:
 
   # Deploy to stage
   - name: "deploy-stage"
-    #branches: "main"
+    branches: "main"
     trigger: "identity-deploy-stage"
     build:
       message: "${BUILDKITE_MESSAGE}"

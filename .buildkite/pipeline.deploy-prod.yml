@@ -21,7 +21,7 @@ steps:
   - wait
 
   - name: "smoke test prod"
-    #branches: "main"
+    branches: "main"
     plugins:
       - wellcomecollection/aws-assume-role#v0.2.2:
           role: "arn:aws:iam::770700576653:role/identity-ci"
