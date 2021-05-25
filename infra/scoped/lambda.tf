@@ -45,6 +45,7 @@ resource "aws_lambda_function" "authorizer" {
 
 resource "aws_lambda_alias" "authorizer_current" {
   name             = "current"
+  description      = "Current deployment"
   function_name    = aws_lambda_function.authorizer.function_name
   function_version = aws_lambda_function.authorizer.version
 
@@ -119,6 +120,7 @@ resource "aws_lambda_function" "api" {
 
 resource "aws_lambda_alias" "api_current" {
   name             = "current"
+  description      = "Current deployment"
   function_name    = aws_lambda_function.api.function_name
   function_version = aws_lambda_function.api.version
 
