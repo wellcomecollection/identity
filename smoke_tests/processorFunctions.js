@@ -1,6 +1,15 @@
+/*
+This is an artillery.io processor
+See: https://artillery.io/docs/guides/guides/http-reference.html#Loading-custom-JS-code
+
+The functions in this file are available as hooks in the http request cycle, allowing
+headers required for authentication to be inserted.
+ */
+
 const AWS = require('aws-sdk');
 const request = require('request');
 
+// These functions are available to use in the .yaml steps
 module.exports = {
   addCredentials: addCredentials,
 };
@@ -19,9 +28,13 @@ const prodSecrets = {
 
 const secretsManager = new AWS.SecretsManager();
 
-let apiKey;
-let accessToken;
+// This file is evaluated once, but the functions contained may be called
+// multiple times. We use mutable values to cache credentials for a short
+// period after they have been retrieved to reduce HTTP interactions.
+let cachedApiKey;
+let cachedAccessToken;
 
+// Convienience function for getting values from AWS SecretsManager
 function getSecret(secretId, callback) {
   secretsManager.getSecretValue({ SecretId: secretId }, function (error, data) {
     if (error) {
@@ -33,6 +46,7 @@ function getSecret(secretId, callback) {
   });
 }
 
+// Implements the resource owner password OAuth flow via Auth0
 function getAuthToken(secretId, auth0Url, requestParams, callback) {
   const setCredentials = (credentials) => {
     const parsedCredentials = JSON.parse(credentials);
@@ -60,7 +74,8 @@ function getAuthToken(secretId, auth0Url, requestParams, callback) {
         process.exit(1);
       } else {
         const parsedBody = JSON.parse(body);
-        accessToken = parsedBody['access_token'];
+        const accessToken = parsedBody['access_token'];
+        cachedAccessToken = accessToken;
         requestParams.headers['authorization'] = 'Bearer ' + accessToken;
 
         callback();
@@ -71,8 +86,10 @@ function getAuthToken(secretId, auth0Url, requestParams, callback) {
   getSecret(secretId, setCredentials);
 }
 
+// Get the API key for API Gateway stored in SecretsManager
 function getApiKey(secretId, requestParams, callback) {
   const setApiKey = (apiKey) => {
+    cachedApiKey = apiKey;
     requestParams.headers['x-api-key'] = apiKey;
     callback();
   };
@@ -80,13 +97,15 @@ function getApiKey(secretId, requestParams, callback) {
   getSecret(secretId, setApiKey);
 }
 
+// This function will retrieve credentials for accessing the Identity API
+// An API key & Bearer token generated via an OAuth flow is required
 function addCredentials(requestParams, context, ee, next) {
   let isStage = context['vars']['$environment'] === 'stage';
   const secrets = isStage ? stageSecrets : prodSecrets;
 
-  if (apiKey && accessToken) {
-    requestParams.headers['x-api-key'] = apiKey;
-    requestParams.headers['Authorization'] = accessToken;
+  if (cachedApiKey && cachedAccessToken) {
+    requestParams.headers['x-api-key'] = cachedApiKey;
+    requestParams.headers['Authorization'] = cachedAccessToken;
     next();
   } else {
     const thenGetAuthToken = () =>
