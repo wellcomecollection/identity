@@ -80,16 +80,15 @@ steps:
 
   - wait
 
-  # Trigger a CD of the codebase using the 'identity-deployment' pipeline.. We only want to do this
-  # for the 'main' branch, and we default to the 'stage' environment and the 'v1' stage of the API
-  # Gateway.
-  - name: "deploy"
+  # Deploy to stage
+  - name: "deploy-stage"
     branches: "main"
-    trigger: "identity-deployment"
+    trigger: "identity-deploy-stage"
     build:
       message: "${BUILDKITE_MESSAGE}"
       commit: "${BUILDKITE_COMMIT}"
       branch: "${BUILDKITE_BRANCH}"
       env:
-        DEPLOY_ENVIRONMENT: "stage" # Default for CD
-        DEPLOY_API_GATEWAY_STAGE: "v1" # Default for CD
+        BUILDKITE_PULL_REQUEST: "${BUILDKITE_PULL_REQUEST}"
+        BUILDKITE_PULL_REQUEST_BASE_BRANCH: "${BUILDKITE_PULL_REQUEST_BASE_BRANCH}"
+        BUILDKITE_PULL_REQUEST_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"

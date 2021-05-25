@@ -212,3 +212,20 @@ resource "auth0_client" "account_admin_system" {
     ]
   }
 }
+
+# Smoke Test Client
+# For automated smoke testing after deployment
+
+resource "auth0_client" "smoke_test" {
+  name           = "Smoke Test Client${local.environment_qualifier}"
+  app_type       = "regular_web"
+  is_first_party = true
+
+  # The password grant is used here as we consider this client running in CI
+  # secure enough to allow that.
+  grant_types = [
+    "password"
+  ]
+
+  callbacks = []
+}

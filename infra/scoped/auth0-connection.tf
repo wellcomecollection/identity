@@ -4,8 +4,9 @@ resource "auth0_connection" "sierra" {
 
   enabled_clients = concat([
     auth0_client.api_gateway_identity.id, # Required to allow the Lambda API client credentials to operate on the connection
-    auth0_client.account_management_system.id],
-    terraform.workspace != "prod" ? [auth0_client.dummy_test[0].id] : []
+    auth0_client.account_management_system.id,
+    auth0_client.smoke_test.id],
+    terraform.workspace != "prod" ? local.stage_test_client_ids : [],
   )
 
   options {
