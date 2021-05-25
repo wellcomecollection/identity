@@ -43,12 +43,24 @@ resource "aws_lambda_function" "authorizer" {
   }
 }
 
+resource "aws_lambda_alias" "authorizer_current" {
+  name             = "current"
+  function_name    = aws_lambda_function.authorizer.function_name
+  function_version = aws_lambda_function.authorizer.version
+
+  lifecycle {
+    ignore_changes = [function_version]
+  }
+}
+
 resource "aws_lambda_permission" "authorizer" {
-  statement_id  = "AllowAPIGatewayInvoke"
-  action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.authorizer.function_name
-  principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_api_gateway_rest_api.identity.execution_arn}/*/*"
+  qualifier     = aws_lambda_alias.authorizer_current.name
+
+  source_arn   = "${aws_api_gateway_rest_api.identity.execution_arn}/*/*"
+  statement_id = "AllowAPIGatewayInvoke"
+  action       = "lambda:InvokeFunction"
+  principal    = "apigateway.amazonaws.com"
 }
 
 # packages/apps/api
@@ -105,10 +117,22 @@ resource "aws_lambda_function" "api" {
   }
 }
 
+resource "aws_lambda_alias" "api_current" {
+  name             = "current"
+  function_name    = aws_lambda_function.api.function_name
+  function_version = aws_lambda_function.api.version
+
+  lifecycle {
+    ignore_changes = [function_version]
+  }
+}
+
 resource "aws_lambda_permission" "api" {
-  statement_id  = "AllowAPIGatewayInvoke"
-  action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.api.function_name
-  principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_api_gateway_rest_api.identity.execution_arn}/*/*"
+  qualifier     = aws_lambda_alias.api_current.name
+
+  source_arn   = "${aws_api_gateway_rest_api.identity.execution_arn}/*/*"
+  statement_id = "AllowAPIGatewayInvoke"
+  action       = "lambda:InvokeFunction"
+  principal    = "apigateway.amazonaws.com"
 }
