@@ -6,10 +6,10 @@ locals {
     "ManagedBy"   = var.tag_managed_by
   }
 
-  stage_test_client_ids = [
-    auth0_client.dummy_test[0].client_id
+  stage_test_client_ids = compact([
+    length(auth0_client.dummy_test) > 0 ? auth0_client.dummy_test[0].client_id : ""
     # Developer client ids can be added here
-  ]
+  ])
 
   # Terraform
   environment_qualifier = terraform.workspace != "prod" ? " (${upper(terraform.workspace)})" : ""
