@@ -6,10 +6,10 @@ locals {
     "ManagedBy"   = var.tag_managed_by
   }
 
-  stage_test_client_ids = [
-    auth0_client.dummy_test[0].client_id
+  stage_test_client_ids = compact([
+    length(auth0_client.dummy_test) > 0 ? auth0_client.dummy_test[0].client_id : ""
     # Developer client ids can be added here
-  ]
+  ])
 
   # Terraform
   environment_qualifier = terraform.workspace != "prod" ? " (${upper(terraform.workspace)})" : ""
@@ -57,11 +57,26 @@ locals {
 
   # Identity account VPC
   identity_account_state = data.terraform_remote_state.accounts_identity.outputs
-  vpc_id                 = local.identity_account_state["identity_vpc_id"]
-  private_subnets        = local.identity_account_state["identity_vpc_private_subnets"]
+
+  environment_vpc_ids = {
+    prod  = local.identity_account_state["identity_prod_vpc_id"]
+    stage = local.identity_account_state["identity_stage_vpc_id"]
+  }
+  vpc_id = local.environment_vpc_ids[terraform.workspace]
+
+  environment_private_subnets = {
+    prod  = local.identity_account_state["identity_prod_vpc_private_subnets"]
+    stage = local.identity_account_state["identity_stage_vpc_private_subnets"]
+  }
+  private_subnets = local.environment_private_subnets[terraform.workspace]
 
   # ECS services
-  elastic_cloud_vpce_sg_id = data.terraform_remote_state.infra_critical.outputs["ec_identity_privatelink_sg_id"]
-  requests_lb_port         = 8000
-  requests_repository      = data.terraform_remote_state.catalogue_api_shared.outputs["ecr_requests_repository_url"]
+  environment_elastic_cloud_vpce_sg_id = {
+    prod  = data.terraform_remote_state.infra_critical.outputs["ec_identity_prod_privatelink_sg_id"]
+    stage = data.terraform_remote_state.infra_critical.outputs["ec_identity_stage_privatelink_sg_id"]
+  }
+  elastic_cloud_vpce_sg_id = local.environment_elastic_cloud_vpce_sg_id[terraform.workspace]
+
+  requests_lb_port    = 8000
+  requests_repository = data.terraform_remote_state.catalogue_api_shared.outputs["ecr_requests_repository_url"]
 }
