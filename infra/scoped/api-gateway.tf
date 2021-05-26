@@ -98,6 +98,23 @@ resource "aws_api_gateway_method_response" "users_get_400" {
   }
 }
 
+# 401 Unauthorized
+
+resource "aws_api_gateway_method_response" "users_get_401" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users.id
+  http_method = aws_api_gateway_method.users_get.http_method
+  status_code = "401"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
 # 403 Forbidden
 
 resource "aws_api_gateway_method_response" "users_get_403" {
@@ -335,6 +352,23 @@ resource "aws_api_gateway_method_response" "users_userid_get_200" {
   }
 }
 
+# 401 Unauthorized
+
+resource "aws_api_gateway_method_response" "users_userid_get_401" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid.id
+  http_method = aws_api_gateway_method.users_userid_get.http_method
+  status_code = "401"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
 # 403 Forbidden
 
 resource "aws_api_gateway_method_response" "users_userid_get_403" {
@@ -440,6 +474,23 @@ resource "aws_api_gateway_method_response" "users_userid_put_400" {
   }
 }
 
+# 401 Unauthorized
+
+resource "aws_api_gateway_method_response" "users_userid_put_401" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid.id
+  http_method = aws_api_gateway_method.users_userid_put.http_method
+  status_code = "401"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
 # 403 Forbidden
 
 resource "aws_api_gateway_method_response" "users_userid_put_403" {
@@ -534,6 +585,23 @@ resource "aws_api_gateway_method_response" "users_userid_delete_204" {
 
   response_models = {
     "application/json" = "Empty"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# 401 Unauthorized
+
+resource "aws_api_gateway_method_response" "users_userid_delete_401" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid.id
+  http_method = aws_api_gateway_method.users_userid_delete.http_method
+  status_code = "401"
+
+  response_models = {
+    "application/json" = "Error"
   }
 
   response_parameters = {
@@ -682,6 +750,23 @@ resource "aws_api_gateway_method_response" "users_userid_password_put_400" {
   }
 }
 
+# 401 Unauthorized
+
+resource "aws_api_gateway_method_response" "users_userid_password_put_401" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_password.id
+  http_method = aws_api_gateway_method.users_userid_password_put.http_method
+  status_code = "401"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
 # 403 Forbidden
 
 resource "aws_api_gateway_method_response" "users_userid_password_put_403" {
@@ -811,6 +896,23 @@ resource "aws_api_gateway_method_response" "users_userid_reset-password_put_200"
 
   response_models = {
     "application/json" = "Empty"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# 401 Unauthorized
+
+resource "aws_api_gateway_method_response" "users_userid_reset-password_put_401" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_reset-password.id
+  http_method = aws_api_gateway_method.users_userid_reset-password_put.http_method
+  status_code = "401"
+
+  response_models = {
+    "application/json" = "Error"
   }
 
   response_parameters = {
@@ -955,6 +1057,23 @@ resource "aws_api_gateway_method_response" "users_userid_send-verification_put_3
   }
 }
 
+# 401 Unauthorized
+
+resource "aws_api_gateway_method_response" "users_userid_send-verification_put_401" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_send-verification.id
+  http_method = aws_api_gateway_method.users_userid_send-verification_put.http_method
+  status_code = "401"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
 # 403 Forbidden
 
 resource "aws_api_gateway_method_response" "users_userid_send-verification_put_403" {
@@ -1075,6 +1194,23 @@ resource "aws_api_gateway_method_response" "users_userid_lock_put_200" {
   }
 }
 
+# 401 Unauthorized
+
+resource "aws_api_gateway_method_response" "users_userid_lock_put_401" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_lock.id
+  http_method = aws_api_gateway_method.users_userid_lock_put.http_method
+  status_code = "401"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
 # 403 Forbidden
 
 resource "aws_api_gateway_method_response" "users_userid_lock_put_403" {
@@ -1169,6 +1305,23 @@ resource "aws_api_gateway_method_response" "users_userid_lock_delete_304" {
 
   response_models = {
     "application/json" = "Empty"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# 401 Unauthorized
+
+resource "aws_api_gateway_method_response" "users_userid_lock_delete_401" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_lock.id
+  http_method = aws_api_gateway_method.users_userid_lock_delete.http_method
+  status_code = "401"
+
+  response_models = {
+    "application/json" = "Error"
   }
 
   response_parameters = {
@@ -1313,6 +1466,23 @@ resource "aws_api_gateway_method_response" "users_userid_deletion-request_put_30
   }
 }
 
+# 401 Unauthorized
+
+resource "aws_api_gateway_method_response" "users_userid_deletion-request_put_401" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_deletion-request.id
+  http_method = aws_api_gateway_method.users_userid_deletion-request_put.http_method
+  status_code = "401"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
 # 403 Forbidden
 
 resource "aws_api_gateway_method_response" "users_userid_deletion-request_put_403" {
@@ -1407,6 +1577,23 @@ resource "aws_api_gateway_method_response" "users_userid_deletion-request_delete
 
   response_models = {
     "application/json" = "Empty"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# 401 Unauthorized
+
+resource "aws_api_gateway_method_response" "users_userid_deletion-request_delete_401" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_deletion-request.id
+  http_method = aws_api_gateway_method.users_userid_deletion-request_delete.http_method
+  status_code = "401"
+
+  response_models = {
+    "application/json" = "Error"
   }
 
   response_parameters = {
@@ -1709,6 +1896,23 @@ resource "aws_api_gateway_method_response" "users_userid_item-requests_post_400"
   }
 }
 
+# 401 Unauthorized
+
+resource "aws_api_gateway_method_response" "users_userid_item-requests_post_401" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_item-requests.id
+  http_method = aws_api_gateway_method.users_userid_item-requests_post.http_method
+  status_code = "401"
+
+  response_models = {
+    "application/json" = "Error"
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
 # 403 Forbidden
 
 resource "aws_api_gateway_method_response" "users_userid_item-requests_post_403" {
@@ -1803,6 +2007,23 @@ resource "aws_api_gateway_method_response" "users_userid_item-requests_get_200" 
 
   response_models = {
     "application/json" = aws_api_gateway_model.item-request-list.name
+  }
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# 401 Unauthorized
+
+resource "aws_api_gateway_method_response" "users_userid_item-requests_get_401" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  resource_id = aws_api_gateway_resource.users_userid_item-requests.id
+  http_method = aws_api_gateway_method.users_userid_item-requests_get.http_method
+  status_code = "401"
+
+  response_models = {
+    "application/json" = "Error"
   }
 
   response_parameters = {
