@@ -57,11 +57,11 @@ locals {
 
   # Identity account VPC
   identity_account_state = data.terraform_remote_state.accounts_identity.outputs
-  vpc_id                 = local.identity_account_state["identity_vpc_id"]
-  private_subnets        = local.identity_account_state["identity_vpc_private_subnets"]
+  vpc_id                 = local.identity_account_state["identity_prod_vpc_id"]
+  private_subnets        = local.identity_account_state["identity_prod_vpc_private_subnets"]
 
   # ECS services
-  elastic_cloud_vpce_sg_id = data.terraform_remote_state.infra_critical.outputs["ec_identity_privatelink_sg_id"]
+  elastic_cloud_vpce_sg_id = data.terraform_remote_state.infra_critical.outputs["ec_identity_prod_privatelink_sg_id"]
   requests_lb_port         = 8000
   requests_repository      = data.terraform_remote_state.catalogue_api_shared.outputs["ecr_requests_repository_url"]
 }
