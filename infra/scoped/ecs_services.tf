@@ -29,10 +29,10 @@ module "requests" {
   }
   secrets = {
     es_host           = "elasticsearch/catalogue/private_host"
-    es_port           = "identity/requests/es_port"
-    es_protocol       = "identity/requests/es_protocol"
-    es_username       = "identity/requests/es_username"
-    es_password       = "identity/requests/es_password"
+    es_port           = "identity/${terraform.workspace}/requests/es_port"
+    es_protocol       = "identity/${terraform.workspace}/requests/es_protocol"
+    es_username       = "identity/${terraform.workspace}/requests/es_username"
+    es_password       = "identity/${terraform.workspace}/requests/es_password"
     sierra_api_key    = "sierra-api-credentials-${terraform.workspace}:SierraAPIKey"
     sierra_api_secret = "sierra-api-credentials-${terraform.workspace}:SierraAPISecret"
   }

@@ -45,6 +45,7 @@ resource "aws_lambda_function" "authorizer" {
 
 resource "aws_lambda_alias" "authorizer_current" {
   name             = "current"
+  description      = "Current deployment"
   function_name    = aws_lambda_function.authorizer.function_name
   function_version = aws_lambda_function.authorizer.version
 
@@ -58,7 +59,7 @@ resource "aws_lambda_permission" "authorizer" {
   qualifier     = aws_lambda_alias.authorizer_current.name
 
   source_arn   = "${aws_api_gateway_rest_api.identity.execution_arn}/*/*"
-  statement_id = "AllowAPIGatewayInvoke"
+  statement_id = "AllowAPIGatewayInvoke-${terraform.workspace}"
   action       = "lambda:InvokeFunction"
   principal    = "apigateway.amazonaws.com"
 }
@@ -119,6 +120,7 @@ resource "aws_lambda_function" "api" {
 
 resource "aws_lambda_alias" "api_current" {
   name             = "current"
+  description      = "Current deployment"
   function_name    = aws_lambda_function.api.function_name
   function_version = aws_lambda_function.api.version
 
@@ -132,7 +134,7 @@ resource "aws_lambda_permission" "api" {
   qualifier     = aws_lambda_alias.api_current.name
 
   source_arn   = "${aws_api_gateway_rest_api.identity.execution_arn}/*/*"
-  statement_id = "AllowAPIGatewayInvoke"
+  statement_id = "AllowAPIGatewayInvoke-${terraform.workspace}"
   action       = "lambda:InvokeFunction"
   principal    = "apigateway.amazonaws.com"
 }
