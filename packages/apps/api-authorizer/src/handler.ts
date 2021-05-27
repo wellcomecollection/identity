@@ -49,7 +49,7 @@ export const createLambdaHandler = (
   ): Promise<APIGatewayAuthorizerResult> => {
     if (!event.headers?.Authorization) {
       console.debug('Authorization header is not present on request');
-      return buildAuthorizerResult('user', 'Deny', event.methodArn);
+      throw 'Unauthorized';
     }
 
     // Start by extracting the access token from the 'Authorization' header.
@@ -59,11 +59,7 @@ export const createLambdaHandler = (
       console.debug(
         `Authorization header [${authorizationHeader}] is not a valid bearer token`
       );
-      return buildAuthorizerResult(
-        authorizationHeader,
-        'Deny',
-        event.methodArn
-      );
+      throw 'Unauthorized';
     }
 
     /*
@@ -86,12 +82,12 @@ export const createLambdaHandler = (
           console.debug(
             `Access token [${accessToken}] rejected by Auth0: ${auth0Validate.message}`
           );
-          return buildAuthorizerResult(accessToken, 'Deny', event.methodArn);
+          throw 'Unauthorized';
         } else {
           console.error(
             `Unknown error processing access token [${accessToken}]: ${auth0Validate.message}`
           );
-          return buildAuthorizerResult(accessToken, 'Deny', event.methodArn);
+          throw 'Unauthorized';
         }
       }
       auth0UserInfo = auth0Validate.result;

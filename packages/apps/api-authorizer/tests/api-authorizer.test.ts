@@ -21,18 +21,21 @@ const lambdaHandler = createLambdaHandler(
 );
 
 describe('API Authorizer', () => {
-  it('denies requests without an authorization header', async () => {
+  it('rejects requests without an authorization header', async () => {
     const event = createEvent({
       token: undefined,
       resource: '/foo',
       method: 'GET',
     });
-    const result = await lambdaHandler(event);
 
-    expect(result).toHaveProperty('policyDocument.Statement.0.Effect', 'Deny');
+    try {
+      await lambdaHandler(event);
+    } catch (e) {
+      expect(e).toEqual('Unauthorized');
+    }
   });
 
-  it('denies requests with an invalid authorization header', async () => {
+  it('rejects requests with an invalid authorization header', async () => {
     const event = {
       ...createEvent({
         resource: '/foo',
@@ -42,12 +45,15 @@ describe('API Authorizer', () => {
         Authorization: 'bad garbage nonsense',
       },
     };
-    const result = await lambdaHandler(event);
 
-    expect(result).toHaveProperty('policyDocument.Statement.0.Effect', 'Deny');
+    try {
+      await lambdaHandler(event);
+    } catch (e) {
+      expect(e).toEqual('Unauthorized');
+    }
   });
 
-  it('denies requests where the access token is rejected by Auth0', async () => {
+  it('rejects requests where the access token is rejected by Auth0', async () => {
     const event = createEvent({
       token: 'test token',
       resource: '/foo',
@@ -57,11 +63,11 @@ describe('API Authorizer', () => {
     await withAuth0Response(
       { status: ResponseStatus.InvalidCredentials },
       async () => {
-        const result = await lambdaHandler(event);
-        expect(result).toHaveProperty(
-          'policyDocument.Statement.0.Effect',
-          'Deny'
-        );
+        try {
+          await lambdaHandler(event);
+        } catch (e) {
+          expect(e).toEqual('Unauthorized');
+        }
       }
     );
   });

@@ -173,6 +173,20 @@ resource "aws_api_gateway_documentation_part" "users_get_400" {
   }
 }
 
+# 401 Unauthorized
+
+resource "aws_api_gateway_documentation_part" "users_get_401" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/get-401.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users.path
+    method      = aws_api_gateway_method.users_get.http_method
+    status_code = "401"
+  }
+}
+
 # 403 Forbidden
 
 resource "aws_api_gateway_documentation_part" "users_get_403" {
@@ -390,6 +404,20 @@ resource "aws_api_gateway_documentation_part" "users_userid_get_200" {
   }
 }
 
+# 401 Unauthorized
+
+resource "aws_api_gateway_documentation_part" "users_userid_get_401" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/get-401.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid.path
+    method      = aws_api_gateway_method.users_userid_get.http_method
+    status_code = "401"
+  }
+}
+
 # 403 Forbidden
 
 resource "aws_api_gateway_documentation_part" "users_userid_get_403" {
@@ -485,6 +513,20 @@ resource "aws_api_gateway_documentation_part" "users_userid_put_400" {
   }
 }
 
+# 401 Unauthorized
+
+resource "aws_api_gateway_documentation_part" "users_userid_put_401" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/put-401.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid.path
+    method      = aws_api_gateway_method.users_userid_put.http_method
+    status_code = "401"
+  }
+}
+
 # 403 Forbidden
 
 resource "aws_api_gateway_documentation_part" "users_userid_put_403" {
@@ -577,6 +619,20 @@ resource "aws_api_gateway_documentation_part" "users_userid_delete_204" {
     path        = aws_api_gateway_resource.users_userid.path
     method      = aws_api_gateway_method.users_userid_delete.http_method
     status_code = "204"
+  }
+}
+
+# 401 Unauthorized
+
+resource "aws_api_gateway_documentation_part" "users_userid_delete_401" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/delete-401.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid.path
+    method      = aws_api_gateway_method.users_userid_delete.http_method
+    status_code = "401"
   }
 }
 
@@ -714,6 +770,20 @@ resource "aws_api_gateway_documentation_part" "users_userid_password_put_400" {
   }
 }
 
+# 401 Unauthorized
+
+resource "aws_api_gateway_documentation_part" "users_userid_password_put_401" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/password/put-401.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_password.path
+    method      = aws_api_gateway_method.users_userid_password_put.http_method
+    status_code = "401"
+  }
+}
+
 # 403 Forbidden
 
 resource "aws_api_gateway_documentation_part" "users_userid_password_put_403" {
@@ -845,6 +915,20 @@ resource "aws_api_gateway_documentation_part" "users_userid_reset-password_put_2
     path        = aws_api_gateway_resource.users_userid_reset-password.path
     method      = aws_api_gateway_method.users_userid_reset-password_put.http_method
     status_code = "200"
+  }
+}
+
+# 401 Unauthorized
+
+resource "aws_api_gateway_documentation_part" "users_userid_reset-password_put_401" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/reset-password/put-401.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_reset-password.path
+    method      = aws_api_gateway_method.users_userid_reset-password_put.http_method
+    status_code = "401"
   }
 }
 
@@ -982,6 +1066,20 @@ resource "aws_api_gateway_documentation_part" "users_userid_send-verification_pu
   }
 }
 
+# 401 Unauthorized
+
+resource "aws_api_gateway_documentation_part" "users_userid_send-verification_put_401" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/send-verification/put-401.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_send-verification.path
+    method      = aws_api_gateway_method.users_userid_send-verification_put.http_method
+    status_code = "401"
+  }
+}
+
 # 403 Forbidden
 
 resource "aws_api_gateway_documentation_part" "users_userid_send-verification_put_403" {
@@ -1102,6 +1200,20 @@ resource "aws_api_gateway_documentation_part" "users_userid_lock_put_200" {
   }
 }
 
+# 401 Unauthorized
+
+resource "aws_api_gateway_documentation_part" "users_userid_lock_put_401" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/lock/put-401.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_lock.path
+    method      = aws_api_gateway_method.users_userid_lock_put.http_method
+    status_code = "401"
+  }
+}
+
 # 403 Forbidden
 
 resource "aws_api_gateway_documentation_part" "users_userid_lock_put_403" {
@@ -1194,6 +1306,20 @@ resource "aws_api_gateway_documentation_part" "users_userid_lock_delete_304" {
     path        = aws_api_gateway_resource.users_userid_lock.path
     method      = aws_api_gateway_method.users_userid_lock_delete.http_method
     status_code = "304"
+  }
+}
+
+# 401 Unauthorized
+
+resource "aws_api_gateway_documentation_part" "users_userid_lock_delete_401" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/lock/delete-401.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_lock.path
+    method      = aws_api_gateway_method.users_userid_lock_delete.http_method
+    status_code = "401"
   }
 }
 
@@ -1331,6 +1457,20 @@ resource "aws_api_gateway_documentation_part" "users_userid_deletion-request_put
   }
 }
 
+# 401 Unauthorized
+
+resource "aws_api_gateway_documentation_part" "users_userid_deletion-request_put_401" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/deletion-request/put-401.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_deletion-request.path
+    method      = aws_api_gateway_method.users_userid_deletion-request_put.http_method
+    status_code = "401"
+  }
+}
+
 # 403 Forbidden
 
 resource "aws_api_gateway_documentation_part" "users_userid_deletion-request_put_403" {
@@ -1423,6 +1563,20 @@ resource "aws_api_gateway_documentation_part" "users_userid_deletion-request_del
     path        = aws_api_gateway_resource.users_userid_deletion-request.path
     method      = aws_api_gateway_method.users_userid_deletion-request_delete.http_method
     status_code = "304"
+  }
+}
+
+# 401 Unauthorized
+
+resource "aws_api_gateway_documentation_part" "users_userid_deletion-request_delete_401" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/deletion-request/delete-401.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_deletion-request.path
+    method      = aws_api_gateway_method.users_userid_deletion-request_delete.http_method
+    status_code = "401"
   }
 }
 
@@ -1668,6 +1822,18 @@ resource "aws_api_gateway_documentation_part" "users_userid_item-requests_post_2
   }
 }
 
+resource "aws_api_gateway_documentation_part" "users_userid_item-requests_post_401" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/item-requests/post-401.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_item-requests.path
+    method      = aws_api_gateway_method.users_userid_item-requests_post.http_method
+    status_code = "401"
+  }
+}
+
 resource "aws_api_gateway_documentation_part" "users_userid_item-requests_post_403" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
   properties  = file("${path.module}/api-documentation/users/:user_id/item-requests/post-403.json")
@@ -1738,6 +1904,18 @@ resource "aws_api_gateway_documentation_part" "users_userid_item-requests_get_20
     path        = aws_api_gateway_resource.users_userid_item-requests.path
     method      = aws_api_gateway_method.users_userid_item-requests_get.http_method
     status_code = "200"
+  }
+}
+
+resource "aws_api_gateway_documentation_part" "users_userid_item-requests_get_401" {
+  rest_api_id = aws_api_gateway_rest_api.identity.id
+  properties  = file("${path.module}/api-documentation/users/:user_id/item-requests/get-401.json")
+
+  location {
+    type        = "RESPONSE"
+    path        = aws_api_gateway_resource.users_userid_item-requests.path
+    method      = aws_api_gateway_method.users_userid_item-requests_get.http_method
+    status_code = "401"
   }
 }
 
