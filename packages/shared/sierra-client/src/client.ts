@@ -103,6 +103,8 @@ export default class SierraClient {
     barcode: string
   ): Promise<APIResponse<PatronRecord>> {
     return this.getInstance().then((instance) => {
+      // Varfield tag 'b' is used for the patron's barcode
+      // See https://documentation.iii.com/sierrahelp/Default.htm#sril/sril_records_varfld_types_patron.html
       return instance
         .get('/patrons/find', {
           params: {
@@ -133,6 +135,8 @@ export default class SierraClient {
     email: string
   ): Promise<APIResponse<PatronRecord>> {
     return this.getInstance().then((instance) => {
+      // Varfield tag 'z' is used for the patron's email address
+      // See https://documentation.iii.com/sierrahelp/Default.htm#sril/sril_records_varfld_types_patron.html
       return instance
         .get('/patrons/find', {
           params: {
@@ -176,6 +180,10 @@ export default class SierraClient {
           if (error.response) {
             switch (error.response.status) {
               case 400: {
+                // I think this is referring to API error code 136 "PIN is not valid"
+                // See https://techdocs.iii.com/sierraapi/Content/zReference/errorHandling.htm
+                // TODO: Check this is what's being tested here.
+                // TODO: What is specificCode == 3 for?
                 if (
                   error.response.data?.code === 136 &&
                   error.response.data?.specificCode === 3
@@ -328,6 +336,10 @@ export default class SierraClient {
           if (error.response) {
             switch (error.response.status) {
               case 400:
+                // I think this is referring to API error code 136 "PIN is not valid"
+                // See https://techdocs.iii.com/sierraapi/Content/zReference/errorHandling.htm
+                // TODO: Check this is what's being tested here.
+                // TODO: What is specificCode == 3 for?
                 if (
                   error.response.data?.code === 136 &&
                   error.response.data?.specificCode === 3
