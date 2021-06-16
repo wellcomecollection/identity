@@ -28,3 +28,8 @@ scenarios:
           beforeRequest: addCredentials
           expect:
             statusCode: 200
+      - get:
+          url: "/users/me/item-requests"
+          beforeRequest: addCredentials
+          expect:
+            statusCode: 200
