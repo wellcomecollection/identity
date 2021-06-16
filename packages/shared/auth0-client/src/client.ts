@@ -175,7 +175,7 @@ export default class Auth0Client {
               }
               case 409:
                 return errorResponse(
-                  'AUth0 user with email [' + email + '] already exists',
+                  'Auth0 user with email [' + email + '] already exists',
                   ResponseStatus.UserAlreadyExists,
                   error
                 );
