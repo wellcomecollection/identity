@@ -1,20 +1,8 @@
 {
-    "compilerOptions": {
-        "composite": true,
-        "declaration": true,
-        "declarationMap": true,
-        "esModuleInterop": true,
-        "module": "CommonJS",
-        "moduleResolution": "node",
-        "noImplicitAny": true,
-        "outDir": "lib",
-        "rootDir": "src",
-        "sourceMap": true,
-        "strict": true,
-        "target": "es2017"
-    },
-    "include": [
-        "src",
-        "test"
-    ]
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "lib",
+    "rootDir": "src"
+  },
+  "include": ["src", "tests"]
 }

@@ -39,3 +39,17 @@ resource "aws_api_gateway_model" "validate" {
   content_type = "application/json"
   schema       = file("${path.module}/../../models/validate.json")
 }
+
+resource "aws_api_gateway_model" "item-request" {
+  name         = "ItemRequest"
+  rest_api_id  = aws_api_gateway_rest_api.identity.id
+  content_type = "application/json"
+  schema       = file("${path.module}/../../models/item-request.json")
+}
+
+resource "aws_api_gateway_model" "item-request-list" {
+  name         = "ItemRequestList"
+  rest_api_id  = aws_api_gateway_rest_api.identity.id
+  content_type = "application/json"
+  schema       = file("${path.module}/../../models/item-request-list.json")
+}

@@ -1,7 +1,12 @@
 {
-    "extends": "./tsconfig.json",
-    "exclude": [
-        "**/*.spec.ts",
-        "**/*.test.ts"
-    ]
+  "extends": "./tsconfig.json",
+  "exclude": ["**/*.spec.ts", "**/*.test.ts"],
+  "references": [
+    {
+      "path": "../../shared/auth0-client/tsconfig.build.json"
+    },
+    {
+      "path": "../../shared/identity-common/tsconfig.build.json"
+    }
+  ]
 }

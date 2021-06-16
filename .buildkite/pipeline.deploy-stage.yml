@@ -1,0 +1,44 @@
+steps:
+  - name: "deploy stage"
+    branches: "main"
+    trigger: "identity-deployment"
+    build:
+      message: "${BUILDKITE_MESSAGE}"
+      commit: "${BUILDKITE_COMMIT}"
+      branch: "${BUILDKITE_BRANCH}"
+      env:
+        DEPLOY_ENVIRONMENT: "stage"
+        DEPLOY_API_GATEWAY_STAGE: "v1"
+        BUILDKITE_PULL_REQUEST: "${BUILDKITE_PULL_REQUEST}"
+        BUILDKITE_PULL_REQUEST_BASE_BRANCH: "${BUILDKITE_PULL_REQUEST_BASE_BRANCH}"
+        BUILDKITE_PULL_REQUEST_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"
+
+  - wait
+
+  - name: "smoke test stage"
+    branches: "main"
+    plugins:
+      - wellcomecollection/aws-assume-role#v0.2.2:
+          role: "arn:aws:iam::770700576653:role/identity-ci"
+      - docker-compose#v3.5.0:
+          run: smoke_test_identity_api
+          command: [ "yarn", "run", "smokeTestIdentityApiStage" ]
+          env:
+            - AWS_ACCESS_KEY_ID
+            - AWS_SECRET_ACCESS_KEY
+            - AWS_SESSION_TOKEN
+            - AWS_REGION=eu-west-1
+
+  - wait
+
+  - name: "deploy prod"
+    branches: "main"
+    trigger: "identity-deploy-prod"
+    build:
+      message: "${BUILDKITE_MESSAGE}"
+      commit: "${BUILDKITE_COMMIT}"
+      branch: "${BUILDKITE_BRANCH}"
+      env:
+        BUILDKITE_PULL_REQUEST: "${BUILDKITE_PULL_REQUEST}"
+        BUILDKITE_PULL_REQUEST_BASE_BRANCH: "${BUILDKITE_PULL_REQUEST_BASE_BRANCH}"
+        BUILDKITE_PULL_REQUEST_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"

@@ -2,13 +2,18 @@
 # For local development / testing of the login flows and stuff ¯\_(ツ)_/¯
 
 resource "auth0_client" "dummy_test" {
+  # Only deploy the dummy client if it's a non-production environment...
+  count = lower(terraform.workspace) != "prod" ? 1 : 0
+
   name                 = "Dummy Test Client${local.environment_qualifier}"
   app_type             = "regular_web"
   is_first_party       = true
   custom_login_page_on = true
 
   grant_types = [
-    "authorization_code"
+    "authorization_code",
+    "password",
+    "http://auth0.com/oauth/grant-type/password-realm"
   ]
 
   callbacks = [
@@ -35,8 +40,13 @@ resource "auth0_client" "api_gateway_identity" {
 
   grant_types = [
     "client_credentials",
-    "password", "http://auth0.com/oauth/grant-type/password-realm" // Required for testing of Auth0 credentials via the API
+    "password",
+    "http://auth0.com/oauth/grant-type/password-realm" // Required for testing of Auth0 credentials via the API
   ]
+
+  # Allows us to provide the 'Auth0-Forwarded-For' header to requests, which causes the token endpoint to use the users
+  # real IP address for brute-force-protection, instead of the backend API IP address.
+  is_token_endpoint_ip_header_trusted = true
 
   lifecycle {
     ignore_changes = [
@@ -97,6 +107,7 @@ resource "auth0_client_grant" "buildkite" {
     "update:connections",
     "delete:connections",
     "create:connections",
+    "read:custom_domains",
     "read:resource_servers",
     "update:resource_servers",
     "delete:resource_servers",
@@ -157,7 +168,8 @@ resource "auth0_client" "account_management_system" {
   ]
 
   allowed_logout_urls = [
-    local.wellcome_collection_site_uri
+    local.wellcome_collection_site_uri,
+    local.ams_delete_requested_uri
   ]
 
   lifecycle {
@@ -199,4 +211,21 @@ resource "auth0_client" "account_admin_system" {
       custom_login_page
     ]
   }
+}
+
+# Smoke Test Client
+# For automated smoke testing after deployment
+
+resource "auth0_client" "smoke_test" {
+  name           = "Smoke Test Client${local.environment_qualifier}"
+  app_type       = "regular_web"
+  is_first_party = true
+
+  # The password grant is used here as we consider this client running in CI
+  # secure enough to allow that.
+  grant_types = [
+    "password"
+  ]
+
+  callbacks = []
 }

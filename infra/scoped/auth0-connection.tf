@@ -2,11 +2,12 @@ resource "auth0_connection" "sierra" {
   name     = "Sierra-Connection"
   strategy = "auth0"
 
-  enabled_clients = [
+  enabled_clients = concat([
     auth0_client.api_gateway_identity.id, # Required to allow the Lambda API client credentials to operate on the connection
-    auth0_client.dummy_test.id,
-    auth0_client.account_management_system.id
-  ]
+    auth0_client.account_management_system.id,
+    auth0_client.smoke_test.id],
+    terraform.workspace != "prod" ? local.stage_test_client_ids : [],
+  )
 
   options {
     import_mode                    = true
@@ -45,6 +46,12 @@ resource "auth0_connection" "sierra" {
       CLIENT_SECRET = data.external.sierra_api_credentials.result.SierraAPISecret
     }
   }
+
+  lifecycle {
+    ignore_changes = [
+      options["scripts"]
+    ]
+  }
 }
 
 resource "auth0_connection" "azure_ad" {
@@ -52,10 +59,10 @@ resource "auth0_connection" "azure_ad" {
   name     = "AzureAD-Connection"
   strategy = "oauth2"
 
-  enabled_clients = [
-    auth0_client.dummy_test.id,
-    auth0_client.account_admin_system.id
-  ]
+  enabled_clients = concat([
+    auth0_client.account_admin_system.id],
+    terraform.workspace != "prod" ? [auth0_client.dummy_test[0].id] : []
+  )
 
   options {
     authorization_endpoint = "https://login.microsoftonline.com/${aws_ssm_parameter.azure_ad_directory_id.value}/oauth2/v2.0/authorize"
@@ -71,11 +78,5 @@ resource "auth0_connection" "azure_ad" {
     scripts = {
       fetchUserProfile = file("${path.module}/../../packages/apps/auth0-actions/src/create_azure_ad_profile.js")
     }
-  }
-
-  lifecycle {
-    ignore_changes = [
-      options["scripts"]
-    ]
   }
 }

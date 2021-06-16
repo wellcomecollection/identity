@@ -1,10 +1,6 @@
 resource "aws_elasticache_subnet_group" "access_token_cache" {
-  name = "identity-subnet-group-access-token-cache-${terraform.workspace}"
-  subnet_ids = [
-    aws_subnet.private_1.id,
-    aws_subnet.private_2.id,
-    aws_subnet.private_3.id
-  ]
+  name       = "identity-subnet-group-access-token-cache-${terraform.workspace}"
+  subnet_ids = local.private_subnets
 }
 
 resource "aws_elasticache_replication_group" "access_token_cache" {
@@ -34,10 +30,7 @@ resource "aws_elasticache_replication_group" "access_token_cache" {
     ]
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "name" = "identity-access-token-cache-${terraform.workspace}"
-    }
-  )
+  tags = {
+    "name" = "identity-access-token-cache-${terraform.workspace}"
+  }
 }

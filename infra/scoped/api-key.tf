@@ -11,29 +11,29 @@ resource "aws_api_gateway_usage_plan" "basic" {
     burst_limit = 5
   }
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "Basic"
-    }
-  )
+  tags = {
+    "Name" = "Basic"
+  }
 }
 
 # Dummy
 
 resource "aws_api_gateway_api_key" "dummy" {
+  # Only deploy the dummy client if it's a non-production environment...
+  count = lower(terraform.workspace) != "prod" ? 1 : 0
+
   name = "dummy"
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "dummy"
-    }
-  )
+  tags = {
+    "Name" = "dummy"
+  }
 }
 
 resource "aws_api_gateway_usage_plan_key" "dummy" {
-  key_id        = aws_api_gateway_api_key.dummy.id
+  # Only deploy the dummy client if it's a non-production environment...
+  count = lower(terraform.workspace) != "prod" ? 1 : 0
+
+  key_id        = aws_api_gateway_api_key.dummy[0].id
   usage_plan_id = aws_api_gateway_usage_plan.basic.id
   key_type      = "API_KEY"
 }
@@ -43,12 +43,9 @@ resource "aws_api_gateway_usage_plan_key" "dummy" {
 resource "aws_api_gateway_api_key" "account_management_system" {
   name = "account management system"
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "account management system"
-    }
-  )
+  tags = {
+    "Name" = "account management system"
+  }
 }
 
 resource "aws_api_gateway_usage_plan_key" "account_management_system" {
@@ -62,12 +59,9 @@ resource "aws_api_gateway_usage_plan_key" "account_management_system" {
 resource "aws_api_gateway_api_key" "account_admin_system" {
   name = "account admin system"
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = "account admin system"
-    }
-  )
+  tags = {
+    "Name" = "account admin system"
+  }
 }
 
 resource "aws_api_gateway_usage_plan_key" "account_admin_system" {

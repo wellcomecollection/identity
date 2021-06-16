@@ -12,12 +12,9 @@ resource "aws_acm_certificate" "identity_api_v1" {
   # and a result must be in 'us-east-1'.
   provider = aws.aws_us-east-1
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = local.identity_v1_hostname
-    }
-  )
+  tags = {
+    "Name" = local.identity_v1_hostname
+  }
 }
 
 resource "aws_acm_certificate_validation" "identity_api_v1" {
@@ -43,12 +40,9 @@ resource "aws_acm_certificate" "swagger_ui_v1" {
   # and a result must be in 'us-east-1'.
   provider = aws.aws_us-east-1
 
-  tags = merge(
-    local.common_tags,
-    {
-      "Name" = local.identity_v1_docs_hostname
-    }
-  )
+  tags = {
+    "Name" = local.identity_v1_docs_hostname
+  }
 }
 
 resource "aws_acm_certificate_validation" "swagger_ui_v1" {

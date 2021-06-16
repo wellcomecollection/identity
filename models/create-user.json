@@ -20,11 +20,6 @@
       "minLength": 1
     }
   },
-  "required": [
-    "firstName",
-    "lastName",
-    "email",
-    "password"
-  ],
+  "required": ["firstName", "lastName", "email", "password"],
   "additionalProperties": false
 }

@@ -1,0 +1,30 @@
+config:
+  target: https://v1-api.stage.account.wellcomecollection.org
+  phases:
+    - duration: 1
+      arrivalRate: 1
+  environments:
+    prod:
+      target: https://v1-api.account.wellcomecollection.org
+      phases:
+        - duration: 1
+          arrivalRate: 1
+    stage:
+      target: https://v1-api.stage.account.wellcomecollection.org
+      phases:
+        - duration: 1
+          arrivalRate: 1
+  ensure:
+    maxErrorRate: 0
+  processor: "./processorFunctions.js"
+  plugins:
+    expect: { }
+    metrics-by-endpoint: { }
+scenarios:
+  - name: "/users/me"
+    flow:
+      - get:
+          url: "/users/me"
+          beforeRequest: addCredentials
+          expect:
+            statusCode: 200

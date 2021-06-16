@@ -1,0 +1,7 @@
+html
+infra
+.buildkite
+.idea
+*.yaml
+*.yml
+*.md

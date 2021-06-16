@@ -1,0 +1,7 @@
+version: '3'
+
+services:
+  smoke_test_identity_api:
+    image: smoke_test_identity_api
+    build:
+      context: ./smoke_tests
