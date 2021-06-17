@@ -28,12 +28,6 @@ const prodSecrets = {
 
 const secretsManager = new AWS.SecretsManager();
 
-// This file is evaluated once, but the functions contained may be called
-// multiple times. We use mutable values to cache credentials for a short
-// period after they have been retrieved to reduce HTTP interactions.
-let cachedApiKey;
-let cachedAccessToken;
-
 // Convienience function for getting values from AWS SecretsManager
 function getSecret(secretId, callback) {
   secretsManager.getSecretValue({ SecretId: secretId }, function (error, data) {
@@ -103,21 +97,15 @@ function addCredentials(requestParams, context, ee, next) {
   let isStage = context['vars']['$environment'] === 'stage';
   const secrets = isStage ? stageSecrets : prodSecrets;
 
-  if (cachedApiKey && cachedAccessToken) {
-    requestParams.headers['x-api-key'] = cachedApiKey;
-    requestParams.headers['Authorization'] = cachedAccessToken;
-    next();
-  } else {
-    const thenGetAuthToken = () =>
-      getAuthToken(
-        secrets['credentialsSecretId'],
-        secrets['auth0Url'],
-        requestParams,
-        next
-      );
-    const thenGetApiKey = () =>
-      getApiKey(secrets['apiKeySecretId'], requestParams, thenGetAuthToken);
+  const thenGetAuthToken = () =>
+    getAuthToken(
+      secrets['credentialsSecretId'],
+      secrets['auth0Url'],
+      requestParams,
+      next
+    );
+  const thenGetApiKey = () =>
+    getApiKey(secrets['apiKeySecretId'], requestParams, thenGetAuthToken);
 
-    thenGetApiKey();
-  }
+  thenGetApiKey();
 }

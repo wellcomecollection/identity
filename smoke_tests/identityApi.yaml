@@ -24,7 +24,12 @@ scenarios:
   - name: "/users/me"
     flow:
       - get:
-          url: "/users/me"
+          url: "/users/1101796"
+          beforeRequest: addCredentials
+          expect:
+            statusCode: 200
+      - get:
+          url: "/users/1101796/item-requests"
           beforeRequest: addCredentials
           expect:
             statusCode: 200
