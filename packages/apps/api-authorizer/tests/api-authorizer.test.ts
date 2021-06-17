@@ -133,6 +133,36 @@ describe('API Authorizer', () => {
     );
   });
 
+  it('denies requests where the user is accessing an invalid resource', async () => {
+    const userId = 'test_id';
+    const event = createEvent({
+      token: 'test token',
+      resource: '/users/{userId}/ice_cream',
+      method: 'GET',
+      userId,
+    });
+
+    await withAuth0Response(
+      {
+        status: ResponseStatus.Success,
+        result: {
+          userId,
+          name: 'test name',
+          firstName: 'test',
+          lastName: 'name',
+          email: 'test@example.com',
+        },
+      },
+      async () => {
+        const result = await lambdaHandler(event);
+        expect(result).toHaveProperty(
+          'policyDocument.Statement.0.Effect',
+          'Deny'
+        );
+      }
+    );
+  });
+
   it('uses cached user info when available', async () => {
     mockRedis.get.mockResolvedValue(
       JSON.stringify({
