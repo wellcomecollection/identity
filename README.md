@@ -28,7 +28,7 @@ Switched to workspace "stage".
 
 This project builds in Buildkite where there are pipelines to cover build and deployment through stage and production environments.
 
-- [Identity](https://buildkite.com/wellcomecollection/identity): Test and build artifacts 
+- [Identity](https://buildkite.com/wellcomecollection/identity): Test and build artifacts
 - [Identity: Deploy Stage](https://buildkite.com/wellcomecollection/identity-deploy-stage): Deploy to staging environment and run smoke tests
 - [Identity: Deploy Prod](https://buildkite.com/wellcomecollection/identity-deploy-prod): Deploy to production environment and run smoke tests
 
