@@ -26,11 +26,15 @@ Switched to workspace "stage".
 
 ### Continuous Integration
 
-This project builds in Buildkite where there are 3 pipelines to cover build and deployment through stage and production environments.
+This project builds in Buildkite where there are pipelines to cover build and deployment through stage and production environments.
+
+- [https://buildkite.com/wellcomecollection/identity](Identity): Test and build artifacts 
+- [https://buildkite.com/wellcomecollection/identity-deploy-stage](Identity: Deploy Stage): Deploy to staging environment and run smoke tests
+- [https://buildkite.com/wellcomecollection/identity-deploy-prod](Identity: Deploy Prod): Deploy to production environment and run smoke tests
 
 [![Build status](https://badge.buildkite.com/965e1197af1ac22887636ef8cbd4b5bba98e7ab656e42fa574.svg)](https://buildkite.com/wellcomecollection/identity)
 
-Merged pull requests will be automatically deployed to the staging environment.
+Merged pull requests will be automatically deployed to the staging environment, but a production deploy requires manual unblocking in Buildkite.
 
 #### Build images
 
