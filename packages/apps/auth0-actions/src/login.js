@@ -41,7 +41,7 @@ function login(email, password, callback) {
         patronSecret: secret,
       },
       {
-        validateStatus: (status) => status === 204,
+        validateStatus: (status) => status === 200,
       }
     );
   }
