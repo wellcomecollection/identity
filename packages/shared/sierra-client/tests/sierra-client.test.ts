@@ -25,39 +25,6 @@ describe('sierra client', () => {
     moxios.uninstall(axios as AxiosInstance);
   });
 
-  describe('validate credentials', () => {
-    it('validates', async () => {
-      moxios.stubRequest('/patrons/validate', {
-        status: 204,
-        response: {},
-      });
-
-      const response = await client.validateCredentials(barcode, pin);
-      equal(response.status, ResponseStatus.Success);
-
-      const result = (<SuccessResponse<{}>>response).result;
-      equal(Object.keys(result).length, 0);
-    });
-
-    it('does not validate', async () => {
-      moxios.stubRequest('/patrons/validate', {
-        status: 400,
-      });
-
-      const response = await client.validateCredentials(barcode, pin);
-      equal(response.status, ResponseStatus.InvalidCredentials);
-    });
-
-    it('returns an unexpected response code', async () => {
-      moxios.stubRequest('/patrons/validate', {
-        status: 500,
-      });
-
-      const response = await client.validateCredentials(barcode, pin);
-      equal(response.status, ResponseStatus.UnknownError);
-    });
-  });
-
   describe('get patron record by record number', () => {
     it('finds the record with non-marc name', async () => {
       moxios.stubRequest(

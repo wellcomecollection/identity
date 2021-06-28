@@ -25,39 +25,6 @@ export default class SierraClient {
     this.clientSecret = clientSecret;
   }
 
-  async validateCredentials(
-    barcode: string,
-    pin: string
-  ): Promise<APIResponse<{}>> {
-    return this.getInstance().then((instance) => {
-      return instance
-        .post(
-          '/patrons/validate',
-          {
-            barcode: barcode,
-            pin: pin,
-          },
-          {
-            validateStatus: (status) => status === 204,
-          }
-        )
-        .then(() => successResponse({}))
-        .catch((error) => {
-          if (error.response) {
-            switch (error.response.status) {
-              case 400:
-                return errorResponse(
-                  'Invalid Patron credentials for barcode [' + barcode + ']',
-                  ResponseStatus.InvalidCredentials,
-                  error
-                );
-            }
-          }
-          return unhandledError(error);
-        });
-    });
-  }
-
   async getPatronRecordByRecordNumber(
     recordNumber: number
   ): Promise<APIResponse<PatronRecord>> {
