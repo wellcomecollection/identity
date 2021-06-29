@@ -34,7 +34,7 @@ function login(email, password, callback) {
       '/v6/patrons/auth',
       {
         authMethod: 'native',
-        patronId: id,
+        patronId: id.toString(), // ID might be passed as a number
         patronSecret: secret,
       },
       {
