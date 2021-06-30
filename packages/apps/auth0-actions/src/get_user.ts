@@ -1,6 +1,7 @@
 import SierraClient from '@weco/sierra-client';
 import { ResponseStatus } from '@weco/identity-common';
 import { callbackify } from 'util';
+import { patronRecordToUser } from './patronRecordToUser';
 
 declare const configuration: {
   API_ROOT: string;
@@ -8,7 +9,7 @@ declare const configuration: {
   CLIENT_SECRET: string;
 };
 
-async function getUser(email: string) {
+export async function getUser(email: string) {
   const apiRoot = configuration.API_ROOT;
   const clientKey = configuration.CLIENT_KEY;
   const clientSecret = configuration.CLIENT_SECRET;
@@ -19,13 +20,7 @@ async function getUser(email: string) {
 
   if (patronRecordResponse.status === ResponseStatus.Success) {
     const patronRecord = patronRecordResponse.result;
-    return {
-      user_id: 'p' + patronRecord.recordNumber,
-      email: patronRecord.email,
-      name: patronRecord.firstName + ' ' + patronRecord.lastName,
-      given_name: patronRecord.firstName,
-      family_name: patronRecord.lastName,
-    };
+    return patronRecordToUser(patronRecord);
   } else if (patronRecordResponse.status === ResponseStatus.NotFound) {
     return undefined;
   } else {
