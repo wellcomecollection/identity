@@ -42,6 +42,8 @@ steps:
   - name: "auth0-packaging"
     command:
       - ". /app/.buildkite/scripts/init-environment.sh"
+      - "yarn install"
+      - "yarn build-auth0-actions"
       - "/app/.buildkite/scripts/auth0-packaging.sh"
     plugins:
       - wellcomecollection/aws-assume-role#v0.2.2:

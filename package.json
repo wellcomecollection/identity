@@ -9,6 +9,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc --build tsconfig.build.json",
+    "build-auth0-actions": "yarn workspace @weco/identity-auth0-actions build",
     "clean": "lerna run clean",
     "test": "lerna run test"
   },
