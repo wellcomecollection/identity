@@ -26,19 +26,20 @@ export default class SierraClient {
   }
 
   async validateCredentials(
-    barcode: string,
-    pin: string
+    id: string,
+    password: string
   ): Promise<APIResponse<{}>> {
     return this.getInstance().then((instance) => {
       return instance
         .post(
-          '/patrons/validate',
+          '/patrons/auth',
           {
-            barcode: barcode,
-            pin: encodeURIComponent(pin),
+            authMethod: 'native',
+            patronId: id,
+            patronSecret: password,
           },
           {
-            validateStatus: (status) => status === 204,
+            validateStatus: (status) => status === 200,
           }
         )
         .then(() => successResponse({}))
@@ -47,7 +48,7 @@ export default class SierraClient {
             switch (error.response.status) {
               case 400:
                 return errorResponse(
-                  'Invalid Patron credentials for barcode [' + barcode + ']',
+                  'Invalid Patron credentials for ID [' + id + ']',
                   ResponseStatus.InvalidCredentials,
                   error
                 );

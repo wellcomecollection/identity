@@ -27,8 +27,8 @@ describe('sierra client', () => {
 
   describe('validate credentials', () => {
     it('validates', async () => {
-      moxios.stubRequest('/patrons/validate', {
-        status: 204,
+      moxios.stubRequest('/patrons/auth', {
+        status: 200,
         response: {},
       });
 
@@ -40,7 +40,7 @@ describe('sierra client', () => {
     });
 
     it('does not validate', async () => {
-      moxios.stubRequest('/patrons/validate', {
+      moxios.stubRequest('/patrons/auth', {
         status: 400,
       });
 
@@ -49,7 +49,7 @@ describe('sierra client', () => {
     });
 
     it('returns an unexpected response code', async () => {
-      moxios.stubRequest('/patrons/validate', {
+      moxios.stubRequest('/patrons/auth', {
         status: 500,
       });
 
