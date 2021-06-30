@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "exclude": ["**/*.spec.ts", "**/*.test.ts"],
+  "references": [
+    {
+      "path": "../../shared/sierra-client/tsconfig.build.json"
+    },
+    {
+      "path": "../../shared/identity-common/tsconfig.build.json"
+    }
+  ]
+}

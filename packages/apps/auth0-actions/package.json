@@ -4,7 +4,19 @@
   "repository": "git@github.com:/wellcomecollection/identity.git",
   "author": "Gary Tierney <gary.tierney@fastmail.com>",
   "license": "MIT",
+  "scripts": {
+    "build": "webpack"
+  },
+  "dependencies": {
+    "@weco/identity-common": "*",
+    "@weco/sierra-client": "*"
+  },
   "devDependencies": {
-    "axios": "^0.21.1"
+    "@tepez/auth0-rules-types": "^0.3.1",
+    "@types/node": "^15.12.5",
+    "axios": "0.21.1",
+    "ts-loader": "^9.2.3",
+    "tsconfig-paths-webpack-plugin": "^3.5.1",
+    "webpack": "^5.41.0"
   }
 }
