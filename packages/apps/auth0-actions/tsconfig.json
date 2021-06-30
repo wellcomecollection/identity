@@ -1,0 +1,17 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "noImplicitUseStrict": true
+  },
+  "include": ["src"],
+  "references": [
+    {
+      "path": "../../shared/sierra-client"
+    },
+    {
+      "path": "../../shared/identity-common"
+    }
+  ]
+}

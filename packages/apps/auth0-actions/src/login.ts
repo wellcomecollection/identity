@@ -8,7 +8,7 @@ declare const configuration: {
   CLIENT_SECRET: string;
 };
 
-async function login(email, password) {
+async function login(email: string, password: string) {
   const apiRoot = configuration.API_ROOT;
   const clientKey = configuration.CLIENT_KEY;
   const clientSecret = configuration.CLIENT_SECRET;
