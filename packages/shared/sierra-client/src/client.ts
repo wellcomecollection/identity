@@ -35,7 +35,7 @@ export default class SierraClient {
           '/patrons/validate',
           {
             barcode: barcode,
-            pin: pin,
+            pin: encodeURIComponent(pin),
           },
           {
             validateStatus: (status) => status === 204,
