@@ -1,7 +1,12 @@
 import axios from 'axios';
 import { callbackify } from 'util';
+import { User } from 'auth0';
+import { User as MicrosoftGraphUser } from '@microsoft/microsoft-graph-types';
+import { IAuth0RuleContext } from '@tepez/auth0-rules-types';
 
-async function fetchUserProfile(accessToken: string) {
+async function fetchUserProfile(
+  accessToken: string
+): Promise<MicrosoftGraphUser> {
   // Auth0's OAuth 2.0 integration scripts don't seem to support environment variables, so we have to hard code
   // API hostname.
   const response = await axios.get(
@@ -16,14 +21,17 @@ async function fetchUserProfile(accessToken: string) {
   return response.data;
 }
 
-async function createAzureAdProfile(accessToken: string, context: any) {
+async function createAzureAdProfile(
+  accessToken: string,
+  context: IAuth0RuleContext
+): Promise<User> {
   const userProfile = await fetchUserProfile(accessToken);
   return {
     user_id: userProfile.id,
-    email: userProfile.mail,
+    email: userProfile.mail!,
     name: userProfile.givenName + ' ' + userProfile.surname,
-    given_name: userProfile.givenName,
-    family_name: userProfile.surname,
+    given_name: userProfile.givenName!,
+    family_name: userProfile.surname!,
   };
 }
 

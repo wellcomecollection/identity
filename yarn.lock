@@ -1264,6 +1264,11 @@
     npmlog "^4.1.2"
     write-file-atomic "^2.3.0"
 
+"@microsoft/microsoft-graph-types@^1.41.0":
+  version "1.41.0"
+  resolved "https://registry.yarnpkg.com/@microsoft/microsoft-graph-types/-/microsoft-graph-types-1.41.0.tgz#669113391f4efb02e888a8a3349e4e3d6d25ba35"
+  integrity sha512-GNGqnN3k4wo6zlxszBUdrzEXMQMeTRXRO2OP3h63LNbqRrRHUe6WY2EbGwL7gUhap7pOoyziZ+eG5YUvUNdBSA==
+
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@mrmlnc/readdir-enhanced/-/readdir-enhanced-2.2.1.tgz#524af240d1a360527b730475ecfa1344aa540dde"
