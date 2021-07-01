@@ -4,6 +4,15 @@ import { User } from 'auth0';
 import createAzureAdProfile from '../src/create_azure_ad_profile';
 import { IAuth0RuleContext } from '@tepez/auth0-rules-types';
 
+const testUserProfile = {
+  id: 'test_id',
+  mail: 'test@test.test',
+  givenName: 'Test',
+  surname: 'Testing',
+};
+
+const graphApiRegex = /^https:\/\/graph\.microsoft\.com/;
+
 describe('create_azure_ad_profile script', () => {
   beforeEach(() => {
     moxios.install(axios as AxiosInstance);
@@ -14,14 +23,9 @@ describe('create_azure_ad_profile script', () => {
   });
 
   it('constructs an Auth0 user object from a user profile fetched from Microsoft Graph', (done) => {
-    moxios.stubRequest(/^https:\/\/graph\.microsoft\.com/, {
+    moxios.stubRequest(graphApiRegex, {
       status: 200,
-      response: {
-        id: 'test_id',
-        mail: 'test@test.test',
-        givenName: 'Test',
-        surname: 'Testing',
-      },
+      response: testUserProfile,
     });
 
     const callback = (error: NodeJS.ErrnoException | null, data?: User) => {
@@ -39,7 +43,7 @@ describe('create_azure_ad_profile script', () => {
   });
 
   it('throws an error if Microsoft Graph returns an error', (done) => {
-    moxios.stubRequest(/^https:\/\/graph\.microsoft\.com/, {
+    moxios.stubRequest(graphApiRegex, {
       status: 401,
     });
 
@@ -52,14 +56,9 @@ describe('create_azure_ad_profile script', () => {
 
   it('uses the passed access token for the request to Microsoft Graph', (done) => {
     const testToken = 'test_token';
-    moxios.stubRequest(/^https:\/\/graph\.microsoft\.com/, {
+    moxios.stubRequest(graphApiRegex, {
       status: 200,
-      response: {
-        id: 'test_id',
-        mail: 'test@test.test',
-        givenName: 'Test',
-        surname: 'Testing',
-      },
+      response: testUserProfile,
     });
 
     const callback = (error: NodeJS.ErrnoException | null, data?: User) => {
