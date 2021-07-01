@@ -10,7 +10,7 @@ declare const configuration: {
 };
 
 const invalidCredentialsMessage =
-  "We don't recognise the email and/or password you entered. Please check your entry and try again";
+  "We don't recognise the email and/or password you entered. Please check your entry and try again.";
 
 async function login(email: string, password: string) {
   const apiRoot = configuration.API_ROOT;
