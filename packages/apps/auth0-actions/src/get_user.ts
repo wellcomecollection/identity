@@ -2,6 +2,7 @@ import SierraClient from '@weco/sierra-client';
 import { ResponseStatus } from '@weco/identity-common';
 import { callbackify } from 'util';
 import { patronRecordToUser } from './patronRecordToUser';
+import { User } from 'auth0';
 
 declare const configuration: {
   API_ROOT: string;
@@ -9,7 +10,7 @@ declare const configuration: {
   CLIENT_SECRET: string;
 };
 
-export async function getUser(email: string) {
+async function getUser(email: string): Promise<User | undefined> {
   const apiRoot = configuration.API_ROOT;
   const clientKey = configuration.CLIENT_KEY;
   const clientSecret = configuration.CLIENT_SECRET;
