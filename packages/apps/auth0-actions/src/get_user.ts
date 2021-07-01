@@ -24,7 +24,7 @@ export async function getUser(email: string) {
   } else if (patronRecordResponse.status === ResponseStatus.NotFound) {
     return undefined;
   } else {
-    throw patronRecordResponse;
+    throw new Error(patronRecordResponse.message);
   }
 }
 
