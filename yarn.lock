@@ -1412,7 +1412,7 @@
   dependencies:
     "@types/auth0" "^2.20.11"
 
-"@types/auth0@^2.20.11":
+"@types/auth0@^2.20.11", "@types/auth0@^2.33.3":
   version "2.33.3"
   resolved "https://registry.yarnpkg.com/@types/auth0/-/auth0-2.33.3.tgz#2437740152ea17051a509d6e23438fde6136c6c2"
   integrity sha512-9LSCqKbPxmOI294tcOnTMXnnfLcabgHw7ymmSqTNdDGiN7orBr/Gpi0G4r/tNktuRnZHF+QEW3LysXKfsVbN1A==
