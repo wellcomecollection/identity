@@ -1,4 +1,3 @@
-import { equal } from 'assert';
 import axios, { AxiosInstance } from 'axios';
 import moxios from 'moxios';
 import { ResponseStatus, SuccessResponse } from '@weco/identity-common';
@@ -8,7 +7,6 @@ describe('sierra client', () => {
   let client: SierraClient;
 
   beforeEach(() => {
-    // @ts-ignore
     moxios.install(axios as AxiosInstance);
     moxios.stubRequest(apiRoot + '/token', {
       status: 200,
@@ -21,7 +19,6 @@ describe('sierra client', () => {
   });
 
   afterEach(() => {
-    // @ts-ignore
     moxios.uninstall(axios as AxiosInstance);
   });
 
@@ -33,10 +30,10 @@ describe('sierra client', () => {
       });
 
       const response = await client.validateCredentials(barcode, pin);
-      equal(response.status, ResponseStatus.Success);
+      expect(response.status).toBe(ResponseStatus.Success);
 
       const result = (<SuccessResponse<{}>>response).result;
-      equal(Object.keys(result).length, 0);
+      expect(result).toEqual({});
     });
 
     it('does not validate', async () => {
@@ -45,7 +42,7 @@ describe('sierra client', () => {
       });
 
       const response = await client.validateCredentials(barcode, pin);
-      equal(response.status, ResponseStatus.InvalidCredentials);
+      expect(response.status).toBe(ResponseStatus.InvalidCredentials);
     });
 
     it('returns an unexpected response code', async () => {
@@ -54,7 +51,7 @@ describe('sierra client', () => {
       });
 
       const response = await client.validateCredentials(barcode, pin);
-      equal(response.status, ResponseStatus.UnknownError);
+      expect(response.status).toBe(ResponseStatus.UnknownError);
     });
   });
 
@@ -69,14 +66,16 @@ describe('sierra client', () => {
       );
 
       const response = await client.getPatronRecordByRecordNumber(recordNumber);
-      equal(response.status, ResponseStatus.Success);
+      expect(response.status).toBe(ResponseStatus.Success);
 
       const result = (<SuccessResponse<PatronRecord>>response).result;
-      equal(result.barcode, barcode);
-      equal(result.email, email);
-      equal(result.firstName, firstName);
-      equal(result.lastName, lastName);
-      equal(result.recordNumber, recordNumber);
+      expect(result).toEqual({
+        barcode,
+        email,
+        firstName,
+        lastName,
+        recordNumber,
+      });
     });
 
     it('finds the record with marc name', async () => {
@@ -89,14 +88,16 @@ describe('sierra client', () => {
       );
 
       const response = await client.getPatronRecordByRecordNumber(recordNumber);
-      equal(response.status, ResponseStatus.Success);
+      expect(response.status).toBe(ResponseStatus.Success);
 
       const result = (<SuccessResponse<PatronRecord>>response).result;
-      equal(result.barcode, barcode);
-      equal(result.email, email);
-      equal(result.firstName, firstName);
-      equal(result.lastName, lastName);
-      equal(result.recordNumber, recordNumber);
+      expect(result).toEqual({
+        barcode,
+        email,
+        firstName,
+        lastName,
+        recordNumber,
+      });
     });
 
     it('finds the deleted record', async () => {
@@ -111,7 +112,7 @@ describe('sierra client', () => {
       );
 
       const response = await client.getPatronRecordByRecordNumber(recordNumber);
-      equal(response.status, ResponseStatus.NotFound);
+      expect(response.status).toBe(ResponseStatus.NotFound);
     });
 
     it('does not find the record', async () => {
@@ -123,7 +124,7 @@ describe('sierra client', () => {
       );
 
       const response = await client.getPatronRecordByRecordNumber(recordNumber);
-      equal(response.status, ResponseStatus.NotFound);
+      expect(response.status).toBe(ResponseStatus.NotFound);
     });
 
     it('returns an unexpected response code', async () => {
@@ -135,7 +136,7 @@ describe('sierra client', () => {
       );
 
       const response = await client.getPatronRecordByRecordNumber(recordNumber);
-      equal(response.status, ResponseStatus.UnknownError);
+      expect(response.status).toBe(ResponseStatus.UnknownError);
     });
   });
 
@@ -152,14 +153,16 @@ describe('sierra client', () => {
       );
 
       const response = await client.getPatronRecordByBarcode(barcode);
-      equal(response.status, ResponseStatus.Success);
+      expect(response.status).toBe(ResponseStatus.Success);
 
       const result = (<SuccessResponse<PatronRecord>>response).result;
-      equal(result.barcode, barcode);
-      equal(result.email, email);
-      equal(result.firstName, firstName);
-      equal(result.lastName, lastName);
-      equal(result.recordNumber, recordNumber);
+      expect(result).toEqual({
+        barcode,
+        email,
+        firstName,
+        lastName,
+        recordNumber,
+      });
     });
 
     it('finds the record with marc name', async () => {
@@ -174,14 +177,16 @@ describe('sierra client', () => {
       );
 
       const response = await client.getPatronRecordByBarcode(barcode);
-      equal(response.status, ResponseStatus.Success);
+      expect(response.status).toBe(ResponseStatus.Success);
 
       const result = (<SuccessResponse<PatronRecord>>response).result;
-      equal(result.barcode, barcode);
-      equal(result.email, email);
-      equal(result.firstName, firstName);
-      equal(result.lastName, lastName);
-      equal(result.recordNumber, recordNumber);
+      expect(result).toEqual({
+        barcode,
+        email,
+        firstName,
+        lastName,
+        recordNumber,
+      });
     });
 
     it('does not find the record', async () => {
@@ -195,7 +200,7 @@ describe('sierra client', () => {
       );
 
       const response = await client.getPatronRecordByBarcode(barcode);
-      equal(response.status, ResponseStatus.NotFound);
+      expect(response.status).toBe(ResponseStatus.NotFound);
     });
 
     it('returns an unexpected response code', async () => {
@@ -209,7 +214,7 @@ describe('sierra client', () => {
       );
 
       const response = await client.getPatronRecordByBarcode(barcode);
-      equal(response.status, ResponseStatus.UnknownError);
+      expect(response.status).toBe(ResponseStatus.UnknownError);
     });
   });
 
@@ -226,14 +231,16 @@ describe('sierra client', () => {
       );
 
       const response = await client.getPatronRecordByEmail(email);
-      equal(response.status, ResponseStatus.Success);
+      expect(response.status).toBe(ResponseStatus.Success);
 
       const result = (<SuccessResponse<PatronRecord>>response).result;
-      equal(result.barcode, barcode);
-      equal(result.email, email);
-      equal(result.firstName, firstName);
-      equal(result.lastName, lastName);
-      equal(result.recordNumber, recordNumber);
+      expect(result).toEqual({
+        barcode,
+        email,
+        firstName,
+        lastName,
+        recordNumber,
+      });
     });
 
     it('finds the record with marc name', async () => {
@@ -248,14 +255,16 @@ describe('sierra client', () => {
       );
 
       const response = await client.getPatronRecordByEmail(email);
-      equal(response.status, ResponseStatus.Success);
+      expect(response.status).toBe(ResponseStatus.Success);
 
       const result = (<SuccessResponse<PatronRecord>>response).result;
-      equal(result.barcode, barcode);
-      equal(result.email, email);
-      equal(result.firstName, firstName);
-      equal(result.lastName, lastName);
-      equal(result.recordNumber, recordNumber);
+      expect(result).toEqual({
+        barcode,
+        email,
+        firstName,
+        lastName,
+        recordNumber,
+      });
     });
 
     it('does not find the record', async () => {
@@ -269,7 +278,7 @@ describe('sierra client', () => {
       );
 
       const response = await client.getPatronRecordByEmail(email);
-      equal(response.status, ResponseStatus.NotFound);
+      expect(response.status).toBe(ResponseStatus.NotFound);
     });
 
     it('returns an unexpected response code', async () => {
@@ -283,7 +292,7 @@ describe('sierra client', () => {
       );
 
       const response = await client.getPatronRecordByEmail(email);
-      equal(response.status, ResponseStatus.UnknownError);
+      expect(response.status).toBe(ResponseStatus.UnknownError);
     });
   });
 
@@ -301,10 +310,10 @@ describe('sierra client', () => {
         lastName,
         pin
       );
-      equal(response.status, ResponseStatus.Success);
+      expect(response.status).toBe(ResponseStatus.Success);
 
       const result = (<SuccessResponse<number>>response).result;
-      equal(result, recordNumber);
+      expect(result).toBe(recordNumber);
     });
 
     it('does not create the record', async () => {
@@ -317,7 +326,7 @@ describe('sierra client', () => {
         lastName,
         pin
       );
-      equal(response.status, ResponseStatus.MalformedRequest);
+      expect(response.status).toBe(ResponseStatus.MalformedRequest);
     });
 
     it('does not meet the password policy', async () => {
@@ -334,7 +343,7 @@ describe('sierra client', () => {
         lastName,
         pin
       );
-      equal(response.status, ResponseStatus.PasswordTooWeak);
+      expect(response.status).toBe(ResponseStatus.PasswordTooWeak);
     });
 
     it('returns an unexpected response code', async () => {
@@ -347,7 +356,7 @@ describe('sierra client', () => {
         lastName,
         pin
       );
-      equal(response.status, ResponseStatus.UnknownError);
+      expect(response.status).toBe(ResponseStatus.UnknownError);
     });
   });
 
@@ -369,14 +378,16 @@ describe('sierra client', () => {
         recordNumber,
         email
       );
-      equal(response.status, ResponseStatus.Success);
+      expect(response.status).toBe(ResponseStatus.Success);
 
       const result = (<SuccessResponse<PatronRecord>>response).result;
-      equal(result.barcode, barcode);
-      equal(result.email, email);
-      equal(result.firstName, firstName);
-      equal(result.lastName, lastName);
-      equal(result.recordNumber, recordNumber);
+      expect(result).toEqual({
+        barcode,
+        email,
+        firstName,
+        lastName,
+        recordNumber,
+      });
     });
 
     it('does not update the record', async () => {
@@ -388,7 +399,7 @@ describe('sierra client', () => {
         recordNumber,
         email
       );
-      equal(response.status, ResponseStatus.MalformedRequest);
+      expect(response.status).toBe(ResponseStatus.MalformedRequest);
     });
 
     it('returns a 404 if there is no user', async () => {
@@ -400,7 +411,7 @@ describe('sierra client', () => {
         recordNumber,
         email
       );
-      equal(response.status, ResponseStatus.NotFound);
+      expect(response.status).toBe(ResponseStatus.NotFound);
     });
 
     it('returns an unexpected response code', async () => {
@@ -412,7 +423,7 @@ describe('sierra client', () => {
         recordNumber,
         email
       );
-      equal(response.status, ResponseStatus.UnknownError);
+      expect(response.status).toBe(ResponseStatus.UnknownError);
     });
   });
 
@@ -431,14 +442,16 @@ describe('sierra client', () => {
       );
 
       const response = await client.updatePatronRecord(recordNumber, email);
-      equal(response.status, ResponseStatus.Success);
+      expect(response.status).toBe(ResponseStatus.Success);
 
       const result = (<SuccessResponse<PatronRecord>>response).result;
-      equal(result.barcode, barcode);
-      equal(result.email, email);
-      equal(result.firstName, firstName);
-      equal(result.lastName, lastName);
-      equal(result.recordNumber, recordNumber);
+      expect(result).toEqual({
+        barcode,
+        email,
+        firstName,
+        lastName,
+        recordNumber,
+      });
     });
 
     it('does not update the record', async () => {
@@ -447,7 +460,7 @@ describe('sierra client', () => {
       });
 
       const response = await client.updatePatronRecord(recordNumber, email);
-      equal(response.status, ResponseStatus.MalformedRequest);
+      expect(response.status).toBe(ResponseStatus.MalformedRequest);
     });
 
     it('returns a 404 if there is no user', async () => {
@@ -456,7 +469,7 @@ describe('sierra client', () => {
       });
 
       const response = await client.updatePatronRecord(recordNumber, email);
-      equal(response.status, ResponseStatus.NotFound);
+      expect(response.status).toBe(ResponseStatus.NotFound);
     });
 
     it('returns an unexpected response code', async () => {
@@ -465,7 +478,7 @@ describe('sierra client', () => {
       });
 
       const response = await client.updatePatronRecord(recordNumber, email);
-      equal(response.status, ResponseStatus.UnknownError);
+      expect(response.status).toBe(ResponseStatus.UnknownError);
     });
   });
 });

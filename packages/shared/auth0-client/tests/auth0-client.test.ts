@@ -3,7 +3,6 @@ import {
   ResponseStatus,
   SuccessResponse,
 } from '@weco/identity-common';
-import { equal, strictEqual } from 'assert';
 import axios, { AxiosInstance } from 'axios';
 import moxios from 'moxios';
 import { SierraUserIdPrefix } from '../src/auth0';
@@ -39,7 +38,7 @@ describe('auth0 client', () => {
 
       const response = await client.deleteUser(userId);
 
-      strictEqual(response.status, ResponseStatus.Success);
+      expect(response.status).toBe(ResponseStatus.Success);
     });
 
     it('not found on invalid user', async () => {
@@ -49,7 +48,7 @@ describe('auth0 client', () => {
 
       const response = await client.deleteUser(userId);
 
-      strictEqual(response.status, ResponseStatus.NotFound);
+      expect(response.status).toBe(ResponseStatus.NotFound);
     });
   });
 
@@ -61,11 +60,12 @@ describe('auth0 client', () => {
       });
 
       const response = await client.validateAccessToken(accessToken);
-      equal(response.status, ResponseStatus.Success);
+      expect(response.status).toBe(ResponseStatus.Success);
 
       const result = (<SuccessResponse<Auth0UserInfo>>response).result;
-      equal(result.userId, userId);
-      equal(result.email, email);
+      expect(result).toEqual(
+        expect.objectContaining({ userId: userId.toString(), email })
+      );
     });
 
     it('does not validate', async () => {
@@ -74,7 +74,7 @@ describe('auth0 client', () => {
       });
 
       const response = await client.validateAccessToken(accessToken);
-      equal(response.status, ResponseStatus.InvalidCredentials);
+      expect(response.status).toBe(ResponseStatus.InvalidCredentials);
     });
 
     it('returns an unexpected response code', async () => {
@@ -83,7 +83,7 @@ describe('auth0 client', () => {
       });
 
       const response = await client.validateAccessToken(accessToken);
-      equal(response.status, ResponseStatus.UnknownError);
+      expect(response.status).toBe(ResponseStatus.UnknownError);
     });
   });
 
@@ -99,17 +99,24 @@ describe('auth0 client', () => {
       const response: APIResponse<Auth0Profile> = await client.getUserByUserId(
         userId
       );
-      equal(response.status, ResponseStatus.Success);
+      expect(response.status).toBe(ResponseStatus.Success);
 
       const result = (<SuccessResponse<Auth0Profile>>response).result;
-      equal(result.userId, userId);
-      equal(result.email, email);
-      equal(result.emailValidated, emailValidated);
-      equal(result.locked, locked);
-      equal(result.creationDate, creationDate);
-      equal(result.lastLoginDate, lastLoginDate);
-      equal(result.lastLoginIp, lastLoginIp);
-      equal(result.totalLogins, totalLogins);
+      expect(result).toEqual(
+        expect.objectContaining({
+          userId: userId.toString(),
+          name,
+          firstName,
+          lastName,
+          email,
+          emailValidated,
+          locked,
+          creationDate,
+          lastLoginDate,
+          lastLoginIp,
+          totalLogins,
+        })
+      );
     });
 
     it('finds the user without blocked', async () => {
@@ -121,17 +128,24 @@ describe('auth0 client', () => {
       const response: APIResponse<Auth0Profile> = await client.getUserByUserId(
         123456
       );
-      equal(response.status, ResponseStatus.Success);
+      expect(response.status).toBe(ResponseStatus.Success);
 
       const result = (<SuccessResponse<Auth0Profile>>response).result;
-      equal(result.userId, userId);
-      equal(result.email, email);
-      equal(result.emailValidated, emailValidated);
-      equal(result.locked, locked);
-      equal(result.creationDate, creationDate);
-      equal(result.lastLoginDate, lastLoginDate);
-      equal(result.lastLoginIp, lastLoginIp);
-      equal(result.totalLogins, totalLogins);
+      expect(result).toEqual(
+        expect.objectContaining({
+          userId: userId.toString(),
+          name,
+          firstName,
+          lastName,
+          email,
+          emailValidated,
+          locked,
+          creationDate,
+          lastLoginDate,
+          lastLoginIp,
+          totalLogins,
+        })
+      );
     });
 
     it('does not find the user', async () => {
@@ -140,7 +154,7 @@ describe('auth0 client', () => {
       });
 
       const response = await client.getUserByUserId(userId);
-      equal(response.status, ResponseStatus.NotFound);
+      expect(response.status).toBe(ResponseStatus.NotFound);
     });
 
     it('returns an unexpected response code', async () => {
@@ -149,7 +163,7 @@ describe('auth0 client', () => {
       });
 
       const response = await client.getUserByUserId(userId);
-      equal(response.status, ResponseStatus.UnknownError);
+      expect(response.status).toBe(ResponseStatus.UnknownError);
     });
   });
 
@@ -165,17 +179,24 @@ describe('auth0 client', () => {
       });
 
       const response = await client.getUserByEmail(email);
-      equal(response.status, ResponseStatus.Success);
+      expect(response.status).toBe(ResponseStatus.Success);
 
       const result = (<SuccessResponse<Auth0Profile>>response).result;
-      equal(result.userId, userId);
-      equal(result.email, email);
-      equal(result.emailValidated, emailValidated);
-      equal(result.locked, locked);
-      equal(result.creationDate, creationDate);
-      equal(result.lastLoginDate, lastLoginDate);
-      equal(result.lastLoginIp, lastLoginIp);
-      equal(result.totalLogins, totalLogins);
+      expect(result).toEqual(
+        expect.objectContaining({
+          userId: userId.toString(),
+          name,
+          firstName,
+          lastName,
+          email,
+          emailValidated,
+          locked,
+          creationDate,
+          lastLoginDate,
+          lastLoginIp,
+          totalLogins,
+        })
+      );
     });
 
     it('does not find the user', async () => {
@@ -185,7 +206,7 @@ describe('auth0 client', () => {
       });
 
       const response = await client.getUserByEmail(email);
-      equal(response.status, ResponseStatus.NotFound);
+      expect(response.status).toBe(ResponseStatus.NotFound);
     });
 
     it('returns an unexpected response code', async () => {
@@ -194,7 +215,7 @@ describe('auth0 client', () => {
       });
 
       const response = await client.getUserByEmail(email);
-      equal(response.status, ResponseStatus.UnknownError);
+      expect(response.status).toBe(ResponseStatus.UnknownError);
     });
 
     it('finds the user without blocked', async () => {
@@ -204,17 +225,24 @@ describe('auth0 client', () => {
       });
 
       const response = await client.getUserByEmail(email);
-      equal(response.status, ResponseStatus.Success);
+      expect(response.status).toBe(ResponseStatus.Success);
 
       const result = (<SuccessResponse<Auth0Profile>>response).result;
-      equal(result.userId, userId);
-      equal(result.email, email);
-      equal(result.emailValidated, emailValidated);
-      equal(result.locked, locked);
-      equal(result.creationDate, creationDate);
-      equal(result.lastLoginDate, lastLoginDate);
-      equal(result.lastLoginIp, lastLoginIp);
-      equal(result.totalLogins, totalLogins);
+      expect(result).toEqual(
+        expect.objectContaining({
+          userId: userId.toString(),
+          name,
+          firstName,
+          lastName,
+          email,
+          emailValidated,
+          locked,
+          creationDate,
+          lastLoginDate,
+          lastLoginIp,
+          totalLogins,
+        })
+      );
     });
 
     it('does not find the user', async () => {
@@ -224,7 +252,7 @@ describe('auth0 client', () => {
       });
 
       const response = await client.getUserByEmail(email);
-      equal(response.status, ResponseStatus.NotFound);
+      expect(response.status).toBe(ResponseStatus.NotFound);
     });
 
     it('returns an unexpected response code', async () => {
@@ -233,7 +261,7 @@ describe('auth0 client', () => {
       });
 
       const response = await client.getUserByEmail(email);
-      equal(response.status, ResponseStatus.UnknownError);
+      expect(response.status).toBe(ResponseStatus.UnknownError);
     });
   });
 
@@ -251,20 +279,24 @@ describe('auth0 client', () => {
         email,
         password
       );
-      equal(response.status, ResponseStatus.Success);
+      expect(response.status).toBe(ResponseStatus.Success);
 
       const result = (<SuccessResponse<Auth0Profile>>response).result;
-      equal(result.userId, userId);
-      equal(result.name, name);
-      equal(result.firstName, firstName);
-      equal(result.lastName, lastName);
-      equal(result.email, email);
-      equal(result.emailValidated, emailValidated);
-      equal(result.locked, locked);
-      equal(result.creationDate, creationDate);
-      equal(result.lastLoginDate, lastLoginDate);
-      equal(result.lastLoginIp, lastLoginIp);
-      equal(result.totalLogins, totalLogins);
+      expect(result).toEqual(
+        expect.objectContaining({
+          userId: userId.toString(),
+          name,
+          firstName,
+          lastName,
+          email,
+          emailValidated,
+          locked,
+          creationDate,
+          lastLoginDate,
+          lastLoginIp,
+          totalLogins,
+        })
+      );
     });
 
     it('does not create the user', async () => {
@@ -279,7 +311,7 @@ describe('auth0 client', () => {
         email,
         password
       );
-      equal(response.status, ResponseStatus.UserAlreadyExists);
+      expect(response.status).toBe(ResponseStatus.UserAlreadyExists);
     });
 
     it('has an insecure password', async () => {
@@ -297,7 +329,7 @@ describe('auth0 client', () => {
         email,
         password
       );
-      equal(response.status, ResponseStatus.PasswordTooWeak);
+      expect(response.status).toBe(ResponseStatus.PasswordTooWeak);
     });
 
     it('receives a malformed request', async () => {
@@ -312,7 +344,7 @@ describe('auth0 client', () => {
         email,
         password
       );
-      equal(response.status, ResponseStatus.MalformedRequest);
+      expect(response.status).toBe(ResponseStatus.MalformedRequest);
     });
 
     it('returns an unexpected response code', async () => {
@@ -327,7 +359,7 @@ describe('auth0 client', () => {
         email,
         password
       );
-      equal(response.status, ResponseStatus.UnknownError);
+      expect(response.status).toBe(ResponseStatus.UnknownError);
     });
   });
 
@@ -344,17 +376,24 @@ describe('auth0 client', () => {
         firstName,
         lastName
       );
-      equal(response.status, ResponseStatus.Success);
+      expect(response.status).toBe(ResponseStatus.Success);
 
       const result = (<SuccessResponse<Auth0Profile>>response).result;
-      equal(result.userId, userId);
-      equal(result.email, email);
-      equal(result.emailValidated, emailValidated);
-      equal(result.locked, locked);
-      equal(result.creationDate, creationDate);
-      equal(result.lastLoginDate, lastLoginDate);
-      equal(result.lastLoginIp, lastLoginIp);
-      equal(result.totalLogins, totalLogins);
+      expect(result).toEqual(
+        expect.objectContaining({
+          userId: userId.toString(),
+          name,
+          firstName,
+          lastName,
+          email,
+          emailValidated,
+          locked,
+          creationDate,
+          lastLoginDate,
+          lastLoginIp,
+          totalLogins,
+        })
+      );
     });
 
     it('does not update the user', async () => {
@@ -371,7 +410,7 @@ describe('auth0 client', () => {
         firstName,
         lastName
       );
-      equal(response.status, ResponseStatus.UserAlreadyExists);
+      expect(response.status).toBe(ResponseStatus.UserAlreadyExists);
     });
 
     it('receives a malformed request', async () => {
@@ -385,7 +424,7 @@ describe('auth0 client', () => {
         firstName,
         lastName
       );
-      equal(response.status, ResponseStatus.MalformedRequest);
+      expect(response.status).toBe(ResponseStatus.MalformedRequest);
     });
 
     it('does not find the user', async () => {
@@ -399,7 +438,7 @@ describe('auth0 client', () => {
         firstName,
         lastName
       );
-      equal(response.status, ResponseStatus.NotFound);
+      expect(response.status).toBe(ResponseStatus.NotFound);
     });
 
     it('returns an unexpected response code', async () => {
@@ -413,7 +452,7 @@ describe('auth0 client', () => {
         firstName,
         lastName
       );
-      equal(response.status, ResponseStatus.UnknownError);
+      expect(response.status).toBe(ResponseStatus.UnknownError);
     });
   });
 });
