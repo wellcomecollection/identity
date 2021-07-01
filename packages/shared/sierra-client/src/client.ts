@@ -32,6 +32,7 @@ export default class SierraClient {
     return this.getInstance().then((instance) => {
       return instance
         .post(
+          // https://sandbox.iii.com/iii/sierra-api/swagger/index.html#!/patrons/validate_patron_credentials_post_2
           '/patrons/auth',
           {
             authMethod: 'native',
