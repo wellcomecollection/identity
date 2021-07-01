@@ -22,7 +22,7 @@ async function login(email: string, password: string) {
     const patronRecord = patronRecordResponse.result;
 
     const validationResponse = await sierraClient.validateCredentials(
-      patronRecord.barcode,
+      patronRecord.recordNumber.toString(),
       password
     );
     if (validationResponse.status !== ResponseStatus.Success) {
