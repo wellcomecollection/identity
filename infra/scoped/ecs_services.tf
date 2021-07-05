@@ -5,6 +5,8 @@ locals {
   desired_task_count       = terraform.workspace == "prod" ? 3 : 1
   clamped_n_subnets        = min(local.n_private_subnets, local.desired_task_count)
   routable_private_subnets = slice(local.private_subnets, 0, local.clamped_n_subnets)
+
+  es_secrets = data.terraform_remote_state.catalogue_api_shared.outputs["es_requests_secret_config"]
 }
 
 module "requests" {
@@ -27,15 +29,10 @@ module "requests" {
     app_base_url      = local.identity_v1_endpoint
     sierra_base_url   = "https://libsys.wellcomelibrary.org/iii/sierra-api"
   }
-  secrets = {
-    es_host           = "elasticsearch/catalogue/private_host"
-    es_port           = "identity/${terraform.workspace}/requests/es_port"
-    es_protocol       = "identity/${terraform.workspace}/requests/es_protocol"
-    es_username       = "identity/${terraform.workspace}/requests/es_username"
-    es_password       = "identity/${terraform.workspace}/requests/es_password"
+  secrets = merge(local.es_secrets, {
     sierra_api_key    = "sierra-api-credentials-${terraform.workspace}:SierraAPIKey"
     sierra_api_secret = "sierra-api-credentials-${terraform.workspace}:SierraAPISecret"
-  }
+  })
 
   load_balancer_arn           = aws_lb.identity_api.arn
   load_balancer_listener_port = local.requests_lb_port
