@@ -5,7 +5,10 @@ resource "aws_lambda_function" "authorizer" {
   handler       = "index.lambdaHandler"
   role          = aws_iam_role.identity_api_gateway_lambda_role.arn
   runtime       = "nodejs12.x"
-  filename      = "data/empty.zip"
+
+  // This creates an empty function on the first apply, as it will be managed by
+  // the deployment scripts and ignored by TF (see lifecycle block)
+  filename = "data/empty.zip"
 
   vpc_config {
     subnet_ids = local.private_subnets

@@ -36,6 +36,8 @@ resource "auth0_connection" "sierra" {
     }
 
     custom_scripts = {
+      // These create an empty function on the first apply, as they will be managed by
+      // the deployment scripts and ignored by TF (see lifecycle block)
       login    = file("${path.module}/data/empty.js"),
       get_user = file("${path.module}/data/empty.js")
     }
@@ -76,6 +78,8 @@ resource "auth0_connection" "azure_ad" {
     ]
 
     scripts = {
+      // This creates an empty function on the first apply, as it will be managed by
+      // the deployment scripts and ignored by TF (see lifecycle block)
       fetchUserProfile = file("${path.module}/data/empty.js")
     }
   }
