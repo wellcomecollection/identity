@@ -1,6 +1,6 @@
 import { IAuth0RuleContext, IAuth0RuleUser } from '@tepez/auth0-rules-types';
 
-type EmptyUser = IAuth0RuleUser<{}, {}>;
+export type EmptyUser = IAuth0RuleUser<{}, {}>;
 
 async function getPatronAttributes() {
   return {
