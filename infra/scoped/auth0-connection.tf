@@ -79,4 +79,10 @@ resource "auth0_connection" "azure_ad" {
       fetchUserProfile = file("${path.module}/data/empty.js")
     }
   }
+
+  lifecycle {
+    ignore_changes = [
+      options["scripts"]
+    ]
+  }
 }
