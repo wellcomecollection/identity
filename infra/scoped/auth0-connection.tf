@@ -36,8 +36,8 @@ resource "auth0_connection" "sierra" {
     }
 
     custom_scripts = {
-      login    = file("${path.module}/../../packages/apps/auth0-actions/src/login.js"),
-      get_user = file("${path.module}/../../packages/apps/auth0-actions/src/get_user.js")
+      login    = file("${path.module}/data/empty.js"),
+      get_user = file("${path.module}/data/empty.js")
     }
 
     configuration = {
@@ -76,7 +76,7 @@ resource "auth0_connection" "azure_ad" {
     ]
 
     scripts = {
-      fetchUserProfile = file("${path.module}/../../packages/apps/auth0-actions/src/create_azure_ad_profile.js")
+      fetchUserProfile = file("${path.module}/data/empty.js")
     }
   }
 }
