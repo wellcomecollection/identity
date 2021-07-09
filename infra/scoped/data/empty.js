@@ -1,0 +1,3 @@
+function noop() {
+  // Do nothing
+}

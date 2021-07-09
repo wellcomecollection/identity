@@ -36,8 +36,10 @@ resource "auth0_connection" "sierra" {
     }
 
     custom_scripts = {
-      login    = file("${path.module}/../../packages/apps/auth0-actions/src/login.js"),
-      get_user = file("${path.module}/../../packages/apps/auth0-actions/src/get_user.js")
+      // These create an empty function on the first apply, as they will be managed by
+      // the deployment scripts and ignored by TF (see lifecycle block)
+      login    = file("${path.module}/data/empty.js"),
+      get_user = file("${path.module}/data/empty.js")
     }
 
     configuration = {
@@ -76,7 +78,15 @@ resource "auth0_connection" "azure_ad" {
     ]
 
     scripts = {
-      fetchUserProfile = file("${path.module}/../../packages/apps/auth0-actions/src/create_azure_ad_profile.js")
+      // This creates an empty function on the first apply, as it will be managed by
+      // the deployment scripts and ignored by TF (see lifecycle block)
+      fetchUserProfile = file("${path.module}/data/empty.js")
     }
+  }
+
+  lifecycle {
+    ignore_changes = [
+      options["scripts"]
+    ]
   }
 }
