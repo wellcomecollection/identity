@@ -87,6 +87,7 @@ steps:
   - name: "deploy-stage"
     branches: "main"
     trigger: "identity-deploy-stage"
+    async: true
     build:
       message: "${BUILDKITE_MESSAGE}"
       commit: "${BUILDKITE_COMMIT}"

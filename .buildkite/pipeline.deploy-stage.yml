@@ -34,6 +34,7 @@ steps:
   - name: "deploy prod"
     branches: "main"
     trigger: "identity-deploy-prod"
+    async: true
     build:
       message: "${BUILDKITE_MESSAGE}"
       commit: "${BUILDKITE_COMMIT}"
