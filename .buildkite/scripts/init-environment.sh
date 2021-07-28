@@ -12,6 +12,8 @@ function __process_environment_variables() {
   export AWS_DEFAULT_REGION=eu-west-1
   export TF_VAR_provider_role_arn=${TF_BACKEND_ROLE_ARN}
   export NORMALIZED_BRANCH_NAME="${BUILDKITE_BRANCH/\//-}"
+  export DEPLOY_ENVIRONMENT=${DEPLOY_ENVIRONMENT:=stage}
+  export DEPLOY_API_GATEWAY_STAGE=${DEPLOY_API_GATEWAY_STAGE:=v1}
 }
 
 # shellcheck disable=SC1091
