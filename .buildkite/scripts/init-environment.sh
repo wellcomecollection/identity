@@ -14,20 +14,6 @@ function __process_environment_variables() {
   export NORMALIZED_BRANCH_NAME="${BUILDKITE_BRANCH/\//-}"
 }
 
-function __process_buildkite_metadata() {
-  # Need to revisit this - not sure we should be defaulting to 'stage' and 'v1'?
-  if [ "${BUILDKITE_SOURCE}" == "ui" ]; then
-    DEPLOY_ENVIRONMENT=$(buildkite-agent meta-data get deploy-environment)
-    DEPLOY_API_GATEWAY_STAGE=$(buildkite-agent meta-data get deploy-api-gateway-stage)
-  else
-    DEPLOY_ENVIRONMENT=stage
-    DEPLOY_API_GATEWAY_STAGE=v1
-  fi
-
-  export DEPLOY_ENVIRONMENT
-  export DEPLOY_API_GATEWAY_STAGE
-}
-
 # shellcheck disable=SC1091
 function __init_terraform_env_vars() {
   cd /app/infra/scoped && \
@@ -39,5 +25,4 @@ function __init_terraform_env_vars() {
 }
 
 __process_environment_variables
-__process_buildkite_metadata
 __init_terraform_env_vars
