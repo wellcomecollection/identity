@@ -1,25 +1,7 @@
 steps:
 
-    # Only prompt for deployment parameters if the build was triggered via the Web UI. All other
-    # methods of invoking the build should provide these are environment variables to the build.
-  - block: "provide deployment parameters"
-    prompt: "Provide deployment parameters"
-    if: build.source == "ui"
-    fields:
-      - text: "Deployment Environment"
-        hint: "The environment to deploy to, e.g. 'stage' or 'prod'"
-        required: true
-        key: "deploy-environment"
-      - text: "Deployment API Gateway Stage"
-        hint: "The API Gateway stage to deploy to, e.g. 'v1' or 'v2'"
-        required: true
-        key: "deploy-api-gateway-stage"
-
-    # Deploy the Auth0 scripts to Auth0. We don't want to execute the deployment every time there's
-    # a push to revision control. We're only interested in doing a deployment if e.g. it was
-    # manually invoked via the web UI, or a downstream job triggered the build.
+  # Deploy any changes to Auth0 scripts
   - name: "auth0 deployment"
-    if: build.source != "webhook"
     command:
       - ". /app/.buildkite/scripts/init-environment.sh"
       - "/app/.buildkite/scripts/auth0-deployment.sh"
@@ -40,11 +22,8 @@ steps:
             - AWS_SESSION_TOKEN
             - DEPLOY_ENVIRONMENT
 
-  # Deploy the Lambda Function code to Lambda. We don't want to execute the deployment every time there's
-  # a push to revision control. We're only interested in doing a deployment if e.g. it was
-  # manually invoked via the web UI, or a downstream job triggered the build.
-  - name: "lambda function deployment"
-    if: build.source != "webhook"
+  # Deploy Lambdas to AWS
+  - name: "lambda deployment"
     command:
       - ". /app/.buildkite/scripts/init-environment.sh"
       - "/app/.buildkite/scripts/aws-lambda-deployment.sh"
