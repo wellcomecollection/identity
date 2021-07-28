@@ -7,8 +7,11 @@ locals {
   }
 
   stage_test_client_ids = compact([
-    length(auth0_client.dummy_test) > 0 ? auth0_client.dummy_test[0].client_id : ""
+    length(auth0_client.dummy_test) > 0 ? auth0_client.dummy_test[0].client_id : "",
     # Developer client ids can be added here
+
+    # davidpmccormick dev client
+    "SrigIHZ3yXKlskZcdxJeytBuHqUUw7gn"
   ])
 
   # Terraform
