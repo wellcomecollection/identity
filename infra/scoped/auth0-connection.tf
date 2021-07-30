@@ -63,7 +63,7 @@ resource "auth0_connection" "azure_ad" {
 
   enabled_clients = concat([
     auth0_client.account_admin_system.id],
-    terraform.workspace != "prod" ? [auth0_client.dummy_test[0].id] : []
+    terraform.workspace != "prod" ? local.stage_test_client_ids : []
   )
 
   options {

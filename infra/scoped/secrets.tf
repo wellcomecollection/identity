@@ -157,6 +157,11 @@ locals {
     clientId : auth0_client.smoke_test.id
     clientSecret : auth0_client.smoke_test.client_secret
   }
+
+  buildkite_credentials = {
+    clientId : auth0_client.buildkite.id
+    clientSecret : auth0_client.buildkite.client_secret
+  }
 }
 
 resource "aws_secretsmanager_secret" "smoke_test-auth0_credentials" {
@@ -170,4 +175,19 @@ resource "aws_secretsmanager_secret" "smoke_test-auth0_credentials" {
 resource "aws_secretsmanager_secret_version" "smoke_test-auth0_credentials" {
   secret_id     = aws_secretsmanager_secret.smoke_test-auth0_credentials.id
   secret_string = jsonencode(local.smoke_test_credentials)
+}
+
+# Buildkite
+
+resource "aws_secretsmanager_secret" "buildkite-auth0_credentials" {
+  name = "identity/${terraform.workspace}/buildkite/credentials"
+
+  tags = {
+    "Name" = "identity/${terraform.workspace}/buildkite/auth0_client_secret"
+  }
+}
+
+resource "aws_secretsmanager_secret_version" "buildkite-auth0_credentials" {
+  secret_id     = aws_secretsmanager_secret.buildkite-auth0_credentials.id
+  secret_string = jsonencode(local.buildkite_credentials)
 }
