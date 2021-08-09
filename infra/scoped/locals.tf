@@ -81,4 +81,15 @@ locals {
 
   requests_lb_port    = 8000
   requests_repository = data.terraform_remote_state.catalogue_api_shared.outputs["ecr_requests_repository_url"]
+
+  # This should be the max number of items that a user can order in Sierra.
+  #
+  # Although Sierra enforces the canonical limit, it's useful for the
+  # requesting API to know what the limit should be -- it means we can
+  # return a more helpful error message when a request fails because
+  # somebody is at their hold limit.
+  #
+  # The hold limit was increased to 15 on 6 August 2021.
+  # See https://wellcome.slack.com/archives/CUA669WHH/p1628089731008800
+  per_user_hold_limit = 15
 }
