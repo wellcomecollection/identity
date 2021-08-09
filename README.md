@@ -10,7 +10,7 @@ Developers should install https://pre-commit.com/, as the CI tests will run the 
 
 ### Terraform
 
-This project uses [Terraform workspaces](https://www.terraform.io/docs/language/state/workspaces.html) to accomodate mulitple environments.
+This project uses [Terraform workspaces](https://www.terraform.io/docs/language/state/workspaces.html) to accomodate multiple environments.
 
 You will need to switch workspace to plan/apply in a particular environment:
 
