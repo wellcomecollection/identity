@@ -11,7 +11,8 @@ output "identity_v1_docs_endpoint" {
 # Auth0
 
 output "auth0_endpoint" {
-  value = local.auth0_endpoint
+  value     = local.auth0_endpoint
+  sensitive = false
 }
 
 # Auth0 clients
@@ -21,7 +22,8 @@ output "auth0_client_dummy_name" {
 }
 
 output "auth0_client_dummy_api_key" {
-  value = aws_api_gateway_api_key.dummy.*.value
+  value     = aws_api_gateway_api_key.dummy.*.value
+  sensitive = true
 }
 
 output "auth0_client_dummy_client_id" {
@@ -29,7 +31,8 @@ output "auth0_client_dummy_client_id" {
 }
 
 output "auth0_client_dummy_client_secret" {
-  value = auth0_client.dummy_test.*.client_secret
+  value     = auth0_client.dummy_test.*.client_secret
+  sensitive = true
 }
 # Email
 
@@ -38,7 +41,8 @@ output "ses_smtp_username" {
 }
 
 output "ses_smtp_password" {
-  value = aws_iam_access_key.auth0_email.ses_smtp_password_v4
+  value     = aws_iam_access_key.auth0_email.ses_smtp_password_v4
+  sensitive = true
 }
 
 # Environment variables (for CI / CD)
@@ -56,4 +60,6 @@ output "ci_environment_variables" {
     "export CLOUDFRONT_SWAGGER_UI_DISTRIBUTION_ID=${aws_cloudfront_distribution.swagger_ui_v1.id}",
     "export SMTP_PASS=${data.aws_secretsmanager_secret_version.email_smtp_password_secret_version.secret_string}"
   ]
+
+  sensitive = true
 }
