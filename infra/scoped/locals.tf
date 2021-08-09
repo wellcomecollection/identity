@@ -20,7 +20,7 @@ locals {
   email_noreply_name_and_address = "${aws_ssm_parameter.email_noreply_name.value} <${local.email_noreply_address}>"
 
   # API Gateway
-  api_hostname = "api.${trimspace(aws_ssm_parameter.hostname_prefix.value)}${data.aws_ssm_parameter.hostname.value}"
+  api_hostname = nonsensitive("api.${trimspace(aws_ssm_parameter.hostname_prefix.value)}${data.aws_ssm_parameter.hostname.value}")
 
   # API Gateway V1
   identity_v1               = "v1"
@@ -30,7 +30,7 @@ locals {
   identity_v1_docs_endpoint = "https://${local.identity_v1_docs_hostname}"
 
   # Auth0
-  auth0_hostname = "${trimspace(aws_ssm_parameter.hostname_prefix.value)}${data.aws_ssm_parameter.hostname.value}"
+  auth0_hostname = nonsensitive("${trimspace(aws_ssm_parameter.hostname_prefix.value)}${data.aws_ssm_parameter.hostname.value}")
   auth0_endpoint = "https://${local.auth0_hostname}"
 
   # Wellcome Collection Site
