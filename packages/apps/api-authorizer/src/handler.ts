@@ -19,12 +19,8 @@ export const createLambdaHandler = (
   ): Promise<Auth0UserInfo | null> {
     const value = await redisClient.get(accessToken);
     if (value) {
-      console.debug(
-        `Cache hit for access token [${accessToken}] with value [${value}]`
-      );
       return JSON.parse(value) as Auth0UserInfo;
     } else {
-      console.debug(`Cache miss for access token [${accessToken}]`);
       return null;
     }
   }
@@ -37,10 +33,7 @@ export const createLambdaHandler = (
     const ttl: number = Number(process.env.REDIS_CACHE_TTL!);
     // 'EX' is the expiration (i.e. TTL) in seconds of the cache entry. We could also use 'PX' to provide the value in milliseconds.
     // AFAICT this is always 'OK' for a successful operation
-    const result = await redisClient.set(accessToken, value, ['EX', ttl]);
-    console.debug(
-      `Cache put for access token [${accessToken}] with value [${value}]: [${result}]`
-    );
+    await redisClient.set(accessToken, value, ['EX', ttl]);
     return value;
   }
 
@@ -56,9 +49,6 @@ export const createLambdaHandler = (
     const authorizationHeader: string = event.headers.Authorization;
     const accessToken: string | null = extractAccessToken(authorizationHeader);
     if (!accessToken) {
-      console.debug(
-        `Authorization header [${authorizationHeader}] is not a valid bearer token`
-      );
       throw 'Unauthorized';
     }
 
@@ -79,13 +69,10 @@ export const createLambdaHandler = (
       );
       if (auth0Validate.status !== ResponseStatus.Success) {
         if (auth0Validate.status === ResponseStatus.InvalidCredentials) {
-          console.debug(
-            `Access token [${accessToken}] rejected by Auth0: ${auth0Validate.message}`
-          );
           throw 'Unauthorized';
         } else {
           console.error(
-            `Unknown error processing access token [${accessToken}]: ${auth0Validate.message}`
+            `Unknown error processing access token: ${auth0Validate.message}`
           );
           throw 'Unauthorized';
         }
@@ -105,9 +92,7 @@ export const createLambdaHandler = (
       )
     ) {
       console.debug(
-        `Access token [${accessToken}] for user [${JSON.stringify(
-          auth0UserInfo
-        )}]` +
+        `Access token for user [${auth0UserInfo.userId}]` +
           `cannot operate on [${event.httpMethod} ${event.resource}] with path parameters [${event.pathParameters}]`
       );
       return buildAuthorizerResult(
