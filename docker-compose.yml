@@ -5,3 +5,7 @@ services:
     image: smoke_test_identity_api
     build:
       context: ./smoke_tests
+  universal_login_deploy:
+    image: universal_login_deploy
+    build:
+      context: ./universal_login
