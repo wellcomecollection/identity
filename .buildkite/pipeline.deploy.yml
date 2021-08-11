@@ -30,6 +30,13 @@ steps:
       - docker-compose#v3.7.0:
           run: universal_login_deploy
           command: [ "yarn", "run", "deploy-stage" ]
+          env:
+            - BUILDKITE_BRANCH
+            - BUILDKITE_SOURCE
+            - AWS_ACCESS_KEY_ID
+            - AWS_SECRET_ACCESS_KEY
+            - AWS_SESSION_TOKEN
+            - DEPLOY_ENVIRONMENT
 
   # Deploy Lambdas to AWS
 # TODO: Uncomment when tested
