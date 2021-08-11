@@ -178,6 +178,6 @@ async function updateLoginPageTemplate(
     console.log('Updates completed successfully');
   } catch (e) {
     console.error(e);
-    throw e;
+    process.exit(1);
   }
 })();
