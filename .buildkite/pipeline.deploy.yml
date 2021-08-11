@@ -1,7 +1,6 @@
 steps:
-
   # Deploy any changes to Auth0 scripts
-  - name: "auth0 deployment"
+  - name: "auth0 script deployment"
     command:
       - ". /app/.buildkite/scripts/init-environment.sh"
       - "/app/.buildkite/scripts/auth0-deployment.sh"
@@ -14,6 +13,22 @@ steps:
           run: app
           config: .buildkite/docker-compose.yml
           mount-buildkite-agent: true
+          env:
+            - BUILDKITE_BRANCH
+            - BUILDKITE_SOURCE
+            - AWS_ACCESS_KEY_ID
+            - AWS_SECRET_ACCESS_KEY
+            - AWS_SESSION_TOKEN
+            - DEPLOY_ENVIRONMENT
+
+  # Deploy any changes to Auth0 universal-login
+  - name: "auth0 universal-login deployment"
+    plugins:
+      - wellcomecollection/aws-assume-role#v0.2.2:
+          role: "arn:aws:iam::770700576653:role/identity-ci"
+      - docker-compose#v3.7.0:
+          run: universal_login_deploy
+          command: [ "yarn", "run", "deploy-from-env" ]
           env:
             - BUILDKITE_BRANCH
             - BUILDKITE_SOURCE
