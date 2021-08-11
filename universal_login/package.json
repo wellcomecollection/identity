@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "scripts": {
     "deploy-stage": "ts-node ./deploy stage",
-    "deploy-prod": "ts-node ./deploy prod"
+    "deploy-prod": "ts-node ./deploy prod",
+    "deploy-from-env": "ts-node ./deploy $DEPLOY_ENVIRONMENT"
   },
   "devDependencies": {
     "@types/node": "12.19.0",

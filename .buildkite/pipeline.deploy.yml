@@ -29,7 +29,7 @@ steps:
           role: "arn:aws:iam::770700576653:role/identity-ci"
       - docker-compose#v3.7.0:
           run: universal_login_deploy
-          command: [ "yarn", "run", "deploy-$$DEPLOY_ENVIRONMENT" ]
+          command: [ "yarn", "run", "deploy-from-env" ]
           env:
             - BUILDKITE_BRANCH
             - BUILDKITE_SOURCE

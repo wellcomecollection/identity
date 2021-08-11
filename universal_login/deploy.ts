@@ -163,6 +163,7 @@ async function updateLoginPageTemplate(
 (async () => {
   try {
     const env = process.argv[2] as Env;
+    console.log(`Updating environment: ${env}`);
 
     const token = await getApiToken(env);
     const prompts: Prompt[] = ['login', 'reset-password', 'email-verification'];
