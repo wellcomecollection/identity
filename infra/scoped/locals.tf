@@ -82,6 +82,10 @@ locals {
   requests_lb_port    = 8000
   requests_repository = data.terraform_remote_state.catalogue_api_shared.outputs["ecr_requests_repository_url"]
 
+  monitoring_outputs = data.terraform_remote_state.monitoring.outputs
+
+  api_gateway_alerts_topic_arn = local.monitoring_outputs["identity_api_gateway_alerts_topic_arn"]
+
   # This should be the max number of items that a user can order in Sierra.
   #
   # Although Sierra enforces the canonical limit, it's useful for the
