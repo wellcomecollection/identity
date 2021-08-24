@@ -4,6 +4,8 @@ locals {
     "Project"     = var.tag_project
     "Environment" = terraform.workspace
     "ManagedBy"   = var.tag_managed_by
+
+    TerraformConfigurationURL = "https://github.com/wellcomecollection/identity/tree/main/infra/scoped"
   }
 
   stage_test_client_ids = compact([
@@ -20,7 +22,7 @@ locals {
   email_noreply_name_and_address = "${aws_ssm_parameter.email_noreply_name.value} <${local.email_noreply_address}>"
 
   # API Gateway
-  api_hostname = "api.${trimspace(aws_ssm_parameter.hostname_prefix.value)}${data.aws_ssm_parameter.hostname.value}"
+  api_hostname = nonsensitive("api.${trimspace(aws_ssm_parameter.hostname_prefix.value)}${data.aws_ssm_parameter.hostname.value}")
 
   # API Gateway V1
   identity_v1               = "v1"
@@ -30,7 +32,7 @@ locals {
   identity_v1_docs_endpoint = "https://${local.identity_v1_docs_hostname}"
 
   # Auth0
-  auth0_hostname = "${trimspace(aws_ssm_parameter.hostname_prefix.value)}${data.aws_ssm_parameter.hostname.value}"
+  auth0_hostname = nonsensitive("${trimspace(aws_ssm_parameter.hostname_prefix.value)}${data.aws_ssm_parameter.hostname.value}")
   auth0_endpoint = "https://${local.auth0_hostname}"
 
   # Wellcome Collection Site
@@ -79,4 +81,19 @@ locals {
 
   requests_lb_port    = 8000
   requests_repository = data.terraform_remote_state.catalogue_api_shared.outputs["ecr_requests_repository_url"]
+
+  monitoring_outputs = data.terraform_remote_state.monitoring.outputs
+
+  api_gateway_alerts_topic_arn = local.monitoring_outputs["identity_api_gateway_alerts_topic_arn"]
+
+  # This should be the max number of items that a user can order in Sierra.
+  #
+  # Although Sierra enforces the canonical limit, it's useful for the
+  # requesting API to know what the limit should be -- it means we can
+  # return a more helpful error message when a request fails because
+  # somebody is at their hold limit.
+  #
+  # The hold limit was increased to 15 on 6 August 2021.
+  # See https://wellcome.slack.com/archives/CUA669WHH/p1628089731008800
+  per_user_hold_limit = 15
 }
