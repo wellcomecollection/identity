@@ -30,7 +30,7 @@ async function login(email: string, password: string): Promise<User> {
 
   const patronRecord = patronRecordResponse.result;
   const validationResponse = await sierraClient.validateCredentials(
-    patronRecord.recordNumber.toString(),
+    patronRecord.barcode,
     password
   );
   if (validationResponse.status !== ResponseStatus.Success) {

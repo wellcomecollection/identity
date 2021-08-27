@@ -18,7 +18,7 @@ jest.mock('@weco/sierra-client', () =>
 
 const testPatronRecord = {
   recordNumber: 1234567,
-  barcode: '1234567',
+  barcode: '7654321',
   firstName: 'Test',
   lastName: 'Testing',
   email: 'test@test.test',
@@ -94,13 +94,13 @@ describe('login script', () => {
       login(loginEmail, loginPassword, callback);
     });
 
-    it('by validating the given password with the resolved patron ID', (done) => {
+    it('by validating the given password with the resolved patron barcode', (done) => {
       mockGetPatronRecordByEmail.mockResolvedValueOnce(
         successResponse(testPatronRecord)
       );
       const callback = (error?: NodeJS.ErrnoException | null, data?: User) => {
         expect(mockValidateCredentials).toHaveBeenCalledWith(
-          testPatronRecord.recordNumber.toString(),
+          testPatronRecord.barcode.toString(),
           loginPassword
         );
         done();
