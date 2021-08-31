@@ -27,7 +27,7 @@ export async function validatePassword(
   if (!isNonBlank(password)) {
     throw new HttpError({
       status: 400,
-      message: 'All fields must be provided and non-blank',
+      message: 'A password must be provided and non-blank',
     });
   }
 
@@ -93,7 +93,7 @@ export async function createUser(
   ) {
     throw new HttpError({
       status: 400,
-      message: 'All fields must be provided and non-blank',
+      message: 'A password must be provided and non-blank',
     });
   }
 
@@ -106,9 +106,9 @@ export async function createUser(
       message: `Patron record with email [${email}] already exists`,
     });
   } else if (sierraGet.status !== ResponseStatus.NotFound) {
+    console.error('Unexpected error from Sierra client', sierraGet.message);
     throw new HttpError({
       status: 500,
-      message: 'Something went wrong: ' + sierraGet.message,
     });
   }
 
@@ -121,9 +121,9 @@ export async function createUser(
       message: `Auth0 user with email [${email}] already exists`,
     });
   } else if (auth0Get.status !== ResponseStatus.NotFound) {
+    console.error('Unexpected error from Auth0 client', auth0Get.message);
     throw new HttpError({
       status: 500,
-      message: 'Something went wrong: ' + auth0Get.message,
     });
   }
 
@@ -234,9 +234,12 @@ export async function updateUser(
         });
       }
     } else if (auth0EmailGet.status !== ResponseStatus.NotFound) {
+      console.error(
+        'Unexpected error from Auth0 client',
+        auth0EmailGet.message
+      );
       throw new HttpError({
         status: 500,
-        message: auth0EmailGet.message,
       });
     }
 
@@ -251,9 +254,12 @@ export async function updateUser(
         });
       }
     } else if (sierraEmailGet.status !== ResponseStatus.NotFound) {
+      console.error(
+        'Unexpected error from Sierra client',
+        sierraEmailGet.message
+      );
       throw new HttpError({
         status: 500,
-        message: sierraEmailGet.message,
       });
     }
   }
@@ -642,7 +648,7 @@ function getTargetUserId(request: Request): number {
   if (request.params.user_id === 'me') {
     if (userIsAdmin(request)) {
       throw new HttpError({
-        status: 404,
+        status: 403,
         message: 'Administrator users cannot operate on themselves',
       });
     }
@@ -653,7 +659,7 @@ function getTargetUserId(request: Request): number {
     if (isNaN(callerId)) {
       throw new HttpError({
         status: 401,
-        message: `Caller attempted to operate on themselves, but has an invalid user ID: [${callerId}]`,
+        message: `Caller attempted to operate on themselves, but request was not authorised`,
       });
     }
 
@@ -663,7 +669,7 @@ function getTargetUserId(request: Request): number {
   const targetUserId: number = Number(request.params.user_id);
   if (isNaN(targetUserId)) {
     throw new HttpError({
-      status: 401,
+      status: 400,
       message: `Invalid user ID [${targetUserId}]`,
     });
   }

@@ -13,7 +13,5 @@ export const errorHandler = (
   }
 
   const status = err instanceof HttpError ? err.status : 500;
-  const message = err.message ?? 'Something went wrong';
-
-  res.status(status).json(toMessage(message));
+  res.status(status).json(err.message ? toMessage(err.message) : undefined);
 };

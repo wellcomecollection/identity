@@ -4,10 +4,10 @@ export class HttpError extends Error {
   public readonly status: number;
   public readonly message: string;
 
-  constructor({ status, message }: { status: number; message: string }) {
+  constructor({ status, message }: { status: number; message?: string }) {
     super(message);
     this.status = status;
-    this.message = message;
+    this.message = message || '';
   }
 }
 
