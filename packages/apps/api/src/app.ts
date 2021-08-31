@@ -19,6 +19,7 @@ import {
   updateUser,
   validatePassword,
 } from './handlers/user';
+import { errorHandler } from './handlers/errorHandler';
 import EmailClient from './utils/email';
 
 export default createApplication();
@@ -66,6 +67,8 @@ function createApplication(): Application {
   registerUsersUserIdLockResource(app);
   registerUsersUserIdDeletionRequestResource(app);
   registerUsersUserIdValidateResource(app);
+
+  app.use(errorHandler);
 
   return app;
 }

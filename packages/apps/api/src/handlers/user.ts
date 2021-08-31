@@ -1,5 +1,4 @@
-import Auth0Client from '@weco/auth0-client';
-import {
+import Auth0Client, {
   Auth0Profile,
   Auth0SearchResults,
   Auth0SearchSortFields,
@@ -14,6 +13,7 @@ import {
 import SierraClient, { PatronRecord } from '@weco/sierra-client';
 import { Request, Response } from 'express';
 import { toMessage } from '../models/common';
+import { clientResponseToHttpError, HttpError } from '../models/HttpError';
 import { toSearchResults, toUser } from '../models/user';
 import EmailClient from '../utils/email';
 
@@ -25,22 +25,17 @@ export async function validatePassword(
   const userId: number = getTargetUserId(request);
   const password: string = request.body.password;
   if (!isNonBlank(password)) {
-    response
-      .status(400)
-      .json(toMessage('All fields must be provided and non-blank'));
-    return;
+    throw new HttpError({
+      status: 400,
+      message: 'A password must be provided and non-blank',
+    });
   }
 
   const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(
     userId
   );
   if (auth0Get.status !== ResponseStatus.Success) {
-    if (auth0Get.status === ResponseStatus.NotFound) {
-      response.status(404).json(toMessage(auth0Get.message));
-    } else {
-      response.status(500).json(toMessage(auth0Get.message));
-    }
-    return;
+    throw clientResponseToHttpError(auth0Get);
   }
 
   const validationResult = await auth0Client.validateUserCredentials(
@@ -49,14 +44,7 @@ export async function validatePassword(
     password
   );
   if (validationResult.status !== ResponseStatus.Success) {
-    if (validationResult.status === ResponseStatus.InvalidCredentials) {
-      response.status(401).json(toMessage(validationResult.message));
-    } else if (validationResult.status === ResponseStatus.RateLimited) {
-      response.status(429).json(toMessage(validationResult.message));
-    } else {
-      response.status(500).json(toMessage(validationResult.message));
-    }
-    return;
+    throw clientResponseToHttpError(validationResult);
   }
 
   response.sendStatus(200);
@@ -74,24 +62,14 @@ export async function getUser(
     userId
   );
   if (sierraGet.status !== ResponseStatus.Success) {
-    if (sierraGet.status === ResponseStatus.NotFound) {
-      response.status(404).json(toMessage(sierraGet.message));
-    } else {
-      response.status(500).json(toMessage(sierraGet.message));
-    }
-    return;
+    throw clientResponseToHttpError(sierraGet);
   }
 
   const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(
     userId
   );
   if (auth0Get.status !== ResponseStatus.Success) {
-    if (auth0Get.status === ResponseStatus.NotFound) {
-      response.status(404).json(toMessage(auth0Get.message));
-    } else {
-      response.status(500).json(toMessage(auth0Get.message));
-    }
-    return;
+    throw clientResponseToHttpError(auth0Get);
   }
 
   response.status(200).json(toUser(auth0Get.result, sierraGet.result));
@@ -113,42 +91,40 @@ export async function createUser(
     !isNonBlank(email) ||
     !isNonBlank(password)
   ) {
-    response
-      .status(400)
-      .json(toMessage('All fields must be provided and non-blank'));
-    return;
+    throw new HttpError({
+      status: 400,
+      message: 'A password must be provided and non-blank',
+    });
   }
 
   const sierraGet: APIResponse<PatronRecord> = await sierraClient.getPatronRecordByEmail(
     email
   );
-  if (sierraGet.status !== ResponseStatus.NotFound) {
-    if (sierraGet.status === ResponseStatus.Success) {
-      response
-        .status(409)
-        .json(
-          toMessage('Patron record with email [' + email + '] already exists')
-        );
-    } else {
-      response.status(500).json(toMessage(sierraGet.message));
-    }
-    return;
+  if (sierraGet.status === ResponseStatus.Success) {
+    throw new HttpError({
+      status: 409,
+      message: `Patron record with email [${email}] already exists`,
+    });
+  } else if (sierraGet.status !== ResponseStatus.NotFound) {
+    console.error('Unexpected error from Sierra client', sierraGet.message);
+    throw new HttpError({
+      status: 500,
+    });
   }
 
   const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByEmail(
     email
   );
-  if (auth0Get.status !== ResponseStatus.NotFound) {
-    if (auth0Get.status === ResponseStatus.Success) {
-      response
-        .status(409)
-        .json(
-          toMessage('Auth0 user with email [' + email + '] already exists')
-        );
-    } else {
-      response.status(500).json(toMessage(auth0Get.message));
-    }
-    return;
+  if (auth0Get.status === ResponseStatus.Success) {
+    throw new HttpError({
+      status: 409,
+      message: `Auth0 user with email [${email}] already exists`,
+    });
+  } else if (auth0Get.status !== ResponseStatus.NotFound) {
+    console.error('Unexpected error from Auth0 client', auth0Get.message);
+    throw new HttpError({
+      status: 500,
+    });
   }
 
   const sierraCreate: APIResponse<number> = await sierraClient.createPatronRecord(
@@ -157,14 +133,7 @@ export async function createUser(
     truncate(password, 30)
   );
   if (sierraCreate.status !== ResponseStatus.Success) {
-    if (sierraCreate.status === ResponseStatus.MalformedRequest) {
-      response.status(400).json(toMessage(sierraCreate.message));
-    } else if (sierraCreate.status === ResponseStatus.PasswordTooWeak) {
-      response.status(422).json(toMessage(sierraCreate.message));
-    } else {
-      response.status(500).json(toMessage(sierraCreate.message));
-    }
-    return;
+    throw clientResponseToHttpError(sierraCreate);
   }
 
   const auth0Create: APIResponse<Auth0Profile> = await auth0Client.createUser(
@@ -176,16 +145,7 @@ export async function createUser(
   );
   if (auth0Create.status !== ResponseStatus.Success) {
     await sierraClient.deletePatronRecord(sierraCreate.result);
-    if (auth0Create.status === ResponseStatus.MalformedRequest) {
-      response.status(400).json(toMessage(auth0Create.message));
-    } else if (auth0Create.status === ResponseStatus.UserAlreadyExists) {
-      response.status(409).json(toMessage(auth0Create.message));
-    } else if (auth0Create.status === ResponseStatus.PasswordTooWeak) {
-      response.status(422).json(toMessage(auth0Create.message));
-    } else {
-      response.status(500).json(toMessage(auth0Create.message));
-    }
-    return;
+    throw clientResponseToHttpError(auth0Create);
   }
 
   const sierraUpdate: APIResponse<PatronRecord> = await sierraClient.updatePatronPostCreationFields(
@@ -193,12 +153,7 @@ export async function createUser(
     email
   );
   if (sierraUpdate.status !== ResponseStatus.Success) {
-    if (sierraUpdate.status === ResponseStatus.MalformedRequest) {
-      response.status(400).json(toMessage(sierraUpdate.message));
-    } else {
-      response.status(500).json(toMessage(sierraUpdate.message));
-    }
-    return;
+    throw clientResponseToHttpError(sierraUpdate);
   }
 
   response.status(201).json(toUser(auth0Create.result, sierraUpdate.result));
@@ -216,12 +171,7 @@ export async function updateUser(
     userId
   );
   if (auth0UserIdGet.status !== ResponseStatus.Success) {
-    if (auth0UserIdGet.status === ResponseStatus.NotFound) {
-      response.status(404).json(toMessage(auth0UserIdGet.message));
-    } else {
-      response.status(500).json(toMessage(auth0UserIdGet.message));
-    }
-    return;
+    throw clientResponseToHttpError(auth0UserIdGet);
   }
   const auth0Profile: Auth0Profile = auth0UserIdGet.result;
 
@@ -264,63 +214,53 @@ export async function updateUser(
       modifiedFields.includes('lastName')) &&
     !userIsAdmin(request)
   ) {
-    response
-      .status(403)
-      .json(
-        toMessage(
-          'Attempt to modify immutable fields [' +
-            modifiedFields.join(',') +
-            ']'
-        )
-      );
-    return;
+    throw new HttpError({
+      status: 403,
+      message: `Attempt to modify immutable fields [${modifiedFields.join(
+        ','
+      )}]`,
+    });
   }
 
   if (modifiedFields.includes('email')) {
     const auth0EmailGet: APIResponse<Auth0Profile> = await auth0Client.getUserByEmail(
       fields.email.value
     );
-    if (auth0EmailGet.status !== ResponseStatus.NotFound) {
-      if (
-        auth0EmailGet.status === ResponseStatus.Success &&
-        auth0EmailGet.result.userId !== userId.toString()
-      ) {
-        response
-          .status(409)
-          .json(
-            toMessage(
-              'Auth0 user with email [' +
-                fields.email.value +
-                '] already exists'
-            )
-          );
-      } else if (auth0EmailGet.status === ResponseStatus.UnknownError) {
-        response.status(500).json(toMessage(auth0EmailGet.message));
+    if (auth0EmailGet.status === ResponseStatus.Success) {
+      if (auth0EmailGet.result.userId !== userId.toString()) {
+        throw new HttpError({
+          status: 409,
+          message: `Auth0 user with email [${fields.email.value}] already exists`,
+        });
       }
-      return;
+    } else if (auth0EmailGet.status !== ResponseStatus.NotFound) {
+      console.error(
+        'Unexpected error from Auth0 client',
+        auth0EmailGet.message
+      );
+      throw new HttpError({
+        status: 500,
+      });
     }
 
     const sierraEmailGet: APIResponse<PatronRecord> = await sierraClient.getPatronRecordByEmail(
       fields.email.value
     );
-    if (sierraEmailGet.status !== ResponseStatus.NotFound) {
-      if (
-        sierraEmailGet.status === ResponseStatus.Success &&
-        sierraEmailGet.result.recordNumber !== userId
-      ) {
-        response
-          .status(409)
-          .json(
-            toMessage(
-              'Patron record with email [' +
-                fields.email.value +
-                '] already exists'
-            )
-          );
-      } else if (sierraEmailGet.status === ResponseStatus.UnknownError) {
-        response.status(500).json(toMessage(sierraEmailGet.message));
+    if (sierraEmailGet.status === ResponseStatus.Success) {
+      if (sierraEmailGet.result.recordNumber === userId) {
+        throw new HttpError({
+          status: 409,
+          message: `Patron record with email [${fields.email.value}] already exists`,
+        });
       }
-      return;
+    } else if (sierraEmailGet.status !== ResponseStatus.NotFound) {
+      console.error(
+        'Unexpected error from Sierra client',
+        sierraEmailGet.message
+      );
+      throw new HttpError({
+        status: 500,
+      });
     }
   }
 
@@ -331,16 +271,7 @@ export async function updateUser(
     fields.lastName.value
   );
   if (auth0Update.status !== ResponseStatus.Success) {
-    if (auth0Update.status === ResponseStatus.NotFound) {
-      response.status(404).json(toMessage(auth0Update.message));
-    } else if (auth0Update.status === ResponseStatus.UserAlreadyExists) {
-      response.status(409).json(toMessage(auth0Update.message));
-    } else if (auth0Update.status === ResponseStatus.MalformedRequest) {
-      response.status(400).json(toMessage(auth0Update.message));
-    } else {
-      response.status(500).json(toMessage(auth0Update.message));
-    }
-    return;
+    throw clientResponseToHttpError(auth0Update);
   }
 
   const sierraUpdate: APIResponse<PatronRecord> = await sierraClient.updatePatronRecord(
@@ -348,14 +279,7 @@ export async function updateUser(
     fields.email.value
   );
   if (sierraUpdate.status !== ResponseStatus.Success) {
-    if (sierraUpdate.status === ResponseStatus.NotFound) {
-      response.status(404).json(toMessage(sierraUpdate.message));
-    } else if (sierraUpdate.status === ResponseStatus.MalformedRequest) {
-      response.status(400).json(toMessage(sierraUpdate.message));
-    } else {
-      response.status(500).json(toMessage(sierraUpdate.message));
-    }
-    return;
+    throw clientResponseToHttpError(sierraUpdate);
   }
 
   response.status(200).json(toUser(auth0Update.result, sierraUpdate.result));
@@ -371,10 +295,10 @@ export async function changePassword(
 
   const password: string = request.body.password;
   if (!isNonBlank(password)) {
-    response
-      .status(400)
-      .json(toMessage('All fields must be provided and non-blank'));
-    return;
+    throw new HttpError({
+      status: 400,
+      message: 'All fields must be provided and non-blank',
+    });
   }
 
   const auth0Update: APIResponse<Auth0Profile> = await auth0Client.updatePassword(
@@ -382,16 +306,7 @@ export async function changePassword(
     password
   );
   if (auth0Update.status !== ResponseStatus.Success) {
-    if (auth0Update.status === ResponseStatus.NotFound) {
-      response.status(404).json(toMessage(auth0Update.message));
-    } else if (auth0Update.status === ResponseStatus.PasswordTooWeak) {
-      response.status(422).json(toMessage(auth0Update.message));
-    } else if (auth0Update.status === ResponseStatus.MalformedRequest) {
-      response.status(400).json(toMessage(auth0Update.message));
-    } else {
-      response.status(500).json(toMessage(auth0Update.message));
-    }
-    return;
+    throw clientResponseToHttpError(auth0Update);
   }
 
   const sierraUpdate: APIResponse<PatronRecord> = await sierraClient.updatePassword(
@@ -399,16 +314,7 @@ export async function changePassword(
     truncate(password, 30)
   );
   if (sierraUpdate.status !== ResponseStatus.Success) {
-    if (sierraUpdate.status === ResponseStatus.NotFound) {
-      response.status(404).json(toMessage(sierraUpdate.message));
-    } else if (sierraUpdate.status === ResponseStatus.MalformedRequest) {
-      response.status(400).json(toMessage(sierraUpdate.message));
-    } else if (sierraUpdate.status === ResponseStatus.PasswordTooWeak) {
-      response.status(422).json(toMessage(sierraUpdate.message));
-    } else {
-      response.status(500).json(toMessage(sierraUpdate.message));
-    }
-    return;
+    throw clientResponseToHttpError(sierraUpdate);
   }
 
   response.sendStatus(200);
@@ -425,62 +331,53 @@ export async function searchUsers(
   const sortDir: number = Number(request.query.sortDir);
 
   if (isNaN(page) || isNaN(pageSize) || !isNonBlank(sort) || isNaN(sortDir)) {
-    response
-      .status(400)
-      .json(
-        toMessage(
-          'All fields [page, pageSize, sort, sortDir] must be provided and non-blank'
-        )
-      );
-    return;
+    throw new HttpError({
+      status: 400,
+      message:
+        'All fields [page, pageSize, sort, sortDir] must be provided and non-blank',
+    });
   }
 
   if (!Auth0SearchSortFields.get(sort)) {
-    response
-      .status(400)
-      .json(
-        toMessage(
-          'Invalid sort field, one of [' +
-            Array.from(Auth0SearchSortFields.keys()) +
-            '] must be provided'
-        )
-      );
-    return;
+    throw new HttpError({
+      status: 400,
+      message:
+        'Invalid sort field, one of [' +
+        Array.from(Auth0SearchSortFields.keys()) +
+        '] must be provided',
+    });
   }
 
   if (sortDir !== 1 && sortDir !== -1) {
-    response
-      .status(400)
-      .json(
-        toMessage(
-          "'sortDir' must be '1' or '-1' to sort ascending and descending respectively"
-        )
-      );
-    return;
+    throw new HttpError({
+      status: 400,
+      message:
+        "'sortDir' must be '1' or '-1' to sort ascending and descending respectively",
+    });
   }
 
   const name: string | undefined = request.query.name as string | undefined;
   if (name && !isNonBlank(name)) {
-    response
-      .status(400)
-      .json(toMessage("'name' was provided but was blank or empty"));
-    return;
+    throw new HttpError({
+      status: 400,
+      message: "'name' was provided but was blank or empty",
+    });
   }
 
   const email: string | undefined = request.query.email as string | undefined;
   if (email && !isNonBlank(email)) {
-    response
-      .status(400)
-      .json(toMessage("'email' was provided but was blank or empty"));
-    return;
+    throw new HttpError({
+      status: 400,
+      message: "'email' was provided but was blank or empty",
+    });
   }
 
   const status: string | undefined = request.query.status as string | undefined;
   if (status && !SearchStatuses.includes(status)) {
-    response
-      .status(400)
-      .json(toMessage("'status' must be one of [" + SearchStatuses + ']'));
-    return;
+    throw new HttpError({
+      status: 400,
+      message: "'status' must be one of [" + SearchStatuses + ']',
+    });
   }
 
   const userSearch: APIResponse<Auth0SearchResults> = await auth0Client.searchUsers(
@@ -493,14 +390,7 @@ export async function searchUsers(
     status
   );
   if (userSearch.status !== ResponseStatus.Success) {
-    if (userSearch.status === ResponseStatus.MalformedRequest) {
-      response.status(400).json(toMessage(userSearch.message));
-    } else if (userSearch.status === ResponseStatus.QueryTimeout) {
-      response.status(503).json(toMessage(userSearch.message));
-    } else {
-      response.status(500).json(toMessage(userSearch.message));
-    }
-    return;
+    throw clientResponseToHttpError(userSearch);
   }
 
   response.status(200).json(toSearchResults(userSearch.result));
@@ -517,12 +407,7 @@ export async function sendVerificationEmail(
     userId
   );
   if (userGet.status !== ResponseStatus.Success) {
-    if (userGet.status === ResponseStatus.NotFound) {
-      response.status(404).json(toMessage(userGet.message));
-    } else {
-      response.status(500).json(toMessage(userGet.message));
-    }
-    return;
+    throw clientResponseToHttpError(userGet);
   }
 
   if (userGet.result.emailValidated) {
@@ -534,12 +419,7 @@ export async function sendVerificationEmail(
     userId
   );
   if (sendVerification.status !== ResponseStatus.Success) {
-    if (sendVerification.status === ResponseStatus.MalformedRequest) {
-      response.status(400).json(toMessage(sendVerification.message));
-    } else {
-      response.status(500).json(toMessage(sendVerification.message));
-    }
-    return;
+    throw clientResponseToHttpError(sendVerification);
   }
 
   response.sendStatus(200);
@@ -556,24 +436,14 @@ export async function sendPasswordResetEmail(
     userId
   );
   if (userGet.status !== ResponseStatus.Success) {
-    if (userGet.status === ResponseStatus.NotFound) {
-      response.status(404).json(toMessage(userGet.message));
-    } else {
-      response.status(500).json(toMessage(userGet.message));
-    }
-    return;
+    throw clientResponseToHttpError(userGet);
   }
 
   const sendPasswordReset: APIResponse<{}> = await auth0Client.sendPasswordResetEmail(
     userGet.result.email
   );
   if (sendPasswordReset.status !== ResponseStatus.Success) {
-    if (sendPasswordReset.status === ResponseStatus.MalformedRequest) {
-      response.status(400).json(toMessage(sendPasswordReset.message));
-    } else {
-      response.status(500).json(toMessage(sendPasswordReset.message));
-    }
-    return;
+    throw clientResponseToHttpError(sendPasswordReset);
   }
 
   response.sendStatus(200);
@@ -591,12 +461,7 @@ export async function requestDelete(
     userId
   );
   if (auth0Get.status !== ResponseStatus.Success) {
-    if (auth0Get.status === ResponseStatus.NotFound) {
-      response.status(404).json(toMessage(auth0Get.message));
-    } else {
-      response.status(500).json(toMessage(auth0Get.message));
-    }
-    return;
+    throw clientResponseToHttpError(auth0Get);
   }
 
   if (auth0Get.result?.metadata?.deleteRequested) {
@@ -616,8 +481,7 @@ export async function requestDelete(
     auth0Get.result
   );
   if (emailDeleteAdmin.status !== ResponseStatus.Success) {
-    response.status(500).json(toMessage(emailDeleteAdmin.message));
-    return;
+    throw clientResponseToHttpError(emailDeleteAdmin);
   }
 
   const auth0Update: APIResponse<{}> = await auth0Client.setAppMetadata(
@@ -663,12 +527,7 @@ export async function removeDelete(
     userId
   );
   if (auth0Get.status !== ResponseStatus.Success) {
-    if (auth0Get.status === ResponseStatus.NotFound) {
-      response.status(404).json(toMessage(auth0Get.message));
-    } else {
-      response.status(500).json(toMessage(auth0Get.message));
-    }
-    return;
+    throw clientResponseToHttpError(auth0Get);
   }
 
   if (!auth0Get.result?.metadata?.deleteRequested) {
@@ -688,28 +547,14 @@ export async function removeDelete(
     metadata
   );
   if (auth0Update.status !== ResponseStatus.Success) {
-    if (auth0Update.status === ResponseStatus.MalformedRequest) {
-      response.status(400).json(toMessage(auth0Update.message));
-    } else if (auth0Update.status === ResponseStatus.NotFound) {
-      response.status(404).json(toMessage(auth0Update.message));
-    } else {
-      response.status(500).json(toMessage(auth0Update.message));
-    }
-    return;
+    throw clientResponseToHttpError(auth0Update);
   }
 
   const auth0Unblock: APIResponse<{}> = await auth0Client.unblockAccount(
     userId
   );
   if (auth0Unblock.status !== ResponseStatus.Success) {
-    if (auth0Unblock.status === ResponseStatus.MalformedRequest) {
-      response.status(400).json(toMessage(auth0Unblock.message));
-    } else if (auth0Unblock.status === ResponseStatus.NotFound) {
-      response.status(404).json(toMessage(auth0Unblock.message));
-    } else {
-      response.status(500).json(toMessage(auth0Unblock.message));
-    }
-    return;
+    throw clientResponseToHttpError(auth0Unblock);
   }
 
   const emailDeleteRemovalUser: APIResponse<{}> = await emailClient.sendDeleteRemovalUser(
@@ -733,14 +578,7 @@ export async function lockUser(
 
   const blockUser: APIResponse<{}> = await auth0Client.blockAccount(userId);
   if (blockUser.status !== ResponseStatus.Success) {
-    if (blockUser.status === ResponseStatus.MalformedRequest) {
-      response.status(400).json(toMessage(blockUser.message));
-    } else if (blockUser.status === ResponseStatus.NotFound) {
-      response.status(404).json(toMessage(blockUser.message));
-    } else {
-      response.status(500).json(toMessage(blockUser.message));
-    }
-    return;
+    throw clientResponseToHttpError(blockUser);
   }
 
   response.sendStatus(200);
@@ -757,12 +595,7 @@ export async function removeUserLock(
     userId
   );
   if (auth0Get.status !== ResponseStatus.Success) {
-    if (auth0Get.status === ResponseStatus.NotFound) {
-      response.status(404).json(toMessage(auth0Get.message));
-    } else {
-      response.status(500).json(toMessage(auth0Get.message));
-    }
-    return;
+    throw clientResponseToHttpError(auth0Get);
   }
 
   if (!auth0Get.result.locked) {
@@ -772,14 +605,7 @@ export async function removeUserLock(
 
   const unblockUser: APIResponse<{}> = await auth0Client.unblockAccount(userId);
   if (unblockUser.status !== ResponseStatus.Success) {
-    if (unblockUser.status === ResponseStatus.MalformedRequest) {
-      response.status(400).json(toMessage(unblockUser.message));
-    } else if (unblockUser.status === ResponseStatus.NotFound) {
-      response.status(404).json(toMessage(unblockUser.message));
-    } else {
-      response.status(500).json(toMessage(unblockUser.message));
-    }
-    return;
+    throw clientResponseToHttpError(unblockUser);
   }
 
   response.sendStatus(204);
@@ -791,28 +617,18 @@ export async function deleteUser(
   request: Request,
   response: Response
 ): Promise<void> {
-  const userId: number = getTargetUserId(request);
+  const userId = getTargetUserId(request);
 
   const auth0Delete: APIResponse<{}> = await auth0Client.deleteUser(userId);
   if (auth0Delete.status !== ResponseStatus.Success) {
-    if (auth0Delete.status === ResponseStatus.NotFound) {
-      response.status(404).json(toMessage(auth0Delete.message));
-    } else {
-      response.status(500).json(toMessage(auth0Delete.message));
-    }
-    return;
+    throw clientResponseToHttpError(auth0Delete);
   }
 
   const patronDelete: APIResponse<{}> = await sierraClient.deletePatronRecord(
     userId
   );
   if (patronDelete.status !== ResponseStatus.Success) {
-    if (patronDelete.status === ResponseStatus.NotFound) {
-      response.status(404).json(toMessage(patronDelete.message));
-    } else {
-      response.status(500).json(toMessage(patronDelete.message));
-    }
-    return;
+    throw clientResponseToHttpError(patronDelete);
   }
 
   response.sendStatus(204);
@@ -820,9 +636,10 @@ export async function deleteUser(
 
 function extractSourceIp(request: Request): string {
   if (!request.apiGateway) {
-    throw new Error(
-      "API Gateway event and context data doesn't exist on request"
-    );
+    throw new HttpError({
+      status: 404,
+      message: "API Gateway event and context data doesn't exist on request",
+    });
   }
   return request.apiGateway?.event.requestContext.identity.sourceIp;
 }
@@ -830,16 +647,20 @@ function extractSourceIp(request: Request): string {
 function getTargetUserId(request: Request): number {
   if (request.params.user_id === 'me') {
     if (userIsAdmin(request)) {
-      throw new Error('Administrator users cannot operate on themselves');
+      throw new HttpError({
+        status: 403,
+        message: 'Administrator users cannot operate on themselves',
+      });
     }
 
     const callerId: number = Number(
       request.apiGateway?.event.requestContext.authorizer?.callerId
     );
     if (isNaN(callerId)) {
-      throw new Error(
-        `Caller attempted to operate on themself, but has an invalid user ID: [${callerId}]`
-      );
+      throw new HttpError({
+        status: 401,
+        message: `Caller attempted to operate on themselves, but request was not authorised`,
+      });
     }
 
     return callerId;
@@ -847,7 +668,10 @@ function getTargetUserId(request: Request): number {
 
   const targetUserId: number = Number(request.params.user_id);
   if (isNaN(targetUserId)) {
-    throw new Error(`Invalid user ID [${targetUserId}]`);
+    throw new HttpError({
+      status: 400,
+      message: `Invalid user ID [${targetUserId}]`,
+    });
   }
 
   return targetUserId;
