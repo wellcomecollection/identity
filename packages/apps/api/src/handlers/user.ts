@@ -11,7 +11,7 @@ import {
   ResponseStatus,
   truncate,
 } from '@weco/identity-common';
-import SierraClient, { PatronRecord } from '@weco/sierra-client';
+import { SierraClient, PatronRecord } from '@weco/sierra-client';
 import { Request, Response } from 'express';
 import { toMessage } from '../models/common';
 import { toSearchResults, toUser } from '../models/user';
