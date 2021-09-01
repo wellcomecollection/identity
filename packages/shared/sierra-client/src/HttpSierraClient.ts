@@ -13,8 +13,9 @@ import {
   toCreatePatron,
   toPatronRecord,
 } from './patron';
+import SierraClient from './SierraClient';
 
-export default class SierraClient {
+export default class HttpSierraClient implements SierraClient {
   private readonly apiRoot: string;
   private readonly clientKey: string;
   private readonly clientSecret: string;

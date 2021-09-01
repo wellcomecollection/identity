@@ -1,20 +1,19 @@
-import {
-  errorResponse,
-  ResponseStatus,
-  successResponse,
-} from '@weco/identity-common';
+import { errorResponse, ResponseStatus } from '@weco/identity-common';
+import { MockSierraClient } from '@weco/sierra-client';
 import { User } from 'auth0';
 import login from '../src/login';
 import { patronRecordToUser } from '../src/patronRecordToUser';
 
-const mockGetPatronRecordByEmail = jest.fn();
-const mockValidateCredentials = jest.fn();
-jest.mock('@weco/sierra-client', () =>
-  jest.fn().mockImplementation(() => ({
-    getPatronRecordByEmail: mockGetPatronRecordByEmail,
-    validateCredentials: mockValidateCredentials,
-  }))
-);
+let mockSierraClient = new MockSierraClient();
+jest.mock('@weco/sierra-client', () => {
+  const actualModule = jest.requireActual('@weco/sierra-client');
+  return {
+    ...actualModule,
+    HttpSierraClient: function () {
+      return mockSierraClient;
+    },
+  };
+});
 
 const testPatronRecord = {
   recordNumber: 1234567,
@@ -24,12 +23,14 @@ const testPatronRecord = {
   email: 'test@test.test',
 };
 
-describe('login script', () => {
-  it('throws a credentials error if the user does not exist in Sierra', (done) => {
-    mockGetPatronRecordByEmail.mockResolvedValueOnce(
-      errorResponse('not found', ResponseStatus.NotFound)
-    );
+const testPatronPassword = 'super-secret';
 
+describe('login script', () => {
+  afterEach(() => {
+    mockSierraClient.reset();
+  });
+
+  it('throws a credentials error if the user does not exist in Sierra', (done) => {
     const callback = (error?: NodeJS.ErrnoException | null, data?: User) => {
       expect(data).toBe(undefined);
       expect(error).toBeInstanceOf(WrongUsernameOrPasswordError);
@@ -39,7 +40,7 @@ describe('login script', () => {
   });
 
   it('throws an error if Sierra returns an error', (done) => {
-    mockGetPatronRecordByEmail.mockResolvedValueOnce(
+    mockSierraClient.getPatronRecordByEmail.mockResolvedValueOnce(
       errorResponse('bad computer', ResponseStatus.UnknownError)
     );
 
@@ -49,63 +50,52 @@ describe('login script', () => {
       expect(error).toBeInstanceOf(Error);
       done();
     };
-    login('', '', callback);
+    login(testPatronRecord.email, testPatronPassword, callback);
   });
 
   it('throws a credentials error if Sierra credentials validation fails', (done) => {
-    mockGetPatronRecordByEmail.mockResolvedValueOnce(
-      successResponse(testPatronRecord)
-    );
-    mockValidateCredentials.mockResolvedValueOnce(
-      errorResponse('invalid credentials', ResponseStatus.InvalidCredentials)
-    );
+    mockSierraClient.addPatron(testPatronRecord, testPatronPassword);
 
     const callback = (error?: NodeJS.ErrnoException | null, data?: User) => {
       expect(data).toBe(undefined);
       expect(error).toBeInstanceOf(WrongUsernameOrPasswordError);
       done();
     };
-    login('', '', callback);
+    login(testPatronRecord.email, 'wrong-password', callback);
   });
 
   it('returns a user object populated by the patron record if validation succeeds', (done) => {
-    mockGetPatronRecordByEmail.mockResolvedValueOnce(
-      successResponse(testPatronRecord)
-    );
-    mockValidateCredentials.mockResolvedValueOnce(successResponse({}));
+    mockSierraClient.addPatron(testPatronRecord, testPatronPassword);
 
     const callback = (error?: NodeJS.ErrnoException | null, data?: User) => {
       expect(error).toBe(null);
       expect(data).toEqual(patronRecordToUser(testPatronRecord));
       done();
     };
-    login('', '', callback);
+    login(testPatronRecord.email, testPatronPassword, callback);
   });
 
   describe('calls the Sierra client correctly', () => {
-    const loginEmail = 'test@test.test';
-    const loginPassword = 'testpassword';
-
     it('by searching for the given email', (done) => {
       const callback = (error?: NodeJS.ErrnoException | null, data?: User) => {
-        expect(mockGetPatronRecordByEmail).toHaveBeenCalledWith(loginEmail);
+        expect(
+          mockSierraClient.getPatronRecordByEmail
+        ).toHaveBeenLastCalledWith(testPatronRecord.email);
         done();
       };
-      login(loginEmail, loginPassword, callback);
+      login(testPatronRecord.email, testPatronPassword, callback);
     });
 
     it('by validating the given password with the resolved patron barcode', (done) => {
-      mockGetPatronRecordByEmail.mockResolvedValueOnce(
-        successResponse(testPatronRecord)
-      );
+      mockSierraClient.addPatron(testPatronRecord, testPatronPassword);
       const callback = (error?: NodeJS.ErrnoException | null, data?: User) => {
-        expect(mockValidateCredentials).toHaveBeenCalledWith(
+        expect(mockSierraClient.validateCredentials).toHaveBeenCalledWith(
           testPatronRecord.barcode.toString(),
-          loginPassword
+          testPatronPassword
         );
         done();
       };
-      login(loginEmail, loginPassword, callback);
+      login(testPatronRecord.email, testPatronPassword, callback);
     });
   });
 });

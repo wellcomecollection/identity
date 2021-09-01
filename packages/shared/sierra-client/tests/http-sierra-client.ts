@@ -1,10 +1,10 @@
 import axios, { AxiosInstance } from 'axios';
 import moxios from 'moxios';
 import { ResponseStatus, SuccessResponse } from '@weco/identity-common';
-import SierraClient, { PatronRecord } from '../src';
+import { PatronRecord, HttpSierraClient } from '../src';
 
-describe('sierra client', () => {
-  let client: SierraClient;
+describe('HTTP sierra client', () => {
+  let client: HttpSierraClient;
 
   beforeEach(() => {
     moxios.install(axios as AxiosInstance);
@@ -15,7 +15,7 @@ describe('sierra client', () => {
       },
     });
 
-    client = new SierraClient(apiRoot, clientKey, clientSecret);
+    client = new HttpSierraClient(apiRoot, clientKey, clientSecret);
   });
 
   afterEach(() => {

@@ -1,5 +1,6 @@
-import SierraClient from './client';
+import SierraClient from './SierraClient';
+import HttpSierraClient from './HttpSierraClient';
+import MockSierraClient from './MockSierraClient';
 
 export { PatronRecord } from './patron';
-
-export default SierraClient;
+export { HttpSierraClient, MockSierraClient, SierraClient };
