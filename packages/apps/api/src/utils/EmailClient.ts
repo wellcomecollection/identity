@@ -19,7 +19,13 @@ export interface SmtpConfiguration {
   };
 }
 
-export default class EmailClient {
+export interface EmailClient {
+  sendDeleteRequestAdmin(auth0Profile: Auth0Profile): Promise<APIResponse<{}>>;
+  sendDeleteRequestUser(auth0Profile: Auth0Profile): Promise<APIResponse<{}>>;
+  sendDeleteRemovalUser(auth0Profile: Auth0Profile): Promise<APIResponse<{}>>;
+}
+
+export default class HttpEmailClient implements EmailClient {
   private readonly engine: Liquid = new Liquid({
     root: path.resolve(__dirname, 'templates/'),
     extname: '.liquid',

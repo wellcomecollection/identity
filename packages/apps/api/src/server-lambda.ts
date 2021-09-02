@@ -4,7 +4,7 @@ import { Server } from 'http';
 import { HttpSierraClient, SierraClient } from '@weco/sierra-client';
 import { HttpAuth0Client, Auth0Client } from '@weco/auth0-client';
 import { createApplication } from './app';
-import EmailClient from './utils/email';
+import HttpEmailClient, { EmailClient } from './utils/EmailClient';
 
 const sierraClient: SierraClient = new HttpSierraClient(
   process.env.SIERRA_API_ROOT!,
@@ -19,7 +19,7 @@ const auth0Client: Auth0Client = new HttpAuth0Client(
   process.env.AUTH0_CLIENT_SECRET!
 );
 
-const emailClient: EmailClient = new EmailClient(
+const emailClient: EmailClient = new HttpEmailClient(
   {
     host: process.env.EMAIL_SMTP_HOSTNAME!,
     port: Number(process.env.EMAIL_SMTP_PORT!),

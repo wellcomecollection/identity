@@ -15,7 +15,7 @@ import { SierraClient, PatronRecord } from '@weco/sierra-client';
 import { Request, Response } from 'express';
 import { toMessage } from '../models/common';
 import { toSearchResults, toUser } from '../models/user';
-import EmailClient from '../utils/email';
+import { EmailClient } from '../utils/EmailClient';
 
 export async function validatePassword(
   auth0Client: Auth0Client,
