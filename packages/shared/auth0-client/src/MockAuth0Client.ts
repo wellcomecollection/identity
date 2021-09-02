@@ -50,64 +50,72 @@ export default class MockAuth0Client implements Auth0Client {
       password
     );
 
-  getAccessToken = (userId: string) => {
-    if (this.users.has(userId)) {
+  getAccessToken = (userId: number) => {
+    if (this.users.has(userId.toString())) {
       const token = Math.floor(Math.random() * 10e10).toString();
-      this.accessTokens.set(token, userId);
+      this.accessTokens.set(token, userId.toString());
       return token;
     }
     throw new Error("User doesn't exist!");
   };
 
-  blockAccount = jest.fn(async (userId) => {
-    const maybeUser = this.users.get(userId);
+  blockAccount = jest.fn(async (userId: number) => {
+    const maybeUser = this.users.get(userId.toString());
     if (maybeUser) {
-      this.users.set(userId, { ...maybeUser, locked: true });
+      this.users.set(userId.toString(), { ...maybeUser, locked: true });
       return successResponse({});
     }
     return errorResponse('Not found', ResponseStatus.NotFound);
   });
 
-  unblockAccount = jest.fn(async (userId) => {
-    const maybeUser = this.users.get(userId);
+  unblockAccount = jest.fn(async (userId: number) => {
+    const maybeUser = this.users.get(userId.toString());
     if (maybeUser) {
-      this.users.set(userId, { ...maybeUser, locked: false });
+      this.users.set(userId.toString(), { ...maybeUser, locked: false });
       return successResponse({});
     }
     return errorResponse('Not found', ResponseStatus.NotFound);
   });
 
-  createUser = jest.fn(async (userId, firstName, lastName, email, password) => {
-    for (const user of this.users.values()) {
-      if (user.email === email) {
-        return errorResponse(
-          'Already exists',
-          ResponseStatus.UserAlreadyExists
-        );
+  createUser = jest.fn(
+    async (
+      userId: number,
+      firstName: string,
+      lastName: string,
+      email: string,
+      password: string
+    ) => {
+      for (const user of this.users.values()) {
+        if (user.email === email) {
+          return errorResponse(
+            'Already exists',
+            ResponseStatus.UserAlreadyExists
+          );
+        }
       }
+      const user: Auth0Profile = {
+        creationDate: new Date().toISOString(),
+        lastLoginDate: null,
+        lastLoginIp: null,
+        locked: false,
+        totalLogins: null,
+        updatedDate: new Date().toISOString(),
+        userId: userId.toString(),
+        name: firstName + ' ' + lastName,
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        emailValidated: false,
+      };
+      this.users.set(userId.toString(), user);
+      this.passwords.set(userId.toString(), password);
+      return successResponse(user);
     }
-    const user: Auth0Profile = {
-      creationDate: new Date().toISOString(),
-      lastLoginDate: null,
-      lastLoginIp: null,
-      locked: false,
-      totalLogins: null,
-      updatedDate: new Date().toISOString(),
-      userId: 'p' + userId,
-      name: firstName + ' ' + lastName,
-      firstName: firstName,
-      lastName: lastName,
-      email: email,
-      emailValidated: false,
-    };
-    this.users.set(userId, user);
-    this.passwords.set(userId, password);
-    return successResponse(user);
-  });
+  );
 
-  deleteUser = jest.fn(async (userId) => {
-    if (this.users.has(userId)) {
-      this.users.delete(userId);
+  deleteUser = jest.fn(async (userId: number) => {
+    if (this.users.has(userId.toString())) {
+      this.users.delete(userId.toString());
       return successResponse({});
     }
     return errorResponse('Not found', ResponseStatus.NotFound);
@@ -122,8 +130,8 @@ export default class MockAuth0Client implements Auth0Client {
     return errorResponse('Not found', ResponseStatus.NotFound);
   });
 
-  getUserByUserId = jest.fn(async (userId) => {
-    const maybeUser = this.users.get(userId);
+  getUserByUserId = jest.fn(async (userId: number) => {
+    const maybeUser = this.users.get(userId.toString());
     if (maybeUser) {
       return successResponse(maybeUser);
     }
@@ -198,53 +206,62 @@ export default class MockAuth0Client implements Auth0Client {
 
   sendVerificationEmail = jest.fn().mockResolvedValue(successResponse({}));
 
-  setAppMetadata = jest.fn(async (userId, metadata) => {
-    const maybeUser = this.users.get(userId);
-    if (maybeUser) {
-      const updatedUser: Auth0Profile = {
-        ...maybeUser,
-        metadata,
-      };
-      this.users.set(userId, updatedUser);
-      return successResponse(updatedUser);
+  setAppMetadata = jest.fn(
+    async (userId: number, metadata: Record<string, string>) => {
+      const maybeUser = this.users.get(userId.toString());
+      if (maybeUser) {
+        const updatedUser: Auth0Profile = {
+          ...maybeUser,
+          metadata,
+        };
+        this.users.set(userId.toString(), updatedUser);
+        return successResponse(updatedUser);
+      }
+      return errorResponse('Not found', ResponseStatus.NotFound);
     }
-    return errorResponse('Not found', ResponseStatus.NotFound);
-  });
+  );
 
-  updatePassword = jest.fn(async (userId, password) => {
-    const maybeUser = this.users.get(userId);
+  updatePassword = jest.fn(async (userId: number, password: string) => {
+    const maybeUser = this.users.get(userId.toString());
     if (maybeUser) {
-      this.passwords.set(userId, password);
+      this.passwords.set(userId.toString(), password);
       return successResponse(maybeUser);
     }
     return errorResponse('Not found', ResponseStatus.NotFound);
   });
 
-  updateUser = jest.fn(async (userId, email, firstName, lastName) => {
-    const maybeUser = this.users.get(userId);
-    if (maybeUser) {
-      for (const user of this.users.values()) {
-        if (user.email === 'email') {
-          return errorResponse(
-            'Already exists',
-            ResponseStatus.UserAlreadyExists
-          );
+  updateUser = jest.fn(
+    async (
+      userId: number,
+      email: string,
+      firstName: string,
+      lastName: string
+    ) => {
+      const maybeUser = this.users.get(userId.toString());
+      if (maybeUser) {
+        for (const user of this.users.values()) {
+          if (user.email === 'email') {
+            return errorResponse(
+              'Already exists',
+              ResponseStatus.UserAlreadyExists
+            );
+          }
         }
+        const updatedUser: Auth0Profile = {
+          ...maybeUser,
+          name: firstName + ' ' + lastName,
+          firstName,
+          lastName,
+          email,
+        };
+        this.users.set(userId.toString(), updatedUser);
+        return successResponse(updatedUser);
       }
-      const updatedUser: Auth0Profile = {
-        ...maybeUser,
-        name: firstName + ' ' + lastName,
-        firstName,
-        lastName,
-        email,
-      };
-      this.users.set(userId, updatedUser);
-      return successResponse(updatedUser);
+      return errorResponse('Not found', ResponseStatus.NotFound);
     }
-    return errorResponse('Not found', ResponseStatus.NotFound);
-  });
+  );
 
-  validateAccessToken = jest.fn(async (accessToken) => {
+  validateAccessToken = jest.fn(async (accessToken: string) => {
     const maybeUserId = this.accessTokens.get(accessToken);
     if (maybeUserId) {
       const user = this.users.get(maybeUserId)!;
@@ -256,18 +273,20 @@ export default class MockAuth0Client implements Auth0Client {
     return errorResponse('Invalid token', ResponseStatus.InvalidCredentials);
   });
 
-  validateUserCredentials = jest.fn(async (sourceIp, username, password) => {
-    for (const user of this.users.values()) {
-      if (
-        user.email === 'username' &&
-        this.passwords.get(user.userId) === password
-      ) {
-        return successResponse({});
+  validateUserCredentials = jest.fn(
+    async (sourceIp: string, username: string, password: string) => {
+      for (const user of this.users.values()) {
+        if (
+          user.email === 'username' &&
+          this.passwords.get(user.userId) === password
+        ) {
+          return successResponse({});
+        }
       }
+      return errorResponse(
+        'Invalid credentials',
+        ResponseStatus.InvalidCredentials
+      );
     }
-    return errorResponse(
-      'Invalid credentials',
-      ResponseStatus.InvalidCredentials
-    );
-  });
+  );
 }
