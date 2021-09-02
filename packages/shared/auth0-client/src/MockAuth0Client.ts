@@ -13,6 +13,7 @@ export default class MockAuth0Client implements Auth0Client {
   private accessTokens: Map<string, string> = new Map();
 
   contains = (userId: number) => this.users.has(userId.toString());
+  get = (userId: number) => this.users.get(userId.toString());
 
   reset = () => {
     this.users.clear();

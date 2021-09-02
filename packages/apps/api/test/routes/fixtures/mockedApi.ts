@@ -13,6 +13,7 @@ export type ExistingUser = {
   password?: string;
   onlyInSierra?: boolean;
   isAdmin?: boolean;
+  markedForDeletion?: boolean;
 };
 
 // See https://github.com/vendia/serverless-express/issues/182#issuecomment-609505645
@@ -54,6 +55,9 @@ export const mockedApi = (existingUsers: ExistingUser[] = []) => {
         name: user.firstName + ' ' + user.lastName,
         additionalAttributes: {
           is_admin: user.isAdmin,
+          deleteRequested: user.markedForDeletion
+            ? new Date().toISOString()
+            : undefined,
         },
       });
     }
