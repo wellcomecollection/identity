@@ -1,4 +1,4 @@
-import Auth0Client from '@weco/auth0-client';
+import { Auth0Client } from '@weco/auth0-client';
 import {
   Auth0Profile,
   Auth0SearchResults,

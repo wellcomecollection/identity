@@ -19,8 +19,9 @@ import {
   toAuth0SearchResults,
   toAuth0UserInfo,
 } from './auth0';
+import Auth0Client from './Auth0Client';
 
-export default class Auth0Client {
+export default class HttpAuth0Client implements Auth0Client {
   private readonly apiRoot: string;
   private readonly apiAudience: string;
   private readonly clientId: string;

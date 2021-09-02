@@ -6,11 +6,11 @@ import {
 import axios, { AxiosInstance } from 'axios';
 import moxios from 'moxios';
 import { SierraUserIdPrefix } from '../src/auth0';
-import Auth0Client from '../src';
+import { HttpAuth0Client } from '../src';
 import { Auth0Profile, Auth0UserInfo, SierraConnection } from '../src/auth0';
 
-describe('auth0 client', () => {
-  let client: Auth0Client;
+describe('HTTP Auth0 client', () => {
+  let client: HttpAuth0Client;
 
   beforeEach(() => {
     // @ts-ignore
@@ -22,7 +22,7 @@ describe('auth0 client', () => {
       },
     });
 
-    client = new Auth0Client(apiRoot, apiAudience, clientId, clientSecret);
+    client = new HttpAuth0Client(apiRoot, apiAudience, clientId, clientSecret);
   });
 
   afterEach(() => {

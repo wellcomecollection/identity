@@ -2,7 +2,7 @@ import { APIGatewayProxyEvent, Context } from 'aws-lambda';
 import * as awsServerlessExpress from 'aws-serverless-express';
 import { Server } from 'http';
 import { HttpSierraClient, SierraClient } from '@weco/sierra-client';
-import Auth0Client from '@weco/auth0-client';
+import { HttpAuth0Client, Auth0Client } from '@weco/auth0-client';
 import { createApplication } from './app';
 import EmailClient from './utils/email';
 
@@ -12,7 +12,7 @@ const sierraClient: SierraClient = new HttpSierraClient(
   process.env.SIERRA_CLIENT_SECRET!
 );
 
-const auth0Client: Auth0Client = new Auth0Client(
+const auth0Client: Auth0Client = new HttpAuth0Client(
   process.env.AUTH0_API_ROOT!,
   process.env.AUTH0_API_AUDIENCE!,
   process.env.AUTH0_CLIENT_ID!,

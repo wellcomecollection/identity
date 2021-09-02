@@ -1,4 +1,4 @@
-import Auth0Client, { Auth0UserInfo } from '@weco/auth0-client';
+import { Auth0Client, Auth0UserInfo } from '@weco/auth0-client';
 import { WrappedNodeRedisClient } from 'handy-redis';
 import {
   APIGatewayAuthorizerResult,

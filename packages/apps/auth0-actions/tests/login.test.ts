@@ -4,7 +4,7 @@ import { User } from 'auth0';
 import login from '../src/login';
 import { patronRecordToUser } from '../src/patronRecordToUser';
 
-let mockSierraClient = new MockSierraClient();
+const mockSierraClient = new MockSierraClient();
 jest.mock('@weco/sierra-client', () => {
   const actualModule = jest.requireActual('@weco/sierra-client');
   return {

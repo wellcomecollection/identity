@@ -3,13 +3,10 @@ import {
   APIGatewayRequestAuthorizerEvent,
 } from 'aws-lambda';
 import { createLambdaHandler } from '../src/handler';
-import { ResponseStatus } from '@weco/identity-common';
-import Auth0Client, { Auth0UserInfo } from '@weco/auth0-client';
+import { MockAuth0Client } from '@weco/auth0-client';
 import { WrappedNodeRedisClient } from 'handy-redis';
 
-const mockAuth0Client = jest.createMockFromModule<{ default: Auth0Client }>(
-  '@weco/auth0-client'
-).default;
+const mockAuth0Client = new MockAuth0Client();
 const mockRedis = {
   get: jest.fn().mockResolvedValue(null),
   set: jest.fn().mockResolvedValue('OK'),
@@ -20,7 +17,19 @@ const lambdaHandler = createLambdaHandler(
   (mockRedis as unknown) as WrappedNodeRedisClient
 );
 
+const testUserInfo = {
+  userId: 'test',
+  name: 'test name',
+  firstName: 'test',
+  lastName: 'name',
+  email: 'test@example.com',
+};
+
 describe('API Authorizer', () => {
+  afterEach(() => {
+    mockAuth0Client.reset();
+  });
+
   it('rejects requests without an authorization header', async () => {
     const event = createEvent({
       token: undefined,
@@ -60,181 +69,88 @@ describe('API Authorizer', () => {
       method: 'GET',
     });
 
-    await withAuth0Response(
-      { status: ResponseStatus.InvalidCredentials },
-      async () => {
-        try {
-          await lambdaHandler(event);
-        } catch (e) {
-          expect(e).toEqual('Unauthorized');
-        }
-      }
-    );
+    try {
+      await lambdaHandler(event);
+    } catch (e) {
+      expect(e).toEqual('Unauthorized');
+    }
   });
 
   it('denies requests where the access token has insufficient privileges for the requested resource', async () => {
+    mockAuth0Client.addUser(testUserInfo);
+    const token = mockAuth0Client.getAccessToken(testUserInfo.userId);
+
     const event = createEvent({
-      token: 'test token',
+      token: token,
       resource: '/users',
       method: 'GET',
     });
 
-    await withAuth0Response(
-      {
-        status: ResponseStatus.Success,
-        result: {
-          userId: 'test',
-          name: 'test name',
-          firstName: 'test',
-          lastName: 'name',
-          email: 'test@example.com',
-          additionalAttributes: {
-            is_admin: false,
-          },
-        },
-      },
-      async () => {
-        const result = await lambdaHandler(event);
-        expect(result).toHaveProperty(
-          'policyDocument.Statement.0.Effect',
-          'Deny'
-        );
-      }
-    );
+    const result = await lambdaHandler(event);
+    expect(result).toHaveProperty('policyDocument.Statement.0.Effect', 'Deny');
   });
 
   it('allows requests where the access token has sufficient privileges for the requested resource', async () => {
-    const userId = 'test_id';
+    mockAuth0Client.addAdminUser(testUserInfo);
+    const token = mockAuth0Client.getAccessToken(testUserInfo.userId);
     const event = createEvent({
-      token: 'test token',
-      resource: '/users/{userId}/password',
-      method: 'PUT',
-      userId,
+      token,
+      resource: '/users',
+      method: 'GET',
     });
 
-    await withAuth0Response(
-      {
-        status: ResponseStatus.Success,
-        result: {
-          userId,
-          name: 'test name',
-          firstName: 'test',
-          lastName: 'name',
-          email: 'test@example.com',
-        },
-      },
-      async () => {
-        const result = await lambdaHandler(event);
-        expect(result).toHaveProperty(
-          'policyDocument.Statement.0.Effect',
-          'Allow'
-        );
-      }
-    );
+    const result = await lambdaHandler(event);
+    expect(result).toHaveProperty('policyDocument.Statement.0.Effect', 'Allow');
   });
 
   it('denies requests where the user is accessing an invalid resource', async () => {
-    const userId = 'test_id';
+    mockAuth0Client.addUser(testUserInfo);
+    const token = mockAuth0Client.getAccessToken(testUserInfo.userId);
     const event = createEvent({
-      token: 'test token',
+      token,
       resource: '/users/{userId}/ice_cream',
       method: 'GET',
-      userId,
+      userId: testUserInfo.userId,
     });
 
-    await withAuth0Response(
-      {
-        status: ResponseStatus.Success,
-        result: {
-          userId,
-          name: 'test name',
-          firstName: 'test',
-          lastName: 'name',
-          email: 'test@example.com',
-        },
-      },
-      async () => {
-        const result = await lambdaHandler(event);
-        expect(result).toHaveProperty(
-          'policyDocument.Statement.0.Effect',
-          'Deny'
-        );
-      }
-    );
+    const result = await lambdaHandler(event);
+    expect(result).toHaveProperty('policyDocument.Statement.0.Effect', 'Deny');
   });
 
   it('uses cached user info when available', async () => {
-    mockRedis.get.mockResolvedValue(
-      JSON.stringify({
-        userId: 'test',
-        name: 'test name',
-        firstName: 'test',
-        lastName: 'name',
-        email: 'test@example.com',
-        additionalAttributes: {
-          is_admin: true,
-        },
-      })
-    );
-    mockAuth0Client.validateAccessToken = jest.fn();
+    mockRedis.get.mockResolvedValue(JSON.stringify(testUserInfo));
+    mockAuth0Client.addUser(testUserInfo);
+    const token = mockAuth0Client.getAccessToken(testUserInfo.userId);
     const event = createEvent({
-      token: 'test token',
-      resource: '/users',
-      method: 'GET',
+      token: token,
+      resource: '/users/{userId}/password',
+      method: 'PUT',
+      userId: testUserInfo.userId,
     });
     const result = await lambdaHandler(event);
 
     expect(result).toHaveProperty('policyDocument.Statement.0.Effect', 'Allow');
-    expect(mockAuth0Client.validateAccessToken).not.toHaveBeenCalled();
+    expect(mockAuth0Client.validateAccessToken).not.toHaveBeenCalledWith(token);
 
     // Reset the mock :(
     mockRedis.get.mockResolvedValue(null);
   });
 
   it('returns the caller ID and admin status in the result context', async () => {
-    const userId = 'test_id';
+    mockAuth0Client.addUser(testUserInfo);
+    const token = mockAuth0Client.getAccessToken(testUserInfo.userId);
     const event = createEvent({
-      token: 'test token',
+      token,
       resource: '/users/{userId}/password',
       method: 'PUT',
-      userId,
+      userId: testUserInfo.userId,
     });
 
-    await withAuth0Response(
-      {
-        status: ResponseStatus.Success,
-        result: {
-          userId,
-          name: 'test name',
-          firstName: 'test',
-          lastName: 'name',
-          email: 'test@example.com',
-        },
-      },
-      async () => {
-        const result = await lambdaHandler(event);
-        expect(result).toHaveProperty('context.callerId', userId);
-        expect(result).toHaveProperty('context.isAdmin', false);
-      }
-    );
+    const result = await lambdaHandler(event);
+    expect(result).toHaveProperty('context.callerId', testUserInfo.userId);
+    expect(result).toHaveProperty('context.isAdmin', false);
   });
 });
-
-const withAuth0Response = async (
-  { status, result }: { status: ResponseStatus; result?: Auth0UserInfo },
-  test: () => Promise<void>
-) => {
-  mockAuth0Client.validateAccessToken = jest
-    .fn()
-    .mockResolvedValue(
-      result && status === ResponseStatus.Success
-        ? { result, status }
-        : { message: 'error', status }
-    );
-  const testResult = await test();
-  ((mockAuth0Client as unknown) as jest.Mock<Auth0Client>).mockReset();
-  return testResult;
-};
 
 type TestEventParams = {
   token?: string;
