@@ -12,6 +12,8 @@ export default class MockAuth0Client implements Auth0Client {
   private passwords: Map<string, string> = new Map();
   private accessTokens: Map<string, string> = new Map();
 
+  contains = (userId: number) => this.users.has(userId.toString());
+
   reset = () => {
     this.users.clear();
     this.passwords.clear();

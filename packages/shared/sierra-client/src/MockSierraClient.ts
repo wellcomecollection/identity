@@ -19,6 +19,8 @@ export default class MockSierraClient implements SierraClient {
     this.passwords.set(patron.recordNumber, password);
   };
 
+  contains = (userId: number) => this.patrons.has(userId);
+
   static randomPatronRecord = (
     firstName?: string,
     lastName?: string
