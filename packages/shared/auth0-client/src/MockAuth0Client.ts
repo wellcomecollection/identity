@@ -280,7 +280,7 @@ export default class MockAuth0Client implements Auth0Client {
     async (sourceIp: string, username: string, password: string) => {
       for (const user of this.users.values()) {
         if (
-          user.email === 'username' &&
+          user.email === username &&
           this.passwords.get(user.userId) === password
         ) {
           return successResponse({});
