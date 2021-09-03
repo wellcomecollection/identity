@@ -1,9 +1,10 @@
 import Auth0Client from '@weco/auth0-client';
 import SierraClient from '@weco/sierra-client';
 import * as awsServerlessExpressMiddleware from 'aws-serverless-express/middleware';
+import asyncHandler from 'express-async-handler';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import express, { Application, Request, Response } from 'express';
+import express, { Application } from 'express';
 import {
   changePassword,
   createUser,
@@ -80,11 +81,11 @@ function registerUsersResource(app: Application): void {
     origin: process.env.API_ALLOWED_ORIGINS,
   });
   app.options('/users', corsOptions);
-  app.get('/users', corsOptions, (request: Request, response: Response) =>
-    searchUsers(auth0Client, request, response)
-  );
-  app.post('/users', corsOptions, (request: Request, response: Response) =>
-    createUser(sierraClient, auth0Client, request, response)
+  app.get('/users', corsOptions, asyncHandler(searchUsers(auth0Client)));
+  app.post(
+    '/users',
+    corsOptions,
+    asyncHandler(createUser(sierraClient, auth0Client))
   );
 }
 
@@ -98,20 +99,17 @@ function registerUsersUserIdResource(app: Application): void {
   app.get(
     '/users/:user_id',
     corsOptions,
-    (request: Request, response: Response) =>
-      getUser(sierraClient, auth0Client, request, response)
+    asyncHandler(getUser(sierraClient, auth0Client))
   );
   app.put(
     '/users/:user_id',
     corsOptions,
-    (request: Request, response: Response) =>
-      updateUser(sierraClient, auth0Client, request, response)
+    asyncHandler(updateUser(sierraClient, auth0Client))
   );
   app.delete(
     '/users/:user_id',
     corsOptions,
-    (request: Request, response: Response) =>
-      deleteUser(sierraClient, auth0Client, request, response)
+    asyncHandler(deleteUser(sierraClient, auth0Client))
   );
 }
 
@@ -125,8 +123,7 @@ function registerUsersUserIdPasswordResource(app: Application): void {
   app.put(
     '/users/:user_id/password',
     corsOptions,
-    (request: Request, response: Response) =>
-      changePassword(sierraClient, auth0Client, request, response)
+    asyncHandler(changePassword(sierraClient, auth0Client))
   );
 }
 
@@ -140,8 +137,7 @@ function registerUsersUserIdResetPasswordResource(app: Application): void {
   app.put(
     '/users/:user_id/reset-password',
     corsOptions,
-    (request: Request, response: Response) =>
-      sendPasswordResetEmail(auth0Client, request, response)
+    asyncHandler(sendPasswordResetEmail(auth0Client))
   );
 }
 
@@ -155,8 +151,7 @@ function registerUsersUserIdSendVerificationResource(app: Application): void {
   app.put(
     '/users/:user_id/send-verification',
     corsOptions,
-    (request: Request, response: Response) =>
-      sendVerificationEmail(auth0Client, request, response)
+    asyncHandler(sendVerificationEmail(auth0Client))
   );
 }
 
@@ -170,14 +165,12 @@ function registerUsersUserIdLockResource(app: Application): void {
   app.put(
     '/users/:user_id/lock',
     corsOptions,
-    (request: Request, response: Response) =>
-      lockUser(auth0Client, request, response)
+    asyncHandler(lockUser(auth0Client))
   );
   app.delete(
     '/users/:user_id/lock',
     corsOptions,
-    (request: Request, response: Response) =>
-      removeUserLock(auth0Client, request, response)
+    asyncHandler(removeUserLock(auth0Client))
   );
 }
 
@@ -191,14 +184,12 @@ function registerUsersUserIdDeletionRequestResource(app: Application): void {
   app.put(
     '/users/:user_id/deletion-request',
     corsOptions,
-    (request: Request, response: Response) =>
-      requestDelete(auth0Client, emailClient, request, response)
+    asyncHandler(requestDelete(auth0Client, emailClient))
   );
   app.delete(
     '/users/:user_id/deletion-request',
     corsOptions,
-    (request: Request, response: Response) =>
-      removeDelete(auth0Client, emailClient, request, response)
+    asyncHandler(removeDelete(auth0Client, emailClient))
   );
 }
 
@@ -212,7 +203,6 @@ function registerUsersUserIdValidateResource(app: Application): void {
   app.post(
     '/users/:user_id/validate',
     corsOptions,
-    (request: Request, response: Response) =>
-      validatePassword(auth0Client, request, response)
+    asyncHandler(validatePassword(auth0Client))
   );
 }
