@@ -1,9 +1,10 @@
 import { Auth0Client } from '@weco/auth0-client';
 import { SierraClient } from '@weco/sierra-client';
 import * as awsServerlessExpressMiddleware from 'aws-serverless-express/middleware';
+import asyncHandler from 'express-async-handler';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import express, { Application, Request, Response } from 'express';
+import express, { Application } from 'express';
 import {
   changePassword,
   createUser,
@@ -58,11 +59,11 @@ function registerUsersResource(clients: Clients, app: Application): void {
     origin: process.env.API_ALLOWED_ORIGINS,
   });
   app.options('/users', corsOptions);
-  app.get('/users', corsOptions, (request: Request, response: Response) =>
-    searchUsers(clients.auth0, request, response)
-  );
-  app.post('/users', corsOptions, (request: Request, response: Response) =>
-    createUser(clients.sierra, clients.auth0, request, response)
+  app.get('/users', corsOptions, asyncHandler(searchUsers(clients.auth0)));
+  app.post(
+    '/users',
+    corsOptions,
+    asyncHandler(createUser(clients.sierra, clients.auth0))
   );
 }
 
@@ -76,20 +77,17 @@ function registerUsersUserIdResource(clients: Clients, app: Application): void {
   app.get(
     '/users/:user_id',
     corsOptions,
-    (request: Request, response: Response) =>
-      getUser(clients.sierra, clients.auth0, request, response)
+    asyncHandler(getUser(clients.sierra, clients.auth0))
   );
   app.put(
     '/users/:user_id',
     corsOptions,
-    (request: Request, response: Response) =>
-      updateUser(clients.sierra, clients.auth0, request, response)
+    asyncHandler(updateUser(clients.sierra, clients.auth0))
   );
   app.delete(
     '/users/:user_id',
     corsOptions,
-    (request: Request, response: Response) =>
-      deleteUser(clients.sierra, clients.auth0, request, response)
+    asyncHandler(deleteUser(clients.sierra, clients.auth0))
   );
 }
 
@@ -106,8 +104,7 @@ function registerUsersUserIdPasswordResource(
   app.put(
     '/users/:user_id/password',
     corsOptions,
-    (request: Request, response: Response) =>
-      changePassword(clients.sierra, clients.auth0, request, response)
+    asyncHandler(changePassword(clients.sierra, clients.auth0))
   );
 }
 
@@ -124,8 +121,7 @@ function registerUsersUserIdResetPasswordResource(
   app.put(
     '/users/:user_id/reset-password',
     corsOptions,
-    (request: Request, response: Response) =>
-      sendPasswordResetEmail(clients.auth0, request, response)
+    asyncHandler(sendPasswordResetEmail(clients.auth0))
   );
 }
 
@@ -142,8 +138,7 @@ function registerUsersUserIdSendVerificationResource(
   app.put(
     '/users/:user_id/send-verification',
     corsOptions,
-    (request: Request, response: Response) =>
-      sendVerificationEmail(clients.auth0, request, response)
+    asyncHandler(sendVerificationEmail(clients.auth0))
   );
 }
 
@@ -160,14 +155,12 @@ function registerUsersUserIdLockResource(
   app.put(
     '/users/:user_id/lock',
     corsOptions,
-    (request: Request, response: Response) =>
-      lockUser(clients.auth0, request, response)
+    asyncHandler(lockUser(clients.auth0))
   );
   app.delete(
     '/users/:user_id/lock',
     corsOptions,
-    (request: Request, response: Response) =>
-      removeUserLock(clients.auth0, request, response)
+    asyncHandler(removeUserLock(clients.auth0))
   );
 }
 
@@ -184,14 +177,12 @@ function registerUsersUserIdDeletionRequestResource(
   app.put(
     '/users/:user_id/deletion-request',
     corsOptions,
-    (request: Request, response: Response) =>
-      requestDelete(clients.auth0, clients.email, request, response)
+    asyncHandler(requestDelete(clients.auth0, clients.email))
   );
   app.delete(
     '/users/:user_id/deletion-request',
     corsOptions,
-    (request: Request, response: Response) =>
-      removeDelete(clients.auth0, clients.email, request, response)
+    asyncHandler(removeDelete(clients.auth0, clients.email))
   );
 }
 
@@ -208,7 +199,6 @@ function registerUsersUserIdValidateResource(
   app.post(
     '/users/:user_id/validate',
     corsOptions,
-    (request: Request, response: Response) =>
-      validatePassword(clients.auth0, request, response)
+    asyncHandler(validatePassword(clients.auth0))
   );
 }

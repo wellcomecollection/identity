@@ -13,6 +13,7 @@
   "dependencies": {
     "aws-serverless-express": "^3.3.8",
     "express": "^4.17.1",
+    "express-async-handler": "^1.1.4",
     "yarn": "^1.22.10"
   },
   "devDependencies": {
