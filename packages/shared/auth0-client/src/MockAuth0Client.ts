@@ -159,19 +159,19 @@ export default class MockAuth0Client implements Auth0Client {
       email: string,
       status: string
     ) => {
-      const emails = email.split(' ');
-      const names = name.split(' ');
+      const emails = email?.split(' ');
+      const names = name?.split(' ');
       const searchList = [];
       for (const user of this.users.values()) {
         if (
-          emails.length !== 0 &&
-          !emails.some((email) => user.email.includes(email))
+          emails?.length > 0 &&
+          !emails?.some((email) => user.email.includes(email))
         ) {
           continue;
         }
         if (
-          names.length !== 0 &&
-          !names.some((name) => user.name.includes(name))
+          names?.length > 0 &&
+          !names?.some((name) => user.name.includes(name))
         ) {
           continue;
         }

@@ -12,6 +12,7 @@ export type ExistingUser = {
   email: string;
   password?: string;
   onlyInSierra?: boolean;
+  onlyInAuth0?: boolean;
   isAdmin?: boolean;
   markedForDeletion?: boolean;
   emailValidated?: boolean;
@@ -40,17 +41,19 @@ export const mockedApi = (existingUsers: ExistingUser[] = []) => {
   };
 
   for (const user of existingUsers) {
-    const { barcode } = MockSierraClient.randomPatronRecord();
-    mockClients.sierra.addPatron(
-      {
-        barcode,
-        recordNumber: user.userId,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-      },
-      user.password
-    );
+    if (!user.onlyInAuth0) {
+      const { barcode } = MockSierraClient.randomPatronRecord();
+      mockClients.sierra.addPatron(
+        {
+          barcode,
+          recordNumber: user.userId,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+        },
+        user.password
+      );
+    }
 
     if (!user.onlyInSierra) {
       mockClients.auth0.addUser(

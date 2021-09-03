@@ -41,7 +41,7 @@ export function toSearchResults(
   };
 }
 
-interface User {
+export interface User {
   userId: number;
   barcode: string | null;
   firstName: string | null;
