@@ -19,15 +19,17 @@ export type ExistingUser = {
   emailValidated?: boolean;
 };
 
-// See https://github.com/vendia/serverless-express/issues/182#issuecomment-609505645
-const withApiGatewayContext = (data: object) => (request: Request) => {
-  const headerValue = encodeURIComponent(
-    JSON.stringify({ requestContext: data })
-  );
-  return request
-    .set('x-apigateway-event', headerValue)
-    .set('x-apigateway-context', headerValue);
+const apiGatewayHeaders = (data: object = {}) => {
+  const value = encodeURIComponent(JSON.stringify({ requestContext: data }));
+  return {
+    'x-apigateway-event': value,
+    'x-apigateway-context': value,
+  };
 };
+
+// See https://github.com/vendia/serverless-express/issues/182#issuecomment-609505645
+const withApiGatewayContext = (data: object) => (request: Request) =>
+  request.set(apiGatewayHeaders(data));
 
 export const asAdmin = withApiGatewayContext({ authorizer: { isAdmin: true } });
 export const withSourceIp = withApiGatewayContext({
@@ -81,5 +83,9 @@ export const mockedApi = (existingUsers: ExistingUser[] = []) => {
   }
 
   const app = createApplication(mockClients);
-  return { api: supertest(app), clients: mockClients };
+
+  const api = supertest.agent(app);
+  api.set(apiGatewayHeaders());
+
+  return { api, clients: mockClients };
 };
