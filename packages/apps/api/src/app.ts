@@ -19,6 +19,7 @@ import {
   updateUser,
   validatePassword,
 } from './handlers/user';
+import { errorHandler } from './handlers/errorHandler';
 import { EmailClient } from './utils/EmailClient';
 
 export type Clients = {
@@ -44,6 +45,8 @@ export function createApplication(clients: Clients): Application {
     registerUsersUserIdDeletionRequestResource,
     registerUsersUserIdValidateResource,
   ].forEach((registerEndpoint) => registerEndpoint(clients, app));
+
+  app.use(errorHandler);
 
   return app;
 }
