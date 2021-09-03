@@ -18,14 +18,19 @@ export type ExistingUser = {
 };
 
 // See https://github.com/vendia/serverless-express/issues/182#issuecomment-609505645
-export const asAdmin = (request: Request): Request => {
+const withApiGatewayContext = (data: object) => (request: Request) => {
   const headerValue = encodeURIComponent(
-    JSON.stringify({ requestContext: { authorizer: { isAdmin: true } } })
+    JSON.stringify({ requestContext: data })
   );
   return request
     .set('x-apigateway-event', headerValue)
     .set('x-apigateway-context', headerValue);
 };
+
+export const asAdmin = withApiGatewayContext({ authorizer: { isAdmin: true } });
+export const withSourceIp = withApiGatewayContext({
+  identity: { sourceIp: 'test' },
+});
 
 export const mockedApi = (existingUsers: ExistingUser[] = []) => {
   const mockClients = {
@@ -48,19 +53,22 @@ export const mockedApi = (existingUsers: ExistingUser[] = []) => {
     );
 
     if (!user.onlyInSierra) {
-      mockClients.auth0.addUser({
-        userId: user.userId.toString(),
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        name: user.firstName + ' ' + user.lastName,
-        additionalAttributes: {
-          is_admin: user.isAdmin,
-          deleteRequested: user.markedForDeletion
-            ? new Date().toISOString()
-            : undefined,
+      mockClients.auth0.addUser(
+        {
+          userId: user.userId.toString(),
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          name: user.firstName + ' ' + user.lastName,
+          additionalAttributes: {
+            is_admin: user.isAdmin,
+            deleteRequested: user.markedForDeletion
+              ? new Date().toISOString()
+              : undefined,
+          },
         },
-      });
+        user.password
+      );
 
       if (user.emailValidated) {
         mockClients.auth0.markVerified(user.userId);
