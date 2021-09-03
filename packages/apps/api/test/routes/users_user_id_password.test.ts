@@ -1,17 +1,11 @@
-import { ExistingUser, mockedApi } from './fixtures/mockedApi';
+import { mockedApi } from './fixtures/mockedApi';
 import { ResponseStatus } from '@weco/identity-common';
-
-const testUser: ExistingUser = {
-  userId: 12345678,
-  email: 'test@test.com',
-  firstName: 'Test',
-  lastName: 'User',
-  password: 'old-password',
-};
+import { randomExistingUser } from './fixtures/generators';
 
 describe('/users/{userId}/password', () => {
   describe('PUT /users/{userId}/password', () => {
     it('changes a user password in both Auth0 and Sierra', async () => {
+      const testUser = randomExistingUser();
       const { api, clients } = mockedApi([testUser]);
       const newPassword = 'new-password';
       const response = await api
@@ -37,12 +31,12 @@ describe('/users/{userId}/password', () => {
     });
 
     it('404s for users that do not exist', async () => {
-      const { api } = mockedApi([testUser]);
-      const newPassword = 'new-password';
+      const { api } = mockedApi();
       const response = await api
         .put(`/users/66666666/password`)
-        .send({ password: newPassword })
+        .send({ password: 'new-password' })
         .set('Accept', 'application/json');
+
       expect(response.statusCode).toBe(404);
     });
   });
