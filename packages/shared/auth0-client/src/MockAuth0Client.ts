@@ -6,6 +6,12 @@ import {
   successResponse,
 } from '@weco/identity-common';
 
+// The Auth0 client gets called with numeric IDs but then stores/returns them as strings
+// This is a bit of a pain but here we are, it's the easiest way to fix it.
+type NumericIDAuth0UserInfo = Omit<Auth0UserInfo, 'userId'> & {
+  userId: string | number;
+};
+
 export default class MockAuth0Client implements Auth0Client {
   private users: Map<string, Auth0Profile> = new Map();
   private passwords: Map<string, string> = new Map();
@@ -30,7 +36,13 @@ export default class MockAuth0Client implements Auth0Client {
   };
 
   addUser = (
-    { userId, firstName, lastName, email, additionalAttributes }: Auth0UserInfo,
+    {
+      userId,
+      firstName,
+      lastName,
+      email,
+      additionalAttributes,
+    }: NumericIDAuth0UserInfo,
     password?: string
   ) => {
     const profile = {
@@ -40,7 +52,7 @@ export default class MockAuth0Client implements Auth0Client {
       locked: false,
       totalLogins: null,
       updatedDate: new Date().toISOString(),
-      userId: userId,
+      userId: userId.toString(),
       name: firstName + ' ' + lastName,
       firstName: firstName,
       lastName: lastName,
@@ -48,11 +60,11 @@ export default class MockAuth0Client implements Auth0Client {
       emailValidated: false,
       metadata: additionalAttributes,
     };
-    this.users.set(userId, profile);
-    this.passwords.set(userId, password || '');
+    this.users.set(userId.toString(), profile);
+    this.passwords.set(userId.toString(), password || '');
   };
 
-  addAdminUser = (user: Auth0UserInfo, password?: string) =>
+  addAdminUser = (user: NumericIDAuth0UserInfo, password?: string) =>
     this.addUser(
       {
         ...user,

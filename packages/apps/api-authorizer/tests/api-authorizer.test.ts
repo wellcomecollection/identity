@@ -18,7 +18,7 @@ const lambdaHandler = createLambdaHandler(
 );
 
 const testUserInfo = {
-  userId: 'test',
+  userId: 12345678,
   name: 'test name',
   firstName: 'test',
   lastName: 'name',
@@ -110,7 +110,7 @@ describe('API Authorizer', () => {
       token,
       resource: '/users/{userId}/ice_cream',
       method: 'GET',
-      userId: testUserInfo.userId,
+      userId: testUserInfo.userId.toString(),
     });
 
     const result = await lambdaHandler(event);
@@ -125,7 +125,7 @@ describe('API Authorizer', () => {
       token: token,
       resource: '/users/{userId}/password',
       method: 'PUT',
-      userId: testUserInfo.userId,
+      userId: testUserInfo.userId.toString(),
     });
     const result = await lambdaHandler(event);
 
@@ -143,11 +143,14 @@ describe('API Authorizer', () => {
       token,
       resource: '/users/{userId}/password',
       method: 'PUT',
-      userId: testUserInfo.userId,
+      userId: testUserInfo.userId.toString(),
     });
 
     const result = await lambdaHandler(event);
-    expect(result).toHaveProperty('context.callerId', testUserInfo.userId);
+    expect(result).toHaveProperty(
+      'context.callerId',
+      testUserInfo.userId.toString()
+    );
     expect(result).toHaveProperty('context.isAdmin', false);
   });
 });

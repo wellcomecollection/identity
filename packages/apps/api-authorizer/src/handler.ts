@@ -96,17 +96,17 @@ export const createLambdaHandler = (
           `cannot operate on [${event.httpMethod} ${event.resource}] with path parameters [${event.pathParameters}]`
       );
       return buildAuthorizerResult(
-        auth0UserInfo.userId,
+        auth0UserInfo.userId.toString(),
         'Deny',
         event.methodArn
       );
     }
 
     return buildAuthorizerResult(
-      auth0UserInfo.userId,
+      auth0UserInfo.userId.toString(),
       'Allow',
       event.methodArn,
-      auth0UserInfo.userId,
+      auth0UserInfo.userId.toString(),
       isAdministrator(auth0UserInfo, {})
     );
   };
