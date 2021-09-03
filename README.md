@@ -32,7 +32,7 @@ This project builds in Buildkite where there are pipelines to cover build and de
 - [Identity: Deploy Stage](https://buildkite.com/wellcomecollection/identity-deploy-stage): Deploy to staging environment and run smoke tests
 - [Identity: Deploy Prod](https://buildkite.com/wellcomecollection/identity-deploy-prod): Deploy to production environment and run smoke tests
 
-[![Build status](https://badge.buildkite.com/965e1197af1ac22887636ef8cbd4b5bba98e7ab656e42fa574.svg)](https://buildkite.com/wellcomecollection/identity)
+[![Build status](https://badge.buildkite.com/965e1197af1ac22887636ef8cbd4b5bba98e7ab656e42fa574.svg?branch=main)](https://buildkite.com/wellcomecollection/identity)
 
 Merged pull requests will be automatically deployed to the staging environment, but a production deploy requires manual unblocking in Buildkite.
 
