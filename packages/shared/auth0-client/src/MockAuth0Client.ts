@@ -1,7 +1,6 @@
 import Auth0Client from './Auth0Client';
 import { Auth0Profile, Auth0UserInfo } from './auth0';
 import {
-  APIResponse,
   errorResponse,
   ResponseStatus,
   successResponse,
@@ -14,6 +13,15 @@ export default class MockAuth0Client implements Auth0Client {
 
   contains = (userId: number) => this.users.has(userId.toString());
   get = (userId: number) => this.users.get(userId.toString());
+  markVerified = (userId: number) => {
+    const maybeUser = this.users.get(userId.toString());
+    if (maybeUser) {
+      this.users.set(maybeUser.userId, {
+        ...maybeUser,
+        emailValidated: true,
+      });
+    }
+  };
 
   reset = () => {
     this.users.clear();

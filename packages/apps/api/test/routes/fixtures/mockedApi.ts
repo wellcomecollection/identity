@@ -14,6 +14,7 @@ export type ExistingUser = {
   onlyInSierra?: boolean;
   isAdmin?: boolean;
   markedForDeletion?: boolean;
+  emailValidated?: boolean;
 };
 
 // See https://github.com/vendia/serverless-express/issues/182#issuecomment-609505645
@@ -60,6 +61,10 @@ export const mockedApi = (existingUsers: ExistingUser[] = []) => {
             : undefined,
         },
       });
+
+      if (user.emailValidated) {
+        mockClients.auth0.markVerified(user.userId);
+      }
     }
   }
 
