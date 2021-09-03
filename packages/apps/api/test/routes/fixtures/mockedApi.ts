@@ -5,14 +5,15 @@ import MockEmailClient from './MockEmailClient';
 import { createApplication } from '../../../src/app';
 import { Request } from 'supertest';
 
+type SourceSystem = 'sierra' | 'auth0';
+
 export type ExistingUser = {
   userId: number;
   firstName: string;
   lastName: string;
   email: string;
+  sourceSystems: SourceSystem[];
   password?: string;
-  onlyInSierra?: boolean;
-  onlyInAuth0?: boolean;
   isAdmin?: boolean;
   markedForDeletion?: boolean;
   emailValidated?: boolean;
@@ -41,7 +42,7 @@ export const mockedApi = (existingUsers: ExistingUser[] = []) => {
   };
 
   for (const user of existingUsers) {
-    if (!user.onlyInAuth0) {
+    if (user.sourceSystems.includes('auth0')) {
       const { barcode } = MockSierraClient.randomPatronRecord();
       mockClients.sierra.addPatron(
         {
@@ -55,7 +56,7 @@ export const mockedApi = (existingUsers: ExistingUser[] = []) => {
       );
     }
 
-    if (!user.onlyInSierra) {
+    if (user.sourceSystems.includes('sierra')) {
       mockClients.auth0.addUser(
         {
           userId: user.userId.toString(),

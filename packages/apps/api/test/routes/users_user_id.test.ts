@@ -9,7 +9,10 @@ describe('/users/{userId}', () => {
       const response = await api.get(`/users/${testUser.userId}`);
 
       expect(response.statusCode).toBe(200);
-      expect(response.body).toMatchObject(testUser);
+      expect(response.body.userId).toBe(testUser.userId);
+      expect(response.body.email).toBe(testUser.email);
+      expect(response.body.firstName).toBe(testUser.firstName);
+      expect(response.body.lastName).toBe(testUser.lastName);
     });
 
     it('404s for users that do not exist', async () => {
@@ -30,10 +33,10 @@ describe('/users/{userId}', () => {
         .set('Accept', 'application/json');
 
       expect(response.statusCode).toBe(200);
-      expect(response.body).toMatchObject({
-        ...testUser,
-        email: 'test2@test.com',
-      });
+      expect(response.body.email).toBe('test2@test.com');
+      expect(response.body.userId).toBe(testUser.userId);
+      expect(response.body.firstName).toBe(testUser.firstName);
+      expect(response.body.lastName).toBe(testUser.lastName);
     });
 
     it('does not update immutable fields for non-admins', async () => {
@@ -55,10 +58,10 @@ describe('/users/{userId}', () => {
         .set('Accept', 'application/json');
 
       expect(response.statusCode).toBe(200);
-      expect(response.body).toMatchObject({
-        ...testUser,
-        firstName: 'Test',
-      });
+      expect(response.body.firstName).toBe('Test');
+      expect(response.body.userId).toBe(testUser.userId);
+      expect(response.body.email).toBe(testUser.email);
+      expect(response.body.lastName).toBe(testUser.lastName);
     });
 
     it('does not update emails if a user with that email already exists', async () => {

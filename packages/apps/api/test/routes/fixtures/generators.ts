@@ -17,5 +17,6 @@ export const randomExistingUser = (
   email: randomEmail(),
   firstName: randomAlphanumeric(5),
   lastName: randomAlphanumeric(6),
+  sourceSystems: ['sierra', 'auth0'],
   ...override,
 });

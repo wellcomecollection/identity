@@ -73,7 +73,7 @@ describe('/users', () => {
     });
 
     it('does not create a user that already exists in Sierra', async () => {
-      const testUser = randomExistingUser({ onlyInSierra: true });
+      const testUser = randomExistingUser({ sourceSystems: ['sierra'] });
       const { api } = mockedApi([testUser]);
       const response = await api
         .post('/users')
@@ -87,7 +87,7 @@ describe('/users', () => {
     });
 
     it('does not create a user that already exists in Auth0', async () => {
-      const testUser = randomExistingUser({ onlyInAuth0: true });
+      const testUser = randomExistingUser({ sourceSystems: ['auth0'] });
       const { api } = mockedApi([testUser]);
       const response = await api
         .post('/users')
