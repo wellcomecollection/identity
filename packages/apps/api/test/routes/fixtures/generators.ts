@@ -2,7 +2,10 @@ import * as crypto from 'crypto';
 import { ExistingUser } from './mockedApi';
 
 export const randomAlphanumeric = (length: number) =>
-  crypto.randomBytes(length).toString('hex');
+  crypto
+    .randomBytes(Math.ceil(length / 2))
+    .toString('hex')
+    .slice(0, length);
 
 export const randomNumber = (max: number, min: number = 0) =>
   Math.floor(min + Math.random() * (max - min));
