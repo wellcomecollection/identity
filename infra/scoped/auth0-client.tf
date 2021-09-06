@@ -180,6 +180,32 @@ resource "auth0_client" "account_management_system" {
   }
 }
 
+# OpenAthens SAML Identity Provider
+# Allows OpenAthens to authenticate users against the Auth0 user-pool
+
+resource "auth0_client" "openathens_saml_idp" {
+  name           = "OpenAthens SAML IDP${local.environment_qualifier}"
+  app_type       = "regular_web"
+  is_first_party = true
+
+  addons {
+    samlp {
+      mappings = {
+        user_id     = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+        email       = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
+        name        = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
+        given_name  = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname"
+        family_name = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname"
+        upn         = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn"
+        groups      = "http://schemas.xmlsoap.org/claims/Group"
+      }
+      name_identifier_probes = [
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
+      ]
+    }
+  }
+}
+
 # Smoke Test Client
 # For automated smoke testing after deployment
 
