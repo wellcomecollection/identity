@@ -55,38 +55,3 @@ resource "auth0_connection" "sierra" {
     ]
   }
 }
-
-resource "auth0_connection" "azure_ad" {
-
-  name     = "AzureAD-Connection"
-  strategy = "oauth2"
-
-  enabled_clients = concat([
-    auth0_client.account_admin_system.id],
-    terraform.workspace != "prod" ? local.stage_test_client_ids : []
-  )
-
-  options {
-    authorization_endpoint = "https://login.microsoftonline.com/${aws_ssm_parameter.azure_ad_directory_id.value}/oauth2/v2.0/authorize"
-    token_endpoint         = "https://login.microsoftonline.com/${aws_ssm_parameter.azure_ad_directory_id.value}/oauth2/v2.0/token"
-
-    client_id     = aws_ssm_parameter.azure_ad_application_id.value
-    client_secret = data.aws_secretsmanager_secret_version.azure_ad_client_secret_version.secret_string
-
-    scopes = [
-      "User.Read"
-    ]
-
-    scripts = {
-      // This creates an empty function on the first apply, as it will be managed by
-      // the deployment scripts and ignored by TF (see lifecycle block)
-      fetchUserProfile = file("${path.module}/data/empty.js")
-    }
-  }
-
-  lifecycle {
-    ignore_changes = [
-      options["scripts"]
-    ]
-  }
-}

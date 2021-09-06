@@ -103,11 +103,6 @@ resource "aws_secretsmanager_secret" "account_admin_system-auth0_client_secret" 
   }
 }
 
-resource "aws_secretsmanager_secret_version" "account_admin_system-auth0_client_secret" {
-  secret_id     = aws_secretsmanager_secret.account_admin_system-auth0_client_secret.id
-  secret_string = auth0_client.account_admin_system.client_secret
-}
-
 resource "aws_secretsmanager_secret" "account_admin_system-api_key" {
   name = "identity/${terraform.workspace}/account_admin_system/api_key"
 
