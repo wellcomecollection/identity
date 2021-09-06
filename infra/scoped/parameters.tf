@@ -370,16 +370,6 @@ resource "aws_ssm_parameter" "account_admin_system-auth0_domain" {
   }
 }
 
-resource "aws_ssm_parameter" "account_admin_system-auth0_client_id" {
-  name  = "/identity/${terraform.workspace}/account_admin_system/auth0_client_id"
-  type  = "String"
-  value = auth0_client.account_admin_system.id
-
-  tags = {
-    "Name" = "/identity/${terraform.workspace}/account_admin_system/auth0_client_id"
-  }
-}
-
 resource "aws_ssm_parameter" "account_admin_system-auth0_callback_url" {
   name  = "/identity/${terraform.workspace}/account_admin_system/auth0_callback_url"
   type  = "String"
