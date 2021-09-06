@@ -34,6 +34,11 @@ output "auth0_client_dummy_client_secret" {
   value     = auth0_client.dummy_test.*.client_secret
   sensitive = true
 }
+
+output "auth0_openathens_saml_idp_client_id" {
+  value = auth0_client.openathens_saml_idp.client_id
+}
+
 # Email
 
 output "ses_smtp_username" {
