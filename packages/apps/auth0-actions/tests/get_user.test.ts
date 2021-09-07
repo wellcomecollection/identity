@@ -1,33 +1,26 @@
-import {
-  errorResponse,
-  ResponseStatus,
-  successResponse,
-} from '@weco/identity-common';
+import { errorResponse, ResponseStatus } from '@weco/identity-common';
+import { MockSierraClient } from '@weco/sierra-client';
 import { User } from 'auth0';
 import getUser from '../src/get_user';
 import { patronRecordToUser } from '../src/patronRecordToUser';
 
-const mockGetPatronRecordByEmail = jest.fn();
-jest.mock('@weco/sierra-client', () =>
-  jest.fn().mockImplementation(() => ({
-    getPatronRecordByEmail: mockGetPatronRecordByEmail,
-  }))
-);
-
-const testPatronRecord = {
-  recordNumber: 1234567,
-  barcode: '1234567',
-  firstName: 'Test',
-  lastName: 'Testing',
-  email: 'test@test.test',
-};
+const mockSierraClient = new MockSierraClient();
+jest.mock('@weco/sierra-client', () => {
+  const actualModule = jest.requireActual('@weco/sierra-client');
+  return {
+    ...actualModule,
+    HttpSierraClient: function () {
+      return mockSierraClient;
+    },
+  };
+});
 
 describe('get user script', () => {
-  it('returns nothing if the user does not exist in Sierra', (done) => {
-    mockGetPatronRecordByEmail.mockResolvedValueOnce(
-      errorResponse('not found', ResponseStatus.NotFound)
-    );
+  afterEach(() => {
+    mockSierraClient.reset();
+  });
 
+  it('returns nothing if the user does not exist in Sierra', (done) => {
     const callback = (error?: NodeJS.ErrnoException | null, data?: User) => {
       expect(error).toBe(null);
       expect(data).toBe(undefined);
@@ -37,7 +30,7 @@ describe('get user script', () => {
   });
 
   it('throws an error if Sierra returns an error', (done) => {
-    mockGetPatronRecordByEmail.mockResolvedValueOnce(
+    mockSierraClient.getPatronRecordByEmail.mockResolvedValueOnce(
       errorResponse('bad computer', ResponseStatus.UnknownError)
     );
 
@@ -50,15 +43,14 @@ describe('get user script', () => {
   });
 
   it('returns a user object populated by the patron record', (done) => {
-    mockGetPatronRecordByEmail.mockResolvedValueOnce(
-      successResponse(testPatronRecord)
-    );
+    const testRecord = MockSierraClient.randomPatronRecord();
+    mockSierraClient.addPatron(testRecord);
 
     const callback = (error?: NodeJS.ErrnoException | null, data?: User) => {
       expect(error).toBe(null);
-      expect(data).toEqual(patronRecordToUser(testPatronRecord));
+      expect(data).toEqual(patronRecordToUser(testRecord));
       done();
     };
-    getUser('', callback);
+    getUser(testRecord.email, callback);
   });
 });

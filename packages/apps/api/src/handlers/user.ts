@@ -1,4 +1,5 @@
-import Auth0Client, {
+import {
+  Auth0Client,
   Auth0Profile,
   Auth0SearchResults,
   Auth0SearchSortFields,
@@ -10,12 +11,12 @@ import {
   ResponseStatus,
   truncate,
 } from '@weco/identity-common';
-import SierraClient, { PatronRecord } from '@weco/sierra-client';
+import { SierraClient, PatronRecord } from '@weco/sierra-client';
 import { Request, Response } from 'express';
 import { toMessage } from '../models/common';
 import { clientResponseToHttpError, HttpError } from '../models/HttpError';
 import { toSearchResults, toUser } from '../models/user';
-import EmailClient from '../utils/email';
+import { EmailClient } from '../utils/EmailClient';
 
 export function validatePassword(auth0Client: Auth0Client) {
   return async function (request: Request, response: Response): Promise<void> {

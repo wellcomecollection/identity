@@ -1,4 +1,4 @@
-import SierraClient from '@weco/sierra-client';
+import { HttpSierraClient } from '@weco/sierra-client';
 import { ResponseStatus } from '@weco/identity-common';
 import { callbackify } from 'util';
 import { User } from 'auth0';
@@ -18,7 +18,7 @@ async function login(email: string, password: string): Promise<User> {
   const clientKey = configuration.CLIENT_KEY;
   const clientSecret = configuration.CLIENT_SECRET;
 
-  const sierraClient = new SierraClient(apiRoot, clientKey, clientSecret);
+  const sierraClient = new HttpSierraClient(apiRoot, clientKey, clientSecret);
 
   const patronRecordResponse = await sierraClient.getPatronRecordByEmail(email);
   if (patronRecordResponse.status === ResponseStatus.NotFound) {

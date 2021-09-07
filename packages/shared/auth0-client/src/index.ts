@@ -1,4 +1,6 @@
-import Auth0Client from './client';
+import Auth0Client from './Auth0Client';
+import HttpAuth0Client from './HttpAuth0Client';
+import MockAuth0Client from './MockAuth0Client';
 
 export {
   Auth0UserInfo,
@@ -8,4 +10,4 @@ export {
   SearchStatuses,
 } from './auth0';
 
-export default Auth0Client;
+export { Auth0Client, HttpAuth0Client, MockAuth0Client };

@@ -1,5 +1,5 @@
-import Auth0Client from '@weco/auth0-client';
-import SierraClient from '@weco/sierra-client';
+import { Auth0Client } from '@weco/auth0-client';
+import { SierraClient } from '@weco/sierra-client';
 import * as awsServerlessExpressMiddleware from 'aws-serverless-express/middleware';
 import asyncHandler from 'express-async-handler';
 import bodyParser from 'body-parser';
@@ -21,75 +21,53 @@ import {
   validatePassword,
 } from './handlers/user';
 import { errorHandler } from './handlers/errorHandler';
-import EmailClient from './utils/email';
+import { EmailClient } from './utils/EmailClient';
 
-export default createApplication();
+export type Clients = {
+  sierra: SierraClient;
+  auth0: Auth0Client;
+  email: EmailClient;
+};
 
-const sierraClient: SierraClient = new SierraClient(
-  process.env.SIERRA_API_ROOT!,
-  process.env.SIERRA_CLIENT_KEY!,
-  process.env.SIERRA_CLIENT_SECRET!
-);
-
-const auth0Client: Auth0Client = new Auth0Client(
-  process.env.AUTH0_API_ROOT!,
-  process.env.AUTH0_API_AUDIENCE!,
-  process.env.AUTH0_CLIENT_ID!,
-  process.env.AUTH0_CLIENT_SECRET!
-);
-
-const emailClient: EmailClient = new EmailClient(
-  {
-    host: process.env.EMAIL_SMTP_HOSTNAME!,
-    port: Number(process.env.EMAIL_SMTP_PORT!),
-    secure: Boolean(process.env.EMAIL_SMTP_SECURE!),
-    auth: {
-      user: process.env.EMAIL_SMTP_USERNAME!,
-      pass: process.env.EMAIL_SMTP_PASSWORD!,
-    },
-  },
-  process.env.EMAIL_FROM_ADDRESS!,
-  process.env.EMAIL_ADMIN_ADDRESS!,
-  process.env.SUPPORT_URL!
-);
-
-function createApplication(): Application {
+export function createApplication(clients: Clients): Application {
   const app: Application = express();
 
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(awsServerlessExpressMiddleware.eventContext());
 
-  registerUsersResource(app);
-  registerUsersUserIdResource(app);
-  registerUsersUserIdPasswordResource(app);
-  registerUsersUserIdResetPasswordResource(app);
-  registerUsersUserIdSendVerificationResource(app);
-  registerUsersUserIdLockResource(app);
-  registerUsersUserIdDeletionRequestResource(app);
-  registerUsersUserIdValidateResource(app);
+  [
+    registerUsersResource,
+    registerUsersUserIdResource,
+    registerUsersUserIdPasswordResource,
+    registerUsersUserIdResetPasswordResource,
+    registerUsersUserIdSendVerificationResource,
+    registerUsersUserIdLockResource,
+    registerUsersUserIdDeletionRequestResource,
+    registerUsersUserIdValidateResource,
+  ].forEach((registerEndpoint) => registerEndpoint(clients, app));
 
   app.use(errorHandler);
 
   return app;
 }
 
-function registerUsersResource(app: Application): void {
+function registerUsersResource(clients: Clients, app: Application): void {
   const corsOptions = cors({
     allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
     methods: 'OPTIONS,GET,POST',
     origin: process.env.API_ALLOWED_ORIGINS,
   });
   app.options('/users', corsOptions);
-  app.get('/users', corsOptions, asyncHandler(searchUsers(auth0Client)));
+  app.get('/users', corsOptions, asyncHandler(searchUsers(clients.auth0)));
   app.post(
     '/users',
     corsOptions,
-    asyncHandler(createUser(sierraClient, auth0Client))
+    asyncHandler(createUser(clients.sierra, clients.auth0))
   );
 }
 
-function registerUsersUserIdResource(app: Application): void {
+function registerUsersUserIdResource(clients: Clients, app: Application): void {
   const corsOptions = cors({
     allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
     methods: 'OPTIONS,GET,PUT,DELETE',
@@ -99,21 +77,24 @@ function registerUsersUserIdResource(app: Application): void {
   app.get(
     '/users/:user_id',
     corsOptions,
-    asyncHandler(getUser(sierraClient, auth0Client))
+    asyncHandler(getUser(clients.sierra, clients.auth0))
   );
   app.put(
     '/users/:user_id',
     corsOptions,
-    asyncHandler(updateUser(sierraClient, auth0Client))
+    asyncHandler(updateUser(clients.sierra, clients.auth0))
   );
   app.delete(
     '/users/:user_id',
     corsOptions,
-    asyncHandler(deleteUser(sierraClient, auth0Client))
+    asyncHandler(deleteUser(clients.sierra, clients.auth0))
   );
 }
 
-function registerUsersUserIdPasswordResource(app: Application): void {
+function registerUsersUserIdPasswordResource(
+  clients: Clients,
+  app: Application
+): void {
   const corsOptions = cors({
     allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
     methods: 'OPTIONS,PUT',
@@ -123,11 +104,14 @@ function registerUsersUserIdPasswordResource(app: Application): void {
   app.put(
     '/users/:user_id/password',
     corsOptions,
-    asyncHandler(changePassword(sierraClient, auth0Client))
+    asyncHandler(changePassword(clients.sierra, clients.auth0))
   );
 }
 
-function registerUsersUserIdResetPasswordResource(app: Application): void {
+function registerUsersUserIdResetPasswordResource(
+  clients: Clients,
+  app: Application
+): void {
   const corsOptions = cors({
     allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
     methods: 'OPTIONS,PUT',
@@ -137,11 +121,14 @@ function registerUsersUserIdResetPasswordResource(app: Application): void {
   app.put(
     '/users/:user_id/reset-password',
     corsOptions,
-    asyncHandler(sendPasswordResetEmail(auth0Client))
+    asyncHandler(sendPasswordResetEmail(clients.auth0))
   );
 }
 
-function registerUsersUserIdSendVerificationResource(app: Application): void {
+function registerUsersUserIdSendVerificationResource(
+  clients: Clients,
+  app: Application
+): void {
   const corsOptions = cors({
     allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
     methods: 'OPTIONS,PUT',
@@ -151,11 +138,14 @@ function registerUsersUserIdSendVerificationResource(app: Application): void {
   app.put(
     '/users/:user_id/send-verification',
     corsOptions,
-    asyncHandler(sendVerificationEmail(auth0Client))
+    asyncHandler(sendVerificationEmail(clients.auth0))
   );
 }
 
-function registerUsersUserIdLockResource(app: Application): void {
+function registerUsersUserIdLockResource(
+  clients: Clients,
+  app: Application
+): void {
   const corsOptions = cors({
     allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
     methods: 'OPTIONS,PUT,DELETE',
@@ -165,16 +155,19 @@ function registerUsersUserIdLockResource(app: Application): void {
   app.put(
     '/users/:user_id/lock',
     corsOptions,
-    asyncHandler(lockUser(auth0Client))
+    asyncHandler(lockUser(clients.auth0))
   );
   app.delete(
     '/users/:user_id/lock',
     corsOptions,
-    asyncHandler(removeUserLock(auth0Client))
+    asyncHandler(removeUserLock(clients.auth0))
   );
 }
 
-function registerUsersUserIdDeletionRequestResource(app: Application): void {
+function registerUsersUserIdDeletionRequestResource(
+  clients: Clients,
+  app: Application
+): void {
   const corsOptions = cors({
     allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
     methods: 'OPTIONS,PUT,DELETE',
@@ -184,16 +177,19 @@ function registerUsersUserIdDeletionRequestResource(app: Application): void {
   app.put(
     '/users/:user_id/deletion-request',
     corsOptions,
-    asyncHandler(requestDelete(auth0Client, emailClient))
+    asyncHandler(requestDelete(clients.auth0, clients.email))
   );
   app.delete(
     '/users/:user_id/deletion-request',
     corsOptions,
-    asyncHandler(removeDelete(auth0Client, emailClient))
+    asyncHandler(removeDelete(clients.auth0, clients.email))
   );
 }
 
-function registerUsersUserIdValidateResource(app: Application): void {
+function registerUsersUserIdValidateResource(
+  clients: Clients,
+  app: Application
+): void {
   const corsOptions = cors({
     allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
     methods: 'OPTIONS,POST',
@@ -203,6 +199,6 @@ function registerUsersUserIdValidateResource(app: Application): void {
   app.post(
     '/users/:user_id/validate',
     corsOptions,
-    asyncHandler(validatePassword(auth0Client))
+    asyncHandler(validatePassword(clients.auth0))
   );
 }
