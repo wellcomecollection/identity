@@ -121,6 +121,6 @@ export default class MockSierraClient implements SierraClient {
         return successResponse({});
       }
     }
-    return errorResponse('Not found', ResponseStatus.InvalidCredentials);
+    return errorResponse('Invalid credentials', ResponseStatus.InvalidCredentials);
   });
 }
