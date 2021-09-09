@@ -39,17 +39,6 @@ output "auth0_openathens_saml_idp_client_id" {
   value = auth0_client.openathens_saml_idp.client_id
 }
 
-# Email
-
-output "ses_smtp_username" {
-  value = aws_iam_access_key.auth0_email.id
-}
-
-output "ses_smtp_password" {
-  value     = aws_iam_access_key.auth0_email.ses_smtp_password_v4
-  sensitive = true
-}
-
 # Environment variables (for CI / CD)
 
 output "ci_environment_variables" {
@@ -63,7 +52,7 @@ output "ci_environment_variables" {
     "export API_GATEWAY_AUTHORIZER_ID=${aws_api_gateway_authorizer.token_authorizer.id}",
     "export AWS_ACCOUNT_ID=${data.aws_caller_identity.current.account_id}",
     "export CLOUDFRONT_SWAGGER_UI_DISTRIBUTION_ID=${aws_cloudfront_distribution.swagger_ui_v1.id}",
-    "export SMTP_PASS=${data.aws_secretsmanager_secret_version.email_smtp_password_secret_version.secret_string}"
+    "export SMTP_PASS=${local.email_credentials["smtp_password"]}"
   ]
 
   sensitive = true

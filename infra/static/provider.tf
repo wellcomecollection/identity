@@ -4,6 +4,10 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 3.41.0" # Any non-beta version >= 3.41.0 and <3.42.0, i.e. 3.41.X
     }
+    mailtrap = {
+      source  = "yardstick/mailtrap"
+      version = "0.0.2"
+    }
   }
 }
 

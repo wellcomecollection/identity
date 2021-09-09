@@ -32,16 +32,8 @@ data "aws_secretsmanager_secret_version" "azure_ad_client_secret_version" {
 
 # Email
 
-resource "aws_secretsmanager_secret" "email_smtp_password_secret" {
-  name = "email-smtp-password-secret-${terraform.workspace}"
-
-  tags = {
-    "Name" = "email-smtp-password-secret-${terraform.workspace}"
-  }
-}
-
-data "aws_secretsmanager_secret_version" "email_smtp_password_secret_version" {
-  secret_id = aws_secretsmanager_secret.email_smtp_password_secret.id
+data "aws_secretsmanager_secret_version" "email_credentials_secret_version" {
+  secret_id = data.terraform_remote_state.identity_static.outputs.email_credential_secret_ids[terraform.workspace]
 }
 
 # Account Management System
