@@ -93,29 +93,6 @@ resource "aws_secretsmanager_secret_version" "account_management_system-api_key-
   secret_string = aws_api_gateway_api_key.account_management_system.value
 }
 
-# Account Admin System
-
-resource "aws_secretsmanager_secret" "account_admin_system-auth0_client_secret" {
-  name = "identity/${terraform.workspace}/account_admin_system/auth0_client_secret"
-
-  tags = {
-    "Name" = "identity/${terraform.workspace}/account_admin_system/auth0_client_secret"
-  }
-}
-
-resource "aws_secretsmanager_secret" "account_admin_system-api_key" {
-  name = "identity/${terraform.workspace}/account_admin_system/api_key"
-
-  tags = {
-    "Name" = "identity/${terraform.workspace}/account_admin_system/api_key"
-  }
-}
-
-resource "aws_secretsmanager_secret_version" "account_admin_system-api_key" {
-  secret_id     = aws_secretsmanager_secret.account_admin_system-api_key.id
-  secret_string = aws_api_gateway_api_key.account_admin_system.value
-}
-
 locals {
   elasticsearch_apps  = ["requests"]
   elasticsearch_creds = ["es_username", "es_password", "es_protocol", "es_port"]
