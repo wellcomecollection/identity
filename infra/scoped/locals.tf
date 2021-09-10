@@ -21,6 +21,15 @@ locals {
   email_noreply_address          = "${aws_ssm_parameter.email_noreply_user.value}@${data.aws_ssm_parameter.email_domain.value}"
   email_noreply_name_and_address = "${aws_ssm_parameter.email_noreply_name.value} <${local.email_noreply_address}>"
 
+  # Credentials exported from static stack in the format:
+  # {
+  #   smtp_hostname = ???
+  #   smtp_port = ???
+  #   smtp_username = ???
+  #   smtp_password = ???
+  # }
+  email_credentials = jsondecode(data.aws_secretsmanager_secret_version.email_credentials_secret_version.secret_string)
+
   # API Gateway
   api_hostname = nonsensitive("api.${trimspace(aws_ssm_parameter.hostname_prefix.value)}${data.aws_ssm_parameter.hostname.value}")
 

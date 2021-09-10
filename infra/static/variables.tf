@@ -6,6 +6,8 @@ locals {
     "Project"     = var.tag_project
     "Environment" = terraform.workspace
     "ManagedBy"   = var.tag_managed_by
+
+    TerraformConfigurationURL = "https://github.com/wellcomecollection/identity/tree/main/infra/static"
   }
 }
 

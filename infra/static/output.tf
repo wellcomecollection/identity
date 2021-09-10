@@ -8,6 +8,8 @@ output "wellcomecollection_org_ses_vertification_token" {
       aws_ses_domain_identity.wellcomecollection_org.verification_token
     ]
   }
+
+  sensitive = true
 }
 
 output "wellcomecollection_org_ses_dkim_tokens" {
@@ -21,6 +23,8 @@ output "wellcomecollection_org_ses_dkim_tokens" {
       ]
     }
   ]
+
+  sensitive = true
 }
 
 output "ses_smtp_hostname" {
@@ -35,4 +39,13 @@ output "ses_smtp_port" {
 
 output "repository_build" {
   value = "https://${aws_ecr_repository.build.repository_url}"
+}
+
+# Email secret ids
+
+output "email_credential_secret_ids" {
+  value = {
+    "stage" = local.stage_email_secrets_id
+    "prod"  = local.prod_email_secrets_id
+  }
 }

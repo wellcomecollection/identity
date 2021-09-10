@@ -416,48 +416,6 @@ resource "aws_ssm_parameter" "email_admin_address" {
   }
 }
 
-resource "aws_ssm_parameter" "email_smtp_hostname" {
-  name  = "identity-email_smtp_hostname-${terraform.workspace}"
-  type  = "String"
-  value = var.ssm_parameter_placeholder_string
-
-  lifecycle {
-    ignore_changes = [value]
-  }
-
-  tags = {
-    "Name" = "identity-email_smtp_hostname-${terraform.workspace}"
-  }
-}
-
-resource "aws_ssm_parameter" "email_smtp_port" {
-  name  = "identity-email_smtp_port-${terraform.workspace}"
-  type  = "String"
-  value = var.ssm_parameter_placeholder_string
-
-  lifecycle {
-    ignore_changes = [value]
-  }
-
-  tags = {
-    "Name" = "identity-email_smtp_port-${terraform.workspace}"
-  }
-}
-
-resource "aws_ssm_parameter" "email_smtp_username" {
-  name  = "identity-email_smtp_username-${terraform.workspace}"
-  type  = "String"
-  value = var.ssm_parameter_placeholder_string
-
-  lifecycle {
-    ignore_changes = [value]
-  }
-
-  tags = {
-    "Name" = "identity-email_smtp_username-${terraform.workspace}"
-  }
-}
-
 # Redis - Access Token Cache
 
 resource "aws_ssm_parameter" "redis_access_token_cache_node_type" {
