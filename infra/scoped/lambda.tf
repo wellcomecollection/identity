@@ -89,8 +89,8 @@ resource "aws_lambda_function" "api" {
   environment {
     variables = {
       SIERRA_API_ROOT      = aws_ssm_parameter.sierra_api_hostname.value,
-      SIERRA_CLIENT_KEY    = data.external.sierra_api_credentials.result.SierraAPIKey
-      SIERRA_CLIENT_SECRET = data.external.sierra_api_credentials.result.SierraAPISecret
+      SIERRA_CLIENT_KEY    = local.sierra_api_credentials.client_key
+      SIERRA_CLIENT_SECRET = local.sierra_api_credentials.client_secret,
       AUTH0_API_ROOT       = local.auth0_endpoint
       AUTH0_API_AUDIENCE   = auth0_client_grant.api_gateway_identity.audience,
       AUTH0_CLIENT_ID      = auth0_client.api_gateway_identity.client_id,
