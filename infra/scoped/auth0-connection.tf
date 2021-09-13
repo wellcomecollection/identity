@@ -45,8 +45,8 @@ resource "auth0_connection" "sierra" {
 
     configuration = {
       API_ROOT      = aws_ssm_parameter.sierra_api_hostname.value,
-      CLIENT_KEY    = data.external.sierra_api_credentials.result.SierraAPIKey,
-      CLIENT_SECRET = data.external.sierra_api_credentials.result.SierraAPISecret
+      CLIENT_KEY    = local.sierra_api_credentials.client_key,
+      CLIENT_SECRET = local.sierra_api_credentials.client_secret
     }
   }
 
