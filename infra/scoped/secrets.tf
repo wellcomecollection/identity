@@ -17,6 +17,15 @@ data "aws_secretsmanager_secret_version" "test_user_credentials" {
   secret_id = aws_secretsmanager_secret.test_user_credentials.id
 }
 
+# OpenAthens configuration
+resource "aws_secretsmanager_secret" "openathens_callback_url" {
+  name = "identity/openathens_callback_url"
+}
+
+data "aws_secretsmanager_secret_version" "openathens_callback_url" {
+  secret_id = aws_secretsmanager_secret.openathens_callback_url.id
+}
+
 # Email provider credentials
 # From the "static" stack - credentials are from mailtrap.io in stage and SES in prod
 data "aws_secretsmanager_secret_version" "email_credentials_secret_version" {

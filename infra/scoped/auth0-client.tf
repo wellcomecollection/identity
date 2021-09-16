@@ -188,8 +188,13 @@ resource "auth0_client" "openathens_saml_idp" {
   app_type       = "regular_web"
   is_first_party = true
 
+  callbacks = [
+    data.aws_secretsmanager_secret_version.openathens_callback_url.secret_string
+  ]
+
   addons {
     samlp {
+
       mappings = {
         user_id     = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
         email       = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
