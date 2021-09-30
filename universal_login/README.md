@@ -56,8 +56,8 @@ At the moment there is only one template in `templates/universal-login.html`.
 
 These templates are in the [liquid](https://shopify.github.io/liquid/) template language.
 
-## Auth0 email customisation
+### Emails
 
-[Email customisation is available through the Auth0 dashboard](https://auth0.com/docs/brand-and-customize/email/customize-email-templates).
+https://auth0.com/docs/brand-and-customize/email/customize-email-templates
 
-The templates we have updated can be found in the `/emails` folder.
+Emails can be found in the `/emails` folder.
