@@ -10,7 +10,11 @@ const ssm = new AWS.SSM();
 type Env = 'stage' | 'prod';
 type Prompt = 'login' | 'reset-password' | 'email-verification';
 type Template = 'universal-login';
-type Email = 'verify_email' | 'welcome_email' | 'blocked_account' | 'change_password';
+type Email =
+  | 'verify_email'
+  | 'welcome_email'
+  | 'blocked_account'
+  | 'change_password';
 
 const stageApiHost = 'stage.account.wellcomecollection.org';
 const prodApiHost = 'account.wellcomecollection.org';
@@ -49,7 +53,7 @@ function loadHTMLTemplate(templateName: Template): string {
   return data;
 }
 
-function loadEmail(emailName: Email): Record<string, unknown>  {
+function loadEmail(emailName: Email): Record<string, unknown> {
   const data = fs.readFileSync(`emails/${emailName}.json`, 'utf8');
   const emailData = JSON.parse(data);
 
@@ -168,11 +172,7 @@ async function updateLoginPageTemplate(
   await axios.request(templateUpdateRequest);
 }
 
-async function updateEmail(
-  env: Env,
-  email: Email,
-  token: BearerToken
-) {
+async function updateEmail(env: Env, email: Email, token: BearerToken) {
   const apiHost = getApiHost(env);
 
   const emailData = loadEmail(email);
@@ -198,7 +198,12 @@ async function updateEmail(
 
     const token = await getApiToken(env);
     const prompts: Prompt[] = ['login', 'reset-password', 'email-verification'];
-    const emails: Email[] = ['verify_email', 'welcome_email', 'blocked_account', 'change_password'];
+    const emails: Email[] = [
+      'verify_email',
+      'welcome_email',
+      'blocked_account',
+      'change_password',
+    ];
 
     for (const prompt of prompts) {
       console.log(`Updating ${prompt} prompt`);
