@@ -8,8 +8,8 @@ const secretsManager = new AWS.SecretsManager();
 const ssm = new AWS.SSM();
 
 type Env = 'stage' | 'prod';
-type Prompt = 'login' | 'reset-password' | 'email-verification';
 type Template = 'universal-login';
+type Prompt = 'login' | 'reset-password' | 'email-verification';
 type Email =
   | 'verify_email'
   | 'welcome_email'
@@ -56,8 +56,8 @@ function loadHTMLTemplate(templateName: Template): string {
 function loadEmail(emailName: Email): Record<string, unknown> {
   const data = fs.readFileSync(`emails/${emailName}.json`, 'utf8');
   const emailData = JSON.parse(data);
-
-  return emailData;
+  const emailTemplate = fs.readFileSync(`emails/${emailName}.html`, 'utf8');
+  return { ...emailData, body: emailTemplate };
 }
 
 async function getParameter(name: string): Promise<string> {
