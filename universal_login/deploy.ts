@@ -202,7 +202,7 @@ async function updateEmail(env: Env, email: Email, token: BearerToken) {
       'verify_email',
       'welcome_email',
       'blocked_account',
-      'change_password',
+      // 'change_password',
     ];
 
     for (const prompt of prompts) {
