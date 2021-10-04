@@ -9,12 +9,16 @@ const ssm = new AWS.SSM();
 
 type Env = 'stage' | 'prod';
 type Template = 'universal-login';
-type Prompt = 'login' | 'reset-password' | 'email-verification';
-type Email =
-  | 'verify_email'
-  | 'welcome_email'
-  | 'blocked_account'
-  | 'change_password';
+const prompts = ['login', 'reset-password', 'email-verification'] as const;
+const emails = [
+  'verify_email',
+  'welcome_email',
+  'blocked_account',
+  // 'change_password',
+] as const;
+
+type Prompt = typeof prompts[number];
+type Email = typeof emails[number];
 
 const stageApiHost = 'stage.account.wellcomecollection.org';
 const prodApiHost = 'account.wellcomecollection.org';
@@ -197,13 +201,6 @@ async function updateEmail(env: Env, email: Email, token: BearerToken) {
     console.log(`Updating environment: ${env}`);
 
     const token = await getApiToken(env);
-    const prompts: Prompt[] = ['login', 'reset-password', 'email-verification'];
-    const emails: Email[] = [
-      'verify_email',
-      'welcome_email',
-      'blocked_account',
-      // 'change_password',
-    ];
 
     for (const prompt of prompts) {
       console.log(`Updating ${prompt} prompt`);
