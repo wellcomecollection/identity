@@ -1,0 +1,7 @@
+{
+  "template": "blocked_account",
+  "from": "library@wellcomecollection.org",
+  "subject": "Blocked account",
+  "syntax": "liquid",
+  "enabled": true
+}

@@ -1,0 +1,8 @@
+{
+  "template": "verify_email",
+  "from": "library@wellcomecollection.org",
+  "resultUrl": "https://wellcomecollection.org/account/validated",
+  "subject": "Verify your email address",
+  "syntax": "liquid",
+  "enabled": true
+}

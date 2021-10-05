@@ -8,8 +8,17 @@ const secretsManager = new AWS.SecretsManager();
 const ssm = new AWS.SSM();
 
 type Env = 'stage' | 'prod';
-type Prompt = 'login' | 'reset-password' | 'email-verification';
 type Template = 'universal-login';
+const prompts = ['login', 'reset-password', 'email-verification'] as const;
+const emails = [
+  'verify_email',
+  'welcome_email',
+  'blocked_account',
+  // 'change_password',
+] as const;
+
+type Prompt = typeof prompts[number];
+type Email = typeof emails[number];
 
 const stageApiHost = 'stage.account.wellcomecollection.org';
 const prodApiHost = 'account.wellcomecollection.org';
@@ -46,6 +55,13 @@ function loadHTMLTemplate(templateName: Template): string {
   const data = fs.readFileSync(`templates/${templateName}.html`, 'utf8');
 
   return data;
+}
+
+function loadEmail(emailName: Email): Record<string, unknown> {
+  const data = fs.readFileSync(`emails/${emailName}.json`, 'utf8');
+  const emailData = JSON.parse(data);
+  const emailTemplate = fs.readFileSync(`emails/${emailName}.html`, 'utf8');
+  return { ...emailData, body: emailTemplate };
 }
 
 async function getParameter(name: string): Promise<string> {
@@ -160,13 +176,31 @@ async function updateLoginPageTemplate(
   await axios.request(templateUpdateRequest);
 }
 
+async function updateEmail(env: Env, email: Email, token: BearerToken) {
+  const apiHost = getApiHost(env);
+
+  const emailData = loadEmail(email);
+  const emailEndpoint = `https://${apiHost}/api/v2/email-templates/${email}`;
+
+  const templateUpdateRequest = {
+    method: 'PUT',
+    url: emailEndpoint,
+    headers: {
+      authorization: `Bearer ${token.access_token}`,
+      'content-type': 'application/json',
+    },
+    data: emailData,
+  } as AxiosRequestConfig;
+
+  await axios.request(templateUpdateRequest);
+}
+
 (async () => {
   try {
     const env = process.argv[2] as Env;
     console.log(`Updating environment: ${env}`);
 
     const token = await getApiToken(env);
-    const prompts: Prompt[] = ['login', 'reset-password', 'email-verification'];
 
     for (const prompt of prompts) {
       console.log(`Updating ${prompt} prompt`);
@@ -175,6 +209,11 @@ async function updateLoginPageTemplate(
 
     console.log(`Updating universal-login template`);
     await updateLoginPageTemplate(env, 'universal-login', token);
+
+    for (const email of emails) {
+      console.log(`Updating ${email} email`);
+      await updateEmail(env, email, token);
+    }
 
     console.log('Updates completed successfully');
   } catch (e) {
