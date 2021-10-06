@@ -14,7 +14,7 @@ const emails = [
   'verify_email',
   'welcome_email',
   'blocked_account',
-  // 'change_password',
+  'reset_email',
 ] as const;
 
 type Prompt = typeof prompts[number];
