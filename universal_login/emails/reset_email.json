@@ -1,5 +1,5 @@
 {
-  "template": "change_password",
+  "template": "reset_email",
   "from": "library@wellcomecollection.org",
   "subject": "Reset your password",
   "syntax": "liquid",
