@@ -202,11 +202,10 @@ async function updateEmail(env: Env, email: Email, token: BearerToken) {
 
     const token = await getApiToken(env);
     // The non production rate limit of the API end point is 2 requests a second, this ensures we never hit the limit
-    const delay = (milliseconds: number) =>
-      new Promise((res) => setTimeout(res, milliseconds));
+    const delay = () => new Promise((res) => setTimeout(res, 1000));
 
     for (const prompt of prompts) {
-      await delay(1000);
+      await delay();
       console.log(`Updating ${prompt} prompt`);
       await updateTextPrompt(env, prompt, token);
     }
@@ -215,7 +214,7 @@ async function updateEmail(env: Env, email: Email, token: BearerToken) {
     await updateLoginPageTemplate(env, 'universal-login', token);
 
     for (const email of emails) {
-      await delay(1000);
+      await delay();
       console.log(`Updating ${email} email`);
       await updateEmail(env, email, token);
     }
