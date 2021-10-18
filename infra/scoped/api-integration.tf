@@ -349,6 +349,10 @@ resource "aws_api_gateway_integration" "users_userid_item-requests_post" {
 
   request_parameters = {
     "integration.request.path.userId" = "method.request.path.userId"
+
+    // This must be set to pass the context set by the authorizer to the HTTP integration
+    // See: https://docs.aws.amazon.com/apigateway/latest/developerguide/request-response-data-mappings.html
+    "integration.request.header.X-Wellcome-Caller-ID" = "context.authorizer.callerId"
   }
 }
 
@@ -367,5 +371,9 @@ resource "aws_api_gateway_integration" "users_userid_item-requests_get" {
 
   request_parameters = {
     "integration.request.path.userId" = "method.request.path.userId"
+
+    // This must be set to pass the context set by the authorizer to the HTTP integration
+    // See: https://docs.aws.amazon.com/apigateway/latest/developerguide/request-response-data-mappings.html
+    "integration.request.header.X-Wellcome-Caller-ID" = "context.authorizer.callerId"
   }
 }
