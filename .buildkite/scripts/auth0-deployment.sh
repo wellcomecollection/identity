@@ -9,9 +9,7 @@ set -o errexit
 function __retrieve_artifacts() {
   mkdir -p /app/.buildkite/build
   aws s3 cp "s3://identity-dist/auth0-scripts-${NORMALIZED_BRANCH_NAME}.zip" "/app/.buildkite/build/auth0-scripts-${NORMALIZED_BRANCH_NAME}.zip"
-  aws s3 cp "s3://identity-dist/auth0-html-${NORMALIZED_BRANCH_NAME}.zip" "/app/.buildkite/build/auth0-html-${NORMALIZED_BRANCH_NAME}.zip"
   unzip "/app/.buildkite/build/auth0-scripts-${NORMALIZED_BRANCH_NAME}.zip" -d "/app/.buildkite/build/"
-  unzip "/app/.buildkite/build/auth0-html-${NORMALIZED_BRANCH_NAME}.zip" -d "/app/.buildkite/build/"
 }
 
 function __do_deployment() {
