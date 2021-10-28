@@ -1,35 +1,10 @@
 export function toPatronRecord(patronRecord: any): PatronRecord {
   const patronName = getPatronName(patronRecord.varFields);
-  return {
+  return Object.assign(patronName, {
     recordNumber: patronRecord.id,
     barcode: getVarFieldContent(patronRecord.varFields, 'b'),
     email: getVarFieldContent(patronRecord.varFields, 'z'),
-
-    // When Sierra stores values, it stores them in a way that means they
-    // can be displayed by concatenating the raw values -- including all
-    // the necessary punctuation.  For example, a name record might be:
-    //
-    //      |cMr a|Wellcome, b|Henry
-    //
-    // You can remove the subfield markers (|c |a |b) to get the display string:
-    //
-    //      Mr Wellcome, Henry
-    //
-    // but when we extract the individual MARC values we get three subfields:
-    //
-    //      c => "Mr"           // title
-    //      a => "Wellcome,"    // last name
-    //      b => "Henry"        // first name
-    //
-    // Notice the trailing comma in the last name.  We don't want to copy
-    // that bit of display punctuation into Auth0, so remove it here.
-    //
-    // Note: I've only ever seen the trailing punctuation on the last name,
-    // and stripping it from the first name is just to be defensive.
-    //
-    firstName: patronName.firstName.replace(/(,*)$/, ''),
-    lastName: patronName.lastName.replace(/(,*)$/, ''),
-  };
+  });
 }
 
 function getVarFieldContent(varFields: VarField[], fieldTag: string): string {
@@ -61,9 +36,32 @@ function getPatronNameMarc(
 ): { firstName: string; lastName: string } {
   const firstName = subFields.find((subField) => subField.tag === 'b');
   const lastName = subFields.find((subField) => subField.tag === 'a');
+
+  // When Sierra stores values, it stores them in a way that means they
+  // can be displayed by concatenating the raw values -- including all
+  // the necessary punctuation.  For example, a name record might be:
+  //
+  //      |cMr a|Wellcome, b|Henry
+  //
+  // You can remove the subfield markers (|c |a |b) to get the display string:
+  //
+  //      Mr Wellcome, Henry
+  //
+  // but when we extract the individual MARC values we get three subfields:
+  //
+  //      c => "Mr"           // title
+  //      a => "Wellcome,"    // last name
+  //      b => "Henry"        // first name
+  //
+  // Notice the trailing comma in the last name.  We don't want to copy
+  // that bit of display punctuation into Auth0, so remove it here.
+  //
+  // Note: I've only ever seen the trailing punctuation on the last name,
+  // and stripping it from the first name is just to be defensive.
+  //
   return {
-    firstName: firstName ? firstName.content.trim() : '',
-    lastName: lastName ? lastName.content.trim() : '',
+    firstName: firstName ? firstName.content.trim().replace(/(,*)$/, '') : '',
+    lastName: lastName ? lastName.content.trim().replace(/(,*)$/, '') : '',
   };
 }
 
