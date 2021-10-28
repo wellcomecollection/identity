@@ -91,9 +91,10 @@ describe('HTTP Auth0 client', () => {
     it('finds the user with blocked', async () => {
       moxios.stubRequest('/users/' + SierraUserIdPrefix + userId, {
         status: 200,
-        response: Object.assign(user, {
+        response: {
+          ...user,
           blocked: false,
-        }),
+        },
       });
 
       const response: APIResponse<Auth0Profile> = await client.getUserByUserId(
@@ -172,9 +173,10 @@ describe('HTTP Auth0 client', () => {
       moxios.stubRequest('/users-by-email?email=' + email, {
         status: 200,
         response: [
-          Object.assign(user, {
+          {
+            ...user,
             blocked: false,
-          }),
+          },
         ],
       });
 
