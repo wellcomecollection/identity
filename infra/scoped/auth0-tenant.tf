@@ -7,6 +7,9 @@ resource "auth0_tenant" "tenant" {
   # This is required for the 'password' grant type that is used when testing user credentials
   default_directory = auth0_connection.sierra.name
 
+  idle_session_lifetime = 8
+  session_lifetime = 168
+
   flags {
     enable_custom_domain_in_emails = true
     universal_login                = true # Enables the 'new' Universal Login experience
