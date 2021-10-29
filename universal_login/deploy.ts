@@ -195,6 +195,25 @@ async function updateEmail(env: Env, email: Email, token: BearerToken) {
   await axios.request(templateUpdateRequest);
 }
 
+// TODO: move this somewhere more appropriate than the universal_login dir?
+async function updateTenantSettings(env: Env, token: BearerToken) {
+  const apiHost = getApiHost(env);
+  const tenantSettingsEndpoint = `https://${apiHost}/api/v2/tenants/settings`;
+
+  var options = {
+    method: 'PATCH',
+    url: tenantSettingsEndpoint,
+    headers: {
+      authorization: `Bearer ${token.access_token}`,
+      'content-type': 'application/json',
+      'cache-control': 'no-cache'
+    },
+    data: '{ "session_lifetime": 168, "idle_session_lifetime": 8 }'
+  } as AxiosRequestConfig;
+
+  await axios.request(options);
+}
+
 (async () => {
   try {
     const env = process.argv[2] as Env;
@@ -218,6 +237,8 @@ async function updateEmail(env: Env, email: Email, token: BearerToken) {
       console.log(`Updating ${email} email`);
       await updateEmail(env, email, token);
     }
+
+    await updateTenantSettings(env, token);
 
     console.log('Updates completed successfully');
   } catch (e) {
