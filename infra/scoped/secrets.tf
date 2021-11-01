@@ -19,7 +19,7 @@ data "aws_secretsmanager_secret_version" "test_user_credentials" {
 
 # OpenAthens configuration
 resource "aws_secretsmanager_secret" "openathens_callback_url" {
-  name = "identity/openathens_callback_url"
+  name = "identity/${terraform.workspace}/openathens_callback_url"
 }
 
 data "aws_secretsmanager_secret_version" "openathens_callback_url" {
