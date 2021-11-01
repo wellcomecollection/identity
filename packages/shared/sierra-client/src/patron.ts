@@ -1,10 +1,11 @@
 export function toPatronRecord(patronRecord: any): PatronRecord {
   const patronName = getPatronName(patronRecord.varFields);
-  return Object.assign(patronName, {
+  return {
+    ...patronName,
     recordNumber: patronRecord.id,
     barcode: getVarFieldContent(patronRecord.varFields, 'b'),
     email: getVarFieldContent(patronRecord.varFields, 'z'),
-  });
+  };
 }
 
 function getVarFieldContent(varFields: VarField[], fieldTag: string): string {
