@@ -1,6 +1,6 @@
 {
   "template": "reset_email",
-  "from": "library@wellcomecollection.org <library@wellcomecollection.org>",
+  "from": "Library Enquiries <library@wellcomecollection.org>",
   "subject": "Reset your password",
   "syntax": "liquid",
   "enabled": true
