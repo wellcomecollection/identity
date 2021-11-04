@@ -1,12 +1,13 @@
 {
-  "name": "api",
+  "name": "@weco/identity-api",
   "version": "0.1.0",
   "main": "index.js",
   "repository": "git@github.com:/wellcomecollection/identity.git",
   "author": "Daniel Grant <daniel.grant@digirati.com>",
   "license": "MIT",
   "scripts": {
-    "build": "tsc --build tsconfig.build.json && cp -r src/utils/templates lib/utils",
+    "build": "tsc --build tsconfig.build.json",
+    "package-templates": "mkdir -p lib && cp -r src/utils/templates lib/utils",
     "clean": "rimraf ./lib tsconfig.build.tsbuildinfo",
     "test": "jest"
   },
