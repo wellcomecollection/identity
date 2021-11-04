@@ -65,6 +65,7 @@ steps:
       - ". /app/.buildkite/scripts/init-environment.sh"
       - "yarn install"
       - "yarn build"
+      - "yarn package-api-templates"
       - "/app/.buildkite/scripts/aws-lambda-packaging.sh"
     plugins:
       - wellcomecollection/aws-assume-role#v0.2.2:
