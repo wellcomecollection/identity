@@ -1,17 +1,21 @@
-import { mockedApi } from './fixtures/mockedApi';
+import { mockedApi, withSourceIp } from './fixtures/mockedApi';
 import { ResponseStatus } from '@weco/identity-common';
 import { randomExistingUser } from './fixtures/generators';
 
 describe('/users/{userId}/password', () => {
   describe('PUT /users/{userId}/password', () => {
     it('changes a user password in both Auth0 and Sierra', async () => {
-      const testUser = randomExistingUser();
-      const { api, clients } = mockedApi([testUser]);
       const newPassword = 'new-password';
-      const response = await api
-        .put(`/users/${testUser.userId}/password`)
-        .send({ password: newPassword })
-        .set('Accept', 'application/json');
+      const oldPassword = 'old-password';
+      const testUser = randomExistingUser({ password: oldPassword });
+      const { api, clients } = mockedApi([testUser]);
+
+      const response = await withSourceIp(
+        api
+          .put(`/users/${testUser.userId}/password`)
+          .send({ newPassword, password: oldPassword })
+          .set('Accept', 'application/json')
+      );
 
       expect(response.statusCode).toBe(200);
 
@@ -30,11 +34,27 @@ describe('/users/{userId}/password', () => {
       expect(sierraValidate.status).toBe(ResponseStatus.Success);
     });
 
+    it('fails if the provided current password is not correct', async () => {
+      const newPassword = 'new-password';
+      const oldPassword = 'old-password';
+      const testUser = randomExistingUser({ password: oldPassword });
+      const { api } = mockedApi([testUser]);
+
+      const response = await withSourceIp(
+        api
+          .put(`/users/${testUser.userId}/password`)
+          .send({ newPassword, password: 'wrong' })
+          .set('Accept', 'application/json')
+      );
+
+      expect(response.statusCode).toBe(401);
+    });
+
     it('404s for users that do not exist', async () => {
       const { api } = mockedApi();
       const response = await api
         .put(`/users/66666666/password`)
-        .send({ password: 'new-password' })
+        .send({ newPassword: 'new-password', password: 'old-password' })
         .set('Accept', 'application/json');
 
       expect(response.statusCode).toBe(404);

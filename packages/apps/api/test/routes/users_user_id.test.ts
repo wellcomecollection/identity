@@ -1,4 +1,4 @@
-import { asAdmin, mockedApi } from './fixtures/mockedApi';
+import { asAdmin, mockedApi, withSourceIp } from './fixtures/mockedApi';
 import { randomExistingUser } from './fixtures/generators';
 
 describe('/users/{userId}', () => {
@@ -25,12 +25,14 @@ describe('/users/{userId}', () => {
 
   describe('PUT /users/{userId}', () => {
     it('updates a user', async () => {
-      const testUser = randomExistingUser();
+      const testUser = randomExistingUser({ password: 'test-password' });
       const { api } = mockedApi([testUser]);
-      const response = await api
-        .put(`/users/${testUser.userId}`)
-        .send({ email: 'test2@test.com' })
-        .set('Accept', 'application/json');
+      const response = await withSourceIp(
+        api
+          .put(`/users/${testUser.userId}`)
+          .send({ email: 'test2@test.com', password: testUser.password })
+          .set('Accept', 'application/json')
+      );
 
       expect(response.statusCode).toBe(200);
       expect(response.body.email).toBe('test2@test.com');
@@ -39,13 +41,41 @@ describe('/users/{userId}', () => {
       expect(response.body.lastName).toBe(testUser.lastName);
     });
 
-    it('does not update immutable fields for non-admins', async () => {
-      const testUser = randomExistingUser();
+    it('fails if the correct current password is not provided for non-admins', async () => {
+      const testUser = randomExistingUser({ password: 'test-password' });
       const { api } = mockedApi([testUser]);
-      const response = await api
-        .put(`/users/${testUser.userId}`)
-        .send({ firstName: 'Test' })
-        .set('Accept', 'application/json');
+      const response = await withSourceIp(
+        api
+          .put(`/users/${testUser.userId}`)
+          .send({ email: 'test2@test.com', password: 'wrong' })
+          .set('Accept', 'application/json')
+      );
+
+      expect(response.statusCode).toBe(401);
+    });
+
+    it('does not require the current password for admins', async () => {
+      const testUser = randomExistingUser({ password: 'test-password' });
+      const { api } = mockedApi([testUser]);
+      const response = await asAdmin(
+        api
+          .put(`/users/${testUser.userId}`)
+          .send({ email: 'test2@test.com' })
+          .set('Accept', 'application/json')
+      );
+
+      expect(response.statusCode).toBe(200);
+    });
+
+    it('does not update immutable fields for non-admins', async () => {
+      const testUser = randomExistingUser({ password: 'test-password' });
+      const { api } = mockedApi([testUser]);
+      const response = await withSourceIp(
+        api
+          .put(`/users/${testUser.userId}`)
+          .send({ firstName: 'Test', password: testUser.password })
+          .set('Accept', 'application/json')
+      );
 
       expect(response.statusCode).toBe(403);
     });
@@ -65,13 +95,15 @@ describe('/users/{userId}', () => {
     });
 
     it('does not update emails if a user with that email already exists', async () => {
-      const testUser1 = randomExistingUser();
+      const testUser1 = randomExistingUser({ password: 'test-password' });
       const testUser2 = randomExistingUser();
       const { api } = mockedApi([testUser1, testUser2]);
-      const response = await api
-        .put(`/users/${testUser1.userId}`)
-        .send({ email: testUser2.email })
-        .set('Accept', 'application/json');
+      const response = await withSourceIp(
+        api
+          .put(`/users/${testUser1.userId}`)
+          .send({ email: testUser2.email, password: testUser1.password })
+          .set('Accept', 'application/json')
+      );
 
       expect(response.statusCode).toBe(409);
     });

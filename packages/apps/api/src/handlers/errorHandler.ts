@@ -14,4 +14,9 @@ export const errorHandler = (
 
   const status = err instanceof HttpError ? err.status : 500;
   res.status(status).json(err.message ? toMessage(err.message) : undefined);
+
+  // These are unexpected errors
+  if (!(err instanceof HttpError)) {
+    console.error(err);
+  }
 };
