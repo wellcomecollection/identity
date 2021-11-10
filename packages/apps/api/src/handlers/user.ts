@@ -320,8 +320,12 @@ export function changePassword(
     if (auth0Get.status !== ResponseStatus.Success) {
       throw clientResponseToHttpError(auth0Get);
     }
-    const sss = extractSourceIp(request);
-    const pogs = await checkPassword(auth0Get.result.email, oldPassword, sss);
+
+    await checkPassword(
+      auth0Get.result.email,
+      oldPassword,
+      extractSourceIp(request)
+    );
 
     const auth0Update: APIResponse<Auth0Profile> = await auth0Client.updatePassword(
       userId,
