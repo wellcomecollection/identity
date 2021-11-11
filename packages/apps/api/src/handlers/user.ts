@@ -19,6 +19,7 @@ import { toSearchResults, toUser } from '../models/user';
 import { EmailClient } from '../utils/EmailClient';
 
 export function validatePassword(auth0Client: Auth0Client) {
+  const checkPassword = passwordCheckerForUser(auth0Client);
   return async function (request: Request, response: Response): Promise<void> {
     const userId: number = getTargetUserId(request);
     const password: string = request.body.password;
@@ -28,7 +29,6 @@ export function validatePassword(auth0Client: Auth0Client) {
         message: 'A password must be provided and non-blank',
       });
     }
-
     const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(
       userId
     );
@@ -36,14 +36,11 @@ export function validatePassword(auth0Client: Auth0Client) {
       throw clientResponseToHttpError(auth0Get);
     }
 
-    const validationResult = await auth0Client.validateUserCredentials(
-      extractSourceIp(request),
+    await checkPassword(
       auth0Get.result.email,
-      password
+      password,
+      extractSourceIp(request)
     );
-    if (validationResult.status !== ResponseStatus.Success) {
-      throw clientResponseToHttpError(validationResult);
-    }
 
     response.sendStatus(200);
   };
@@ -159,8 +156,10 @@ export function updateUser(
   sierraClient: SierraClient,
   auth0Client: Auth0Client
 ) {
+  const checkPassword = passwordCheckerForUser(auth0Client);
   return async function (request: Request, response: Response): Promise<void> {
     const userId: number = getTargetUserId(request);
+    const password: string | undefined = request.body.password;
 
     const auth0UserIdGet: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(
       userId
@@ -169,6 +168,21 @@ export function updateUser(
       throw clientResponseToHttpError(auth0UserIdGet);
     }
     const auth0Profile: Auth0Profile = auth0UserIdGet.result;
+
+    if (!userIsAdmin(request)) {
+      if (!password) {
+        throw new HttpError({
+          status: 400,
+          message: 'Current password must be provided',
+        });
+      }
+
+      await checkPassword(
+        auth0Profile.email,
+        password,
+        extractSourceIp(request)
+      );
+    }
 
     const fields: { [key: string]: { value: string; modified: boolean } } = {
       email: {
@@ -287,20 +301,35 @@ export function changePassword(
   sierraClient: SierraClient,
   auth0Client: Auth0Client
 ) {
+  const checkPassword = passwordCheckerForUser(auth0Client);
   return async function (request: Request, response: Response): Promise<void> {
     const userId: number = getTargetUserId(request);
 
-    const password: string = request.body.password;
-    if (!isNonBlank(password)) {
+    const newPassword: string = request.body.newPassword;
+    const oldPassword: string = request.body.password;
+    if (!isNonBlank(newPassword) || !isNonBlank(oldPassword)) {
       throw new HttpError({
         status: 400,
         message: 'All fields must be provided and non-blank',
       });
     }
 
+    const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(
+      userId
+    );
+    if (auth0Get.status !== ResponseStatus.Success) {
+      throw clientResponseToHttpError(auth0Get);
+    }
+
+    await checkPassword(
+      auth0Get.result.email,
+      oldPassword,
+      extractSourceIp(request)
+    );
+
     const auth0Update: APIResponse<Auth0Profile> = await auth0Client.updatePassword(
       userId,
-      password
+      newPassword
     );
     if (auth0Update.status !== ResponseStatus.Success) {
       throw clientResponseToHttpError(auth0Update);
@@ -308,7 +337,7 @@ export function changePassword(
 
     const sierraUpdate: APIResponse<PatronRecord> = await sierraClient.updatePassword(
       userId,
-      truncate(password, 30)
+      truncate(newPassword, 30)
     );
     if (sierraUpdate.status !== ResponseStatus.Success) {
       throw clientResponseToHttpError(sierraUpdate);
@@ -447,8 +476,10 @@ export function requestDelete(
   auth0Client: Auth0Client,
   emailClient: EmailClient
 ) {
+  const checkPassword = passwordCheckerForUser(auth0Client);
   return async function (request: Request, response: Response): Promise<void> {
     const userId: number = getTargetUserId(request);
+    const password: string = request.body.password;
 
     const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(
       userId
@@ -456,6 +487,12 @@ export function requestDelete(
     if (auth0Get.status !== ResponseStatus.Success) {
       throw clientResponseToHttpError(auth0Get);
     }
+
+    await checkPassword(
+      auth0Get.result.email,
+      password,
+      extractSourceIp(request)
+    );
 
     if (auth0Get.result?.metadata?.deleteRequested) {
       response
@@ -673,4 +710,21 @@ function userIsAdmin(request: Request): boolean {
   const isAdmin: string | null | undefined =
     request.apiGateway?.event.requestContext.authorizer?.isAdmin;
   return !!isAdmin && /true/i.test(isAdmin);
+}
+
+function passwordCheckerForUser(auth0Client: Auth0Client) {
+  return async function (
+    email: string,
+    password: string,
+    sourceIp: string
+  ): Promise<void> {
+    const validationResult = await auth0Client.validateUserCredentials(
+      sourceIp,
+      email,
+      password
+    );
+    if (validationResult.status !== ResponseStatus.Success) {
+      throw clientResponseToHttpError(validationResult);
+    }
+  };
 }

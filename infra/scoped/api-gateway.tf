@@ -1447,6 +1447,10 @@ resource "aws_api_gateway_method" "users_userid_deletion-request_put" {
   request_parameters = {
     "method.request.path.userId" = true
   }
+
+  request_models = {
+    "application/json" = aws_api_gateway_model.deletion-request.name
+  }
 }
 
 # 200 OK

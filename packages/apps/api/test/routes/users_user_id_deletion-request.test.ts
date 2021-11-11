@@ -1,13 +1,16 @@
-import { mockedApi } from './fixtures/mockedApi';
+import { mockedApi, withSourceIp } from './fixtures/mockedApi';
 import { randomExistingUser } from './fixtures/generators';
 
 describe('/users/{userId}/deletion-request', () => {
   describe('PUT /users/{userId}/deletion-request', () => {
     it('marks a user as having requested deletion, blocks the account, and sends deletion request emails', async () => {
-      const testUser = randomExistingUser();
+      const testUser = randomExistingUser({ password: 'test-password' });
       const { clients, api } = mockedApi([testUser]);
-      const response = await api.put(
-        `/users/${testUser.userId}/deletion-request`
+      const response = await withSourceIp(
+        api
+          .put(`/users/${testUser.userId}/deletion-request`)
+          .send({ password: testUser.password })
+          .set('Accept', 'application/json')
       );
       expect(response.statusCode).toBe(200);
 
@@ -19,11 +22,29 @@ describe('/users/{userId}/deletion-request', () => {
       expect(clients.email.sendDeleteRequestUser).toHaveBeenCalled();
     });
 
-    it('304s for a user already marked for deletion', async () => {
-      const testUser = randomExistingUser({ markedForDeletion: true });
+    it('fails if the correct current password is not provided', async () => {
+      const testUser = randomExistingUser({ password: 'test-password' });
       const { api } = mockedApi([testUser]);
-      const response = await api.put(
-        `/users/${testUser.userId}/deletion-request`
+      const response = await withSourceIp(
+        api
+          .put(`/users/${testUser.userId}/deletion-request`)
+          .send({ password: 'wrong' })
+          .set('Accept', 'application/json')
+      );
+      expect(response.statusCode).toBe(401);
+    });
+
+    it('304s for a user already marked for deletion', async () => {
+      const testUser = randomExistingUser({
+        markedForDeletion: true,
+        password: 'test-password',
+      });
+      const { api } = mockedApi([testUser]);
+      const response = await withSourceIp(
+        api
+          .put(`/users/${testUser.userId}/deletion-request`)
+          .send({ password: testUser.password })
+          .set('Accept', 'application/json')
       );
       expect(response.statusCode).toBe(304);
     });

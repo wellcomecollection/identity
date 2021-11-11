@@ -33,6 +33,13 @@ resource "aws_api_gateway_model" "update-user" {
   schema       = file("${path.module}/../../models/update-user.json")
 }
 
+resource "aws_api_gateway_model" "deletion-request" {
+  name         = "DeletionRequest"
+  rest_api_id  = aws_api_gateway_rest_api.identity.id
+  content_type = "application/json"
+  schema       = file("${path.module}/../../models/deletion-request.json")
+}
+
 resource "aws_api_gateway_model" "validate" {
   name         = "Validate"
   rest_api_id  = aws_api_gateway_rest_api.identity.id
