@@ -2,7 +2,7 @@
   "template": "verify_email",
   "from": "Library Enquiries <library@wellcomecollection.org>",
   "resultUrl": "https://wellcomecollection.org/account/validated",
-  "subject": "Verify your email address",
+  "subject": "Please verify your email address",
   "syntax": "liquid",
   "enabled": true
 }
