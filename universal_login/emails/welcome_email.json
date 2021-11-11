@@ -1,7 +1,7 @@
 {
   "template": "welcome_email",
   "from": "Library Enquiries <library@wellcomecollection.org>",
-  "subject": "Welcome to Wellcome Collection",
+  "subject": "Email verified",
   "syntax": "liquid",
-  "enabled": false
+  "enabled": true
 }
