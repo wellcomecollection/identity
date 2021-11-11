@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc --build tsconfig.build.json",
-    "package-templates": "mkdir  -p lib && cp -r src/utils/templates lib/utils",
+    "package-templates": "mkdir -p lib && cp -r src/utils/templates lib/utils",
     "clean": "rimraf ./lib tsconfig.build.tsbuildinfo",
     "test": "jest"
   },
