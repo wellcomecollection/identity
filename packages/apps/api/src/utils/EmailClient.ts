@@ -22,7 +22,6 @@ export interface SmtpConfiguration {
 export interface EmailClient {
   sendDeleteRequestAdmin(auth0Profile: Auth0Profile): Promise<APIResponse<{}>>;
   sendDeleteRequestUser(auth0Profile: Auth0Profile): Promise<APIResponse<{}>>;
-  sendDeleteRemovalUser(auth0Profile: Auth0Profile): Promise<APIResponse<{}>>;
 }
 
 export default class HttpEmailClient implements EmailClient {
@@ -82,23 +81,6 @@ export default class HttpEmailClient implements EmailClient {
         firstName: auth0Profile.firstName,
         lastName: auth0Profile.lastName,
         supportUrl: this.supportUrl,
-      }
-    );
-    return this.sendEmail(auth0Profile.email, subject, body);
-  }
-
-  async sendDeleteRemovalUser(
-    auth0Profile: Auth0Profile
-  ): Promise<APIResponse<{}>> {
-    const subject: string = await this.engine.renderFile(
-      'remove-delete-request_user_subject',
-      {}
-    );
-    const body: string = await this.engine.renderFile(
-      'remove-delete-request_user_body',
-      {
-        firstName: auth0Profile.firstName,
-        lastName: auth0Profile.lastName,
       }
     );
     return this.sendEmail(auth0Profile.email, subject, body);
