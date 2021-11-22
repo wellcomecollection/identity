@@ -39,8 +39,7 @@ export default class HttpAuth0Client implements Auth0Client {
     this.clientSecret = clientSecret;
   }
 
-  // This call intentionally handles access tokens pertaining to any connection. Without this, we wouldn't be able to
-  // test and verify access tokens issued by the Azure AD connection on behalf of administrator users.
+  // This call intentionally handles access tokens pertaining to any connection.
   async validateAccessToken(
     accessToken: string
   ): Promise<APIResponse<Auth0UserInfo>> {

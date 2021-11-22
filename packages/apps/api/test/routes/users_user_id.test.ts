@@ -1,4 +1,4 @@
-import { asAdmin, mockedApi, withSourceIp } from './fixtures/mockedApi';
+import { mockedApi, withSourceIp } from './fixtures/mockedApi';
 import { randomExistingUser } from './fixtures/generators';
 
 describe('/users/{userId}', () => {

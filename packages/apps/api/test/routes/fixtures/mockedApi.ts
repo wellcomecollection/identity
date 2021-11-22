@@ -14,7 +14,6 @@ export type ExistingUser = {
   email: string;
   sourceSystems: SourceSystem[];
   password?: string;
-  isAdmin?: boolean;
   markedForDeletion?: boolean;
   emailValidated?: boolean;
 };
@@ -31,7 +30,6 @@ const apiGatewayHeaders = (data: object = {}) => {
 const withApiGatewayContext = (data: object) => (request: Request) =>
   request.set(apiGatewayHeaders(data));
 
-export const asAdmin = withApiGatewayContext({ authorizer: { isAdmin: true } });
 export const withSourceIp = withApiGatewayContext({
   identity: { sourceIp: 'test' },
 });
@@ -67,7 +65,6 @@ export const mockedApi = (existingUsers: ExistingUser[] = []) => {
           lastName: user.lastName,
           name: user.firstName + ' ' + user.lastName,
           additionalAttributes: {
-            is_admin: user.isAdmin,
             deleteRequested: user.markedForDeletion
               ? new Date().toISOString()
               : undefined,

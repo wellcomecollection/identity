@@ -64,15 +64,6 @@ export default class MockAuth0Client implements Auth0Client {
     this.passwords.set(userId.toString(), password || '');
   };
 
-  addAdminUser = (user: NumericIDAuth0UserInfo, password?: string) =>
-    this.addUser(
-      {
-        ...user,
-        additionalAttributes: { ...user.additionalAttributes, is_admin: true },
-      },
-      password
-    );
-
   getAccessToken = (userId: number) => {
     if (this.users.has(userId.toString())) {
       const token = Math.floor(Math.random() * 10e10).toString();
