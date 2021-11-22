@@ -5,10 +5,7 @@ import {
   APIGatewayRequestAuthorizerEvent,
 } from 'aws-lambda';
 import { APIResponse, ResponseStatus } from '@weco/identity-common';
-import resourceAcls, {
-  isAdministrator,
-  ResourceAclMethod,
-} from './resourceAcls';
+import resourceAcls, { ResourceAclMethod } from './resourceAcls';
 
 export const createLambdaHandler = (
   auth0Client: Auth0Client,
@@ -106,8 +103,7 @@ export const createLambdaHandler = (
       auth0UserInfo.userId.toString(),
       'Allow',
       event.methodArn,
-      auth0UserInfo.userId.toString(),
-      isAdministrator(auth0UserInfo, {})
+      auth0UserInfo.userId.toString()
     );
   };
 };
@@ -135,13 +131,11 @@ function buildAuthorizerResult(
   principal: string,
   effect: 'Allow' | 'Deny',
   methodArn: string,
-  callerId: string | undefined = undefined,
-  isAdmin: boolean = false
+  callerId: string | undefined = undefined
 ): APIGatewayAuthorizerResult {
   return {
     context: {
       callerId,
-      isAdmin,
     },
     principalId: principal,
     policyDocument: {

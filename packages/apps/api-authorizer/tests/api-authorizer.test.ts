@@ -76,33 +76,6 @@ describe('API Authorizer', () => {
     }
   });
 
-  it('denies requests where the access token has insufficient privileges for the requested resource', async () => {
-    mockAuth0Client.addUser(testUserInfo);
-    const token = mockAuth0Client.getAccessToken(testUserInfo.userId);
-
-    const event = createEvent({
-      token: token,
-      resource: '/users',
-      method: 'GET',
-    });
-
-    const result = await lambdaHandler(event);
-    expect(result).toHaveProperty('policyDocument.Statement.0.Effect', 'Deny');
-  });
-
-  it('allows requests where the access token has sufficient privileges for the requested resource', async () => {
-    mockAuth0Client.addAdminUser(testUserInfo);
-    const token = mockAuth0Client.getAccessToken(testUserInfo.userId);
-    const event = createEvent({
-      token,
-      resource: '/users',
-      method: 'GET',
-    });
-
-    const result = await lambdaHandler(event);
-    expect(result).toHaveProperty('policyDocument.Statement.0.Effect', 'Allow');
-  });
-
   it('denies requests where the user is accessing an invalid resource', async () => {
     mockAuth0Client.addUser(testUserInfo);
     const token = mockAuth0Client.getAccessToken(testUserInfo.userId);
@@ -136,7 +109,7 @@ describe('API Authorizer', () => {
     mockRedis.get.mockResolvedValue(null);
   });
 
-  it('returns the caller ID and admin status in the result context', async () => {
+  it('returns the caller ID in the result context', async () => {
     mockAuth0Client.addUser(testUserInfo);
     const token = mockAuth0Client.getAccessToken(testUserInfo.userId);
     const event = createEvent({
@@ -151,7 +124,6 @@ describe('API Authorizer', () => {
       'context.callerId',
       testUserInfo.userId.toString()
     );
-    expect(result).toHaveProperty('context.isAdmin', false);
   });
 });
 

@@ -10,13 +10,6 @@ type ResourceAcls = Record<
   Partial<Record<ResourceAclMethod, ResourceAclCheck>>
 >;
 
-export const isAdministrator = function (
-  auth0UserInfo: Auth0UserInfo,
-  pathParameters: Record<string, string | undefined> | null
-): boolean {
-  return auth0UserInfo.additionalAttributes?.is_admin ?? false;
-};
-
 export const isSelf = function (
   auth0UserInfo: Auth0UserInfo,
   pathParameters: Record<string, string | undefined> | null
@@ -33,27 +26,15 @@ const anyOf = (...checks: ResourceAclCheck[]): ResourceAclCheck => (
 ) => checks.some((check) => check(info, params));
 
 const resourceAcls: ResourceAcls = {
-  '/users': {
-    GET: isAdministrator,
-  },
   '/users/{userId}': {
-    GET: anyOf(isSelf, isAdministrator),
-    PUT: anyOf(isSelf, isAdministrator),
-    DELETE: isAdministrator,
+    GET: isSelf,
+    PUT: isSelf,
   },
   '/users/{userId}/password': {
     PUT: isSelf,
   },
-  '/users/{userId}/send-verification': {
-    PUT: isAdministrator,
-  },
-  '/users/{userId}/lock': {
-    PUT: isAdministrator,
-    DELETE: isAdministrator,
-  },
   '/users/{userId}/deletion-request': {
     PUT: isSelf,
-    DELETE: isAdministrator,
   },
   '/users/{userId}/validate': {
     POST: isSelf,
