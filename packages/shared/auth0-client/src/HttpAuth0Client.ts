@@ -221,9 +221,7 @@ export default class HttpAuth0Client implements Auth0Client {
 
   async updateUser(
     userId: number,
-    email: string,
-    firstName: string,
-    lastName: string
+    email: string
   ): Promise<APIResponse<Auth0Profile>> {
     return this.getMachineToMachineInstance().then((instance) => {
       return instance
@@ -232,9 +230,6 @@ export default class HttpAuth0Client implements Auth0Client {
           {
             // Automatically append the mandatory Auth0 prefix to the given user ID.
             email: email,
-            given_name: firstName,
-            family_name: lastName,
-            name: firstName + ' ' + lastName,
             verify_email: true,
             connection: SierraConnection,
           },

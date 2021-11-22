@@ -32,12 +32,7 @@ export default interface Auth0Client {
     email: string,
     password: string
   ): Promise<APIResponse<Auth0Profile>>;
-  updateUser(
-    userId: number,
-    email: string,
-    firstName: string,
-    lastName: string
-  ): Promise<APIResponse<Auth0Profile>>;
+  updateUser(userId: number, email: string): Promise<APIResponse<Auth0Profile>>;
   deleteUser(userId: number): Promise<APIResponse<{}>>;
 
   sendVerificationEmail(userId: number): Promise<APIResponse<{}>>;

@@ -106,18 +106,6 @@ export function updateUser(
       return;
     }
 
-    if (
-      modifiedFields.includes('firstName') ||
-      modifiedFields.includes('lastName')
-    ) {
-      throw new HttpError({
-        status: 403,
-        message: `Attempt to modify immutable fields [${modifiedFields.join(
-          ','
-        )}]`,
-      });
-    }
-
     if (modifiedFields.includes('email')) {
       const auth0EmailGet: APIResponse<Auth0Profile> = await auth0Client.getUserByEmail(
         fields.email.value
@@ -162,9 +150,7 @@ export function updateUser(
 
     const auth0Update: APIResponse<Auth0Profile> = await auth0Client.updateUser(
       userId,
-      fields.email.value,
-      fields.firstName.value,
-      fields.lastName.value
+      fields.email.value
     );
     if (auth0Update.status !== ResponseStatus.Success) {
       throw clientResponseToHttpError(auth0Update);
