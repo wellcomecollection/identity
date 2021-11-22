@@ -3,12 +3,7 @@ const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const TaskWrapperPlugin = require('./TaskWrapperPlugin');
 
 // All of the individual scripts to be built need to be listed here
-const actions = [
-  'create_azure_ad_profile',
-  'enrich_userinfo',
-  'get_user',
-  'login',
-];
+const actions = ['create_azure_ad_profile', 'get_user', 'login'];
 
 // Any non-node external modules should be listed here
 // They must be on this list: https://auth0-extensions.github.io/canirequire/

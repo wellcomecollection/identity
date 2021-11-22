@@ -10,8 +10,7 @@ function __package_auth0_scripts() {
   mkdir -p /app/.buildkite/build/
   zip -vj "/app/.buildkite/build/auth0-scripts-${NORMALIZED_BRANCH_NAME}.zip" \
     "/app/packages/apps/auth0-actions/dist/get_user.js" \
-    "/app/packages/apps/auth0-actions/dist/login.js" \
-    "/app/packages/apps/auth0-actions/dist/enrich_userinfo.js"
+    "/app/packages/apps/auth0-actions/dist/login.js"
 }
 
 function __store_auth0_scripts() {
