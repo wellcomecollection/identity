@@ -1,7 +1,0 @@
-{
-  "summary": "Creates a user",
-  "description": "Creates a new user record in Wellcome Collection's Sierra platform and Auth0, linking the records together.",
-  "tags": [
-    "Public"
-  ]
-}

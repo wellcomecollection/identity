@@ -59,14 +59,6 @@ locals {
   ams_validate_uri         = "${local.wellcome_collection_site_uri}/${local.ams_context_path}/validated"
   ams_delete_requested_uri = "${local.wellcome_collection_site_uri}/${local.ams_context_path}/delete-requested"
 
-  # Account Admin System
-  account_admin_hostnames = {
-    stage = "account-admin-stage.wellcomecollection.org"
-    prod  = "account-admin.wellcomecollection.org"
-  }
-  aas_redirect_uri = "https://${local.account_admin_hostnames[terraform.workspace]}/api/auth/callback"
-  aas_logout_uri   = "https://${local.account_admin_hostnames[terraform.workspace]}"
-
   # Identity account VPC
   identity_account_state = data.terraform_remote_state.accounts_identity.outputs
 

@@ -260,36 +260,6 @@ resource "aws_ssm_parameter" "cloudwatch_retention" {
   }
 }
 
-# Azure AD
-
-resource "aws_ssm_parameter" "azure_ad_directory_id" {
-  name  = "identity-azure_ad_directory_id-${terraform.workspace}"
-  type  = "String"
-  value = var.ssm_parameter_placeholder_string
-
-  lifecycle {
-    ignore_changes = [value]
-  }
-
-  tags = {
-    "Name" = "identity-azure_ad_directory_id-${terraform.workspace}"
-  }
-}
-
-resource "aws_ssm_parameter" "azure_ad_application_id" {
-  name  = "identity-azure_ad_application_id-${terraform.workspace}"
-  type  = "String"
-  value = var.ssm_parameter_placeholder_string
-
-  lifecycle {
-    ignore_changes = [value]
-  }
-
-  tags = {
-    "Name" = "identity-azure_ad_application_id-${terraform.workspace}"
-  }
-}
-
 # Account Management System
 
 resource "aws_ssm_parameter" "account_management_system-auth0_domain" {
@@ -355,48 +325,6 @@ resource "aws_ssm_parameter" "account_management_system-logout_redirect_url" {
 
   tags = {
     "Name" = "/identity/${terraform.workspace}/account_management_system/logout_redirect_url"
-  }
-}
-
-# Account Admin System
-
-resource "aws_ssm_parameter" "account_admin_system-auth0_domain" {
-  name  = "/identity/${terraform.workspace}/account_admin_system/auth0_domain"
-  type  = "String"
-  value = local.auth0_hostname
-
-  tags = {
-    "Name" = "/identity/${terraform.workspace}/account_admin_system/auth0_domain"
-  }
-}
-
-resource "aws_ssm_parameter" "account_admin_system-auth0_callback_url" {
-  name  = "/identity/${terraform.workspace}/account_admin_system/auth0_callback_url"
-  type  = "String"
-  value = local.aas_redirect_uri
-
-  tags = {
-    "Name" = "/identity/${terraform.workspace}/account_admin_system/auth0_callback_url"
-  }
-}
-
-resource "aws_ssm_parameter" "account_admin_system-api_base_url" {
-  name  = "/identity/${terraform.workspace}/account_admin_system/api_base_url"
-  type  = "String"
-  value = local.identity_v1_endpoint
-
-  tags = {
-    "Name" = "/identity/${terraform.workspace}/account_admin_system/api_base_url"
-  }
-}
-
-resource "aws_ssm_parameter" "account_admin_system-logout_redirect_url" {
-  name  = "/identity/${terraform.workspace}/account_admin_system/logout_redirect_url"
-  type  = "String"
-  value = local.wellcome_collection_site_uri
-
-  tags = {
-    "Name" = "/identity/${terraform.workspace}/account_admin_system/logout_redirect_url"
   }
 }
 
