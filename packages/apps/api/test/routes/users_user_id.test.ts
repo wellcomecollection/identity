@@ -41,7 +41,7 @@ describe('/users/{userId}', () => {
       expect(response.body.lastName).toBe(testUser.lastName);
     });
 
-    it('fails if the correct current password is not provided for non-admins', async () => {
+    it('fails if the correct current password is not provided', async () => {
       const testUser = randomExistingUser({ password: 'test-password' });
       const { api } = mockedApi([testUser]);
       const response = await withSourceIp(
