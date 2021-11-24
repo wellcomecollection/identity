@@ -10,6 +10,8 @@ const actions = [
   'change_password',
   'change_email',
   'verify',
+  'create',
+  'delete',
 ];
 
 // Any non-node external modules should be listed here
@@ -64,9 +66,10 @@ module.exports = {
     filename: '[name].js',
     path: path.resolve(__dirname, 'dist'),
     // This config means that the output declares a `var` named as the chunk name
-    // to which the default export of the script is assigned.
+    // to which the default export of the script is assigned, with the suffix `_script`
+    // in case the chunk name is not a valid identifier.
     library: {
-      name: '[name]',
+      name: '[name]_script',
       type: 'var',
       export: 'default',
     },
