@@ -1,6 +1,7 @@
 import { HttpSierraClient } from '@weco/sierra-client';
 import { ResponseStatus } from '@weco/identity-common';
 import { callbackify } from 'util';
+import { recordNumberForEmail } from './helpers';
 
 declare const configuration: {
   API_ROOT: string;
@@ -20,27 +21,21 @@ async function changeEmail(
   const clientSecret = configuration.CLIENT_SECRET;
 
   const sierraClient = new HttpSierraClient(apiRoot, clientKey, clientSecret);
+  const recordNumber = await recordNumberForEmail(email, sierraClient);
 
-  const patronRecordResponse = await sierraClient.getPatronRecordByEmail(email);
+  if (recordNumber) {
+    const patronRecordUpdate = await sierraClient.updatePatronRecord(
+      recordNumber,
+      newEmail
+    );
 
-  if (patronRecordResponse.status === ResponseStatus.NotFound) {
-    return false;
-  } else if (patronRecordResponse.status !== ResponseStatus.Success) {
-    throw new Error(patronRecordResponse.message);
+    if (patronRecordUpdate.status !== ResponseStatus.Success) {
+      throw new Error(patronRecordUpdate.message);
+    }
+
+    return true;
   }
-
-  const patronRecord = patronRecordResponse.result;
-  const patronRecordNumber = patronRecord.recordNumber;
-  const patronRecordUpdate = await sierraClient.updatePatronRecord(
-    patronRecordNumber,
-    newEmail
-  );
-
-  if (patronRecordUpdate.status !== ResponseStatus.Success) {
-    throw new Error(patronRecordUpdate.message);
-  }
-
-  return true;
+  return false;
 }
 
 export default callbackify(changeEmail);

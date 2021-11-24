@@ -1,4 +1,4 @@
-import changeEmail from '../src/change_email';
+import changePassword from '../src/change_password';
 import { MockSierraClient } from '@weco/sierra-client';
 import { errorResponse, ResponseStatus } from '@weco/identity-common';
 
@@ -13,15 +13,16 @@ jest.mock('@weco/sierra-client', () => {
   };
 });
 
-describe('change email script', () => {
+describe('change password script', () => {
   afterEach(() => {
     mockSierraClient.reset();
   });
 
-  it('returns true if the email is successfully updated', (done) => {
+  it('returns true if the password is successfully updated', (done) => {
+    const oldPassword = 'old-password';
+    const newPassword = 'new-password';
     const testPatron = MockSierraClient.randomPatronRecord();
-    mockSierraClient.addPatron(testPatron);
-    const newEmail = 'new@email.com';
+    mockSierraClient.addPatron(testPatron, oldPassword);
 
     const callback = (
       error?: NodeJS.ErrnoException | null,
@@ -29,13 +30,13 @@ describe('change email script', () => {
     ) => {
       expect(error).toBe(null);
       expect(success).toBe(true);
-      expect(mockSierraClient.get(testPatron.recordNumber)?.email).toBe(
-        newEmail
+      expect(mockSierraClient.getPassword(testPatron.recordNumber)).toBe(
+        newPassword
       );
       done();
     };
 
-    changeEmail(testPatron.email, newEmail, false, callback);
+    changePassword(testPatron.email, newPassword, callback);
   });
 
   it('returns false if the user does not exist in Sierra', (done) => {
@@ -48,18 +49,13 @@ describe('change email script', () => {
       done();
     };
 
-    changeEmail(
-      'doesnotexist@email.com',
-      'doesnotmatter@email.com',
-      false,
-      callback
-    );
+    changePassword('doesnotexist@email.com', 'password', callback);
   });
 
   it('throws an error if the Sierra request returns an error', (done) => {
     const testPatron = MockSierraClient.randomPatronRecord();
     mockSierraClient.addPatron(testPatron);
-    mockSierraClient.updatePatronRecord.mockResolvedValueOnce(
+    mockSierraClient.updatePassword.mockResolvedValueOnce(
       errorResponse('bad computer', ResponseStatus.UnknownError)
     );
     const callback = (
@@ -71,6 +67,6 @@ describe('change email script', () => {
       done();
     };
 
-    changeEmail(testPatron.email, 'doesnotmatter@email.com', false, callback);
+    changePassword(testPatron.email, 'password', callback);
   });
 });

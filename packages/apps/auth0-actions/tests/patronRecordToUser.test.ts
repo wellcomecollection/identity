@@ -1,4 +1,4 @@
-import { patronRecordToUser } from '../src/patronRecordToUser';
+import { patronRecordToUser } from '../src/helpers';
 
 const testPatronRecord = {
   recordNumber: 1234567,
