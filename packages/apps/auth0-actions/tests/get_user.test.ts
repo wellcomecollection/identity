@@ -2,7 +2,7 @@ import { errorResponse, ResponseStatus } from '@weco/identity-common';
 import { MockSierraClient } from '@weco/sierra-client';
 import { User } from 'auth0';
 import getUser from '../src/get_user';
-import { patronRecordToUser } from '../src/patronRecordToUser';
+import { patronRecordToUser } from '../src/helpers';
 
 const mockSierraClient = new MockSierraClient();
 jest.mock('@weco/sierra-client', () => {

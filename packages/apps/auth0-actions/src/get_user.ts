@@ -1,7 +1,7 @@
 import { HttpSierraClient } from '@weco/sierra-client';
 import { ResponseStatus } from '@weco/identity-common';
 import { callbackify } from 'util';
-import { patronRecordToUser } from './patronRecordToUser';
+import { patronRecordToUser } from './helpers';
 import { User } from 'auth0';
 
 declare const configuration: {

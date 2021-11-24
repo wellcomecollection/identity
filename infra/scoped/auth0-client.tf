@@ -24,7 +24,6 @@ resource "auth0_client" "dummy_test" {
 
   lifecycle {
     ignore_changes = [
-      custom_login_page_preview,
       custom_login_page
     ]
   }
@@ -47,12 +46,6 @@ resource "auth0_client" "api_gateway_identity" {
   # Allows us to provide the 'Auth0-Forwarded-For' header to requests, which causes the token endpoint to use the users
   # real IP address for brute-force-protection, instead of the backend API IP address.
   is_token_endpoint_ip_header_trusted = true
-
-  lifecycle {
-    ignore_changes = [
-      custom_login_page_preview
-    ]
-  }
 }
 
 resource "auth0_client_grant" "api_gateway_identity" {
@@ -79,12 +72,6 @@ resource "auth0_client" "buildkite" {
   grant_types = [
     "client_credentials"
   ]
-
-  lifecycle {
-    ignore_changes = [
-      custom_login_page_preview
-    ]
-  }
 }
 
 resource "auth0_client_grant" "buildkite" {
@@ -174,7 +161,6 @@ resource "auth0_client" "account_management_system" {
 
   lifecycle {
     ignore_changes = [
-      custom_login_page_preview,
       custom_login_page
     ]
   }

@@ -2,7 +2,7 @@ import { HttpSierraClient } from '@weco/sierra-client';
 import { ResponseStatus } from '@weco/identity-common';
 import { callbackify } from 'util';
 import { User } from 'auth0';
-import { patronRecordToUser } from './patronRecordToUser';
+import { patronRecordToUser } from './helpers';
 
 declare const configuration: {
   API_ROOT: string;

@@ -10,6 +10,7 @@ export default class MockSierraClient implements SierraClient {
   private passwords: Map<number, string | undefined> = new Map();
 
   get = (recordNumber: number) => this.patrons.get(recordNumber);
+  getPassword = (recordNumber: number) => this.passwords.get(recordNumber);
 
   reset = () => {
     this.patrons.clear();

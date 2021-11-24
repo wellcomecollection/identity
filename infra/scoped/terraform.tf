@@ -5,27 +5,27 @@ terraform {
   required_providers {
     archive = {
       source  = "hashicorp/archive"
-      version = "~> 2.0.0" # Any non-beta version >= 2.0.0 and <2.1.0, i.e. 2.0.X
+      version = "~> 2.0.0"
     }
     auth0 = {
       source  = "alexkappa/auth0"
-      version = "~> 0.16.0" # Any non-beta version >= 0.16.0 and <0.17.0, i.e. 0.16.X
+      version = "~> 0.24.1"
     }
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 3.41.0" # Any non-beta version >= 3.41.0 and <3.42.0, i.e. 3.41.X
+      version = "~> 3.41.0"
     }
     template = {
       source  = "hashicorp/template"
-      version = "~> 2.2.0" # Any non-beta version >= 2.2.0 and <2.3.0, i.e. 2.2.X
+      version = "~> 2.2.0"
     }
     external = {
       source  = "hashicorp/external"
-      version = "~> 2.0.0" # Any non-beta version >= 2.0.0 and <2.1.0, i.e. 2.0.X
+      version = "~> 2.0.0"
     }
     random = {
       source  = "hashicorp/random"
-      version = "~> 3.0.0" # Any non-beta version >= 3.0.0 and <3.1.0, i.e. 3.0.X
+      version = "~> 3.0.0"
     }
   }
 }

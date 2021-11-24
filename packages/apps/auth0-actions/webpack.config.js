@@ -4,10 +4,12 @@ const TaskWrapperPlugin = require('./TaskWrapperPlugin');
 
 // All of the individual scripts to be built need to be listed here
 const actions = [
-  'create_azure_ad_profile',
-  'enrich_userinfo',
   'get_user',
   'login',
+  'enrich_userinfo',
+  'change_password',
+  'change_email',
+  'verify',
 ];
 
 // Any non-node external modules should be listed here
