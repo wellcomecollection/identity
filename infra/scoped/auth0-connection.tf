@@ -44,6 +44,8 @@ resource "auth0_connection" "sierra" {
       change_password = file("${path.module}/data/empty.js"),
       change_email    = file("${path.module}/data/empty.js"),
       verify          = file("${path.module}/data/empty.js"),
+      create          = file("${path.module}/data/empty.js"),
+      delete          = file("${path.module}/data/empty.js"),
     }
 
     configuration = {

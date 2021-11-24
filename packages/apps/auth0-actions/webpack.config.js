@@ -10,6 +10,8 @@ const actions = [
   'change_password',
   'change_email',
   'verify',
+  'create',
+  'delete',
 ];
 
 // Any non-node external modules should be listed here
