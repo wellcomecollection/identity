@@ -18,6 +18,9 @@ function __do_deployment() {
 
   cp -v /app/.buildkite/build/get_user.js "/app/.buildkite/build/auth0-export/database-connections/${AUTH0_CONNECTION_NAME}/"
   cp -v /app/.buildkite/build/login.js "/app/.buildkite/build/auth0-export/database-connections/${AUTH0_CONNECTION_NAME}/"
+  cp -v /app/.buildkite/build/change_password.js "/app/.buildkite/build/auth0-export/database-connections/${AUTH0_CONNECTION_NAME}/"
+  cp -v /app/.buildkite/build/change_email.js "/app/.buildkite/build/auth0-export/database-connections/${AUTH0_CONNECTION_NAME}/"
+  cp -v /app/.buildkite/build/verify.js "/app/.buildkite/build/auth0-export/database-connections/${AUTH0_CONNECTION_NAME}/"
   cp -v /app/.buildkite/build/enrich_userinfo.js "/app/.buildkite/build/auth0-export/rules/${AUTH0_ENRICH_USERINFO_RULE_NAME}.js"
 
   a0deploy import --input_file "/app/.buildkite/build/auth0-export/"

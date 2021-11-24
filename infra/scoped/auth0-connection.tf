@@ -11,7 +11,7 @@ resource "auth0_connection" "sierra" {
   )
 
   options {
-    import_mode                    = true
+    import_mode                    = false
     enabled_database_customization = true
     disable_signup                 = true
     requires_username              = false
@@ -39,8 +39,11 @@ resource "auth0_connection" "sierra" {
     custom_scripts = {
       // These create an empty function on the first apply, as they will be managed by
       // the deployment scripts and ignored by TF (see lifecycle block)
-      login    = file("${path.module}/data/empty.js"),
-      get_user = file("${path.module}/data/empty.js")
+      login           = file("${path.module}/data/empty.js"),
+      get_user        = file("${path.module}/data/empty.js"),
+      change_password = file("${path.module}/data/empty.js"),
+      change_email    = file("${path.module}/data/empty.js"),
+      verify          = file("${path.module}/data/empty.js"),
     }
 
     configuration = {
