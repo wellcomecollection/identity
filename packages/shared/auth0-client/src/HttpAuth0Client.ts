@@ -249,7 +249,7 @@ export default class HttpAuth0Client implements Auth0Client {
                   )
                 ) {
                   return errorResponse(
-                    'Auth0 user with email [' + email + '] already exists',
+                    'User with email [' + email + '] already exists',
                     ResponseStatus.UserAlreadyExists,
                     error
                   );

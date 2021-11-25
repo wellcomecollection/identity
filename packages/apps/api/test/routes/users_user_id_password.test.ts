@@ -4,7 +4,7 @@ import { randomExistingUser } from './fixtures/generators';
 
 describe('/users/{userId}/password', () => {
   describe('PUT /users/{userId}/password', () => {
-    it('changes a user password in both Auth0 and Sierra', async () => {
+    it('changes a user password in Auth0', async () => {
       const newPassword = 'new-password';
       const oldPassword = 'old-password';
       const testUser = randomExistingUser({ password: oldPassword });
@@ -25,13 +25,6 @@ describe('/users/{userId}/password', () => {
         newPassword
       );
       expect(auth0Validate.status).toBe(ResponseStatus.Success);
-
-      const sierraUser = await clients.sierra.get(testUser.userId);
-      const sierraValidate = await clients.sierra.validateCredentials(
-        sierraUser?.barcode || '',
-        newPassword
-      );
-      expect(sierraValidate.status).toBe(ResponseStatus.Success);
     });
 
     it('fails if the provided current password is not correct', async () => {

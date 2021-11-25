@@ -248,7 +248,7 @@ export default class MockAuth0Client implements Auth0Client {
     const maybeUser = this.users.get(userId.toString());
     if (maybeUser) {
       for (const user of this.users.values()) {
-        if (user.email === 'email') {
+        if (user.email === email) {
           return errorResponse(
             'Already exists',
             ResponseStatus.UserAlreadyExists

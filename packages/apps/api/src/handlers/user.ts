@@ -93,15 +93,7 @@ export function updateUser(
       userId,
       newEmail
     );
-    if (
-      auth0Update.status === ResponseStatus.MalformedRequest &&
-      auth0Update.message.includes('The specified new email already exists')
-    ) {
-      throw new HttpError({
-        status: 409,
-        message: `Auth0 user with email [${newEmail}] already exists`,
-      });
-    } else if (auth0Update.status !== ResponseStatus.Success) {
+    if (auth0Update.status !== ResponseStatus.Success) {
       throw clientResponseToHttpError(auth0Update);
     }
 
