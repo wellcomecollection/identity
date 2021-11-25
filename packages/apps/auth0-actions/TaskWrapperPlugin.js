@@ -6,7 +6,7 @@ const {
 const pluginName = 'TaskWrapperPlugin';
 
 // This wraps single-chunk assets in a function named `[chunkName]_wrapper`,
-// which assumes that there is a function called `[chunkName]` in scope and calls
+// which assumes that there is a function called `[chunkName]_script` in scope and calls
 // it with the same arguments.
 //
 // It is necessary because auth0 scripts want everything to be wrapped in a single function
@@ -48,7 +48,7 @@ class TaskWrapperPlugin {
     return new ConcatSource(
       `function ${chunkName}_wrapper(...args) {\n`,
       source,
-      `\n${chunkName}.apply(this, args);\n}`
+      `\n${chunkName}_script.apply(this, args);\n}`
     );
   }
 }
