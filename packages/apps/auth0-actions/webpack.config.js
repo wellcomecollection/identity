@@ -6,7 +6,6 @@ const TaskWrapperPlugin = require('./TaskWrapperPlugin');
 const actions = [
   'get_user',
   'login',
-  'enrich_userinfo',
   'change_password',
   'change_email',
   'verify',

@@ -35,30 +35,6 @@ export default class MockSierraClient implements SierraClient {
     email: 'test@patron.com',
   });
 
-  createPatronRecord = jest.fn(
-    async (firstName: string, lastName: string, pin: string) => {
-      const patron = MockSierraClient.randomPatronRecord(firstName, lastName);
-      this.patrons.set(patron.recordNumber, patron);
-      this.passwords.set(patron.recordNumber, pin);
-      return successResponse(patron.recordNumber);
-    }
-  );
-
-  deletePatronRecord = jest.fn(async (recordNumber: number) => {
-    this.patrons.delete(recordNumber);
-    this.passwords.delete(recordNumber);
-    return successResponse({});
-  });
-
-  getPatronRecordByBarcode = jest.fn(async (barcode: string) => {
-    for (const patron of this.patrons.values()) {
-      if (patron.barcode === barcode) {
-        return successResponse(patron);
-      }
-    }
-    return errorResponse('Not found', ResponseStatus.NotFound);
-  });
-
   getPatronRecordByEmail = jest.fn(async (email: string) => {
     for (const patron of this.patrons.values()) {
       if (patron.email === email) {
@@ -83,22 +59,6 @@ export default class MockSierraClient implements SierraClient {
     }
     return errorResponse('Not found', ResponseStatus.NotFound);
   });
-
-  updatePatronPostCreationFields = jest.fn(
-    async (recordNumber: number, email: string) => {
-      const maybePatron = this.patrons.get(recordNumber);
-      if (maybePatron) {
-        const updatedPatron = {
-          ...maybePatron,
-          email,
-          barcode: recordNumber.toString(),
-        };
-        this.patrons.set(recordNumber, updatedPatron);
-        return successResponse(updatedPatron);
-      }
-      return errorResponse('Not found', ResponseStatus.NotFound);
-    }
-  );
 
   updatePatronRecord = jest.fn(async (recordNumber: number, email: string) => {
     const maybePatron = this.patrons.get(recordNumber);

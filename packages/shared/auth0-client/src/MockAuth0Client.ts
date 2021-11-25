@@ -64,15 +64,6 @@ export default class MockAuth0Client implements Auth0Client {
     this.passwords.set(userId.toString(), password || '');
   };
 
-  addAdminUser = (user: NumericIDAuth0UserInfo, password?: string) =>
-    this.addUser(
-      {
-        ...user,
-        additionalAttributes: { ...user.additionalAttributes, is_admin: true },
-      },
-      password
-    );
-
   getAccessToken = (userId: number) => {
     if (this.users.has(userId.toString())) {
       const token = Math.floor(Math.random() * 10e10).toString();
@@ -253,36 +244,26 @@ export default class MockAuth0Client implements Auth0Client {
     return errorResponse('Not found', ResponseStatus.NotFound);
   });
 
-  updateUser = jest.fn(
-    async (
-      userId: number,
-      email: string,
-      firstName: string,
-      lastName: string
-    ) => {
-      const maybeUser = this.users.get(userId.toString());
-      if (maybeUser) {
-        for (const user of this.users.values()) {
-          if (user.email === 'email') {
-            return errorResponse(
-              'Already exists',
-              ResponseStatus.UserAlreadyExists
-            );
-          }
+  updateUser = jest.fn(async (userId: number, email: string) => {
+    const maybeUser = this.users.get(userId.toString());
+    if (maybeUser) {
+      for (const user of this.users.values()) {
+        if (user.email === 'email') {
+          return errorResponse(
+            'Already exists',
+            ResponseStatus.UserAlreadyExists
+          );
         }
-        const updatedUser: Auth0Profile = {
-          ...maybeUser,
-          name: firstName + ' ' + lastName,
-          firstName,
-          lastName,
-          email,
-        };
-        this.users.set(userId.toString(), updatedUser);
-        return successResponse(updatedUser);
       }
-      return errorResponse('Not found', ResponseStatus.NotFound);
+      const updatedUser: Auth0Profile = {
+        ...maybeUser,
+        email,
+      };
+      this.users.set(userId.toString(), updatedUser);
+      return successResponse(updatedUser);
     }
-  );
+    return errorResponse('Not found', ResponseStatus.NotFound);
+  });
 
   validateAccessToken = jest.fn(async (accessToken: string) => {
     const maybeUserId = this.accessTokens.get(accessToken);

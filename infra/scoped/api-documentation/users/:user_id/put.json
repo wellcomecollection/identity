@@ -2,7 +2,6 @@
   "summary": "Updates a user",
   "description": "Updates the user defined by the `userId` path parameter.",
   "tags": [
-    "User",
-    "Administrator"
+    "User"
   ]
 }

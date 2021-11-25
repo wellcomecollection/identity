@@ -108,10 +108,6 @@ function extractUserId(value: string): string {
       );
     }
     return userId;
-  } else if (value.startsWith(AzureUserIdPrefix)) {
-    return value.slice(
-      value.indexOf(AzureUserIdPrefix) + AzureUserIdPrefix.length
-    );
   } else {
     throw new Error('Unexpected format for user ID [' + value + ']');
   }
@@ -193,6 +189,5 @@ export const Auth0SearchSortFields = new Map<string, string>([
 export const SierraConnection = 'Sierra-Connection';
 
 export const SierraUserIdPrefix = 'auth0|p';
-export const AzureUserIdPrefix = 'oauth2|AzureAD-Connection|';
 
 export const SearchStatuses: string[] = ['active', 'locked', 'deletePending'];

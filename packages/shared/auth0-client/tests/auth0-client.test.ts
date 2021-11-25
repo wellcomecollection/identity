@@ -372,12 +372,7 @@ describe('HTTP Auth0 client', () => {
         response: user,
       });
 
-      const response = await client.updateUser(
-        userId,
-        email,
-        firstName,
-        lastName
-      );
+      const response = await client.updateUser(userId, email);
       expect(response.status).toBe(ResponseStatus.Success);
 
       const result = (<SuccessResponse<Auth0Profile>>response).result;
@@ -406,12 +401,7 @@ describe('HTTP Auth0 client', () => {
         },
       });
 
-      const response = await client.updateUser(
-        userId,
-        email,
-        firstName,
-        lastName
-      );
+      const response = await client.updateUser(userId, email);
       expect(response.status).toBe(ResponseStatus.UserAlreadyExists);
     });
 
@@ -420,12 +410,7 @@ describe('HTTP Auth0 client', () => {
         status: 400,
       });
 
-      const response = await client.updateUser(
-        userId,
-        email,
-        firstName,
-        lastName
-      );
+      const response = await client.updateUser(userId, email);
       expect(response.status).toBe(ResponseStatus.MalformedRequest);
     });
 
@@ -434,12 +419,7 @@ describe('HTTP Auth0 client', () => {
         status: 404,
       });
 
-      const response = await client.updateUser(
-        userId,
-        email,
-        firstName,
-        lastName
-      );
+      const response = await client.updateUser(userId, email);
       expect(response.status).toBe(ResponseStatus.NotFound);
     });
 
@@ -448,12 +428,7 @@ describe('HTTP Auth0 client', () => {
         status: 500,
       });
 
-      const response = await client.updateUser(
-        userId,
-        email,
-        firstName,
-        lastName
-      );
+      const response = await client.updateUser(userId, email);
       expect(response.status).toBe(ResponseStatus.UnknownError);
     });
   });

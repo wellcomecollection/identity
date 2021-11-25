@@ -1,3 +1,0 @@
-{
-  "description": "The account status to filter by. Valid options are `active`, `locked` and `deletePending`. If not provided, then filtering is not applied to account status."
-}

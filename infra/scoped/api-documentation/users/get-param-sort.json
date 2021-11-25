@@ -1,3 +1,0 @@
-{
-  "description": "The field to order the search query by. Valid values are `userId`, `name`, `email` and `lastLogin`."
-}

@@ -22,9 +22,6 @@
       "name": "User"
     },
     {
-      "name": "Administrator"
-    },
-    {
       "name": "Cross-Origin Resource Sharing"
     }
   ]

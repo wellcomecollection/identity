@@ -47,7 +47,6 @@ output "ci_environment_variables" {
     "export AUTH0_CLIENT_ID=${auth0_client.buildkite.client_id}",
     "export AUTH0_CLIENT_SECRET=${auth0_client.buildkite.client_secret}",
     "export AUTH0_CONNECTION_NAME=${auth0_connection.sierra.name}",
-    "export AUTH0_ENRICH_USERINFO_RULE_NAME=${auth0_rule.enrich_userinfo.name}",
     "export API_GATEWAY_ID=${aws_api_gateway_rest_api.identity.id}",
     "export API_GATEWAY_AUTHORIZER_ID=${aws_api_gateway_authorizer.token_authorizer.id}",
     "export AWS_ACCOUNT_ID=${data.aws_caller_identity.current.account_id}",

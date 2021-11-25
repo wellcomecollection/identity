@@ -15,8 +15,7 @@ function __package_auth0_scripts() {
     "/app/packages/apps/auth0-actions/dist/change_email.js" \
     "/app/packages/apps/auth0-actions/dist/verify.js" \
     "/app/packages/apps/auth0-actions/dist/create.js" \
-    "/app/packages/apps/auth0-actions/dist/delete.js" \
-    "/app/packages/apps/auth0-actions/dist/enrich_userinfo.js"
+    "/app/packages/apps/auth0-actions/dist/delete.js"
 }
 
 function __store_auth0_scripts() {
