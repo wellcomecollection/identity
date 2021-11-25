@@ -12,5 +12,11 @@ class WrongUsernameOrPasswordError extends Error {
     super(message);
   }
 }
+class ValidationError extends Error {
+  constructor(errorId, message) {
+    super(message);
+  }
+}
 
 global.WrongUsernameOrPasswordError = WrongUsernameOrPasswordError;
+global.ValidationError = ValidationError;

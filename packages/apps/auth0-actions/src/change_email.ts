@@ -23,19 +23,30 @@ async function changeEmail(
   const sierraClient = new HttpSierraClient(apiRoot, clientKey, clientSecret);
   const recordNumber = await recordNumberForEmail(email, sierraClient);
 
-  if (recordNumber) {
-    const patronRecordUpdate = await sierraClient.updatePatronRecord(
-      recordNumber,
-      newEmail
-    );
-
-    if (patronRecordUpdate.status !== ResponseStatus.Success) {
-      throw new Error(patronRecordUpdate.message);
-    }
-
-    return true;
+  if (!recordNumber) {
+    return false;
   }
-  return false;
+
+  const userWithEmailExists = Boolean(
+    await recordNumberForEmail(newEmail, sierraClient)
+  );
+  if (userWithEmailExists) {
+    throw new ValidationError(
+      'user-exists',
+      'The specified new email already exists in Sierra'
+    );
+  }
+
+  const patronRecordUpdate = await sierraClient.updatePatronRecord(
+    recordNumber,
+    newEmail
+  );
+
+  if (patronRecordUpdate.status !== ResponseStatus.Success) {
+    throw new Error(patronRecordUpdate.message);
+  }
+
+  return true;
 }
 
 export default callbackify(changeEmail);
