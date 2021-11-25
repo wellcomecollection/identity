@@ -39,6 +39,31 @@ describe('change password script', () => {
     changePassword(testPatron.email, newPassword, callback);
   });
 
+  it('truncates the password stored in Sierra to 30 characters', (done) => {
+    const oldPassword = 'old-password';
+    const newPassword = Array.from({ length: 50 })
+      .map(() => 'a')
+      .join('');
+    const testPatron = MockSierraClient.randomPatronRecord();
+    mockSierraClient.addPatron(testPatron, oldPassword);
+
+    const callback = (
+      error?: NodeJS.ErrnoException | null,
+      success?: boolean
+    ) => {
+      expect(error).toBe(null);
+      expect(success).toBe(true);
+      const storedPassword = mockSierraClient.getPassword(
+        testPatron.recordNumber
+      );
+      expect(storedPassword).not.toBe(newPassword);
+      expect(storedPassword).toBe(newPassword.slice(0, 30));
+      done();
+    };
+
+    changePassword(testPatron.email, newPassword, callback);
+  });
+
   it('returns false if the user does not exist in Sierra', (done) => {
     const callback = (
       error?: NodeJS.ErrnoException | null,
