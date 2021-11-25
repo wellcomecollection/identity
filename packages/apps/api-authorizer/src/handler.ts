@@ -81,29 +81,29 @@ export const createLambdaHandler = (
     // At this point, we have a valid access token and have a handle on the caller user information. Now we determine if
     // the user has access to the resource they are operating on.
     if (
-      !validateRequest(
+      validateRequest(
         auth0UserInfo,
         event.resource,
         <ResourceAclMethod>event.httpMethod,
         event.pathParameters
       )
     ) {
-      console.debug(
-        `Access token for user [${auth0UserInfo.userId}]` +
-          `cannot operate on [${event.httpMethod} ${event.resource}] with path parameters [${event.pathParameters}]`
-      );
       return buildAuthorizerResult(
         auth0UserInfo.userId.toString(),
-        'Deny',
-        event.methodArn
+        'Allow',
+        event.methodArn,
+        auth0UserInfo.userId.toString()
       );
     }
 
+    console.debug(
+      `Access token for user [${auth0UserInfo.userId}]` +
+        `cannot operate on [${event.httpMethod} ${event.resource}] with path parameters [${event.pathParameters}]`
+    );
     return buildAuthorizerResult(
       auth0UserInfo.userId.toString(),
-      'Allow',
-      event.methodArn,
-      auth0UserInfo.userId.toString()
+      'Deny',
+      event.methodArn
     );
   };
 };
