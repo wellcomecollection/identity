@@ -1,6 +1,6 @@
 import { callbackify } from 'util';
 import { HttpSierraClient } from '@weco/sierra-client';
-import { ResponseStatus } from '@weco/identity-common';
+import { ResponseStatus, truncate } from '@weco/identity-common';
 import { recordNumberForEmail } from './helpers';
 
 declare const configuration: {
@@ -25,7 +25,8 @@ async function changePassword(
   if (recordNumber) {
     const patronRecordUpdate = await sierraClient.updatePassword(
       recordNumber,
-      newPassword
+      // Sierra ignores passwords after the 30th character
+      truncate(newPassword, 30)
     );
 
     if (patronRecordUpdate.status !== ResponseStatus.Success) {
