@@ -32,7 +32,7 @@ export default class MockSierraClient implements SierraClient {
     barcode: Math.floor(Math.random() * 1e8).toString(),
     firstName: firstName ?? 'Test',
     lastName: lastName ?? 'Patron',
-    email: 'test@patron.com',
+    email: 'test' + Math.floor(Math.random() * 100).toString() + '@patron',
   });
 
   getPatronRecordByEmail = jest.fn(async (email: string) => {

@@ -56,6 +56,27 @@ describe('change email script', () => {
     );
   });
 
+  it('throws a ValidationError if a user with the new email already exists in Sierra', (done) => {
+    const testPatron = MockSierraClient.randomPatronRecord();
+    const existingPatron = MockSierraClient.randomPatronRecord();
+    mockSierraClient.addPatron(testPatron);
+    mockSierraClient.addPatron(existingPatron);
+
+    const callback = (
+      error?: NodeJS.ErrnoException | null,
+      success?: boolean
+    ) => {
+      expect(error).toBeInstanceOf(ValidationError);
+      expect(
+        error?.message.includes('The specified new email already exists')
+      ).toBe(true);
+      expect(success).toBeUndefined();
+      done();
+    };
+
+    changeEmail(testPatron.email, existingPatron.email, false, callback);
+  });
+
   it('throws an error if the Sierra request returns an error', (done) => {
     const testPatron = MockSierraClient.randomPatronRecord();
     mockSierraClient.addPatron(testPatron);

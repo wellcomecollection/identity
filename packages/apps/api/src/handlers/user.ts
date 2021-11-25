@@ -1,11 +1,6 @@
 import { Auth0Client, Auth0Profile } from '@weco/auth0-client';
-import {
-  APIResponse,
-  isNonBlank,
-  ResponseStatus,
-  truncate,
-} from '@weco/identity-common';
-import { SierraClient, PatronRecord } from '@weco/sierra-client';
+import { APIResponse, isNonBlank, ResponseStatus } from '@weco/identity-common';
+import { PatronRecord, SierraClient } from '@weco/sierra-client';
 import { Request, Response } from 'express';
 import { toMessage } from '../models/common';
 import { clientResponseToHttpError, HttpError } from '../models/HttpError';
@@ -79,6 +74,14 @@ export function updateUser(
     }
     const auth0Profile: Auth0Profile = auth0UserIdGet.result;
 
+    // TODO this is only required for the barcode, hopefully we can remove it
+    const sierraGet: APIResponse<PatronRecord> = await sierraClient.getPatronRecordByRecordNumber(
+      userId
+    );
+    if (sierraGet.status !== ResponseStatus.Success) {
+      throw clientResponseToHttpError(sierraGet);
+    }
+
     if (!password) {
       throw new HttpError({
         status: 400,
@@ -88,83 +91,21 @@ export function updateUser(
 
     await checkPassword(auth0Profile.email, password, extractSourceIp(request));
 
-    const fields: { [key: string]: { value: string; modified: boolean } } = {
-      email: {
-        modified:
-          !!request.body.email && request.body.email !== auth0Profile.email,
-        get value() {
-          return this.modified ? request.body.email : auth0Profile.email;
-        },
-      },
-    };
-
-    const modifiedFields: string[] = Object.keys(fields).filter(
-      (field) => fields[field].modified
-    );
-    if (modifiedFields.length === 0) {
+    const newEmail = request.body.email;
+    if (!newEmail || newEmail === auth0Profile.email) {
       response.sendStatus(304);
       return;
     }
 
-    if (modifiedFields.includes('email')) {
-      const auth0EmailGet: APIResponse<Auth0Profile> = await auth0Client.getUserByEmail(
-        fields.email.value
-      );
-      if (auth0EmailGet.status === ResponseStatus.Success) {
-        if (auth0EmailGet.result.userId !== userId.toString()) {
-          throw new HttpError({
-            status: 409,
-            message: `Auth0 user with email [${fields.email.value}] already exists`,
-          });
-        }
-      } else if (auth0EmailGet.status !== ResponseStatus.NotFound) {
-        console.error(
-          'Unexpected error from Auth0 client',
-          auth0EmailGet.message
-        );
-        throw new HttpError({
-          status: 500,
-        });
-      }
-
-      const sierraEmailGet: APIResponse<PatronRecord> = await sierraClient.getPatronRecordByEmail(
-        fields.email.value
-      );
-      if (sierraEmailGet.status === ResponseStatus.Success) {
-        if (sierraEmailGet.result.recordNumber === userId) {
-          throw new HttpError({
-            status: 409,
-            message: `Patron record with email [${fields.email.value}] already exists`,
-          });
-        }
-      } else if (sierraEmailGet.status !== ResponseStatus.NotFound) {
-        console.error(
-          'Unexpected error from Sierra client',
-          sierraEmailGet.message
-        );
-        throw new HttpError({
-          status: 500,
-        });
-      }
-    }
-
     const auth0Update: APIResponse<Auth0Profile> = await auth0Client.updateUser(
       userId,
-      fields.email.value
+      newEmail
     );
     if (auth0Update.status !== ResponseStatus.Success) {
       throw clientResponseToHttpError(auth0Update);
     }
 
-    const sierraUpdate: APIResponse<PatronRecord> = await sierraClient.updatePatronRecord(
-      userId,
-      fields.email.value
-    );
-    if (sierraUpdate.status !== ResponseStatus.Success) {
-      throw clientResponseToHttpError(sierraUpdate);
-    }
-
-    response.status(200).json(toUser(auth0Update.result, sierraUpdate.result));
+    response.status(200).json(toUser(auth0Update.result, sierraGet.result));
   };
 }
 
@@ -204,14 +145,6 @@ export function changePassword(
     );
     if (auth0Update.status !== ResponseStatus.Success) {
       throw clientResponseToHttpError(auth0Update);
-    }
-
-    const sierraUpdate: APIResponse<PatronRecord> = await sierraClient.updatePassword(
-      userId,
-      truncate(newPassword, 30)
-    );
-    if (sierraUpdate.status !== ResponseStatus.Success) {
-      throw clientResponseToHttpError(sierraUpdate);
     }
 
     response.sendStatus(200);
