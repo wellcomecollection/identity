@@ -74,6 +74,14 @@ export function updateUser(
     }
     const auth0Profile: Auth0Profile = auth0UserIdGet.result;
 
+    // TODO this is only required for the barcode, hopefully we can remove it
+    const sierraGet: APIResponse<PatronRecord> = await sierraClient.getPatronRecordByRecordNumber(
+      userId
+    );
+    if (sierraGet.status !== ResponseStatus.Success) {
+      throw clientResponseToHttpError(sierraGet);
+    }
+
     if (!password) {
       throw new HttpError({
         status: 400,
@@ -97,8 +105,7 @@ export function updateUser(
       throw clientResponseToHttpError(auth0Update);
     }
 
-    // TODO this will be missing the barcode until we put that in the Auth0 metadata
-    response.status(200).json(toUser(auth0Update.result));
+    response.status(200).json(toUser(auth0Update.result, sierraGet.result));
   };
 }
 
