@@ -3,20 +3,16 @@
   "version": "0.1.0",
   "main": "index.js",
   "repository": "git@github.com:/wellcomecollection/identity.git",
-  "author": "Daniel Grant <daniel.grant@digirati.com>",
+  "author": "Wellcome Collection <digital@wellcomecollection.org>",
   "license": "MIT",
   "scripts": {
     "build": "tsc --build tsconfig.build.json",
-    "test": "jest --silent --rootDir .",
+    "test": "jest",
     "clean": "rimraf ./lib tsconfig.build.tsbuildinfo"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.71",
     "@types/node": "^14.14.25",
-    "@weco/auth0-client": "*",
-    "@weco/identity-common": "*",
-    "handy-redis": "^2.2.1",
-    "redis": "^3.0.2",
     "ts-node": "^9.1.1",
     "typescript": "^4.1.3"
   }
