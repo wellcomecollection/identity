@@ -62,7 +62,14 @@ export const createLambdaHandler = (validateToken: TokenValidator) => async (
   });
 
   // 4. Return the appropriate result
-  const authorizerResultEffect = requestIsAllowed ? 'Allow' : 'Deny';
+
+  // I've written this like so because a ternary is not so readable and doesn't
+  // really fulfill the desire of "deny by default" behaviour.
+  let authorizerResultEffect: 'Deny' | 'Allow' = 'Deny';
+  if (requestIsAllowed) {
+    authorizerResultEffect = 'Allow';
+  }
+
   return authorizerResult({
     policyDocument: policyDocument({
       effect: authorizerResultEffect,
