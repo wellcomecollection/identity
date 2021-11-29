@@ -27,21 +27,10 @@ async function changeEmail(
     return false;
   }
 
-  const userWithEmailExists = Boolean(
-    await recordNumberForEmail(newEmail, sierraClient)
-  );
-  if (userWithEmailExists) {
-    throw new ValidationError(
-      'user-exists',
-      'The specified new email already exists in Sierra'
-    );
-  }
-
   const patronRecordUpdate = await sierraClient.updatePatronRecord(
     recordNumber,
     newEmail
   );
-
   if (patronRecordUpdate.status !== ResponseStatus.Success) {
     throw new Error(patronRecordUpdate.message);
   }

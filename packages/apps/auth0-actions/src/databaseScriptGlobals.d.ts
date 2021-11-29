@@ -6,7 +6,4 @@ declare global {
   class WrongUsernameOrPasswordError extends Error {
     constructor(emailOrId?: string, message?: string);
   }
-  class ValidationError extends Error {
-    constructor(errorId: string, message: string);
-  }
 }
