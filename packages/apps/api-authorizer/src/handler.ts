@@ -42,7 +42,7 @@ export const createLambdaHandler = (validateToken: TokenValidator) => async (
   }
 
   // 2. Validate the token
-  const validatedToken = await validateToken(token).catch(send401);
+  const validatedToken = await validateToken(token!).catch(send401);
 
   // 3. Check the required scopes are present per-route
   const requestIsAllowed = validateRequest({

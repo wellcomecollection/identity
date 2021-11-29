@@ -3,27 +3,134 @@ import {
   APIGatewayRequestAuthorizerEvent,
 } from 'aws-lambda';
 import { createLambdaHandler } from '../src/handler';
+import { TokenValidator } from '../src/authentication';
+import { JsonWebTokenError, Jwt } from 'jsonwebtoken';
 
-const lambdaHandler = createLambdaHandler();
+const alwaysSucceed = ({
+  userId = 'test',
+  scopes = [],
+}: {
+  userId?: string;
+  scopes?: string[];
+} = {}): TokenValidator => () =>
+  Promise.resolve(({
+    payload: { sub: userId, scope: scopes.join(' ') },
+  } as unknown) as Jwt);
 
-const testUserInfo = {
-  userId: 12345678,
-  name: 'test name',
-  firstName: 'test',
-  lastName: 'name',
-  email: 'test@example.com',
-};
+const alwaysFail: TokenValidator = () =>
+  Promise.reject(new JsonWebTokenError('invalid token'));
 
 describe('API Authorizer', () => {
-  it('rejects requests without an authorization header', async () => {});
+  it('rejects requests without an authorization header', async () => {
+    const handler = createLambdaHandler(alwaysSucceed());
+    const event = createEvent({
+      token: undefined,
+      resource: '/foo',
+      method: 'GET',
+    });
 
-  it('rejects requests with an invalid authorization header', async () => {});
+    await expect(handler(event)).rejects.toBe('Unauthorized');
+  });
 
-  it('rejects requests where the access token is rejected by Auth0', async () => {});
+  it('rejects requests with an invalid authorization header', async () => {
+    const handler = createLambdaHandler(alwaysFail);
+    const event = createEvent({
+      token: 'INVALID_TOKEN',
+      resource: '/foo',
+      method: 'GET',
+    });
 
-  it('denies requests where the user is accessing an invalid resource', async () => {});
+    await expect(handler(event)).rejects.toBe('Unauthorized');
+  });
 
-  it('returns the caller ID in the result context', async () => {});
+  it('denies requests where the user is accessing an invalid resource', async () => {
+    const handler = createLambdaHandler(alwaysSucceed());
+    const event = createEvent({
+      token: 'VALID_TOKEN',
+      resource: '/foo',
+      method: 'GET',
+    });
+
+    const result = await handler(event);
+    expect(result.policyDocument.Statement[0].Effect).toBe('Deny');
+  });
+
+  it('denies requests where the caller token has the wrong scopes', async () => {
+    const handler = createLambdaHandler(
+      alwaysSucceed({ scopes: ['something:else'] })
+    );
+    const event = createEvent({
+      token: 'VALID_TOKEN',
+      resource: '/users/{userId}',
+      method: 'GET',
+      userId: 'me',
+    });
+
+    const result = await handler(event);
+    expect(result.policyDocument.Statement[0].Effect).toBe('Deny');
+  });
+
+  it('allows requests where the caller token has the correct scopes', async () => {
+    const handler = createLambdaHandler(
+      alwaysSucceed({ scopes: ['read:patron'] })
+    );
+    const event = createEvent({
+      token: 'VALID_TOKEN',
+      resource: '/users/{userId}',
+      method: 'GET',
+      userId: 'me',
+    });
+
+    const result = await handler(event);
+    expect(result.policyDocument.Statement[0].Effect).toBe('Allow');
+  });
+
+  it('denies requests where the ID in the token does not match the resource', async () => {
+    const handler = createLambdaHandler(
+      alwaysSucceed({ scopes: ['read:patron'], userId: 'token_id' })
+    );
+    const event = createEvent({
+      token: 'VALID_TOKEN',
+      resource: '/users/{userId}',
+      method: 'GET',
+      userId: 'not_token_id',
+    });
+
+    const result = await handler(event);
+    expect(result.policyDocument.Statement[0].Effect).toBe('Deny');
+  });
+
+  it('allows requests where the ID in the token matches the resource', async () => {
+    const userId = 'test_user';
+    const handler = createLambdaHandler(
+      alwaysSucceed({ scopes: ['read:patron'], userId })
+    );
+    const event = createEvent({
+      token: 'VALID_TOKEN',
+      resource: '/users/{userId}',
+      method: 'GET',
+      userId,
+    });
+
+    const result = await handler(event);
+    expect(result.policyDocument.Statement[0].Effect).toBe('Allow');
+  });
+
+  it('returns the caller ID in the result context', async () => {
+    const userId = 'test_user';
+    const handler = createLambdaHandler(
+      alwaysSucceed({ scopes: ['read:patron'], userId })
+    );
+    const event = createEvent({
+      token: 'VALID_TOKEN',
+      resource: '/users/{userId}',
+      method: 'GET',
+      userId: 'me',
+    });
+
+    const result = await handler(event);
+    expect(result.context?.callerId).toBe(userId);
+  });
 });
 
 type TestEventParams = {
