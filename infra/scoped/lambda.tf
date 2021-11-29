@@ -21,13 +21,8 @@ resource "aws_lambda_function" "authorizer" {
 
   environment {
     variables = {
-      AUTH0_API_ROOT      = local.auth0_endpoint
-      AUTH0_API_AUDIENCE  = auth0_client_grant.api_gateway_identity.audience,
-      AUTH0_CLIENT_ID     = auth0_client.api_gateway_identity.client_id,
-      AUTH0_CLIENT_SECRET = auth0_client.api_gateway_identity.client_secret,
-      REDIS_HOST          = aws_elasticache_replication_group.access_token_cache.primary_endpoint_address
-      REDIS_PORT          = aws_elasticache_replication_group.access_token_cache.port
-      REDIS_CACHE_TTL     = aws_ssm_parameter.redis_access_token_cache_ttl.value
+      AUTH0_DOMAIN    = local.auth0_hostname
+      IDENTITY_API_ID = auth0_resource_server.identity_api.identifier
     }
   }
 
