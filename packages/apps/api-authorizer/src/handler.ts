@@ -11,6 +11,15 @@ import {
   resourceAuthorizationValidator,
 } from './authorization';
 
+// The presence of scope checking here is more about being descriptive than adding security,
+// as the ability to enforce which scopes a user is allowed is an additional piece of work
+// which we haven't completed.
+//
+// Refer to: https://auth0.com/docs/configure/apis/scopes/api-scopes#limit-api-scopes
+// If we want to add different types of user and restrict permisssions/scopes based on
+// their roles, we will want to add RBAC with the Authorization Core:
+// https://auth0.com/docs/authorization/rbac/
+// https://auth0.com/docs/authorization/rbac/auth-core-features
 const validateRequest = resourceAuthorizationValidator({
   '/users/{userId}': {
     GET: allOf(isSelf, hasScopes('read:user')),
