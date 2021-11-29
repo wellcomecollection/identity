@@ -72,7 +72,7 @@ describe('API Authorizer', () => {
 
   it('allows requests where the caller token has the correct scopes', async () => {
     const handler = createLambdaHandler(
-      alwaysSucceed({ scopes: ['read:patron'] })
+      alwaysSucceed({ scopes: ['read:user'] })
     );
     const event = createEvent({
       token: 'VALID_TOKEN',
@@ -87,7 +87,7 @@ describe('API Authorizer', () => {
 
   it('denies requests where the ID in the token does not match the resource', async () => {
     const handler = createLambdaHandler(
-      alwaysSucceed({ scopes: ['read:patron'], userId: 'token_id' })
+      alwaysSucceed({ scopes: ['read:user'], userId: 'token_id' })
     );
     const event = createEvent({
       token: 'VALID_TOKEN',
@@ -103,7 +103,7 @@ describe('API Authorizer', () => {
   it('allows requests where the ID in the token matches the resource', async () => {
     const userId = 'test_user';
     const handler = createLambdaHandler(
-      alwaysSucceed({ scopes: ['read:patron'], userId })
+      alwaysSucceed({ scopes: ['read:user'], userId })
     );
     const event = createEvent({
       token: 'VALID_TOKEN',
@@ -119,7 +119,7 @@ describe('API Authorizer', () => {
   it('returns the caller ID in the result context', async () => {
     const userId = 'test_user';
     const handler = createLambdaHandler(
-      alwaysSucceed({ scopes: ['read:patron'], userId })
+      alwaysSucceed({ scopes: ['read:user'], userId })
     );
     const event = createEvent({
       token: 'VALID_TOKEN',

@@ -19,8 +19,8 @@ resource "auth0_resource_server" "identity_api" {
   }
 
   scopes {
-    value       = "read:patron"
-    description = "Read patron info"
+    value       = "read:user"
+    description = "Read user info"
   }
 
   scopes {

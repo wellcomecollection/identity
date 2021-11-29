@@ -13,7 +13,7 @@ import {
 
 const validateRequest = resourceAuthorizationValidator({
   '/users/{userId}': {
-    GET: allOf(isSelf, hasScopes('read:patron')),
+    GET: allOf(isSelf, hasScopes('read:user')),
     PUT: allOf(isSelf, hasScopes('update:email')),
   },
   '/users/{userId}/password': {
