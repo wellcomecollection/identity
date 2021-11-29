@@ -53,10 +53,7 @@ resource "auth0_client_grant" "api_gateway_identity" {
   audience  = "https://${aws_ssm_parameter.auth0_domain.value}/api/v2/"
   scope = [
     "read:users",
-    "read:user_idp_tokens",
-    "create:users",
     "update:users",
-    "delete:users"
   ]
 }
 
