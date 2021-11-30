@@ -1,4 +1,4 @@
-import { mockedApi, withSourceIp } from './fixtures/mockedApi';
+import { mockedApi, withCallerId } from './fixtures/mockedApi';
 import { ResponseStatus } from '@weco/identity-common';
 import { randomExistingUser } from './fixtures/generators';
 
@@ -10,7 +10,7 @@ describe('/users/{userId}/password', () => {
       const testUser = randomExistingUser({ password: oldPassword });
       const { api, clients } = mockedApi([testUser]);
 
-      const response = await withSourceIp(
+      const response = await withCallerId(testUser.userId)(
         api
           .put(`/users/${testUser.userId}/password`)
           .send({ newPassword, password: oldPassword })
@@ -33,7 +33,7 @@ describe('/users/{userId}/password', () => {
       const testUser = randomExistingUser({ password: oldPassword });
       const { api } = mockedApi([testUser]);
 
-      const response = await withSourceIp(
+      const response = await withCallerId(testUser.userId)(
         api
           .put(`/users/${testUser.userId}/password`)
           .send({ newPassword, password: 'wrong' })
@@ -45,10 +45,13 @@ describe('/users/{userId}/password', () => {
 
     it('404s for users that do not exist', async () => {
       const { api } = mockedApi();
-      const response = await api
-        .put(`/users/66666666/password`)
-        .send({ newPassword: 'new-password', password: 'old-password' })
-        .set('Accept', 'application/json');
+      const id = 6666666;
+      const response = await withCallerId(id)(
+        api
+          .put(`/users/${id}/password`)
+          .send({ newPassword: 'new-password', password: 'old-password' })
+          .set('Accept', 'application/json')
+      );
 
       expect(response.statusCode).toBe(404);
     });

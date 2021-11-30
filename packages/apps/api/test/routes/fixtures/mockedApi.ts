@@ -30,9 +30,11 @@ const apiGatewayHeaders = (data: object = {}) => {
 const withApiGatewayContext = (data: object) => (request: Request) =>
   request.set(apiGatewayHeaders(data));
 
-export const withSourceIp = withApiGatewayContext({
-  identity: { sourceIp: 'test' },
-});
+export const withCallerId = (id: string | number) =>
+  withApiGatewayContext({
+    authorizer: { callerId: id },
+    identity: { sourceIp: 'test' },
+  });
 
 export const mockedApi = (existingUsers: ExistingUser[] = []) => {
   const mockClients = {
