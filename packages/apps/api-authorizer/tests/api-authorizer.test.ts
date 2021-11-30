@@ -7,7 +7,7 @@ import { TokenValidator } from '../src/authentication';
 import { JsonWebTokenError, Jwt } from 'jsonwebtoken';
 
 const alwaysSucceed = ({
-  userId = 'test',
+  userId = 'auth0|ptest',
   scopes = [],
 }: {
   userId?: string;
@@ -87,7 +87,7 @@ describe('API Authorizer', () => {
 
   it('denies requests where the ID in the token does not match the resource', async () => {
     const handler = createLambdaHandler(
-      alwaysSucceed({ scopes: ['read:user'], userId: 'token_id' })
+      alwaysSucceed({ scopes: ['read:user'], userId: 'auth0|ptoken_id' })
     );
     const event = createEvent({
       token: 'VALID_TOKEN',
@@ -103,7 +103,7 @@ describe('API Authorizer', () => {
   it('allows requests where the ID in the token matches the resource', async () => {
     const userId = 'test_user';
     const handler = createLambdaHandler(
-      alwaysSucceed({ scopes: ['read:user'], userId })
+      alwaysSucceed({ scopes: ['read:user'], userId: 'auth0|p' + userId })
     );
     const event = createEvent({
       token: 'VALID_TOKEN',
@@ -119,7 +119,7 @@ describe('API Authorizer', () => {
   it('returns the caller ID in the result context', async () => {
     const userId = 'test_user';
     const handler = createLambdaHandler(
-      alwaysSucceed({ scopes: ['read:user'], userId })
+      alwaysSucceed({ scopes: ['read:user'], userId: 'auth0|p' + userId })
     );
     const event = createEvent({
       token: 'VALID_TOKEN',

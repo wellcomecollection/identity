@@ -9,6 +9,7 @@ import {
   hasScopes,
   isSelf,
   resourceAuthorizationValidator,
+  userIdFromSubject,
 } from './authorization';
 
 // The presence of scope checking here is more about being descriptive than adding security,
@@ -75,6 +76,6 @@ export const createLambdaHandler = (validateToken: TokenValidator) => async (
       effect: authorizerResultEffect,
       resource: event.methodArn,
     }),
-    principalId: validatedToken.payload.sub || '',
+    principalId: userIdFromSubject(validatedToken.payload.sub) || '',
   });
 };
