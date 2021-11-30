@@ -16,7 +16,7 @@ import {
 // which we haven't completed.
 //
 // Refer to: https://auth0.com/docs/configure/apis/scopes/api-scopes#limit-api-scopes
-// If we want to add different types of user and restrict permisssions/scopes based on
+// If we want to add different types of user and restrict permissions/scopes based on
 // their roles, we will want to add RBAC with the Authorization Core:
 // https://auth0.com/docs/authorization/rbac/
 // https://auth0.com/docs/authorization/rbac/auth-core-features
@@ -51,7 +51,7 @@ export const createLambdaHandler = (validateToken: TokenValidator) => async (
   }
 
   // 2. Validate the token
-  const validatedToken = await validateToken(token!).catch(send401);
+  const validatedToken = await validateToken(token).catch(send401);
 
   // 3. Check the request against the rules defined above
   const requestIsAllowed = validateRequest({
