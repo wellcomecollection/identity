@@ -154,7 +154,7 @@
         }
       }
       .container-inner {
-        max-width: 500px;
+        max-width: 550px;
         margin: 30px auto;
         padding: 0 30px;
       }
@@ -228,13 +228,24 @@
     <div class="container">
       <div class="container-inner">
         <h1>{{ prompt.screen.texts.pageTitle }}</h1>
-        {%- auth0:widget -%} {% if prompt.name == "login" or prompt.name ==
-        "signup" %}
-        <!-- TODO check text and whether to capitalise Library-->
+        {% if prompt.name == "login" %}
         <p>
+          <strong>Note:</strong> Please use the email address connected to your
+          library account to sign in. You'll no longer be able to use your
+          library card number or username.
+        </p>
+        {% endif %} {%- auth0:widget -%} {% if prompt.name == "login" or
+        prompt.name == "signup" %}
+        <p>
+          {% if prompt.name == "login" %}
+          <strong>Having trouble accessing your account?</strong>
+          <a href="mailto:library@wellcomecollection.org"
+            >Contact the library team.</a
+          ><br />
+          {% endif %}
           <strong>Not a library member?</strong>
           <a href="https://wellcomecollection.org/pages/X_2eexEAACQAZLBi"
-            >Read more about joining the library</a
+            >Read more about joining the library.</a
           >
         </p>
         {% endif %} {% if prompt.screen.name == "reset-password-success" %}
