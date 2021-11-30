@@ -163,6 +163,21 @@ resource "auth0_client" "account_management_system" {
   }
 }
 
+resource "auth0_client_grant" "account_management_system" {
+  client_id = auth0_client.account_management_system.client_id
+  audience  = auth0_resource_server.identity_api.identifier
+
+  // Be explicit about these scopes so as not to accidentally give too many permissions
+  scope = [
+    "create:requests",
+    "delete:patron",
+    "read:user",
+    "read:requests",
+    "update:email",
+    "update:password"
+  ]
+}
+
 # OpenAthens SAML Identity Provider
 # Allows OpenAthens to authenticate users against the Auth0 user-pool
 
@@ -209,4 +224,10 @@ resource "auth0_client" "smoke_test" {
   ]
 
   callbacks = []
+}
+
+resource "auth0_client_grant" "smoke_test" {
+  client_id = auth0_client.smoke_test.client_id
+  audience  = auth0_resource_server.identity_api.identifier
+  scope     = [for scope in auth0_resource_server.identity_api.scopes : scope.value]
 }
