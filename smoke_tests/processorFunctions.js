@@ -59,6 +59,16 @@ function getAuthToken(secretId, auth0Url, requestParams, callback) {
         password: password,
         client_id: clientId,
         client_secret: clientSecret,
+        scope: [
+          'openid',
+          'create:requests',
+          'delete:patron',
+          'read:user',
+          'read:requests',
+          'update:email',
+          'update:password',
+        ].join(' '),
+        audience: 'https://v1-api.stage.account.wellcomecollection.org',
       },
     };
 
