@@ -1,21 +1,23 @@
-import { Auth0Client, HttpAuth0Client } from '@weco/auth0-client';
-import { createNodeRedisClient, WrappedNodeRedisClient } from 'handy-redis';
 import { createLambdaHandler } from './handler';
+import { createValidator } from './authentication';
 
-// Place these resources outside of the handler itself, so they can be reused between invocations.
-const lambdaAuth0Client: Auth0Client = new HttpAuth0Client(
-  process.env.AUTH0_API_ROOT!,
-  process.env.AUTH0_API_AUDIENCE!,
-  process.env.AUTH0_CLIENT_ID!,
-  process.env.AUTH0_CLIENT_SECRET!
-);
+const envConfig = {
+  auth0Domain: process.env.AUTH0_DOMAIN!,
+  identityApiId: process.env.IDENTITY_API_ID!,
+};
 
-const lambdaRedisClient: WrappedNodeRedisClient = createNodeRedisClient({
-  host: process.env.REDIS_HOST!,
-  port: Number(process.env.REDIS_PORT!),
+Object.entries(envConfig).forEach(([key, value]) => {
+  if (value === undefined) {
+    throw new Error(`Required config key [${key}] was missing!`);
+  }
 });
 
-export const lambdaHandler = createLambdaHandler(
-  lambdaAuth0Client,
-  lambdaRedisClient
-);
+const tokenValidator = createValidator({
+  // https://auth0.com/docs/security/tokens/json-web-tokens/json-web-key-sets
+  jwksUri: `https://${envConfig.auth0Domain}/.well-known/jwks.json`,
+  // https://auth0.com/docs/security/tokens/access-tokens/get-access-tokens#custom-domains-and-the-management-api
+  tokenIssuer: envConfig.auth0Domain,
+  resourceServerId: envConfig.identityApiId,
+});
+
+export const lambdaHandler = createLambdaHandler(tokenValidator);

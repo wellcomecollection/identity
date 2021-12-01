@@ -1,152 +1,81 @@
-import { Auth0Client, Auth0UserInfo } from '@weco/auth0-client';
-import { WrappedNodeRedisClient } from 'handy-redis';
 import {
   APIGatewayAuthorizerResult,
   APIGatewayRequestAuthorizerEvent,
 } from 'aws-lambda';
-import { APIResponse, ResponseStatus } from '@weco/identity-common';
-import resourceAcls, { ResourceAclMethod } from './resourceAcls';
+import { TokenValidator } from './authentication';
+import { authorizerResult, policyDocument, send401 } from './api-gateway';
+import {
+  allOf,
+  hasScopes,
+  isSelf,
+  resourceAuthorizationValidator,
+  userIdFromSubject,
+} from './authorization';
 
-export const createLambdaHandler = (
-  auth0Client: Auth0Client,
-  redisClient: WrappedNodeRedisClient
-) => {
-  async function cacheLookup(
-    accessToken: string
-  ): Promise<Auth0UserInfo | null> {
-    const value = await redisClient.get(accessToken);
-    if (value) {
-      return JSON.parse(value) as Auth0UserInfo;
-    } else {
-      return null;
-    }
+// The presence of scope checking here is more about being descriptive than adding security,
+// as the ability to enforce which scopes a user is allowed is an additional piece of work
+// which we haven't completed.
+//
+// Refer to: https://auth0.com/docs/configure/apis/scopes/api-scopes#limit-api-scopes
+// If we want to add different types of user and restrict permissions/scopes based on
+// their roles, we will want to add RBAC with the Authorization Core:
+// https://auth0.com/docs/authorization/rbac/
+// https://auth0.com/docs/authorization/rbac/auth-core-features
+const validateRequest = resourceAuthorizationValidator({
+  '/users/{userId}': {
+    GET: allOf(isSelf, hasScopes('read:user')),
+    PUT: allOf(isSelf, hasScopes('update:email')),
+  },
+  '/users/{userId}/password': {
+    PUT: allOf(isSelf, hasScopes('update:password')),
+  },
+  '/users/{userId}/deletion-request': {
+    PUT: allOf(isSelf, hasScopes('delete:patron')),
+  },
+  '/users/{userId}/validate': {
+    POST: isSelf,
+  },
+  '/users/{userId}/item-requests': {
+    POST: allOf(isSelf, hasScopes('create:requests')),
+    GET: allOf(isSelf, hasScopes('read:requests')),
+  },
+});
+
+export const createLambdaHandler = (validateToken: TokenValidator) => async (
+  event: APIGatewayRequestAuthorizerEvent
+): Promise<APIGatewayAuthorizerResult> => {
+  // 1. Extract the token
+  const authHeader = event.headers?.['Authorization'];
+  const token = authHeader?.match(/^Bearer (.*)$/)?.[1];
+  if (!token) {
+    return send401();
   }
 
-  async function cacheInsert(
-    accessToken: string,
-    auth0UserInfo: Auth0UserInfo
-  ): Promise<string | null> {
-    const value: string = JSON.stringify(auth0UserInfo);
-    const ttl: number = Number(process.env.REDIS_CACHE_TTL!);
-    // 'EX' is the expiration (i.e. TTL) in seconds of the cache entry. We could also use 'PX' to provide the value in milliseconds.
-    // AFAICT this is always 'OK' for a successful operation
-    await redisClient.set(accessToken, value, ['EX', ttl]);
-    return value;
+  // 2. Validate the token
+  const validatedToken = await validateToken(token).catch(send401);
+
+  // 3. Check the request against the rules defined above
+  const requestIsAllowed = validateRequest({
+    path: event.resource,
+    method: event.httpMethod,
+    token: validatedToken,
+    parameters: event.pathParameters || undefined,
+  });
+
+  // 4. Return the appropriate result
+
+  // I've written this like so because a ternary is not so readable and doesn't
+  // really fulfill the desire of "deny by default" behaviour.
+  let authorizerResultEffect: 'Deny' | 'Allow' = 'Deny';
+  if (requestIsAllowed) {
+    authorizerResultEffect = 'Allow';
   }
 
-  return async (
-    event: APIGatewayRequestAuthorizerEvent
-  ): Promise<APIGatewayAuthorizerResult> => {
-    if (!event.headers?.Authorization) {
-      console.debug('Authorization header is not present on request');
-      throw 'Unauthorized';
-    }
-
-    // Start by extracting the access token from the 'Authorization' header.
-    const authorizationHeader: string = event.headers.Authorization;
-    const accessToken: string | null = extractAccessToken(authorizationHeader);
-    if (!accessToken) {
-      throw 'Unauthorized';
-    }
-
-    /*
-     * 1. Using the given access token, query the Redis cache for an existing entry.
-     * 2. If one is found, we assume the token is still valid and re-use the associated user information.
-     * 3. Otherwise, query the Auth0 API to test for validity and fetch the corresponding user information.
-     * 4. If the query was successful, store the user information in the Redis cache keyed against the access token.
-     *
-     * When the entry is inserted into the cache, it has a TTL defined by 'REDIS_CACHE_TTL'. Essentially, this value
-     * represents the maximum amount of time (in seconds) that a token can be expired / revoked by Auth0 before we detect
-     * that in this Lambda Function.
-     */
-    let auth0UserInfo: Auth0UserInfo | null = await cacheLookup(accessToken);
-    if (!auth0UserInfo) {
-      const auth0Validate: APIResponse<Auth0UserInfo> = await auth0Client.validateAccessToken(
-        accessToken
-      );
-      if (auth0Validate.status !== ResponseStatus.Success) {
-        if (auth0Validate.status === ResponseStatus.InvalidCredentials) {
-          throw 'Unauthorized';
-        } else {
-          console.error(
-            `Unknown error processing access token: ${auth0Validate.message}`
-          );
-          throw 'Unauthorized';
-        }
-      }
-      auth0UserInfo = auth0Validate.result;
-      await cacheInsert(accessToken, auth0UserInfo);
-    }
-
-    // At this point, we have a valid access token and have a handle on the caller user information. Now we determine if
-    // the user has access to the resource they are operating on.
-    if (
-      validateRequest(
-        auth0UserInfo,
-        event.resource,
-        <ResourceAclMethod>event.httpMethod,
-        event.pathParameters
-      )
-    ) {
-      return buildAuthorizerResult(
-        auth0UserInfo.userId.toString(),
-        'Allow',
-        event.methodArn,
-        auth0UserInfo.userId.toString()
-      );
-    }
-
-    console.debug(
-      `Access token for user [${auth0UserInfo.userId}]` +
-        `cannot operate on [${event.httpMethod} ${event.resource}] with path parameters [${event.pathParameters}]`
-    );
-    return buildAuthorizerResult(
-      auth0UserInfo.userId.toString(),
-      'Deny',
-      event.methodArn
-    );
-  };
+  return authorizerResult({
+    policyDocument: policyDocument({
+      effect: authorizerResultEffect,
+      resource: event.methodArn,
+    }),
+    principalId: userIdFromSubject(validatedToken.payload.sub) || '',
+  });
 };
-
-function extractAccessToken(tokenString: string): null | string {
-  const match = tokenString.match(/^Bearer (.*)$/);
-  return !match || match.length < 2 ? null : match[1];
-}
-
-function validateRequest(
-  auth0UserInfo: Auth0UserInfo,
-  resource: string,
-  method: ResourceAclMethod,
-  pathParameters: Record<string, string | undefined> | null
-): boolean {
-  const check = resourceAcls[resource]?.[method];
-  if (!check) {
-    // No ACL found, defensively deny access
-    return false;
-  }
-  return check(auth0UserInfo, pathParameters);
-}
-
-function buildAuthorizerResult(
-  principal: string,
-  effect: 'Allow' | 'Deny',
-  methodArn: string,
-  callerId: string | undefined = undefined
-): APIGatewayAuthorizerResult {
-  return {
-    context: {
-      callerId,
-    },
-    principalId: principal,
-    policyDocument: {
-      Version: '2012-10-17',
-      Statement: [
-        {
-          Action: 'execute-api:Invoke',
-          Effect: effect,
-          Resource: methodArn,
-        },
-      ],
-    },
-  };
-}

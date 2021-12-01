@@ -3,127 +3,133 @@ import {
   APIGatewayRequestAuthorizerEvent,
 } from 'aws-lambda';
 import { createLambdaHandler } from '../src/handler';
-import { MockAuth0Client } from '@weco/auth0-client';
-import { WrappedNodeRedisClient } from 'handy-redis';
+import { TokenValidator } from '../src/authentication';
+import { JsonWebTokenError, Jwt } from 'jsonwebtoken';
 
-const mockAuth0Client = new MockAuth0Client();
-const mockRedis = {
-  get: jest.fn().mockResolvedValue(null),
-  set: jest.fn().mockResolvedValue('OK'),
-};
+const alwaysSucceed = ({
+  userId = 'auth0|ptest',
+  scopes = [],
+}: {
+  userId?: string;
+  scopes?: string[];
+} = {}): TokenValidator => () =>
+  Promise.resolve(({
+    payload: { sub: userId, scope: scopes.join(' ') },
+  } as unknown) as Jwt);
 
-const lambdaHandler = createLambdaHandler(
-  mockAuth0Client,
-  (mockRedis as unknown) as WrappedNodeRedisClient
-);
-
-const testUserInfo = {
-  userId: 12345678,
-  name: 'test name',
-  firstName: 'test',
-  lastName: 'name',
-  email: 'test@example.com',
-};
+const alwaysFail: TokenValidator = () =>
+  Promise.reject(new JsonWebTokenError('invalid token'));
 
 describe('API Authorizer', () => {
-  afterEach(() => {
-    mockAuth0Client.reset();
-  });
-
   it('rejects requests without an authorization header', async () => {
+    const handler = createLambdaHandler(alwaysSucceed());
     const event = createEvent({
       token: undefined,
       resource: '/foo',
       method: 'GET',
     });
 
-    try {
-      await lambdaHandler(event);
-    } catch (e) {
-      expect(e).toEqual('Unauthorized');
-    }
+    await expect(handler(event)).rejects.toBe('Unauthorized');
   });
 
   it('rejects requests with an invalid authorization header', async () => {
-    const event = {
-      ...createEvent({
-        resource: '/foo',
-        method: 'GET',
-      }),
-      Headers: {
-        Authorization: 'bad garbage nonsense',
-      },
-    };
-
-    try {
-      await lambdaHandler(event);
-    } catch (e) {
-      expect(e).toEqual('Unauthorized');
-    }
-  });
-
-  it('rejects requests where the access token is rejected by Auth0', async () => {
+    const handler = createLambdaHandler(alwaysFail);
     const event = createEvent({
-      token: 'test token',
+      token: 'INVALID_TOKEN',
       resource: '/foo',
       method: 'GET',
     });
 
-    try {
-      await lambdaHandler(event);
-    } catch (e) {
-      expect(e).toEqual('Unauthorized');
-    }
+    await expect(handler(event)).rejects.toBe('Unauthorized');
   });
 
   it('denies requests where the user is accessing an invalid resource', async () => {
-    mockAuth0Client.addUser(testUserInfo);
-    const token = mockAuth0Client.getAccessToken(testUserInfo.userId);
+    const handler = createLambdaHandler(alwaysSucceed());
     const event = createEvent({
-      token,
-      resource: '/users/{userId}/ice_cream',
+      token: 'VALID_TOKEN',
+      resource: '/foo',
       method: 'GET',
-      userId: testUserInfo.userId.toString(),
     });
 
-    const result = await lambdaHandler(event);
-    expect(result).toHaveProperty('policyDocument.Statement.0.Effect', 'Deny');
+    const result = await handler(event);
+    expect(result.policyDocument.Statement[0].Effect).toBe('Deny');
   });
 
-  it('uses cached user info when available', async () => {
-    mockRedis.get.mockResolvedValue(JSON.stringify(testUserInfo));
-    mockAuth0Client.addUser(testUserInfo);
-    const token = mockAuth0Client.getAccessToken(testUserInfo.userId);
+  it('denies requests where the caller token has the wrong scopes', async () => {
+    const handler = createLambdaHandler(
+      alwaysSucceed({ scopes: ['something:else'] })
+    );
     const event = createEvent({
-      token: token,
-      resource: '/users/{userId}/password',
-      method: 'PUT',
-      userId: testUserInfo.userId.toString(),
+      token: 'VALID_TOKEN',
+      resource: '/users/{userId}',
+      method: 'GET',
+      userId: 'me',
     });
-    const result = await lambdaHandler(event);
 
-    expect(result).toHaveProperty('policyDocument.Statement.0.Effect', 'Allow');
-    expect(mockAuth0Client.validateAccessToken).not.toHaveBeenCalledWith(token);
+    const result = await handler(event);
+    expect(result.policyDocument.Statement[0].Effect).toBe('Deny');
+  });
 
-    // Reset the mock :(
-    mockRedis.get.mockResolvedValue(null);
+  it('allows requests where the caller token has the correct scopes', async () => {
+    const handler = createLambdaHandler(
+      alwaysSucceed({ scopes: ['read:user'] })
+    );
+    const event = createEvent({
+      token: 'VALID_TOKEN',
+      resource: '/users/{userId}',
+      method: 'GET',
+      userId: 'me',
+    });
+
+    const result = await handler(event);
+    expect(result.policyDocument.Statement[0].Effect).toBe('Allow');
+  });
+
+  it('denies requests where the ID in the token does not match the resource', async () => {
+    const handler = createLambdaHandler(
+      alwaysSucceed({ scopes: ['read:user'], userId: 'auth0|ptoken_id' })
+    );
+    const event = createEvent({
+      token: 'VALID_TOKEN',
+      resource: '/users/{userId}',
+      method: 'GET',
+      userId: 'not_token_id',
+    });
+
+    const result = await handler(event);
+    expect(result.policyDocument.Statement[0].Effect).toBe('Deny');
+  });
+
+  it('allows requests where the ID in the token matches the resource', async () => {
+    const userId = 'test_user';
+    const handler = createLambdaHandler(
+      alwaysSucceed({ scopes: ['read:user'], userId: 'auth0|p' + userId })
+    );
+    const event = createEvent({
+      token: 'VALID_TOKEN',
+      resource: '/users/{userId}',
+      method: 'GET',
+      userId,
+    });
+
+    const result = await handler(event);
+    expect(result.policyDocument.Statement[0].Effect).toBe('Allow');
   });
 
   it('returns the caller ID in the result context', async () => {
-    mockAuth0Client.addUser(testUserInfo);
-    const token = mockAuth0Client.getAccessToken(testUserInfo.userId);
+    const userId = 'test_user';
+    const handler = createLambdaHandler(
+      alwaysSucceed({ scopes: ['read:user'], userId: 'auth0|p' + userId })
+    );
     const event = createEvent({
-      token,
-      resource: '/users/{userId}/password',
-      method: 'PUT',
-      userId: testUserInfo.userId.toString(),
+      token: 'VALID_TOKEN',
+      resource: '/users/{userId}',
+      method: 'GET',
+      userId: 'me',
     });
 
-    const result = await lambdaHandler(event);
-    expect(result).toHaveProperty(
-      'context.callerId',
-      testUserInfo.userId.toString()
-    );
+    const result = await handler(event);
+    expect(result.context?.callerId).toBe(userId);
   });
 });
 

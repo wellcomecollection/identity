@@ -19,8 +19,8 @@ resource "auth0_resource_server" "identity_api" {
   }
 
   scopes {
-    value       = "read:patron"
-    description = "Read patron info"
+    value       = "read:user"
+    description = "Read user info"
   }
 
   scopes {
@@ -31,6 +31,11 @@ resource "auth0_resource_server" "identity_api" {
   scopes {
     value       = "update:email"
     description = "Update email"
+  }
+
+  scopes {
+    value       = "update:password"
+    description = "Update password"
   }
 
   // Applications are allowed refresh tokens

@@ -236,29 +236,26 @@ function extractSourceIp(request: Request): string {
 }
 
 function getTargetUserId(request: Request): number {
-  if (request.params.user_id === 'me') {
-    const callerId: number = Number(
-      request.apiGateway?.event.requestContext.authorizer?.callerId
-    );
-    if (isNaN(callerId)) {
-      throw new HttpError({
-        status: 401,
-        message: `Caller attempted to operate on themselves, but request was not authorised`,
-      });
-    }
+  const callerId: number = Number(
+    request.apiGateway?.event.requestContext.authorizer?.callerId
+  );
 
-    return callerId;
-  }
-
-  const targetUserId: number = Number(request.params.user_id);
-  if (isNaN(targetUserId)) {
+  if (isNaN(callerId)) {
     throw new HttpError({
-      status: 400,
-      message: `Invalid user ID [${targetUserId}]`,
+      status: 401,
+      message: `Request was not authorised`,
     });
   }
 
-  return targetUserId;
+  const paramUserId = request.params.user_id;
+  if (paramUserId !== 'me' && Number(paramUserId) !== callerId) {
+    throw new HttpError({
+      status: 403,
+      message: `Caller cannot operate on resource`,
+    });
+  }
+
+  return callerId;
 }
 
 function passwordCheckerForUser(auth0Client: Auth0Client) {
