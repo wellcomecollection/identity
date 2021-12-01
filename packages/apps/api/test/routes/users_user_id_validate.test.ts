@@ -1,4 +1,4 @@
-import { mockedApi, withSourceIp } from './fixtures/mockedApi';
+import { mockedApi, withCallerId } from './fixtures/mockedApi';
 import { randomAlphanumeric, randomExistingUser } from './fixtures/generators';
 
 describe('/users/{userId}/validate', () => {
@@ -6,7 +6,7 @@ describe('/users/{userId}/validate', () => {
     it('validates a correct user password', async () => {
       const testUser = randomExistingUser({ password: randomAlphanumeric(10) });
       const { api } = mockedApi([testUser]);
-      const response = await withSourceIp(
+      const response = await withCallerId(testUser.userId)(
         api.post(`/users/${testUser.userId}/validate`)
       )
         .send({ password: testUser.password })
@@ -18,7 +18,7 @@ describe('/users/{userId}/validate', () => {
     it('401s for an incorrect user password', async () => {
       const testUser = randomExistingUser();
       const { api } = mockedApi([testUser]);
-      const response = await withSourceIp(
+      const response = await withCallerId(testUser.userId)(
         api.post(`/users/${testUser.userId}/validate`)
       )
         .send({ password: 'incorrect-password' })
@@ -29,10 +29,13 @@ describe('/users/{userId}/validate', () => {
 
     it('404s for users that do not exist', async () => {
       const { api } = mockedApi();
-      const response = await api
-        .post(`/users/66666666/validate`)
-        .send({ password: 'beep-boop' })
-        .set('Accept', 'application/json');
+      const id = 1234567;
+      const response = await withCallerId(id)(
+        api
+          .post(`/users/${id}/validate`)
+          .send({ password: 'beep-boop' })
+          .set('Accept', 'application/json')
+      );
 
       expect(response.statusCode).toBe(404);
     });

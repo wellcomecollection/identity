@@ -1,4 +1,4 @@
-import { mockedApi, withSourceIp } from './fixtures/mockedApi';
+import { mockedApi, withCallerId } from './fixtures/mockedApi';
 import { randomExistingUser } from './fixtures/generators';
 
 describe('/users/{userId}/deletion-request', () => {
@@ -6,7 +6,7 @@ describe('/users/{userId}/deletion-request', () => {
     it('marks a user as having requested deletion, blocks the account, and sends deletion request emails', async () => {
       const testUser = randomExistingUser({ password: 'test-password' });
       const { clients, api } = mockedApi([testUser]);
-      const response = await withSourceIp(
+      const response = await withCallerId(testUser.userId)(
         api
           .put(`/users/${testUser.userId}/deletion-request`)
           .send({ password: testUser.password })
@@ -25,7 +25,7 @@ describe('/users/{userId}/deletion-request', () => {
     it('fails if the correct current password is not provided', async () => {
       const testUser = randomExistingUser({ password: 'test-password' });
       const { api } = mockedApi([testUser]);
-      const response = await withSourceIp(
+      const response = await withCallerId(testUser.userId)(
         api
           .put(`/users/${testUser.userId}/deletion-request`)
           .send({ password: 'wrong' })
@@ -40,7 +40,7 @@ describe('/users/{userId}/deletion-request', () => {
         password: 'test-password',
       });
       const { api } = mockedApi([testUser]);
-      const response = await withSourceIp(
+      const response = await withCallerId(testUser.userId)(
         api
           .put(`/users/${testUser.userId}/deletion-request`)
           .send({ password: testUser.password })
@@ -51,7 +51,10 @@ describe('/users/{userId}/deletion-request', () => {
 
     it('404s for users that do not exist', async () => {
       const { api } = mockedApi();
-      const response = await api.put(`/users/6666666/deletion-request`);
+      const id = 6666666;
+      const response = await withCallerId(id)(
+        api.put(`/users/${id}/deletion-request`)
+      );
       expect(response.statusCode).toBe(404);
     });
   });

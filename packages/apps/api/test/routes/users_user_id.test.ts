@@ -1,4 +1,4 @@
-import { mockedApi, withSourceIp } from './fixtures/mockedApi';
+import { mockedApi, withCallerId } from './fixtures/mockedApi';
 import { randomExistingUser } from './fixtures/generators';
 
 describe('/users/{userId}', () => {
@@ -6,7 +6,9 @@ describe('/users/{userId}', () => {
     it('fetches a user', async () => {
       const testUser = randomExistingUser();
       const { api } = mockedApi([testUser]);
-      const response = await api.get(`/users/${testUser.userId}`);
+      const response = await withCallerId(testUser.userId)(
+        api.get(`/users/${testUser.userId}`)
+      );
 
       expect(response.statusCode).toBe(200);
       expect(response.body.userId).toBe(testUser.userId);
@@ -17,7 +19,8 @@ describe('/users/{userId}', () => {
 
     it('404s for users that do not exist', async () => {
       const { api } = mockedApi();
-      const response = await api.get(`/users/6666666`);
+      const id = 6666666;
+      const response = await withCallerId(id)(api.get(`/users/${id}`));
 
       expect(response.statusCode).toBe(404);
     });
@@ -27,7 +30,7 @@ describe('/users/{userId}', () => {
     it('updates a user', async () => {
       const testUser = randomExistingUser({ password: 'test-password' });
       const { api } = mockedApi([testUser]);
-      const response = await withSourceIp(
+      const response = await withCallerId(testUser.userId)(
         api
           .put(`/users/${testUser.userId}`)
           .send({ email: 'test2@test.com', password: testUser.password })
@@ -44,7 +47,7 @@ describe('/users/{userId}', () => {
     it('fails if the correct current password is not provided', async () => {
       const testUser = randomExistingUser({ password: 'test-password' });
       const { api } = mockedApi([testUser]);
-      const response = await withSourceIp(
+      const response = await withCallerId(testUser.userId)(
         api
           .put(`/users/${testUser.userId}`)
           .send({ email: 'test2@test.com', password: 'wrong' })
@@ -58,7 +61,7 @@ describe('/users/{userId}', () => {
       const testUser1 = randomExistingUser({ password: 'test-password' });
       const testUser2 = randomExistingUser();
       const { api } = mockedApi([testUser1, testUser2]);
-      const response = await withSourceIp(
+      const response = await withCallerId(testUser1.userId)(
         api
           .put(`/users/${testUser1.userId}`)
           .send({ email: testUser2.email, password: testUser1.password })

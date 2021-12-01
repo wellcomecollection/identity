@@ -15,13 +15,13 @@ module.exports = {
 };
 
 const stageSecrets = {
-  auth0Url: 'https://wellcomecollection-stage.eu.auth0.com/oauth/token',
+  auth0Domain: 'stage.account.wellcomecollection.org',
   apiKeySecretId: 'identity/stage/account_management_system/api_key',
   credentialsSecretId: 'identity/stage/smoke_test/credentials',
 };
 
 const prodSecrets = {
-  auth0Url: 'https://wellcomecollection.eu.auth0.com/oauth/token',
+  auth0Domain: 'account.wellcomecollection.org',
   apiKeySecretId: 'identity/prod/account_management_system/api_key',
   credentialsSecretId: 'identity/prod/smoke_test/credentials',
 };
@@ -41,7 +41,7 @@ function getSecret(secretId, callback) {
 }
 
 // Implements the resource owner password OAuth flow via Auth0
-function getAuthToken(secretId, auth0Url, requestParams, callback) {
+function getAuthToken(secretId, auth0Domain, requestParams, callback) {
   const setCredentials = (credentials) => {
     const parsedCredentials = JSON.parse(credentials);
     const username = parsedCredentials['username'];
@@ -51,7 +51,7 @@ function getAuthToken(secretId, auth0Url, requestParams, callback) {
 
     const options = {
       method: 'POST',
-      url: auth0Url,
+      url: `https://${auth0Domain}/oauth/token`,
       headers: { 'content-type': 'application/x-www-form-urlencoded' },
       form: {
         grant_type: 'password',
@@ -59,6 +59,16 @@ function getAuthToken(secretId, auth0Url, requestParams, callback) {
         password: password,
         client_id: clientId,
         client_secret: clientSecret,
+        scope: [
+          'openid',
+          'create:requests',
+          'delete:patron',
+          'read:user',
+          'read:requests',
+          'update:email',
+          'update:password',
+        ].join(' '),
+        audience: `https://v1-api.${auth0Domain}`,
       },
     };
 
@@ -99,13 +109,13 @@ function addCredentials(requestParams, context, ee, next) {
 
   const thenGetAuthToken = () =>
     getAuthToken(
-      secrets['credentialsSecretId'],
-      secrets['auth0Url'],
+      secrets.credentialsSecretId,
+      secrets.auth0Domain,
       requestParams,
       next
     );
   const thenGetApiKey = () =>
-    getApiKey(secrets['apiKeySecretId'], requestParams, thenGetAuthToken);
+    getApiKey(secrets.apiKeySecretId, requestParams, thenGetAuthToken);
 
   thenGetApiKey();
 }
