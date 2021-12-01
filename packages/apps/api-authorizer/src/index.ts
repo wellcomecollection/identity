@@ -16,7 +16,7 @@ const tokenValidator = createValidator({
   // https://auth0.com/docs/security/tokens/json-web-tokens/json-web-key-sets
   jwksUri: `https://${envConfig.auth0Domain}/.well-known/jwks.json`,
   // https://auth0.com/docs/security/tokens/access-tokens/get-access-tokens#custom-domains-and-the-management-api
-  tokenIssuer: envConfig.auth0Domain,
+  tokenIssuer: `https://${envConfig.auth0Domain}/`,
   resourceServerId: envConfig.identityApiId,
 });
 

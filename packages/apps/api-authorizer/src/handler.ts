@@ -11,6 +11,7 @@ import {
   resourceAuthorizationValidator,
   userIdFromSubject,
 } from './authorization';
+import { JsonWebTokenError } from 'jsonwebtoken';
 
 // The presence of scope checking here is more about being descriptive than adding security,
 // as the ability to enforce which scopes a user is allowed is an additional piece of work
@@ -52,7 +53,15 @@ export const createLambdaHandler = (validateToken: TokenValidator) => async (
   }
 
   // 2. Validate the token
-  const validatedToken = await validateToken(token).catch(send401);
+  const validatedToken = await validateToken(token).catch((error) => {
+    // These are 'interesting' JWT errors as opposed to routine expiries
+    // They do not leak PII
+    // See https://github.com/auth0/node-jsonwebtoken#jsonwebtokenerror
+    if (error instanceof JsonWebTokenError) {
+      console.error('Invalid token', error);
+    }
+    return send401();
+  });
 
   // 3. Check the request against the rules defined above
   const requestIsAllowed = validateRequest({
