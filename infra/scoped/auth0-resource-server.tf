@@ -46,7 +46,7 @@ resource "auth0_resource_server" "identity_api" {
 }
 
 resource "auth0_client_grant" "dev_and_test" {
-  for_each = toset(terraform.workspace != "prod" ? local.stage_test_client_ids : [])
+  for_each = toset(terraform.workspace == "stage" ? local.stage_test_client_ids : [])
 
   client_id = each.value
   audience  = auth0_resource_server.identity_api.identifier
