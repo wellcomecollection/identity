@@ -44,3 +44,11 @@ resource "auth0_resource_server" "identity_api" {
   token_lifetime_for_web                          = 60 * 60 // 1 hour
   skip_consent_for_verifiable_first_party_clients = true
 }
+
+resource "auth0_client_grant" "dev_and_test" {
+  for_each = toset(terraform.workspace == "stage" ? local.stage_test_client_ids : [])
+
+  client_id = each.value
+  audience  = auth0_resource_server.identity_api.identifier
+  scope     = [for scope in auth0_resource_server.identity_api.scopes : scope.value]
+}
