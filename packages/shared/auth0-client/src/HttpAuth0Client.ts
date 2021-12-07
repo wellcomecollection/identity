@@ -9,15 +9,9 @@ import {
 } from '@weco/identity-common';
 import {
   Auth0Profile,
-  Auth0SearchResults,
-  Auth0SearchSortFields,
-  Auth0UserInfo,
-  generateUserSearchQuery,
   SierraConnection,
   SierraUserIdPrefix,
   toAuth0Profile,
-  toAuth0SearchResults,
-  toAuth0UserInfo,
 } from './auth0';
 import Auth0Client from './Auth0Client';
 
@@ -39,30 +33,6 @@ export default class HttpAuth0Client implements Auth0Client {
     this.clientSecret = clientSecret;
   }
 
-  // This call intentionally handles access tokens pertaining to any connection.
-  async validateAccessToken(
-    accessToken: string
-  ): Promise<APIResponse<Auth0UserInfo>> {
-    return this.getInstanceOnBehalfOf(accessToken)
-      .get('/userinfo', {
-        validateStatus: (status) => status === 200,
-      })
-      .then((response) => successResponse(toAuth0UserInfo(response.data)))
-      .catch((error) => {
-        if (error.response) {
-          switch (error.response.status) {
-            case 401:
-              return errorResponse(
-                'Auth0 access token [' + accessToken + '] not valid',
-                ResponseStatus.InvalidCredentials,
-                error
-              );
-          }
-        }
-        return unhandledError(error);
-      });
-  }
-
   async getUserByUserId(userId: number): Promise<APIResponse<Auth0Profile>> {
     return this.getMachineToMachineInstance().then((instance) => {
       return instance
@@ -78,105 +48,6 @@ export default class HttpAuth0Client implements Auth0Client {
                 return errorResponse(
                   'Auth0 user with ID [' + userId + '] not found',
                   ResponseStatus.NotFound,
-                  error
-                );
-            }
-          }
-          return unhandledError(error);
-        });
-    });
-  }
-
-  // @TODO This call should only search users that exist in the Sierra connection
-  async getUserByEmail(email: string): Promise<APIResponse<Auth0Profile>> {
-    return this.getMachineToMachineInstance().then((instance) => {
-      return instance
-        .get('/users-by-email', {
-          params: {
-            email: email.toLowerCase(),
-          },
-          validateStatus: (status) => status === 200,
-        })
-        .then((response) => {
-          // Even though email addresses are unique in Auth0, this endpoint will return a 200 and an empty JSON array if
-          // there's no match. If there is a match, we still get the JSON array, with a single JSON object inside it.
-          if (response.data.length === 0) {
-            return errorResponse(
-              'Auth0 user with email [' + email + '] not found',
-              ResponseStatus.NotFound
-            );
-          } else {
-            return successResponse(toAuth0Profile(response.data[0]));
-          }
-        })
-        .catch((error) => {
-          return unhandledError(error);
-        });
-    });
-  }
-
-  async createUser(
-    userId: number,
-    firstName: string,
-    lastName: string,
-    email: string,
-    password: string
-  ): Promise<APIResponse<Auth0Profile>> {
-    return this.getMachineToMachineInstance().then((instance) => {
-      return instance
-        .post(
-          '/users',
-          {
-            user_id: 'p' + userId, // When creating an Auth0 user, don't provide the 'auth0|' prefix, just prefix the 'p' - Auth0 will do the rest.
-            name: firstName + ' ' + lastName,
-            given_name: firstName,
-            family_name: lastName,
-            email: email,
-            password: password,
-            email_verified: false,
-            connection: SierraConnection,
-          },
-          {
-            validateStatus: (status) => status === 201,
-          }
-        )
-        .then((response) => successResponse(toAuth0Profile(response.data)))
-        .catch((error) => {
-          if (error.response) {
-            switch (error.response.status) {
-              case 400: {
-                if (
-                  error.response.data?.message?.startsWith(
-                    'PasswordStrengthError'
-                  )
-                ) {
-                  return errorResponse(
-                    'Password does not meet Auth0 policy',
-                    ResponseStatus.PasswordTooWeak,
-                    error
-                  );
-                } else if (
-                  error.response.data?.message.startsWith(
-                    'PasswordDictionaryError'
-                  )
-                ) {
-                  return errorResponse(
-                    'Password is too common or has been explicitly forbidden',
-                    ResponseStatus.PasswordTooWeak,
-                    error
-                  );
-                } else {
-                  return errorResponse(
-                    'Malformed or invalid Auth0 user creation request',
-                    ResponseStatus.MalformedRequest,
-                    error
-                  );
-                }
-              }
-              case 409:
-                return errorResponse(
-                  'Auth0 user with email [' + email + '] already exists',
-                  ResponseStatus.UserAlreadyExists,
                   error
                 );
             }
@@ -336,125 +207,6 @@ export default class HttpAuth0Client implements Auth0Client {
     });
   }
 
-  async searchUsers(
-    page: number,
-    pageSize: number,
-    sort: string,
-    sortDir: number,
-    name: string | undefined,
-    email: string | undefined,
-    status: string | undefined
-  ): Promise<APIResponse<Auth0SearchResults>> {
-    return this.getMachineToMachineInstance().then((instance) => {
-      return instance
-        .get('/users', {
-          params: {
-            page: page,
-            per_page: pageSize,
-            include_totals: true,
-            sort: Auth0SearchSortFields.get(sort) + ':' + sortDir,
-            q: generateUserSearchQuery(name, email, status),
-            search_engine: 'v3',
-          },
-          validateStatus: (status) => status === 200,
-        })
-        .then((response) =>
-          successResponse(
-            toAuth0SearchResults(
-              page,
-              sort,
-              sortDir,
-              name,
-              email,
-              status,
-              response.data
-            )
-          )
-        )
-        .catch((error) => {
-          if (error.response) {
-            switch (error.response.status) {
-              case 400: {
-                return errorResponse(
-                  'Malformed or invalid Auth0 user search request',
-                  ResponseStatus.MalformedRequest,
-                  error
-                );
-              }
-              case 503: {
-                return errorResponse(
-                  'Auth0 user search query exceeded the timeout',
-                  ResponseStatus.QueryTimeout,
-                  error
-                );
-              }
-            }
-          }
-          return unhandledError(error);
-        });
-    });
-  }
-
-  // @TODO This call should only handle users that exist in the Sierra connection - not sure if this is possible?
-  async sendVerificationEmail(userId: number): Promise<APIResponse<{}>> {
-    return this.getMachineToMachineInstance().then((instance) => {
-      return instance
-        .post(
-          '/jobs/verification-email',
-          {
-            user_id: SierraUserIdPrefix + userId,
-          },
-          {
-            validateStatus: (status) => status === 201,
-          }
-        )
-        .then(() => successResponse({}))
-        .catch((error) => {
-          if (error.response) {
-            switch (error.response.status) {
-              case 400: {
-                return errorResponse(
-                  'Malformed or invalid Auth0 email verification request',
-                  ResponseStatus.MalformedRequest,
-                  error
-                );
-              }
-            }
-          }
-          return unhandledError(error);
-        });
-    });
-  }
-
-  async sendPasswordResetEmail(email: string): Promise<APIResponse<{}>> {
-    return axios
-      .post(
-        this.apiRoot + '/dbconnections/change_password',
-        {
-          email: email,
-          connection: SierraConnection,
-        },
-        {
-          validateStatus: (status) => status === 200,
-        }
-      )
-      .then(() => successResponse({}))
-      .catch((error) => {
-        if (error.response) {
-          switch (error.response.status) {
-            case 400: {
-              return errorResponse(
-                'Malformed or invalid Auth0 password reset request',
-                ResponseStatus.MalformedRequest,
-                error
-              );
-            }
-          }
-        }
-        return unhandledError(error);
-      });
-  }
-
   async setAppMetadata(
     userId: number,
     metadata: Record<string, any>
@@ -517,67 +269,6 @@ export default class HttpAuth0Client implements Auth0Client {
                   error
                 );
               }
-              case 404:
-                return errorResponse(
-                  'Auth0 user with ID [' + userId + '] not found',
-                  ResponseStatus.NotFound,
-                  error
-                );
-            }
-          }
-          return unhandledError(error);
-        });
-    });
-  }
-
-  async unblockAccount(userId: number): Promise<APIResponse<{}>> {
-    return this.getMachineToMachineInstance().then((instance) => {
-      return instance
-        .patch(
-          '/users/' + SierraUserIdPrefix + userId,
-          {
-            blocked: false,
-          },
-          {
-            validateStatus: (status) => status === 200,
-          }
-        )
-        .then(() => successResponse({}))
-        .catch((error) => {
-          if (error.response) {
-            switch (error.response.status) {
-              case 400: {
-                return errorResponse(
-                  'Malformed or invalid Auth0 user unblock request',
-                  ResponseStatus.MalformedRequest,
-                  error
-                );
-              }
-              case 404:
-                return errorResponse(
-                  'Auth0 user with ID [' + userId + '] not found',
-                  ResponseStatus.NotFound,
-                  error
-                );
-            }
-          }
-          return unhandledError(error);
-        });
-    });
-  }
-
-  async deleteUser(userId: number): Promise<APIResponse<{}>> {
-    return this.getMachineToMachineInstance().then((instance) => {
-      return instance
-        .delete('/users/' + SierraUserIdPrefix + userId, {
-          validateStatus: responseCodeIs(204),
-        })
-        .then(() => {
-          return successResponse({});
-        })
-        .catch((error) => {
-          if (error.response) {
-            switch (error.response.status) {
               case 404:
                 return errorResponse(
                   'Auth0 user with ID [' + userId + '] not found',

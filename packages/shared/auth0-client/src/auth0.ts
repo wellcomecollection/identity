@@ -1,26 +1,5 @@
 import { isNonBlank } from '@weco/identity-common';
 
-export function toAuth0UserInfo(userInfo: any): Auth0UserInfo {
-  // Mandatory Auth0 fields
-  const sub: string = userInfo.sub;
-  if (!isNonBlank(sub)) {
-    throw new Error(
-      'One or more required UserInfo fields are missing. Have all necessary scopes been requested?'
-    );
-  }
-
-  return {
-    userId: extractUserId(sub),
-    name: userInfo.name ? userInfo.name : null,
-    firstName: userInfo.given_name ? userInfo.given_name : null,
-    lastName: userInfo.family_name ? userInfo.family_name : null,
-    email: userInfo.email ? userInfo.email : null,
-    additionalAttributes: userInfo['https://wellcomecollection.org/']
-      ? userInfo['https://wellcomecollection.org/']
-      : null,
-  };
-}
-
 export function toAuth0Profile(auth0User: any): Auth0Profile {
   // Mandatory Auth0 fields
   const userIdStr: string = auth0User.user_id;
@@ -111,36 +90,6 @@ function extractUserId(value: string): string {
   } else {
     throw new Error('Unexpected format for user ID [' + value + ']');
   }
-}
-
-export function generateUserSearchQuery(
-  name: string | undefined,
-  email: string | undefined,
-  status: string | undefined
-): string {
-  let query: string[] = ['identities.connection:"Sierra-Connection"'];
-
-  if (name) {
-    query.push(...name.split(' ').map((token) => 'name:*' + token + '*'));
-  }
-
-  if (email) {
-    query.push(...email.split(' ').map((token) => 'email:*' + token + '*'));
-  }
-
-  if (status) {
-    if (status === 'active') {
-      // Auth0 again - records that have never been toggled to / from the blocked status, won't have a 'blocked' field
-      // on them, so we test if the flag is either 'false', or if that field doesn't exist.
-      query.push('!blocked:true');
-    } else if (status === 'locked') {
-      query.push('blocked:true');
-    } else if (status === 'deletePending') {
-      query.push('app_metadata.deleteRequested:*');
-    }
-  }
-
-  return query.join(' AND ');
 }
 
 // A simple representation of the Auth0 user, using only the attributes we provide to Auth0 to create it.
