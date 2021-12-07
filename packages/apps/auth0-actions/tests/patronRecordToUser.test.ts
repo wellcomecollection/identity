@@ -17,6 +17,9 @@ describe('patronRecordToUser', () => {
       name: 'Test Testing',
       given_name: 'Test',
       family_name: 'Testing',
+      app_metadata: {
+        barcode: '1234567',
+      },
     });
   });
 });

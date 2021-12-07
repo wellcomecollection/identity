@@ -1,7 +1,7 @@
 import { callbackify } from 'util';
-import { User } from 'auth0';
+import { Auth0User } from '@weco/auth0-client';
 
-async function verify(email: string): Promise<User> {
+async function verify(email: string): Promise<Auth0User> {
   // Do some things
   return {};
 }
