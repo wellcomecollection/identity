@@ -2,12 +2,21 @@ import { PatronRecord, SierraClient } from '@weco/sierra-client';
 import { User } from 'auth0';
 import { ResponseStatus } from '@weco/identity-common';
 
-export const patronRecordToUser = (patronRecord: PatronRecord): User => ({
+type UserMetadata = {
+  patron_barcode: string;
+};
+
+export const patronRecordToUser = (
+  patronRecord: PatronRecord
+): User<{}, UserMetadata> => ({
   user_id: 'p' + patronRecord.recordNumber,
   email: patronRecord.email,
   name: patronRecord.firstName + ' ' + patronRecord.lastName,
   given_name: patronRecord.firstName,
   family_name: patronRecord.lastName,
+  user_metadata: {
+    patron_barcode: patronRecord.barcode,
+  },
 });
 
 export const recordNumberForEmail = async (
