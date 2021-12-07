@@ -16,7 +16,6 @@ import { errorHandler } from './handlers/errorHandler';
 import { EmailClient } from './utils/EmailClient';
 
 export type Clients = {
-  sierra: SierraClient;
   auth0: Auth0Client;
   email: EmailClient;
 };
@@ -47,15 +46,11 @@ function registerUsersUserIdResource(clients: Clients, app: Application): void {
     origin: process.env.API_ALLOWED_ORIGINS,
   });
   app.options('/users/:user_id', corsOptions);
-  app.get(
-    '/users/:user_id',
-    corsOptions,
-    asyncHandler(getUser(clients.sierra, clients.auth0))
-  );
+  app.get('/users/:user_id', corsOptions, asyncHandler(getUser(clients.auth0)));
   app.put(
     '/users/:user_id',
     corsOptions,
-    asyncHandler(updateUser(clients.sierra, clients.auth0))
+    asyncHandler(updateUser(clients.auth0))
   );
 }
 
@@ -72,7 +67,7 @@ function registerUsersUserIdPasswordResource(
   app.put(
     '/users/:user_id/password',
     corsOptions,
-    asyncHandler(changePassword(clients.sierra, clients.auth0))
+    asyncHandler(changePassword(clients.auth0))
   );
 }
 

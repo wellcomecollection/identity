@@ -7,9 +7,6 @@
   "include": ["src", "tests"],
   "references": [
     {
-      "path": "../../shared/sierra-client"
-    },
-    {
       "path": "../../shared/auth0-client"
     },
     {

@@ -1,6 +1,5 @@
 import { Auth0Client, Auth0User } from '@weco/auth0-client';
 import { APIResponse, isNonBlank, ResponseStatus } from '@weco/identity-common';
-import { PatronRecord, SierraClient } from '@weco/sierra-client';
 import { Request, Response } from 'express';
 import { toMessage } from '../models/common';
 import { clientResponseToHttpError, HttpError } from '../models/HttpError';
@@ -35,17 +34,9 @@ export function validatePassword(auth0Client: Auth0Client) {
   };
 }
 
-export function getUser(sierraClient: SierraClient, auth0Client: Auth0Client) {
+export function getUser(auth0Client: Auth0Client) {
   return async function (request: Request, response: Response): Promise<void> {
     const userId: number = getTargetUserId(request);
-
-    const sierraGet: APIResponse<PatronRecord> = await sierraClient.getPatronRecordByRecordNumber(
-      userId
-    );
-    if (sierraGet.status !== ResponseStatus.Success) {
-      throw clientResponseToHttpError(sierraGet);
-    }
-
     const auth0Get: APIResponse<Auth0User> = await auth0Client.getUserByUserId(
       userId
     );
@@ -53,14 +44,11 @@ export function getUser(sierraClient: SierraClient, auth0Client: Auth0Client) {
       throw clientResponseToHttpError(auth0Get);
     }
 
-    response.status(200).json(toUser(auth0Get.result, sierraGet.result));
+    response.status(200).json(toUser(auth0Get.result));
   };
 }
 
-export function updateUser(
-  sierraClient: SierraClient,
-  auth0Client: Auth0Client
-) {
+export function updateUser(auth0Client: Auth0Client) {
   const checkPassword = passwordCheckerForUser(auth0Client);
   return async function (request: Request, response: Response): Promise<void> {
     const userId: number = getTargetUserId(request);
@@ -73,14 +61,6 @@ export function updateUser(
       throw clientResponseToHttpError(auth0UserIdGet);
     }
     const auth0Profile: Auth0User = auth0UserIdGet.result;
-
-    // TODO this is only required for the barcode, hopefully we can remove it
-    const sierraGet: APIResponse<PatronRecord> = await sierraClient.getPatronRecordByRecordNumber(
-      userId
-    );
-    if (sierraGet.status !== ResponseStatus.Success) {
-      throw clientResponseToHttpError(sierraGet);
-    }
 
     if (!password) {
       throw new HttpError({
@@ -109,14 +89,11 @@ export function updateUser(
       throw clientResponseToHttpError(auth0Update);
     }
 
-    response.status(200).json(toUser(auth0Update.result, sierraGet.result));
+    response.status(200).json(toUser(auth0Update.result));
   };
 }
 
-export function changePassword(
-  sierraClient: SierraClient,
-  auth0Client: Auth0Client
-) {
+export function changePassword(auth0Client: Auth0Client) {
   const checkPassword = passwordCheckerForUser(auth0Client);
   return async function (request: Request, response: Response): Promise<void> {
     const userId: number = getTargetUserId(request);

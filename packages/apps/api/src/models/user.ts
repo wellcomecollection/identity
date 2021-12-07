@@ -1,13 +1,9 @@
 import { Auth0User } from '@weco/auth0-client';
-import { PatronRecord } from '@weco/sierra-client';
 
-export function toUser(
-  auth0Profile: Auth0User,
-  patronRecord?: PatronRecord
-): User {
+export function toUser(auth0Profile: Auth0User): User {
   return {
     userId: Number(auth0Profile.user_id), // @TODO is this safe?
-    barcode: auth0Profile.app_metadata?.barcode || patronRecord?.barcode,
+    barcode: auth0Profile.app_metadata?.barcode,
     firstName: auth0Profile.given_name,
     lastName: auth0Profile.family_name,
     email: auth0Profile.email!,
