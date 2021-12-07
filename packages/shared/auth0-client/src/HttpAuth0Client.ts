@@ -7,13 +7,8 @@ import {
   successResponse,
   unhandledError,
 } from '@weco/identity-common';
-import {
-  Auth0Profile,
-  SierraConnection,
-  SierraUserIdPrefix,
-  toAuth0Profile,
-} from './auth0';
-import Auth0Client from './Auth0Client';
+import { SierraConnection, SierraUserIdPrefix } from './auth0';
+import Auth0Client, { Auth0User } from './Auth0Client';
 
 export default class HttpAuth0Client implements Auth0Client {
   private readonly apiRoot: string;
@@ -33,14 +28,14 @@ export default class HttpAuth0Client implements Auth0Client {
     this.clientSecret = clientSecret;
   }
 
-  async getUserByUserId(userId: number): Promise<APIResponse<Auth0Profile>> {
+  async getUserByUserId(userId: number): Promise<APIResponse<Auth0User>> {
     return this.getMachineToMachineInstance().then((instance) => {
       return instance
         .get('/users/' + SierraUserIdPrefix + userId, {
           // Automatically append the mandatory Auth0 prefix to the given user ID.
           validateStatus: (status) => status === 200,
         })
-        .then((response) => successResponse(toAuth0Profile(response.data)))
+        .then((response) => successResponse(response.data))
         .catch((error) => {
           if (error.response) {
             switch (error.response.status) {
@@ -63,7 +58,7 @@ export default class HttpAuth0Client implements Auth0Client {
     username: string,
     password: string
   ): Promise<APIResponse<{}>> {
-    return this.getInstanceWithCredentials(sourceIp, username, password)
+    return this.validateCredentials(sourceIp, username, password)
       .then(() => successResponse(true))
       .catch((error) => {
         if (error.response) {
@@ -92,7 +87,7 @@ export default class HttpAuth0Client implements Auth0Client {
   async updateUser(
     userId: number,
     email: string
-  ): Promise<APIResponse<Auth0Profile>> {
+  ): Promise<APIResponse<Auth0User>> {
     return this.getMachineToMachineInstance().then((instance) => {
       return instance
         .patch(
@@ -107,7 +102,7 @@ export default class HttpAuth0Client implements Auth0Client {
             validateStatus: (status) => status === 200,
           }
         )
-        .then((response) => successResponse(toAuth0Profile(response.data)))
+        .then((response) => successResponse(response.data))
         .catch((error) => {
           if (error.response) {
             switch (error.response.status) {
@@ -148,7 +143,7 @@ export default class HttpAuth0Client implements Auth0Client {
   async updatePassword(
     userId: number,
     password: string
-  ): Promise<APIResponse<Auth0Profile>> {
+  ): Promise<APIResponse<Auth0User>> {
     return this.getMachineToMachineInstance().then((instance) => {
       return instance
         .patch(
@@ -161,7 +156,7 @@ export default class HttpAuth0Client implements Auth0Client {
             validateStatus: (status) => status === 200,
           }
         )
-        .then((response) => successResponse(toAuth0Profile(response.data)))
+        .then((response) => successResponse(response.data))
         .catch((error) => {
           if (error.response) {
             switch (error.response.status) {
@@ -219,10 +214,10 @@ export default class HttpAuth0Client implements Auth0Client {
             app_metadata: metadata,
           },
           {
-            validateStatus: (status) => status === 200,
+            validateStatus: responseCodeIs(200),
           }
         )
-        .then((response) => successResponse(toAuth0Profile(response.data)))
+        .then((response) => successResponse(response.data))
         .catch((error) => {
           if (error.response) {
             switch (error.response.status) {
@@ -306,45 +301,27 @@ export default class HttpAuth0Client implements Auth0Client {
       });
   }
 
-  private getInstanceWithCredentials(
+  private validateCredentials(
     sourceIp: string,
     username: string,
     password: string
-  ): Promise<AxiosInstance> {
-    return axios
-      .post(
-        this.apiRoot + '/oauth/token',
-        {
-          client_id: this.clientId,
-          client_secret: this.clientSecret,
-          audience: this.apiAudience,
-          grant_type: 'password',
-          username: username,
-          password: password,
-        },
-        {
-          headers: {
-            'Auth0-Forwarded-For': sourceIp,
-          },
-          validateStatus: responseCodeIs(200),
-        }
-      )
-      .then((response) => {
-        return axios.create({
-          baseURL: this.apiRoot + '/api/v2',
-          headers: {
-            Authorization: 'Bearer ' + response.data.access_token,
-          },
-        });
-      });
-  }
-
-  private getInstanceOnBehalfOf(accessToken: string): AxiosInstance {
-    return axios.create({
-      baseURL: this.apiRoot,
-      headers: {
-        Authorization: 'Bearer ' + accessToken,
+  ): Promise<boolean> {
+    return axios.post(
+      this.apiRoot + '/oauth/token',
+      {
+        client_id: this.clientId,
+        client_secret: this.clientSecret,
+        audience: this.apiAudience,
+        grant_type: 'password',
+        username: username,
+        password: password,
       },
-    });
+      {
+        headers: {
+          'Auth0-Forwarded-For': sourceIp,
+        },
+        validateStatus: responseCodeIs(200),
+      }
+    );
   }
 }

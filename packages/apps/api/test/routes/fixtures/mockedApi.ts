@@ -44,7 +44,7 @@ export const mockedApi = (existingUsers: ExistingUser[] = []) => {
   };
 
   for (const user of existingUsers) {
-    if (user.sourceSystems.includes('auth0')) {
+    if (user.sourceSystems.includes('sierra')) {
       const { barcode } = MockSierraClient.randomPatronRecord();
       mockClients.sierra.addPatron(
         {
@@ -58,15 +58,15 @@ export const mockedApi = (existingUsers: ExistingUser[] = []) => {
       );
     }
 
-    if (user.sourceSystems.includes('sierra')) {
+    if (user.sourceSystems.includes('auth0')) {
       mockClients.auth0.addUser(
         {
-          userId: user.userId.toString(),
+          user_id: user.userId.toString(),
           email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
+          given_name: user.firstName,
+          family_name: user.lastName,
           name: user.firstName + ' ' + user.lastName,
-          additionalAttributes: {
+          app_metadata: {
             deleteRequested: user.markedForDeletion
               ? new Date().toISOString()
               : undefined,

@@ -1,4 +1,4 @@
-import { Auth0Client, Auth0Profile } from '@weco/auth0-client';
+import { Auth0Client, Auth0User } from '@weco/auth0-client';
 import { APIResponse, isNonBlank, ResponseStatus } from '@weco/identity-common';
 import { PatronRecord, SierraClient } from '@weco/sierra-client';
 import { Request, Response } from 'express';
@@ -18,7 +18,7 @@ export function validatePassword(auth0Client: Auth0Client) {
         message: 'A password must be provided and non-blank',
       });
     }
-    const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(
+    const auth0Get: APIResponse<Auth0User> = await auth0Client.getUserByUserId(
       userId
     );
     if (auth0Get.status !== ResponseStatus.Success) {
@@ -26,7 +26,7 @@ export function validatePassword(auth0Client: Auth0Client) {
     }
 
     await checkPassword(
-      auth0Get.result.email,
+      auth0Get.result.email!,
       password,
       extractSourceIp(request)
     );
@@ -46,7 +46,7 @@ export function getUser(sierraClient: SierraClient, auth0Client: Auth0Client) {
       throw clientResponseToHttpError(sierraGet);
     }
 
-    const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(
+    const auth0Get: APIResponse<Auth0User> = await auth0Client.getUserByUserId(
       userId
     );
     if (auth0Get.status !== ResponseStatus.Success) {
@@ -66,13 +66,13 @@ export function updateUser(
     const userId: number = getTargetUserId(request);
     const password: string | undefined = request.body.password;
 
-    const auth0UserIdGet: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(
+    const auth0UserIdGet: APIResponse<Auth0User> = await auth0Client.getUserByUserId(
       userId
     );
     if (auth0UserIdGet.status !== ResponseStatus.Success) {
       throw clientResponseToHttpError(auth0UserIdGet);
     }
-    const auth0Profile: Auth0Profile = auth0UserIdGet.result;
+    const auth0Profile: Auth0User = auth0UserIdGet.result;
 
     // TODO this is only required for the barcode, hopefully we can remove it
     const sierraGet: APIResponse<PatronRecord> = await sierraClient.getPatronRecordByRecordNumber(
@@ -89,7 +89,11 @@ export function updateUser(
       });
     }
 
-    await checkPassword(auth0Profile.email, password, extractSourceIp(request));
+    await checkPassword(
+      auth0Profile.email!,
+      password,
+      extractSourceIp(request)
+    );
 
     const newEmail = request.body.email;
     if (!newEmail || newEmail === auth0Profile.email) {
@@ -97,7 +101,7 @@ export function updateUser(
       return;
     }
 
-    const auth0Update: APIResponse<Auth0Profile> = await auth0Client.updateUser(
+    const auth0Update: APIResponse<Auth0User> = await auth0Client.updateUser(
       userId,
       newEmail
     );
@@ -126,7 +130,7 @@ export function changePassword(
       });
     }
 
-    const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(
+    const auth0Get: APIResponse<Auth0User> = await auth0Client.getUserByUserId(
       userId
     );
     if (auth0Get.status !== ResponseStatus.Success) {
@@ -134,12 +138,12 @@ export function changePassword(
     }
 
     await checkPassword(
-      auth0Get.result.email,
+      auth0Get.result.email!,
       oldPassword,
       extractSourceIp(request)
     );
 
-    const auth0Update: APIResponse<Auth0Profile> = await auth0Client.updatePassword(
+    const auth0Update: APIResponse<Auth0User> = await auth0Client.updatePassword(
       userId,
       newPassword
     );
@@ -160,7 +164,7 @@ export function requestDelete(
     const userId: number = getTargetUserId(request);
     const password: string = request.body.password;
 
-    const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(
+    const auth0Get: APIResponse<Auth0User> = await auth0Client.getUserByUserId(
       userId
     );
     if (auth0Get.status !== ResponseStatus.Success) {
@@ -168,12 +172,12 @@ export function requestDelete(
     }
 
     await checkPassword(
-      auth0Get.result.email,
+      auth0Get.result.email!,
       password,
       extractSourceIp(request)
     );
 
-    if (auth0Get.result?.metadata?.deleteRequested) {
+    if (auth0Get.result?.app_metadata?.deleteRequested) {
       response
         .status(304)
         .json(

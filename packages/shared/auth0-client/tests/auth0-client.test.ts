@@ -5,9 +5,8 @@ import {
 } from '@weco/identity-common';
 import axios, { AxiosInstance } from 'axios';
 import moxios from 'moxios';
-import { SierraUserIdPrefix } from '../src/auth0';
-import { HttpAuth0Client } from '../src';
-import { Auth0Profile, Auth0UserInfo, SierraConnection } from '../src/auth0';
+import { SierraUserIdPrefix, SierraConnection } from '../src/auth0';
+import { Auth0User, HttpAuth0Client } from '../src';
 
 describe('HTTP Auth0 client', () => {
   let client: HttpAuth0Client;
@@ -40,27 +39,13 @@ describe('HTTP Auth0 client', () => {
         },
       });
 
-      const response: APIResponse<Auth0Profile> = await client.getUserByUserId(
+      const response: APIResponse<Auth0User> = await client.getUserByUserId(
         userId
       );
       expect(response.status).toBe(ResponseStatus.Success);
 
-      const result = (<SuccessResponse<Auth0Profile>>response).result;
-      expect(result).toEqual(
-        expect.objectContaining({
-          userId: userId.toString(),
-          name,
-          firstName,
-          lastName,
-          email,
-          emailValidated,
-          locked,
-          creationDate,
-          lastLoginDate,
-          lastLoginIp,
-          totalLogins,
-        })
-      );
+      const result = (<SuccessResponse<Auth0User>>response).result;
+      expect(result).toEqual(expect.objectContaining(user));
     });
 
     it('finds the user without blocked', async () => {
@@ -69,27 +54,13 @@ describe('HTTP Auth0 client', () => {
         response: user,
       });
 
-      const response: APIResponse<Auth0Profile> = await client.getUserByUserId(
+      const response: APIResponse<Auth0User> = await client.getUserByUserId(
         123456
       );
       expect(response.status).toBe(ResponseStatus.Success);
 
-      const result = (<SuccessResponse<Auth0Profile>>response).result;
-      expect(result).toEqual(
-        expect.objectContaining({
-          userId: userId.toString(),
-          name,
-          firstName,
-          lastName,
-          email,
-          emailValidated,
-          locked,
-          creationDate,
-          lastLoginDate,
-          lastLoginIp,
-          totalLogins,
-        })
-      );
+      const result = (<SuccessResponse<Auth0User>>response).result;
+      expect(result).toEqual(expect.objectContaining(user));
     });
 
     it('does not find the user', async () => {
@@ -113,28 +84,20 @@ describe('HTTP Auth0 client', () => {
 
   describe('updates a user', () => {
     it('updates the user', async () => {
+      const newEmail = 'new@email.com';
       moxios.stubRequest('/users/' + SierraUserIdPrefix + userId, {
         status: 200,
-        response: user,
+        response: { ...user, email: newEmail },
       });
 
-      const response = await client.updateUser(userId, email);
+      const response = await client.updateUser(userId, newEmail);
       expect(response.status).toBe(ResponseStatus.Success);
 
-      const result = (<SuccessResponse<Auth0Profile>>response).result;
+      const result = (<SuccessResponse<Auth0User>>response).result;
       expect(result).toEqual(
         expect.objectContaining({
-          userId: userId.toString(),
-          name,
-          firstName,
-          lastName,
-          email,
-          emailValidated,
-          locked,
-          creationDate,
-          lastLoginDate,
-          lastLoginIp,
-          totalLogins,
+          ...user,
+          email: newEmail,
         })
       );
     });
@@ -202,19 +165,7 @@ const totalLogins: number = 10;
 const emailValidated: boolean = true;
 const locked: boolean = false;
 
-const userInfo: any = {
-  sub: SierraUserIdPrefix + userId,
-  nickname: email.substring(0, email.lastIndexOf('@')),
-  name: name,
-  given_name: firstName,
-  family_name: lastName,
-  picture: picture,
-  updated_at: updatedDate,
-  email: email,
-  email_verified: emailValidated,
-};
-
-const user: any = {
+const user: Auth0User = {
   created_at: creationDate,
   email: email,
   identities: [

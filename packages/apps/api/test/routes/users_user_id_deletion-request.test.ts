@@ -15,8 +15,10 @@ describe('/users/{userId}/deletion-request', () => {
       expect(response.statusCode).toBe(200);
 
       const updatedAuth0User = await clients.auth0.get(testUser.userId);
-      expect(updatedAuth0User?.metadata?.deleteRequested).not.toBeUndefined();
-      expect(updatedAuth0User?.locked).toBe(true);
+      expect(
+        updatedAuth0User?.app_metadata?.deleteRequested
+      ).not.toBeUndefined();
+      expect(updatedAuth0User?.blocked).toBe(true);
 
       expect(clients.email.sendDeleteRequestAdmin).toHaveBeenCalled();
       expect(clients.email.sendDeleteRequestUser).toHaveBeenCalled();
