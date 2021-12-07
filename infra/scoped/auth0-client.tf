@@ -143,8 +143,13 @@ resource "auth0_client" "account_management_system" {
   is_first_party       = true
   custom_login_page_on = true
 
+  jwt_configuration {
+    alg = "RS256"
+  }
+
   grant_types = [
-    "authorization_code"
+    "authorization_code",
+    "refresh_token"
   ]
 
   callbacks = [
