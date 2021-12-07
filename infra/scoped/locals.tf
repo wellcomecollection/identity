@@ -55,7 +55,7 @@ locals {
 
   # Account Management System
   ams_context_path         = "account"
-  ams_redirect_uri         = "${local.wellcome_collection_site_uri}/${local.ams_context_path}/callback"
+  ams_redirect_uri         = "${local.wellcome_collection_site_uri}/${local.ams_context_path}/api/auth/callback"
   ams_error_uri            = "${local.wellcome_collection_site_uri}/${local.ams_context_path}/error"
   ams_validate_uri         = "${local.wellcome_collection_site_uri}/${local.ams_context_path}/validated"
   ams_delete_requested_uri = "${local.wellcome_collection_site_uri}/${local.ams_context_path}/delete-requested"
