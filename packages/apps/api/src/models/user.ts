@@ -1,8 +1,8 @@
-import { Auth0User } from '@weco/auth0-client';
+import { auth0IdToPublic, Auth0User } from '@weco/auth0-client';
 
 export function toUser(auth0Profile: Auth0User): User {
   return {
-    userId: Number(auth0Profile.user_id), // @TODO is this safe?
+    userId: Number(auth0IdToPublic(auth0Profile.user_id)),
     barcode: auth0Profile.app_metadata?.barcode,
     firstName: auth0Profile.given_name,
     lastName: auth0Profile.family_name,

@@ -2,6 +2,7 @@ import {
   APIGatewayAuthorizerResult,
   APIGatewayRequestAuthorizerEvent,
 } from 'aws-lambda';
+import { auth0IdToPublic } from '@weco/auth0-client';
 import { TokenValidator } from './authentication';
 import { authorizerResult, policyDocument, send401 } from './api-gateway';
 import {
@@ -9,7 +10,6 @@ import {
   hasScopes,
   isSelf,
   resourceAuthorizationValidator,
-  userIdFromSubject,
 } from './authorization';
 import { JsonWebTokenError } from 'jsonwebtoken';
 
@@ -85,6 +85,6 @@ export const createLambdaHandler = (validateToken: TokenValidator) => async (
       effect: authorizerResultEffect,
       resource: event.methodArn,
     }),
-    principalId: userIdFromSubject(validatedToken.payload.sub) || '',
+    principalId: auth0IdToPublic(validatedToken.payload.sub) || '',
   });
 };
