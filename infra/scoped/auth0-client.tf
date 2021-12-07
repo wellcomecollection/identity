@@ -148,7 +148,8 @@ resource "auth0_client" "account_management_system" {
   }
 
   grant_types = [
-    "authorization_code"
+    "authorization_code",
+    "refresh_token"
   ]
 
   callbacks = [
