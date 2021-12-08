@@ -23,6 +23,7 @@ function __init_terraform_env_vars() {
     terraform workspace select "${DEPLOY_ENVIRONMENT}"
   mkdir -p /app/.buildkite/build
   terraform output -json -no-color | jq -r .ci_environment_variables.value[] >/app/.buildkite/build/env.sh
+  terraform output -json -no-color | jq -r .auth0_actions.value >/app/.buildkite/build/auth0-actions.json
   chmod +x /app/.buildkite/build/env.sh && source /app/.buildkite/build/env.sh && rm /app/.buildkite/build/env.sh
 }
 

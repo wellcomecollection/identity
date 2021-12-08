@@ -1,31 +1,35 @@
 #!/bin/bash
-########################################################
-# Script name : auth0-deployment.sh
-# Author      : Daniel Grant <daniel.grant@digirati.com>
-########################################################
-
 set -o errexit
 
-function __retrieve_artifacts() {
-  mkdir -p /app/.buildkite/build
-  aws s3 cp "s3://identity-dist/auth0-scripts-${NORMALIZED_BRANCH_NAME}.zip" "/app/.buildkite/build/auth0-scripts-${NORMALIZED_BRANCH_NAME}.zip"
-  unzip "/app/.buildkite/build/auth0-scripts-${NORMALIZED_BRANCH_NAME}.zip" -d "/app/.buildkite/build/"
-}
+SCRIPTS_BUILD_DIR="/app/packages/auth0-database-scripts/dist"
+ACTIONS_BUILD_DIR="/app/packages/auth0-actions/lib"
+AUTH0_EXPORT_DIR="/app/.buildkite/build/auth0-export"
+AUTH0_ACTIONS_FILE="/app/.buildkite/build/auth0-actions.json"
+
+DATABASE_SCRIPTS="get_user login change_password change_email verify create delete"
+ACTIONS="add_custom_claims"
 
 function __do_deployment() {
-  mkdir -p /app/.buildkite/build/auth0-export/
-  a0deploy export --format directory --output_folder /app/.buildkite/build/auth0-export/
+  mkdir -p ${AUTH0_EXPORT_DIR}
+  a0deploy export --format directory --output_folder "${AUTH0_EXPORT_DIR}/"
 
-  cp -v /app/.buildkite/build/get_user.js "/app/.buildkite/build/auth0-export/database-connections/${AUTH0_CONNECTION_NAME}/"
-  cp -v /app/.buildkite/build/login.js "/app/.buildkite/build/auth0-export/database-connections/${AUTH0_CONNECTION_NAME}/"
-  cp -v /app/.buildkite/build/change_password.js "/app/.buildkite/build/auth0-export/database-connections/${AUTH0_CONNECTION_NAME}/"
-  cp -v /app/.buildkite/build/change_email.js "/app/.buildkite/build/auth0-export/database-connections/${AUTH0_CONNECTION_NAME}/"
-  cp -v /app/.buildkite/build/verify.js "/app/.buildkite/build/auth0-export/database-connections/${AUTH0_CONNECTION_NAME}/"
-  cp -v /app/.buildkite/build/create.js "/app/.buildkite/build/auth0-export/database-connections/${AUTH0_CONNECTION_NAME}/"
-  cp -v /app/.buildkite/build/delete.js "/app/.buildkite/build/auth0-export/database-connections/${AUTH0_CONNECTION_NAME}/"
+  # Deploy database scripts
+  for script in ${DATABASE_SCRIPTS}
+  do
+    cp -v "${SCRIPTS_BUILD_DIR}/${script}.js" "${AUTH0_EXPORT_DIR}/database-connections/${AUTH0_CONNECTION_NAME}/"
+  done
 
-  a0deploy import --input_file "/app/.buildkite/build/auth0-export/"
+  # Deploy actions
+  for action in ${ACTIONS}
+  do
+    action_name=$(jq ".names.${action}" ${AUTH0_ACTIONS_FILE})
+    cp -v "${ACTIONS_BUILD_DIR}/${action}.js" "${AUTH0_EXPORT_DIR}/actions/${action_name}/code.js"
+  done
+
+  # Update action triggers
+  jq .triggers ${AUTH0_ACTIONS_FILE} > ${AUTH0_EXPORT_DIR}/triggers/triggers.json
+
+  a0deploy import --input_file "${AUTH0_EXPORT_DIR}/"
 }
 
-__retrieve_artifacts
 __do_deployment

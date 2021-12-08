@@ -58,7 +58,10 @@ output "ci_environment_variables" {
 }
 
 output "auth0_actions" {
-  value = jsonencode({
-    add_custom_claims = auth0_action.add_custom_claims.id
-  })
+  value = {
+    names = {
+      add_custom_claims = auth0_action.add_custom_claims.name
+    }
+    triggers = local.auth0_triggers
+  }
 }
