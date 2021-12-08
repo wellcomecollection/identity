@@ -15,8 +15,8 @@ steps:
 
   - wait
 
-  # Build and run the AWS Lambda Function tests.
-  - name: "aws-lambda-tests"
+  # Build and run the tests.
+  - name: "tests"
     command:
       - ". /app/.buildkite/scripts/init-environment.sh"
       - "yarn install"
