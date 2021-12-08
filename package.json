@@ -11,6 +11,7 @@
     "build": "tsc --build tsconfig.build.json",
     "package-api-templates": "yarn workspace @weco/identity-api package-templates",
     "build-auth0-database-scripts": "yarn workspace @weco/auth0-database-scripts build",
+    "build-auth0-actions": "yarn workspace @weco/auth0-actions build",
     "clean": "lerna run clean",
     "test": "lerna run test"
   },
