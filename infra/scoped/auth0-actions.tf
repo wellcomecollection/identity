@@ -9,6 +9,6 @@ resource "auth0_action" "add_custom_claims" {
   }
 
   lifecycle {
-    ignore_changes = ["code"]
+    ignore_changes = [code]
   }
 }

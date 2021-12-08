@@ -130,7 +130,11 @@ resource "auth0_client_grant" "buildkite" {
     "update:prompts",
     "read:branding",
     "update:branding",
-    "read:actions"
+    "create:actions",
+    "read:actions",
+    "update:actions",
+    "delete:actions",
+    "deploy:actions"
   ]
 }
 
