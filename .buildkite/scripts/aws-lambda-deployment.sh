@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ########################################################
 # Script name : aws-lambda-deployment.sh
 # Author      : Gary Tierney <gary.tierney@digirati.com>

@@ -2,10 +2,10 @@ steps:
   # Deploy any changes to Auth0 scripts/actions
   - name: "auth0 deployment"
     command:
+      - ". /app/.buildkite/scripts/init-environment.sh"
       - "yarn"
       - "yarn build-auth0-database-scripts"
       - "yarn build-auth0-actions"
-      - ". /app/.buildkite/scripts/init-environment.sh"
       - "/app/.buildkite/scripts/auth0-deployment.sh"
     plugins:
       - wellcomecollection/aws-assume-role#v0.2.2:

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ########################################################
 # Script name : init-environment.sh
 # Author      : Daniel Grant <daniel.grant@digirati.com>
@@ -16,7 +16,6 @@ function __process_environment_variables() {
   export DEPLOY_API_GATEWAY_STAGE=${DEPLOY_API_GATEWAY_STAGE:=v1}
 }
 
-# shellcheck disable=SC1091
 function __init_terraform_env_vars() {
   cd /app/infra/scoped && \
     terraform init -backend-config="role_arn=${TF_BACKEND_ROLE_ARN}" && \

@@ -1,5 +1,4 @@
 steps:
-
   # Carry out some basic linting across the codebase.
   - name: "linting"
     command:

@@ -1,8 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -o errexit
 
-SCRIPTS_BUILD_DIR="/app/packages/auth0-database-scripts/dist"
-ACTIONS_BUILD_DIR="/app/packages/auth0-actions/lib"
+SCRIPTS_BUILD_DIR="/app/packages/apps/auth0-database-scripts/dist"
+ACTIONS_BUILD_DIR="/app/packages/apps/auth0-actions/lib"
 AUTH0_EXPORT_DIR="/app/.buildkite/build/auth0-export"
 AUTH0_ACTIONS_FILE="/app/.buildkite/build/auth0-actions.json"
 
@@ -22,7 +22,7 @@ function __do_deployment() {
   # Deploy actions
   for action in ${ACTIONS}
   do
-    action_name=$(jq ".names.${action}" ${AUTH0_ACTIONS_FILE})
+    action_name=$(jq -r ".names.${action}" ${AUTH0_ACTIONS_FILE})
     cp -v "${ACTIONS_BUILD_DIR}/${action}.js" "${AUTH0_EXPORT_DIR}/actions/${action_name}/code.js"
   done
 
