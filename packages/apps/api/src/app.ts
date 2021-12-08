@@ -1,5 +1,4 @@
 import { Auth0Client } from '@weco/auth0-client';
-import { SierraClient } from '@weco/sierra-client';
 import * as awsServerlessExpressMiddleware from 'aws-serverless-express/middleware';
 import asyncHandler from 'express-async-handler';
 import bodyParser from 'body-parser';
