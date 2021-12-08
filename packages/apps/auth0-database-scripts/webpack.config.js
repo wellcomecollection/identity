@@ -3,7 +3,7 @@ const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const TaskWrapperPlugin = require('./TaskWrapperPlugin');
 
 // All of the individual scripts to be built need to be listed here
-const actions = [
+const scripts = [
   'get_user',
   'login',
   'change_password',
@@ -21,9 +21,9 @@ const configFile = 'tsconfig.build.json';
 
 module.exports = {
   mode: 'production',
-  entry: actions.reduce(
-    (entrypoints, action) => ({
-      [action]: `./src/${action}.ts`,
+  entry: scripts.reduce(
+    (entrypoints, script) => ({
+      [script]: `./src/${script}.ts`,
       ...entrypoints,
     }),
     {}
