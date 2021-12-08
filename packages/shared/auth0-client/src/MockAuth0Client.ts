@@ -1,10 +1,10 @@
-import Auth0Client, { Auth0User } from './Auth0Client';
+import Auth0Client from './Auth0Client';
 import {
   errorResponse,
   ResponseStatus,
   successResponse,
 } from '@weco/identity-common';
-import { AppMetadata, auth0IdToPublic } from './auth0';
+import { AppMetadata, auth0IdToPublic, Auth0User } from './auth0';
 
 export default class MockAuth0Client implements Auth0Client {
   private users: Map<string, Auth0User> = new Map();
@@ -30,11 +30,11 @@ export default class MockAuth0Client implements Auth0Client {
   };
 
   addUser = (user: Auth0User, password?: string) => {
-    this.users.set(user.user_id!, {
+    this.users.set(user.user_id, {
       ...user,
       user_id: 'auth0|p' + user.user_id,
     });
-    this.passwords.set(user.user_id!.toString(), password || '');
+    this.passwords.set(user.user_id.toString(), password || '');
   };
 
   blockAccount = jest.fn(async (userId: number) => {

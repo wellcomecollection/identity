@@ -25,7 +25,7 @@ export function validatePassword(auth0Client: Auth0Client) {
     }
 
     await checkPassword(
-      auth0Get.result.email!,
+      auth0Get.result.email,
       password,
       extractSourceIp(request)
     );
@@ -69,11 +69,7 @@ export function updateUser(auth0Client: Auth0Client) {
       });
     }
 
-    await checkPassword(
-      auth0Profile.email!,
-      password,
-      extractSourceIp(request)
-    );
+    await checkPassword(auth0Profile.email, password, extractSourceIp(request));
 
     const newEmail = request.body.email;
     if (!newEmail || newEmail === auth0Profile.email) {
@@ -115,7 +111,7 @@ export function changePassword(auth0Client: Auth0Client) {
     }
 
     await checkPassword(
-      auth0Get.result.email!,
+      auth0Get.result.email,
       oldPassword,
       extractSourceIp(request)
     );
@@ -149,7 +145,7 @@ export function requestDelete(
     }
 
     await checkPassword(
-      auth0Get.result.email!,
+      auth0Get.result.email,
       password,
       extractSourceIp(request)
     );

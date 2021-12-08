@@ -7,8 +7,8 @@ import {
   successResponse,
   unhandledError,
 } from '@weco/identity-common';
-import { SierraConnection, SierraUserIdPrefix } from './auth0';
-import Auth0Client, { Auth0User } from './Auth0Client';
+import { Auth0User, SierraConnection, SierraUserIdPrefix } from './auth0';
+import Auth0Client from './Auth0Client';
 
 export default class HttpAuth0Client implements Auth0Client {
   private readonly apiRoot: string;

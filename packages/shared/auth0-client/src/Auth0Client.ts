@@ -1,8 +1,5 @@
 import { APIResponse } from '@weco/identity-common';
-import { User } from 'auth0';
-import { AppMetadata, UserMetadata } from './auth0';
-
-export type Auth0User = User<AppMetadata, UserMetadata>;
+import { AppMetadata, Auth0User } from './auth0';
 
 export default interface Auth0Client {
   validateUserCredentials(

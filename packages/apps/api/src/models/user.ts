@@ -6,7 +6,7 @@ export function toUser(auth0Profile: Auth0User): User {
     barcode: auth0Profile.app_metadata?.barcode,
     firstName: auth0Profile.given_name,
     lastName: auth0Profile.family_name,
-    email: auth0Profile.email!,
+    email: auth0Profile.email,
     emailValidated: !!auth0Profile.email_verified,
     locked: !!auth0Profile.blocked,
     creationDate: auth0Profile.created_at!,

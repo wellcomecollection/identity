@@ -51,13 +51,13 @@ export default class HttpEmailClient implements EmailClient {
     const subject: string = await this.engine.renderFile(
       'delete-request_admin_subject',
       {
-        userId: auth0User.user_id!,
+        userId: auth0User.user_id,
       }
     );
     const body: string = await this.engine.renderFile(
       'delete-request_admin_body',
       {
-        userId: auth0User.user_id!,
+        userId: auth0User.user_id,
         email: auth0User.email,
         firstName: auth0User.given_name,
         lastName: auth0User.family_name,
@@ -79,7 +79,7 @@ export default class HttpEmailClient implements EmailClient {
         supportUrl: this.supportUrl,
       }
     );
-    return this.sendEmail(auth0User.email!, subject, body);
+    return this.sendEmail(auth0User.email, subject, body);
   }
 
   protected async sendEmail(
