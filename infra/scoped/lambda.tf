@@ -83,21 +83,18 @@ resource "aws_lambda_function" "api" {
 
   environment {
     variables = {
-      SIERRA_API_ROOT      = aws_ssm_parameter.sierra_api_hostname.value,
-      SIERRA_CLIENT_KEY    = local.sierra_api_credentials.client_key
-      SIERRA_CLIENT_SECRET = local.sierra_api_credentials.client_secret,
-      AUTH0_API_ROOT       = local.auth0_endpoint
-      AUTH0_API_AUDIENCE   = auth0_client_grant.api_gateway_identity.audience,
-      AUTH0_CLIENT_ID      = auth0_client.api_gateway_identity.client_id,
-      AUTH0_CLIENT_SECRET  = auth0_client.api_gateway_identity.client_secret,
-      API_ALLOWED_ORIGINS  = local.identity_v1_docs_endpoint,
-      EMAIL_SMTP_HOSTNAME  = local.email_credentials["smtp_hostname"],
-      EMAIL_SMTP_PORT      = local.email_credentials["smtp_port"],
-      EMAIL_SMTP_USERNAME  = local.email_credentials["smtp_username"],
-      EMAIL_SMTP_PASSWORD  = local.email_credentials["smtp_password"],
-      EMAIL_FROM_ADDRESS   = local.email_noreply_name_and_address,
-      EMAIL_ADMIN_ADDRESS  = aws_ssm_parameter.email_admin_address.value,
-      SUPPORT_URL          = aws_ssm_parameter.auth0_support_url.value
+      AUTH0_API_ROOT      = local.auth0_endpoint
+      AUTH0_API_AUDIENCE  = auth0_client_grant.api_gateway_identity.audience,
+      AUTH0_CLIENT_ID     = auth0_client.api_gateway_identity.client_id,
+      AUTH0_CLIENT_SECRET = auth0_client.api_gateway_identity.client_secret,
+      API_ALLOWED_ORIGINS = local.identity_v1_docs_endpoint,
+      EMAIL_SMTP_HOSTNAME = local.email_credentials["smtp_hostname"],
+      EMAIL_SMTP_PORT     = local.email_credentials["smtp_port"],
+      EMAIL_SMTP_USERNAME = local.email_credentials["smtp_username"],
+      EMAIL_SMTP_PASSWORD = local.email_credentials["smtp_password"],
+      EMAIL_FROM_ADDRESS  = local.email_noreply_name_and_address,
+      EMAIL_ADMIN_ADDRESS = aws_ssm_parameter.email_admin_address.value,
+      SUPPORT_URL         = aws_ssm_parameter.auth0_support_url.value
     }
   }
 
