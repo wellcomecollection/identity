@@ -43,7 +43,7 @@ steps:
     command:
       - ". /app/.buildkite/scripts/init-environment.sh"
       - "yarn install"
-      - "yarn build-auth0-actions"
+      - "yarn build-auth0-database-scripts"
       - "/app/.buildkite/scripts/auth0-packaging.sh"
     plugins:
       - wellcomecollection/aws-assume-role#v0.2.2:
