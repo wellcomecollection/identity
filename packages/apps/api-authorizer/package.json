@@ -21,6 +21,7 @@
     "typescript": "^4.1.3"
   },
   "dependencies": {
+    "@weco/auth0-client": "*",
     "jsonwebtoken": "^8.5.1",
     "jwks-rsa": "^2.0.5"
   }

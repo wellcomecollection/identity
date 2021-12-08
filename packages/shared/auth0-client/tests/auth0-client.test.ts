@@ -5,9 +5,8 @@ import {
 } from '@weco/identity-common';
 import axios, { AxiosInstance } from 'axios';
 import moxios from 'moxios';
-import { SierraUserIdPrefix } from '../src/auth0';
-import { HttpAuth0Client } from '../src';
-import { Auth0Profile, Auth0UserInfo, SierraConnection } from '../src/auth0';
+import { SierraUserIdPrefix, SierraConnection } from '../src/auth0';
+import { Auth0User, HttpAuth0Client } from '../src';
 
 describe('HTTP Auth0 client', () => {
   let client: HttpAuth0Client;
@@ -30,63 +29,6 @@ describe('HTTP Auth0 client', () => {
     moxios.uninstall(axios as AxiosInstance);
   });
 
-  describe('delete user', () => {
-    it('deletes the user with given id', async () => {
-      moxios.stubRequest('/users/' + SierraUserIdPrefix + userId, {
-        status: 204,
-      });
-
-      const response = await client.deleteUser(userId);
-
-      expect(response.status).toBe(ResponseStatus.Success);
-    });
-
-    it('not found on invalid user', async () => {
-      moxios.stubRequest('/users/' + SierraUserIdPrefix + userId, {
-        status: 404,
-      });
-
-      const response = await client.deleteUser(userId);
-
-      expect(response.status).toBe(ResponseStatus.NotFound);
-    });
-  });
-
-  describe('validate access token', () => {
-    it('validates', async () => {
-      moxios.stubRequest('/userinfo', {
-        status: 200,
-        response: userInfo,
-      });
-
-      const response = await client.validateAccessToken(accessToken);
-      expect(response.status).toBe(ResponseStatus.Success);
-
-      const result = (<SuccessResponse<Auth0UserInfo>>response).result;
-      expect(result).toEqual(
-        expect.objectContaining({ userId: userId.toString(), email })
-      );
-    });
-
-    it('does not validate', async () => {
-      moxios.stubRequest('/userinfo', {
-        status: 401,
-      });
-
-      const response = await client.validateAccessToken(accessToken);
-      expect(response.status).toBe(ResponseStatus.InvalidCredentials);
-    });
-
-    it('returns an unexpected response code', async () => {
-      moxios.stubRequest('/userinfo', {
-        status: 500,
-      });
-
-      const response = await client.validateAccessToken(accessToken);
-      expect(response.status).toBe(ResponseStatus.UnknownError);
-    });
-  });
-
   describe('get user by user id', () => {
     it('finds the user with blocked', async () => {
       moxios.stubRequest('/users/' + SierraUserIdPrefix + userId, {
@@ -97,27 +39,13 @@ describe('HTTP Auth0 client', () => {
         },
       });
 
-      const response: APIResponse<Auth0Profile> = await client.getUserByUserId(
+      const response: APIResponse<Auth0User> = await client.getUserByUserId(
         userId
       );
       expect(response.status).toBe(ResponseStatus.Success);
 
-      const result = (<SuccessResponse<Auth0Profile>>response).result;
-      expect(result).toEqual(
-        expect.objectContaining({
-          userId: userId.toString(),
-          name,
-          firstName,
-          lastName,
-          email,
-          emailValidated,
-          locked,
-          creationDate,
-          lastLoginDate,
-          lastLoginIp,
-          totalLogins,
-        })
-      );
+      const result = (<SuccessResponse<Auth0User>>response).result;
+      expect(result).toEqual(expect.objectContaining(user));
     });
 
     it('finds the user without blocked', async () => {
@@ -126,27 +54,13 @@ describe('HTTP Auth0 client', () => {
         response: user,
       });
 
-      const response: APIResponse<Auth0Profile> = await client.getUserByUserId(
+      const response: APIResponse<Auth0User> = await client.getUserByUserId(
         123456
       );
       expect(response.status).toBe(ResponseStatus.Success);
 
-      const result = (<SuccessResponse<Auth0Profile>>response).result;
-      expect(result).toEqual(
-        expect.objectContaining({
-          userId: userId.toString(),
-          name,
-          firstName,
-          lastName,
-          email,
-          emailValidated,
-          locked,
-          creationDate,
-          lastLoginDate,
-          lastLoginIp,
-          totalLogins,
-        })
-      );
+      const result = (<SuccessResponse<Auth0User>>response).result;
+      expect(result).toEqual(expect.objectContaining(user));
     });
 
     it('does not find the user', async () => {
@@ -168,227 +82,22 @@ describe('HTTP Auth0 client', () => {
     });
   });
 
-  describe('get user by email', () => {
-    it('finds the user with blocked', async () => {
-      moxios.stubRequest('/users-by-email?email=' + email, {
-        status: 200,
-        response: [
-          {
-            ...user,
-            blocked: false,
-          },
-        ],
-      });
-
-      const response = await client.getUserByEmail(email);
-      expect(response.status).toBe(ResponseStatus.Success);
-
-      const result = (<SuccessResponse<Auth0Profile>>response).result;
-      expect(result).toEqual(
-        expect.objectContaining({
-          userId: userId.toString(),
-          name,
-          firstName,
-          lastName,
-          email,
-          emailValidated,
-          locked,
-          creationDate,
-          lastLoginDate,
-          lastLoginIp,
-          totalLogins,
-        })
-      );
-    });
-
-    it('does not find the user', async () => {
-      moxios.stubRequest('/users-by-email?email=' + email, {
-        status: 200,
-        response: [],
-      });
-
-      const response = await client.getUserByEmail(email);
-      expect(response.status).toBe(ResponseStatus.NotFound);
-    });
-
-    it('returns an unexpected response code', async () => {
-      moxios.stubRequest('/users-by-email?email=' + email, {
-        status: 500,
-      });
-
-      const response = await client.getUserByEmail(email);
-      expect(response.status).toBe(ResponseStatus.UnknownError);
-    });
-
-    it('finds the user without blocked', async () => {
-      moxios.stubRequest('/users-by-email?email=' + email, {
-        status: 200,
-        response: [user],
-      });
-
-      const response = await client.getUserByEmail(email);
-      expect(response.status).toBe(ResponseStatus.Success);
-
-      const result = (<SuccessResponse<Auth0Profile>>response).result;
-      expect(result).toEqual(
-        expect.objectContaining({
-          userId: userId.toString(),
-          name,
-          firstName,
-          lastName,
-          email,
-          emailValidated,
-          locked,
-          creationDate,
-          lastLoginDate,
-          lastLoginIp,
-          totalLogins,
-        })
-      );
-    });
-
-    it('does not find the user', async () => {
-      moxios.stubRequest('/users-by-email?email=' + email, {
-        status: 200,
-        response: [],
-      });
-
-      const response = await client.getUserByEmail(email);
-      expect(response.status).toBe(ResponseStatus.NotFound);
-    });
-
-    it('returns an unexpected response code', async () => {
-      moxios.stubRequest('/users-by-email?email=' + email, {
-        status: 500,
-      });
-
-      const response = await client.getUserByEmail(email);
-      expect(response.status).toBe(ResponseStatus.UnknownError);
-    });
-  });
-
-  describe('creates a user', () => {
-    it('creates the user', async () => {
-      moxios.stubRequest('/users', {
-        status: 201,
-        response: user,
-      });
-
-      const response = await client.createUser(
-        userId,
-        firstName,
-        lastName,
-        email,
-        password
-      );
-      expect(response.status).toBe(ResponseStatus.Success);
-
-      const result = (<SuccessResponse<Auth0Profile>>response).result;
-      expect(result).toEqual(
-        expect.objectContaining({
-          userId: userId.toString(),
-          name,
-          firstName,
-          lastName,
-          email,
-          emailValidated,
-          locked,
-          creationDate,
-          lastLoginDate,
-          lastLoginIp,
-          totalLogins,
-        })
-      );
-    });
-
-    it('does not create the user', async () => {
-      moxios.stubRequest('/users', {
-        status: 409,
-      });
-
-      const response = await client.createUser(
-        userId,
-        firstName,
-        lastName,
-        email,
-        password
-      );
-      expect(response.status).toBe(ResponseStatus.UserAlreadyExists);
-    });
-
-    it('has an insecure password', async () => {
-      moxios.stubRequest('/users', {
-        status: 400,
-        response: {
-          message: 'PasswordStrengthError',
-        },
-      });
-
-      const response = await client.createUser(
-        userId,
-        firstName,
-        lastName,
-        email,
-        password
-      );
-      expect(response.status).toBe(ResponseStatus.PasswordTooWeak);
-    });
-
-    it('receives a malformed request', async () => {
-      moxios.stubRequest('/users', {
-        status: 400,
-      });
-
-      const response = await client.createUser(
-        userId,
-        firstName,
-        lastName,
-        email,
-        password
-      );
-      expect(response.status).toBe(ResponseStatus.MalformedRequest);
-    });
-
-    it('returns an unexpected response code', async () => {
-      moxios.stubRequest('/users', {
-        status: 500,
-      });
-
-      const response = await client.createUser(
-        userId,
-        firstName,
-        lastName,
-        email,
-        password
-      );
-      expect(response.status).toBe(ResponseStatus.UnknownError);
-    });
-  });
-
   describe('updates a user', () => {
     it('updates the user', async () => {
+      const newEmail = 'new@email.com';
       moxios.stubRequest('/users/' + SierraUserIdPrefix + userId, {
         status: 200,
-        response: user,
+        response: { ...user, email: newEmail },
       });
 
-      const response = await client.updateUser(userId, email);
+      const response = await client.updateUser(userId, newEmail);
       expect(response.status).toBe(ResponseStatus.Success);
 
-      const result = (<SuccessResponse<Auth0Profile>>response).result;
+      const result = (<SuccessResponse<Auth0User>>response).result;
       expect(result).toEqual(
         expect.objectContaining({
-          userId: userId.toString(),
-          name,
-          firstName,
-          lastName,
-          email,
-          emailValidated,
-          locked,
-          creationDate,
-          lastLoginDate,
-          lastLoginIp,
-          totalLogins,
+          ...user,
+          email: newEmail,
         })
       );
     });
@@ -456,19 +165,7 @@ const totalLogins: number = 10;
 const emailValidated: boolean = true;
 const locked: boolean = false;
 
-const userInfo: any = {
-  sub: SierraUserIdPrefix + userId,
-  nickname: email.substring(0, email.lastIndexOf('@')),
-  name: name,
-  given_name: firstName,
-  family_name: lastName,
-  picture: picture,
-  updated_at: updatedDate,
-  email: email,
-  email_verified: emailValidated,
-};
-
-const user: any = {
+const user: Auth0User = {
   created_at: creationDate,
   email: email,
   identities: [

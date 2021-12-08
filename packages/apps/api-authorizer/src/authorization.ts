@@ -1,4 +1,5 @@
 import { Jwt } from 'jsonwebtoken';
+import { auth0IdToPublic } from '@weco/auth0-client';
 
 type HttpVerb =
   | 'GET'
@@ -21,17 +22,6 @@ type ResourceRules = {
   };
 };
 
-export const userIdFromSubject = (
-  subjectClaim?: string
-): string | undefined => {
-  const prefix = 'auth0|p';
-  if (subjectClaim?.startsWith(prefix)) {
-    return subjectClaim.slice(prefix.length);
-  } else {
-    return subjectClaim;
-  }
-};
-
 export const hasScopes = (...requiredScopes: string[]): AccessControlRule => (
   jwt,
   parameters
@@ -41,7 +31,7 @@ export const hasScopes = (...requiredScopes: string[]): AccessControlRule => (
 };
 
 export const isSelf: AccessControlRule = (jwt, parameters) => {
-  const tokenUserId = userIdFromSubject(jwt.payload.sub);
+  const tokenUserId = auth0IdToPublic(jwt.payload.sub);
   const parameterUserId = parameters?.userId;
   return Boolean(
     parameterUserId &&

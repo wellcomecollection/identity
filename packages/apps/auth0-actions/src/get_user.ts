@@ -1,8 +1,8 @@
+import { Auth0User } from '@weco/auth0-client';
 import { HttpSierraClient } from '@weco/sierra-client';
 import { ResponseStatus } from '@weco/identity-common';
 import { callbackify } from 'util';
 import { patronRecordToUser } from './helpers';
-import { User } from 'auth0';
 
 declare const configuration: {
   API_ROOT: string;
@@ -10,7 +10,7 @@ declare const configuration: {
   CLIENT_SECRET: string;
 };
 
-async function getUser(email: string): Promise<User | undefined> {
+async function getUser(email: string): Promise<Auth0User | undefined> {
   const apiRoot = configuration.API_ROOT;
   const clientKey = configuration.CLIENT_KEY;
   const clientSecret = configuration.CLIENT_SECRET;

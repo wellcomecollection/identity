@@ -1,6 +1,5 @@
-import { Auth0Client, Auth0Profile } from '@weco/auth0-client';
+import { Auth0Client, Auth0User } from '@weco/auth0-client';
 import { APIResponse, isNonBlank, ResponseStatus } from '@weco/identity-common';
-import { PatronRecord, SierraClient } from '@weco/sierra-client';
 import { Request, Response } from 'express';
 import { toMessage } from '../models/common';
 import { clientResponseToHttpError, HttpError } from '../models/HttpError';
@@ -18,7 +17,7 @@ export function validatePassword(auth0Client: Auth0Client) {
         message: 'A password must be provided and non-blank',
       });
     }
-    const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(
+    const auth0Get: APIResponse<Auth0User> = await auth0Client.getUserByUserId(
       userId
     );
     if (auth0Get.status !== ResponseStatus.Success) {
@@ -35,52 +34,33 @@ export function validatePassword(auth0Client: Auth0Client) {
   };
 }
 
-export function getUser(sierraClient: SierraClient, auth0Client: Auth0Client) {
+export function getUser(auth0Client: Auth0Client) {
   return async function (request: Request, response: Response): Promise<void> {
     const userId: number = getTargetUserId(request);
-
-    const sierraGet: APIResponse<PatronRecord> = await sierraClient.getPatronRecordByRecordNumber(
-      userId
-    );
-    if (sierraGet.status !== ResponseStatus.Success) {
-      throw clientResponseToHttpError(sierraGet);
-    }
-
-    const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(
+    const auth0Get: APIResponse<Auth0User> = await auth0Client.getUserByUserId(
       userId
     );
     if (auth0Get.status !== ResponseStatus.Success) {
       throw clientResponseToHttpError(auth0Get);
     }
 
-    response.status(200).json(toUser(auth0Get.result, sierraGet.result));
+    response.status(200).json(toUser(auth0Get.result));
   };
 }
 
-export function updateUser(
-  sierraClient: SierraClient,
-  auth0Client: Auth0Client
-) {
+export function updateUser(auth0Client: Auth0Client) {
   const checkPassword = passwordCheckerForUser(auth0Client);
   return async function (request: Request, response: Response): Promise<void> {
     const userId: number = getTargetUserId(request);
     const password: string | undefined = request.body.password;
 
-    const auth0UserIdGet: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(
+    const auth0UserIdGet: APIResponse<Auth0User> = await auth0Client.getUserByUserId(
       userId
     );
     if (auth0UserIdGet.status !== ResponseStatus.Success) {
       throw clientResponseToHttpError(auth0UserIdGet);
     }
-    const auth0Profile: Auth0Profile = auth0UserIdGet.result;
-
-    // TODO this is only required for the barcode, hopefully we can remove it
-    const sierraGet: APIResponse<PatronRecord> = await sierraClient.getPatronRecordByRecordNumber(
-      userId
-    );
-    if (sierraGet.status !== ResponseStatus.Success) {
-      throw clientResponseToHttpError(sierraGet);
-    }
+    const auth0Profile: Auth0User = auth0UserIdGet.result;
 
     if (!password) {
       throw new HttpError({
@@ -97,7 +77,7 @@ export function updateUser(
       return;
     }
 
-    const auth0Update: APIResponse<Auth0Profile> = await auth0Client.updateUser(
+    const auth0Update: APIResponse<Auth0User> = await auth0Client.updateUser(
       userId,
       newEmail
     );
@@ -105,14 +85,11 @@ export function updateUser(
       throw clientResponseToHttpError(auth0Update);
     }
 
-    response.status(200).json(toUser(auth0Update.result, sierraGet.result));
+    response.status(200).json(toUser(auth0Update.result));
   };
 }
 
-export function changePassword(
-  sierraClient: SierraClient,
-  auth0Client: Auth0Client
-) {
+export function changePassword(auth0Client: Auth0Client) {
   const checkPassword = passwordCheckerForUser(auth0Client);
   return async function (request: Request, response: Response): Promise<void> {
     const userId: number = getTargetUserId(request);
@@ -126,7 +103,7 @@ export function changePassword(
       });
     }
 
-    const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(
+    const auth0Get: APIResponse<Auth0User> = await auth0Client.getUserByUserId(
       userId
     );
     if (auth0Get.status !== ResponseStatus.Success) {
@@ -139,7 +116,7 @@ export function changePassword(
       extractSourceIp(request)
     );
 
-    const auth0Update: APIResponse<Auth0Profile> = await auth0Client.updatePassword(
+    const auth0Update: APIResponse<Auth0User> = await auth0Client.updatePassword(
       userId,
       newPassword
     );
@@ -160,7 +137,7 @@ export function requestDelete(
     const userId: number = getTargetUserId(request);
     const password: string = request.body.password;
 
-    const auth0Get: APIResponse<Auth0Profile> = await auth0Client.getUserByUserId(
+    const auth0Get: APIResponse<Auth0User> = await auth0Client.getUserByUserId(
       userId
     );
     if (auth0Get.status !== ResponseStatus.Success) {
@@ -173,7 +150,7 @@ export function requestDelete(
       extractSourceIp(request)
     );
 
-    if (auth0Get.result?.metadata?.deleteRequested) {
+    if (auth0Get.result?.app_metadata?.deleteRequested) {
       response
         .status(304)
         .json(

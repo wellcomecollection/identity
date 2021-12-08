@@ -29,7 +29,6 @@
     "@types/supertest": "^2.0.11",
     "@weco/auth0-client": "*",
     "@weco/identity-common": "*",
-    "@weco/sierra-client": "*",
     "cors": "^2.8.5",
     "jest": "^27.1.0",
     "liquidjs": "^9.22.0",

@@ -1,8 +1,8 @@
 import { HttpSierraClient } from '@weco/sierra-client';
 import { ResponseStatus } from '@weco/identity-common';
 import { callbackify } from 'util';
-import { User } from 'auth0';
 import { patronRecordToUser } from './helpers';
+import { Auth0User } from '@weco/auth0-client';
 
 declare const configuration: {
   API_ROOT: string;
@@ -13,7 +13,7 @@ declare const configuration: {
 const invalidCredentialsMessage =
   "We don't recognise the email and/or password you entered. Please check your entry and try again.";
 
-async function login(email: string, password: string): Promise<User> {
+async function login(email: string, password: string): Promise<Auth0User> {
   const apiRoot = configuration.API_ROOT;
   const clientKey = configuration.CLIENT_KEY;
   const clientSecret = configuration.CLIENT_SECRET;

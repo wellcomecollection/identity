@@ -1,4 +1,3 @@
-import { Auth0Profile } from '@weco/auth0-client';
 import {
   APIResponse,
   successResponse,
@@ -8,6 +7,7 @@ import { Liquid } from 'liquidjs';
 import * as nodemailer from 'nodemailer';
 import Mail, { Options } from 'nodemailer/lib/mailer';
 import * as path from 'path';
+import { Auth0User } from '@weco/auth0-client';
 
 export interface SmtpConfiguration {
   host: string;
@@ -20,8 +20,8 @@ export interface SmtpConfiguration {
 }
 
 export interface EmailClient {
-  sendDeleteRequestAdmin(auth0Profile: Auth0Profile): Promise<APIResponse<{}>>;
-  sendDeleteRequestUser(auth0Profile: Auth0Profile): Promise<APIResponse<{}>>;
+  sendDeleteRequestAdmin(auth0User: Auth0User): Promise<APIResponse<{}>>;
+  sendDeleteRequestUser(auth0User: Auth0User): Promise<APIResponse<{}>>;
 }
 
 export default class HttpEmailClient implements EmailClient {
@@ -47,30 +47,26 @@ export default class HttpEmailClient implements EmailClient {
     this.supportUrl = supportUrl;
   }
 
-  async sendDeleteRequestAdmin(
-    auth0Profile: Auth0Profile
-  ): Promise<APIResponse<{}>> {
+  async sendDeleteRequestAdmin(auth0User: Auth0User): Promise<APIResponse<{}>> {
     const subject: string = await this.engine.renderFile(
       'delete-request_admin_subject',
       {
-        userId: auth0Profile.userId,
+        userId: auth0User.user_id,
       }
     );
     const body: string = await this.engine.renderFile(
       'delete-request_admin_body',
       {
-        userId: auth0Profile.userId,
-        email: auth0Profile.email,
-        firstName: auth0Profile.firstName,
-        lastName: auth0Profile.lastName,
+        userId: auth0User.user_id,
+        email: auth0User.email,
+        firstName: auth0User.given_name,
+        lastName: auth0User.family_name,
       }
     );
     return this.sendEmail(this.adminAddress, subject, body);
   }
 
-  async sendDeleteRequestUser(
-    auth0Profile: Auth0Profile
-  ): Promise<APIResponse<{}>> {
+  async sendDeleteRequestUser(auth0User: Auth0User): Promise<APIResponse<{}>> {
     const subject: string = await this.engine.renderFile(
       'delete-request_user_subject',
       {}
@@ -78,12 +74,12 @@ export default class HttpEmailClient implements EmailClient {
     const body: string = await this.engine.renderFile(
       'delete-request_user_body',
       {
-        firstName: auth0Profile.firstName,
-        lastName: auth0Profile.lastName,
+        firstName: auth0User.given_name,
+        lastName: auth0User.family_name,
         supportUrl: this.supportUrl,
       }
     );
-    return this.sendEmail(auth0Profile.email, subject, body);
+    return this.sendEmail(auth0User.email, subject, body);
   }
 
   protected async sendEmail(
