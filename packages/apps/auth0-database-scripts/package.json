@@ -1,8 +1,8 @@
 {
-  "name": "@weco/identity-auth0-actions",
+  "name": "@weco/auth0-database-scripts",
   "version": "0.1.0",
   "repository": "git@github.com:/wellcomecollection/identity.git",
-  "author": "Gary Tierney <gary.tierney@fastmail.com>",
+  "author": "Wellcome Collection <digital@wellcomecollection.org>",
   "license": "MIT",
   "scripts": {
     "build": "webpack",
