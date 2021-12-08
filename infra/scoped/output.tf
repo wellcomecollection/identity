@@ -56,3 +56,9 @@ output "ci_environment_variables" {
 
   sensitive = true
 }
+
+output "auth0_actions" {
+  value = jsonencode({
+    add_custom_claims = auth0_action.add_custom_claims.id
+  })
+}
