@@ -15,7 +15,7 @@ export type Event<UserType extends User = User> = {
   user: UserType;
 };
 
-type AuthenticationMethodName =
+export type AuthenticationMethodName =
   | 'federated'
   | 'pwd'
   | 'sms'
@@ -23,40 +23,40 @@ type AuthenticationMethodName =
   | 'mfa'
   | 'mock';
 
-type AuthenticationMethod = {
+export type AuthenticationMethod = {
   name: AuthenticationMethodName;
   timestamp: string;
 };
 
-type EventAuthentication = {
+export type EventAuthentication = {
   methods: AuthenticationMethod[];
 };
 
-type EventAuthorization = {
+export type EventAuthorization = {
   roles: string[];
 };
 
-type EventClient = {
+export type EventClient = {
   client_id: string;
   metadata: Record<string, string>;
   name: string;
 };
 
-type EventConnection = {
+export type EventConnection = {
   id: string;
   metadata?: Record<string, string>;
   name: string;
   strategy: string;
 };
 
-type EventOrganization = {
+export type EventOrganization = {
   display_name: string;
   id: string;
   metadata: Record<string, string>;
   name: string;
 };
 
-type GeoIP = {
+export type GeoIP = {
   cityName?: string;
   continentCode?: string;
   countryCode?: string;
@@ -67,7 +67,7 @@ type GeoIP = {
   timeZone?: string;
 };
 
-type EventRequest = {
+export type EventRequest = {
   body: Record<string, string>;
   geoip: GeoIP;
   hostname?: string;
@@ -78,19 +78,19 @@ type EventRequest = {
   user_agent?: string;
 };
 
-type EventResourceServer = {
+export type EventResourceServer = {
   identifier: string;
 };
 
-type EventStats = {
+export type EventStats = {
   logins_count: number;
 };
 
-type EventTenant = {
+export type EventTenant = {
   id: string;
 };
 
-type EventTransactionProtocol =
+export type EventTransactionProtocol =
   | 'oidc-basic-profile'
   | 'oidc-implicit-profile'
   | 'oauth2-device-code'
@@ -105,7 +105,7 @@ type EventTransactionProtocol =
   | 'wsfed'
   | 'wstrust-usernamemixed';
 
-type EventTransaction = {
+export type EventTransaction = {
   acr_values: string[];
   locale: string;
   protocol?: EventTransactionProtocol;
@@ -122,36 +122,36 @@ export type API<UserType extends User = User> = {
   user: APIUser<UserType>;
 };
 
-type APIAccess = {
+export type APIAccess = {
   deny: (reason: string) => API;
 };
 
-type APIAccessToken = {
+export type APIAccessToken = {
   setCustomClaim: <T>(name: string, value: T) => API;
 };
 
-type APIIdToken = {
+export type APIIdToken = {
   setCustomClaim: <T>(name: string, value: T) => API;
 };
 
-type APIMultifactorProvider =
+export type APIMultifactorProvider =
   | 'any'
   | 'duo'
   | 'google-authenticator'
   | 'guardian';
 
-type APIMultifactorOptions = {
+export type APIMultifactorOptions = {
   allRememberBrowser?: boolean;
 };
 
-type APIMultifactor = {
+export type APIMultifactor = {
   enable: (
     provider: APIMultifactorProvider,
     options?: APIMultifactorOptions
   ) => API;
 };
 
-type APIUser<UserType extends User = User> = {
+export type APIUser<UserType extends User = User> = {
   setUserMetadata: <K extends keyof UserType['user_metadata']>(
     name: K,
     value: UserType['user_metadata'][K] | null
