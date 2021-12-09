@@ -1,6 +1,6 @@
 # Actions environment type definitions
 
-While the online editor has Typescript definitions built in, these don't seem to be publicly available.
+While the online editor has TypeScript definitions built in, these don't seem to be publicly available.
 
 We have asked about this in the Auth0 forums: https://community.auth0.com/t/public-type-definitions-availability/74480.
 
