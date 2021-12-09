@@ -56,3 +56,12 @@ output "ci_environment_variables" {
 
   sensitive = true
 }
+
+output "auth0_actions" {
+  value = {
+    names = {
+      add_custom_claims = auth0_action.add_custom_claims.name
+    }
+    triggers = local.auth0_triggers
+  }
+}

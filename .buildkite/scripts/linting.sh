@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ########################################################
 # Script name : linting.sh
 # Author      : Daniel Grant <daniel.grant@digirati.com>
