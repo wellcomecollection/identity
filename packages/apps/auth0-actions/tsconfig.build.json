@@ -1,6 +1,10 @@
 {
   "extends": "./tsconfig.json",
   "exclude": ["**/*.spec.ts", "**/*.test.ts"],
+  "compilerOptions": {
+    "sourceMap": false,
+    "declarationMap": false
+  },
   "references": [
     {
       "path": "../../shared/auth0-client/tsconfig.build.json"
