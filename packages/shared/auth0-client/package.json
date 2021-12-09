@@ -13,6 +13,7 @@
   },
   "devDependencies": {
     "@types/auth0": "^2.34.7",
+    "@types/jest": "^27.0.3",
     "@weco/identity-common": "*",
     "axios": "^0.21.1"
   }
