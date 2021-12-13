@@ -154,9 +154,18 @@ resource "auth0_client" "account_management_system" {
   app_type             = "regular_web"
   is_first_party       = true
   custom_login_page_on = true
+  oidc_conformant      = true
 
   jwt_configuration {
     alg = "RS256"
+  }
+
+  refresh_token {
+    rotation_type           = "rotating"
+    expiration_type         = "expiring"
+    token_lifetime          = local.session_absolute_lifetime_hours * local.one_hour_s
+    infinite_token_lifetime = false
+    leeway                  = 10
   }
 
   grant_types = [

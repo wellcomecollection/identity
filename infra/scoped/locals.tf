@@ -99,4 +99,10 @@ locals {
   # The hold limit was increased to 15 on 6 August 2021.
   # See https://wellcome.slack.com/archives/CUA669WHH/p1628089731008800
   per_user_hold_limit = 15
+
+  one_hour_s = 60 * 60
+
+  // These should match the values used by the frontend app
+  session_absolute_lifetime_hours = 7 * 24
+  session_rolling_lifetime_hours  = 8
 }
