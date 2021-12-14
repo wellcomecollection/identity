@@ -64,13 +64,12 @@ describe('login script', () => {
     login(testPatronRecord.email, 'wrong-password', callback);
   });
 
-  it('returns a verified user object populated by the patron record if validation succeeds', (done) => {
+  it('returns a user object populated by the patron record if validation succeeds', (done) => {
     mockSierraClient.addPatron(testPatronRecord, testPatronPassword);
 
     const callback = (error?: NodeJS.ErrnoException | null, data?: User) => {
       expect(error).toBe(null);
       expect(data).toMatchObject(patronRecordToUser(testPatronRecord));
-      expect(data?.email_verified).toBe(true);
       done();
     };
     login(testPatronRecord.email, testPatronPassword, callback);
