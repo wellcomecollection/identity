@@ -7,8 +7,8 @@ resource "auth0_tenant" "tenant" {
   # This is required for the 'password' grant type that is used when testing user credentials
   default_directory = auth0_connection.sierra.name
 
-  idle_session_lifetime = 8      // 8 hours
-  session_lifetime      = 7 * 24 // 1 week
+  idle_session_lifetime = local.session_rolling_lifetime_hours
+  session_lifetime      = local.session_absolute_lifetime_hours
 
   flags {
     enable_custom_domain_in_emails = true
