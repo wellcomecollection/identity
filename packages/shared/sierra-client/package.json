@@ -12,12 +12,14 @@
     "test": "jest --rootDir ."
   },
   "dependencies": {
-    "axios": "^0.21.1",
-    "@weco/identity-common": "*"
+    "@weco/identity-common": "*",
+    "axios": "^0.21.1"
   },
   "devDependencies": {
+    "@types/moxios": "^0.4.14",
     "axios": "^0.21.1",
     "jest": "^27.4.3",
+    "moxios": "^0.4.0",
     "ts-jest": "^27.1.1",
     "typescript": "^4.1.3"
   }
