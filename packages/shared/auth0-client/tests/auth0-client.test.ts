@@ -3,42 +3,29 @@ import {
   ResponseStatus,
   SuccessResponse,
 } from '@weco/identity-common';
-import axios, { AxiosInstance } from 'axios';
-import moxios from 'moxios';
 import { SierraUserIdPrefix, SierraConnection } from '../src/auth0';
 import { Auth0User, HttpAuth0Client } from '../src';
+import mockAuth0Server, { apiRoot, routeUrls } from './mock-auth0-server';
+import { compose, rest } from 'msw';
 
 describe('HTTP Auth0 client', () => {
-  let client: HttpAuth0Client;
+  const apiAudience: string = 'http://my-api.localhost';
+  const clientId: string = 'abcdefghijklmnopqrstuvwxyz';
+  const clientSecret: string = 'ABCDEFGHIJKLMNOPQRSTUVYWXYZ';
 
-  beforeEach(() => {
-    // @ts-ignore
-    moxios.install(axios as AxiosInstance);
-    moxios.stubRequest(apiRoot + '/oauth/token', {
-      status: 200,
-      response: {
-        access_token: accessToken,
-      },
-    });
+  const client = new HttpAuth0Client(
+    apiRoot,
+    apiAudience,
+    clientId,
+    clientSecret
+  );
 
-    client = new HttpAuth0Client(apiRoot, apiAudience, clientId, clientSecret);
-  });
-
-  afterEach(() => {
-    // @ts-ignore
-    moxios.uninstall(axios as AxiosInstance);
-  });
+  beforeAll(() => mockAuth0Server.listen());
+  afterAll(() => mockAuth0Server.close());
+  afterEach(() => mockAuth0Server.resetHandlers());
 
   describe('get user by user id', () => {
-    it('finds the user with blocked', async () => {
-      moxios.stubRequest('/users/' + SierraUserIdPrefix + userId, {
-        status: 200,
-        response: {
-          ...user,
-          blocked: false,
-        },
-      });
-
+    it('finds a user by ID', async () => {
       const response: APIResponse<Auth0User> = await client.getUserByUserId(
         userId
       );
@@ -48,34 +35,19 @@ describe('HTTP Auth0 client', () => {
       expect(result).toEqual(expect.objectContaining(user));
     });
 
-    it('finds the user without blocked', async () => {
-      moxios.stubRequest('/users/' + SierraUserIdPrefix + userId, {
-        status: 200,
-        response: user,
-      });
-
-      const response: APIResponse<Auth0User> = await client.getUserByUserId(
-        123456
+    it('returns a NotFound if the user does not exist', async () => {
+      mockAuth0Server.use(
+        rest.get(routeUrls.user, (req, res, ctx) => res(ctx.status(404)))
       );
-      expect(response.status).toBe(ResponseStatus.Success);
-
-      const result = (<SuccessResponse<Auth0User>>response).result;
-      expect(result).toEqual(expect.objectContaining(user));
-    });
-
-    it('does not find the user', async () => {
-      moxios.stubRequest('/users/' + SierraUserIdPrefix + userId, {
-        status: 404,
-      });
 
       const response = await client.getUserByUserId(userId);
       expect(response.status).toBe(ResponseStatus.NotFound);
     });
 
-    it('returns an unexpected response code', async () => {
-      moxios.stubRequest('/users/' + SierraUserIdPrefix + userId, {
-        status: 500,
-      });
+    it('returns an UnknownError if the Auth0 API returns a 500', async () => {
+      mockAuth0Server.use(
+        rest.get(routeUrls.user, (req, res, ctx) => res(ctx.status(500)))
+      );
 
       const response = await client.getUserByUserId(userId);
       expect(response.status).toBe(ResponseStatus.UnknownError);
@@ -83,12 +55,8 @@ describe('HTTP Auth0 client', () => {
   });
 
   describe('updates a user', () => {
-    it('updates the user', async () => {
+    it('updates the email address of the user', async () => {
       const newEmail = 'new@email.com';
-      moxios.stubRequest('/users/' + SierraUserIdPrefix + userId, {
-        status: 200,
-        response: { ...user, email: newEmail },
-      });
 
       const response = await client.updateUser(userId, newEmail);
       expect(response.status).toBe(ResponseStatus.Success);
@@ -102,40 +70,43 @@ describe('HTTP Auth0 client', () => {
       );
     });
 
-    it('does not update the user', async () => {
-      moxios.stubRequest('/users/' + SierraUserIdPrefix + userId, {
-        status: 400,
-        response: {
-          message: 'The specified new email already exists',
-        },
-      });
-
+    it('does not update the email address if the new value is already in use', async () => {
+      mockAuth0Server.use(
+        rest.patch(routeUrls.user, (req, res, ctx) =>
+          res(
+            compose(
+              ctx.status(400),
+              ctx.json({ message: 'The specified new email already exists' })
+            )
+          )
+        )
+      );
       const response = await client.updateUser(userId, email);
       expect(response.status).toBe(ResponseStatus.UserAlreadyExists);
     });
 
     it('receives a malformed request', async () => {
-      moxios.stubRequest('/users/' + SierraUserIdPrefix + userId, {
-        status: 400,
-      });
+      mockAuth0Server.use(
+        rest.patch(routeUrls.user, (req, res, ctx) => res(ctx.status(400)))
+      );
 
       const response = await client.updateUser(userId, email);
       expect(response.status).toBe(ResponseStatus.MalformedRequest);
     });
 
     it('does not find the user', async () => {
-      moxios.stubRequest('/users/' + SierraUserIdPrefix + userId, {
-        status: 404,
-      });
+      mockAuth0Server.use(
+        rest.patch(routeUrls.user, (req, res, ctx) => res(ctx.status(404)))
+      );
 
       const response = await client.updateUser(userId, email);
       expect(response.status).toBe(ResponseStatus.NotFound);
     });
 
     it('returns an unexpected response code', async () => {
-      moxios.stubRequest('/users/' + SierraUserIdPrefix + userId, {
-        status: 500,
-      });
+      mockAuth0Server.use(
+        rest.patch(routeUrls.user, (req, res, ctx) => res(ctx.status(500)))
+      );
 
       const response = await client.updateUser(userId, email);
       expect(response.status).toBe(ResponseStatus.UnknownError);
@@ -143,12 +114,6 @@ describe('HTTP Auth0 client', () => {
   });
 });
 
-const apiRoot: string = 'http://localhost';
-const apiAudience: string = 'http://my-api.localhost';
-const clientId: string = 'abcdefghijklmnopqrstuvwxyz';
-const clientSecret: string = 'ABCDEFGHIJKLMNOPQRSTUVYWXYZ';
-
-const accessToken: string = 'a1b23c4d5e6f7g8hj';
 const userId: number = 123456;
 const firstName: string = 'Test';
 const lastName: string = 'User';

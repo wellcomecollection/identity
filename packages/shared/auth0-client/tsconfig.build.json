@@ -1,6 +1,9 @@
 {
   "extends": "./tsconfig.json",
   "exclude": ["**/*.spec.ts", "**/*.test.ts"],
+  "compilerOptions": {
+    "rootDirs": ["src"]
+  },
   "references": [
     {
       "path": "../identity-common/tsconfig.build.json"
