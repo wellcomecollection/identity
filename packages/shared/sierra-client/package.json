@@ -4,15 +4,22 @@
   "description": "API client for Sierra services",
   "main": "lib/index.js",
   "repository": "git@github.com:/wellcomecollection/identity.git",
-  "author": "Daniel Grant <daniel.grant@digirati.com>",
+  "author": "Wellcome Collection <digital@wellcomecollection.org>",
   "license": "MIT",
   "scripts": {
     "build": "tsc --build tsconfig.build.json",
     "clean": "rimraf ./lib tsconfig.build.tsbuildinfo",
     "test": "jest --rootDir ."
   },
+  "dependencies": {
+    "@weco/identity-common": "*",
+    "axios": "^0.21.1"
+  },
   "devDependencies": {
-    "axios": "^0.21.1",
-    "@weco/identity-common": "*"
+    "@types/moxios": "^0.4.14",
+    "jest": "^27.4.3",
+    "moxios": "^0.4.0",
+    "ts-jest": "^27.1.1",
+    "typescript": "^4.1.3"
   }
 }

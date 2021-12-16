@@ -18,7 +18,7 @@ steps:
   - name: "tests"
     command:
       - ". /app/.buildkite/scripts/init-environment.sh"
-      - "yarn install"
+      - "yarn install --frozen-lockfile"
       - "yarn build"
       - "yarn test"
     plugins:
@@ -40,7 +40,7 @@ steps:
   # Build the Auth0 scripts (just to check for successful compilation)
   - name: "Build auth0 scripts"
     command:
-      - "yarn"
+      - "yarn --frozen-lockfile"
       - "yarn build-auth0-database-scripts"
       - "yarn build-auth0-actions"
     plugins:
@@ -56,9 +56,11 @@ steps:
   - name: "aws-lambda-packaging"
     command:
       - ". /app/.buildkite/scripts/init-environment.sh"
-      - "yarn install"
+      - "yarn install --frozen-lockfile"
       - "yarn build"
       - "yarn package-api-templates"
+      # This step means we don't bundle devDependencies into the lambdas
+      - "yarn install --frozen-lockfile --production=true"
       - "/app/.buildkite/scripts/aws-lambda-packaging.sh"
     plugins:
       - wellcomecollection/aws-assume-role#v0.2.2:

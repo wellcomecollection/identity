@@ -7,6 +7,7 @@ describe('HTTP sierra client', () => {
   let client: HttpSierraClient;
 
   beforeEach(() => {
+    // @ts-ignore
     moxios.install(axios as AxiosInstance);
     moxios.stubRequest(apiRoot + '/token', {
       status: 200,
@@ -19,6 +20,7 @@ describe('HTTP sierra client', () => {
   });
 
   afterEach(() => {
+    // @ts-ignore
     moxios.uninstall(axios as AxiosInstance);
   });
 
