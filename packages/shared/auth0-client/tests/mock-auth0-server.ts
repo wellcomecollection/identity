@@ -4,12 +4,25 @@ import { setupServer } from 'msw/node';
 import { Auth0User } from '@weco/auth0-client';
 import { testUser } from './test-user';
 
-const createAccessToken = (expiresIn?: string) =>
-  jwt.sign({}, 'test-secret-key', { expiresIn });
+let accessToken: string;
+const createAccessToken = (expiresIn?: string) => {
+  accessToken = jwt.sign(
+    { importantInformation: Math.random() },
+    'test-secret-key',
+    { expiresIn }
+  );
+  return accessToken;
+};
+
+const hasCurrentToken = (req: RestRequest): boolean =>
+  req.headers.get('Authorization') === `Bearer ${accessToken}`;
 
 export const resolveUser = (
   user: Auth0User
 ): ResponseResolver<RestRequest, RestContext> => (req, res, ctx) => {
+  if (!hasCurrentToken(req)) {
+    return res(ctx.status(401));
+  }
   return res(ctx.json(user));
 };
 
@@ -30,6 +43,9 @@ const handlers = [
   }),
   rest.get(routeUrls.user, resolveUser(testUser)),
   rest.patch(routeUrls.user, (req, res, ctx) => {
+    if (!hasCurrentToken(req)) {
+      return res(ctx.status(401));
+    }
     return res(
       ctx.json({
         ...testUser,
