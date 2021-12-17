@@ -1,6 +1,7 @@
-import axios, { AxiosInstance } from 'axios';
+import axios from 'axios';
 import {
   APIResponse,
+  authenticatedInstanceFactory,
   errorResponse,
   ResponseStatus,
   successResponse,
@@ -225,9 +226,9 @@ export default class HttpSierraClient implements SierraClient {
     });
   }
 
-  private async getInstance(): Promise<AxiosInstance> {
-    return axios
-      .post(
+  private getInstance = authenticatedInstanceFactory(
+    async () => {
+      const response = await axios.post(
         this.apiRoot + '/token',
         {},
         {
@@ -237,14 +238,12 @@ export default class HttpSierraClient implements SierraClient {
           },
           validateStatus: (status) => status === 200,
         }
-      )
-      .then((response) => {
-        return axios.create({
-          baseURL: this.apiRoot + '/v6',
-          headers: {
-            Authorization: 'Bearer ' + response.data.access_token,
-          },
-        });
-      });
-  }
+      );
+      return {
+        accessToken: response.data.access_token,
+        expiresAt: Math.floor(Date.now() / 1000) + response.data.expires_in,
+      };
+    },
+    () => ({ baseURL: `${this.apiRoot}/v6` })
+  );
 }
