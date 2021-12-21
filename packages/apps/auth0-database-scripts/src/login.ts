@@ -37,16 +37,7 @@ async function login(email: string, password: string): Promise<Auth0User> {
     throw new WrongUsernameOrPasswordError(email, invalidCredentialsMessage);
   }
 
-  const user = patronRecordToUser(patronRecord);
-  return {
-    ...user,
-    // This script executes when a user who is not found in the Auth0 database attempts to log in.
-    // If it succeeds, the user can log in directly and their account is migrated to Auth0 using
-    // this return value.
-    // As such, we do not need users who pass this authentication to validate their emails: they
-    // already have valid library accounts in Sierra.
-    email_verified: true,
-  };
+  return patronRecordToUser(patronRecord);
 }
 
 export default callbackify(login);
