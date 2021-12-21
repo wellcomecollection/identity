@@ -95,3 +95,5 @@ export enum ResponseStatus {
 }
 
 export type APIResponse<T> = SuccessResponse<T> | ErrorResponse;
+
+export { authenticatedInstanceFactory } from './auth';

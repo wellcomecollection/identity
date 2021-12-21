@@ -1,4 +1,5 @@
-import axios, { AxiosInstance } from 'axios';
+import axios from 'axios';
+import jwt from 'jsonwebtoken';
 import {
   APIResponse,
   errorResponse,
@@ -6,6 +7,7 @@ import {
   ResponseStatus,
   successResponse,
   unhandledError,
+  authenticatedInstanceFactory,
 } from '@weco/identity-common';
 import { Auth0User, SierraConnection, SierraUserIdPrefix } from './auth0';
 import Auth0Client from './Auth0Client';
@@ -277,9 +279,9 @@ export default class HttpAuth0Client implements Auth0Client {
     });
   }
 
-  private async getMachineToMachineInstance(): Promise<AxiosInstance> {
-    return axios
-      .post(
+  private getMachineToMachineInstance = authenticatedInstanceFactory(
+    async () => {
+      const response = await axios.post(
         this.apiRoot + '/oauth/token',
         {
           client_id: this.clientId,
@@ -288,18 +290,24 @@ export default class HttpAuth0Client implements Auth0Client {
           grant_type: 'client_credentials',
         },
         {
-          validateStatus: (status) => status === 200,
+          validateStatus: responseCodeIs(200),
         }
-      )
-      .then((response) => {
-        return axios.create({
-          baseURL: this.apiRoot + '/api/v2',
-          headers: {
-            Authorization: 'Bearer ' + response.data.access_token,
-          },
-        });
-      });
-  }
+      );
+
+      const accessToken = response.data.access_token;
+      const decodedToken = jwt.decode(accessToken);
+      if (
+        decodedToken &&
+        typeof decodedToken === 'object' &&
+        decodedToken.exp
+      ) {
+        return { accessToken, expiresAt: decodedToken.exp };
+      } else {
+        throw new Error("Can't extract expiry claim from token");
+      }
+    },
+    () => ({ baseURL: `${this.apiRoot}/api/v2` })
+  );
 
   private validateCredentials(
     sourceIp: string,
