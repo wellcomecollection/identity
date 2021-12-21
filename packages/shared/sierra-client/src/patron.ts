@@ -96,60 +96,6 @@ function getPatronNameNonMarc(
   };
 }
 
-// There's a bunch of hardcoded fields in here. This is intentional, these are static and don't change and mostly
-// indicate that the user has self-registered. I don't think we need to extract them out into configuration.
-export function toCreatePatron(
-  firstName: string,
-  lastName: string,
-  pin: string
-): PatronCreate {
-  return {
-    pin: pin,
-    pMessage: 's',
-    homeLibraryCode: 'sreg',
-    patronType: 29,
-    fixedFields: {
-      46: {
-        label: 'USER CAT.',
-        value: '13',
-      },
-    },
-    varFields: [
-      {
-        // Field tag 'n' is used for the patron name.
-        // See https://documentation.iii.com/sierrahelp/Default.htm#sril/sril_records_varfld_types_patron.html
-        //
-        // MARC tag 100 is used for the personal name.
-        // See https://www.loc.gov/marc/bibliographic/bd100.html
-        fieldTag: 'n',
-        marcTag: '100',
-        subfields: [
-          {
-            tag: 'a',
-            content: lastName,
-          },
-          {
-            tag: 'b',
-            content: firstName,
-          },
-        ],
-      },
-    ],
-  };
-}
-
-// The Patron record creation endpoint returns in response to a successful record creation the full URL to the API
-// endpoint to query that new record. We're not interested in that, just give us the Patron record number.
-export function extractRecordNumberFromLink(link: string): number {
-  const match = link.match(/^https:\/\/.+?\/v6\/patrons\/(\d+)$/);
-  if (!match || match.length < 2) {
-    throw new Error(
-      'Patron creation link [' + link + '] not in expected format'
-    );
-  }
-  return Number(match[1]);
-}
-
 export interface PatronRecord {
   recordNumber: number;
   barcode: string;

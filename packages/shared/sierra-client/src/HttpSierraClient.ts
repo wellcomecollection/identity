@@ -6,13 +6,7 @@ import {
   successResponse,
   unhandledError,
 } from '@weco/identity-common';
-
-import {
-  extractRecordNumberFromLink,
-  PatronRecord,
-  toCreatePatron,
-  toPatronRecord,
-} from './patron';
+import { PatronRecord, toPatronRecord } from './patron';
 import SierraClient from './SierraClient';
 
 export default class HttpSierraClient implements SierraClient {

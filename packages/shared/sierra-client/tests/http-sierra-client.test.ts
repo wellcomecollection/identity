@@ -1,36 +1,29 @@
-import axios, { AxiosInstance } from 'axios';
-import moxios from 'moxios';
 import { ResponseStatus, SuccessResponse } from '@weco/identity-common';
 import { PatronRecord, HttpSierraClient } from '../src';
+import mockSierraServer, { apiRoot, routeUrls } from './mock-sierra-server';
+import {
+  barcode,
+  email,
+  firstName,
+  lastName,
+  pin,
+  recordMarc,
+  recordNonMarc,
+  recordNumber,
+} from './test-patron';
+import { rest } from 'msw';
 
 describe('HTTP sierra client', () => {
-  let client: HttpSierraClient;
+  const clientKey = 'abcdefghijklmnopqrstuvwxyz';
+  const clientSecret = 'ABCDEFGHIJKLMNOPQRSTUVYWXYZ';
+  const client = new HttpSierraClient(apiRoot, clientKey, clientSecret);
 
-  beforeEach(() => {
-    // @ts-ignore
-    moxios.install(axios as AxiosInstance);
-    moxios.stubRequest(apiRoot + '/token', {
-      status: 200,
-      response: {
-        access_token: accessToken,
-      },
-    });
-
-    client = new HttpSierraClient(apiRoot, clientKey, clientSecret);
-  });
-
-  afterEach(() => {
-    // @ts-ignore
-    moxios.uninstall(axios as AxiosInstance);
-  });
+  beforeAll(() => mockSierraServer.listen());
+  afterAll(() => mockSierraServer.close());
+  afterEach(() => mockSierraServer.resetHandlers());
 
   describe('validate credentials', () => {
-    it('validates', async () => {
-      moxios.stubRequest('/patrons/auth', {
-        status: 200,
-        response: {},
-      });
-
+    it('validates correct credentials', async () => {
       const response = await client.validateCredentials(barcode, pin);
       expect(response.status).toBe(ResponseStatus.Success);
 
@@ -38,19 +31,17 @@ describe('HTTP sierra client', () => {
       expect(result).toEqual({});
     });
 
-    it('does not validate', async () => {
-      moxios.stubRequest('/patrons/auth', {
-        status: 400,
-      });
-
-      const response = await client.validateCredentials(barcode, pin);
+    it('fails on unexpected credentials', async () => {
+      const response = await client.validateCredentials('wrong', 'wrong');
       expect(response.status).toBe(ResponseStatus.InvalidCredentials);
     });
 
-    it('returns an unexpected response code', async () => {
-      moxios.stubRequest('/patrons/auth', {
-        status: 500,
-      });
+    it('returns an UnknownError if the API errors', async () => {
+      mockSierraServer.use(
+        rest.post(routeUrls.credentials, (req, res, ctx) =>
+          res(ctx.status(500))
+        )
+      );
 
       const response = await client.validateCredentials(barcode, pin);
       expect(response.status).toBe(ResponseStatus.UnknownError);
@@ -58,13 +49,11 @@ describe('HTTP sierra client', () => {
   });
 
   describe('get patron record by record number', () => {
-    it('finds the record with non-marc name', async () => {
-      moxios.stubRequest(
-        '/patrons/' + recordNumber + '?fields=varFields,deleted',
-        {
-          status: 200,
-          response: recordNonMarc,
-        }
+    it('gets a record where the name is not in MARC format', async () => {
+      mockSierraServer.use(
+        rest.get(routeUrls.patron, (req, res, ctx) =>
+          res(ctx.json(recordNonMarc))
+        )
       );
 
       const response = await client.getPatronRecordByRecordNumber(recordNumber);
@@ -80,15 +69,7 @@ describe('HTTP sierra client', () => {
       });
     });
 
-    it('finds the record with marc name', async () => {
-      moxios.stubRequest(
-        '/patrons/' + recordNumber + '?fields=varFields,deleted',
-        {
-          status: 200,
-          response: recordMarc,
-        }
-      );
-
+    it('gets a record where the name is in MARC format', async () => {
       const response = await client.getPatronRecordByRecordNumber(recordNumber);
       expect(response.status).toBe(ResponseStatus.Success);
 
@@ -102,39 +83,29 @@ describe('HTTP sierra client', () => {
       });
     });
 
-    it('finds the deleted record', async () => {
-      moxios.stubRequest(
-        '/patrons/' + recordNumber + '?fields=varFields,deleted',
-        {
-          status: 200,
-          response: {
-            deleted: true,
-          },
-        }
+    it('returns a NotFound for a patron record that exists but is deleted', async () => {
+      mockSierraServer.use(
+        rest.get(routeUrls.patron, (req, res, ctx) =>
+          res(ctx.json({ ...recordMarc, deleted: true }))
+        )
       );
 
       const response = await client.getPatronRecordByRecordNumber(recordNumber);
       expect(response.status).toBe(ResponseStatus.NotFound);
     });
 
-    it('does not find the record', async () => {
-      moxios.stubRequest(
-        '/patrons/' + recordNumber + '?fields=varFields,deleted',
-        {
-          status: 404,
-        }
+    it('returns a NotFound when the api returns a 404', async () => {
+      mockSierraServer.use(
+        rest.get(routeUrls.patron, (req, res, ctx) => res(ctx.status(404)))
       );
 
       const response = await client.getPatronRecordByRecordNumber(recordNumber);
       expect(response.status).toBe(ResponseStatus.NotFound);
     });
 
-    it('returns an unexpected response code', async () => {
-      moxios.stubRequest(
-        '/patrons/' + recordNumber + '?fields=varFields,deleted',
-        {
-          status: 500,
-        }
+    it('returns an UnknownError when the api returns a 500', async () => {
+      mockSierraServer.use(
+        rest.get(routeUrls.patron, (req, res, ctx) => res(ctx.status(500)))
       );
 
       const response = await client.getPatronRecordByRecordNumber(recordNumber);
@@ -143,15 +114,11 @@ describe('HTTP sierra client', () => {
   });
 
   describe('get patron record by email', () => {
-    it('finds the record with non-marc name', async () => {
-      moxios.stubRequest(
-        '/patrons/find?varFieldTag=z&varFieldContent=' +
-          email +
-          '&fields=varFields',
-        {
-          status: 200,
-          response: recordNonMarc,
-        }
+    it('finds a record where the name is not in MARC format', async () => {
+      mockSierraServer.use(
+        rest.get(routeUrls.find, (req, res, ctx) =>
+          res(ctx.json(recordNonMarc))
+        )
       );
 
       const response = await client.getPatronRecordByEmail(email);
@@ -167,17 +134,7 @@ describe('HTTP sierra client', () => {
       });
     });
 
-    it('finds the record with marc name', async () => {
-      moxios.stubRequest(
-        '/patrons/find?varFieldTag=z&varFieldContent=' +
-          email +
-          '&fields=varFields',
-        {
-          status: 200,
-          response: recordMarc,
-        }
-      );
-
+    it('finds a record where the name is in MARC format', async () => {
       const response = await client.getPatronRecordByEmail(email);
       expect(response.status).toBe(ResponseStatus.Success);
 
@@ -191,28 +148,18 @@ describe('HTTP sierra client', () => {
       });
     });
 
-    it('does not find the record', async () => {
-      moxios.stubRequest(
-        '/patrons/find?varFieldTag=z&varFieldContent=' +
-          email +
-          '&fields=varFields',
-        {
-          status: 404,
-        }
+    it('returns a NotFound when no record can be found', async () => {
+      mockSierraServer.use(
+        rest.get(routeUrls.find, (req, res, ctx) => res(ctx.status(404)))
       );
 
       const response = await client.getPatronRecordByEmail(email);
       expect(response.status).toBe(ResponseStatus.NotFound);
     });
 
-    it('returns an unexpected response code', async () => {
-      moxios.stubRequest(
-        '/patrons/find?varFieldTag=z&varFieldContent=' +
-          email +
-          '&fields=varFields',
-        {
-          status: 500,
-        }
+    it('returns an UnknownError when the api returns a 500', async () => {
+      mockSierraServer.use(
+        rest.get(routeUrls.find, (req, res, ctx) => res(ctx.status(500)))
       );
 
       const response = await client.getPatronRecordByEmail(email);
@@ -222,18 +169,6 @@ describe('HTTP sierra client', () => {
 
   describe('update patron record', () => {
     it('updates the record', async () => {
-      moxios.stubOnce('put', '/patrons/' + recordNumber, {
-        status: 204,
-      });
-      moxios.stubOnce(
-        'get',
-        '/patrons/' + recordNumber + '?fields=varFields,deleted',
-        {
-          status: 200,
-          response: recordMarc,
-        }
-      );
-
       const response = await client.updatePatronRecord(recordNumber, email);
       expect(response.status).toBe(ResponseStatus.Success);
 
@@ -247,91 +182,31 @@ describe('HTTP sierra client', () => {
       });
     });
 
-    it('does not update the record', async () => {
-      moxios.stubRequest('/patrons/' + recordNumber, {
-        status: 400,
-      });
+    it('handles malformed requests', async () => {
+      mockSierraServer.use(
+        rest.put(routeUrls.patron, (req, res, ctx) => res(ctx.status(400)))
+      );
 
       const response = await client.updatePatronRecord(recordNumber, email);
       expect(response.status).toBe(ResponseStatus.MalformedRequest);
     });
 
-    it('returns a 404 if there is no user', async () => {
-      moxios.stubRequest('/patrons/' + recordNumber, {
-        status: 404,
-      });
+    it('returns a NotFound if there is no user', async () => {
+      mockSierraServer.use(
+        rest.put(routeUrls.patron, (req, res, ctx) => res(ctx.status(404)))
+      );
 
       const response = await client.updatePatronRecord(recordNumber, email);
       expect(response.status).toBe(ResponseStatus.NotFound);
     });
 
-    it('returns an unexpected response code', async () => {
-      moxios.stubRequest('/patrons/' + recordNumber, {
-        status: 500,
-      });
+    it('returns an UnknownError when the api returns a 500', async () => {
+      mockSierraServer.use(
+        rest.put(routeUrls.patron, (req, res, ctx) => res(ctx.status(500)))
+      );
 
       const response = await client.updatePatronRecord(recordNumber, email);
       expect(response.status).toBe(ResponseStatus.UnknownError);
     });
   });
 });
-
-const apiRoot: string = 'https://localhost';
-const clientKey: string = 'abcdefghijklmnopqrstuvwxyz';
-const clientSecret: string = 'ABCDEFGHIJKLMNOPQRSTUVYWXYZ';
-
-const accessToken: string = 'a1b23c4d5e6f7g8hj';
-const recordNumber: number = 123456;
-const barcode: string = '654321';
-const pin: string = 'superstrongpassword';
-const firstName: string = 'Test';
-const lastName: string = 'User';
-const email: string = 'test.user@example.com';
-
-const recordMarc: any = {
-  id: 123456,
-  varFields: [
-    {
-      fieldTag: 'b',
-      content: barcode,
-    },
-    {
-      fieldTag: 'z',
-      content: email,
-    },
-    {
-      fieldTag: 'n',
-      marcTag: '100',
-      ind1: ' ',
-      ind2: ' ',
-      subfields: [
-        {
-          tag: 'a',
-          content: lastName,
-        },
-        {
-          tag: 'b',
-          content: firstName,
-        },
-      ],
-    },
-  ],
-};
-
-const recordNonMarc: any = {
-  id: 123456,
-  varFields: [
-    {
-      fieldTag: 'b',
-      content: barcode,
-    },
-    {
-      fieldTag: 'z',
-      content: email,
-    },
-    {
-      fieldTag: 'n',
-      content: 'a|' + lastName + ', |b' + firstName,
-    },
-  ],
-};
