@@ -173,7 +173,8 @@ export function requestDelete(
     const auth0Update: APIResponse<{}> = await auth0Client.setAppMetadata(
       userId,
       {
-        ...auth0Get.result.app_metadata!,
+        // I believe the type assertion (!) is correct but putting the fallback here for safety
+        ...(auth0Get.result.app_metadata! || {}),
         deleteRequested: new Date().toISOString(),
       }
     );
