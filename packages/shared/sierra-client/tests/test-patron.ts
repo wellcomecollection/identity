@@ -4,9 +4,11 @@ export const pin: string = 'superstrongpassword';
 export const firstName: string = 'Test';
 export const lastName: string = 'User';
 export const email: string = 'test.user@example.com';
+export const role: string = 'Reader';
 
 export const recordMarc: any = {
   id: 123456,
+  patronType: 7,
   varFields: [
     {
       fieldTag: 'b',
@@ -37,6 +39,7 @@ export const recordMarc: any = {
 
 export const recordNonMarc: any = {
   id: 123456,
+  patronType: 7,
   varFields: [
     {
       fieldTag: 'b',

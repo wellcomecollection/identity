@@ -173,6 +173,7 @@ export function requestDelete(
     const auth0Update: APIResponse<{}> = await auth0Client.setAppMetadata(
       userId,
       {
+        ...auth0Get.result.app_metadata!,
         deleteRequested: new Date().toISOString(),
       }
     );

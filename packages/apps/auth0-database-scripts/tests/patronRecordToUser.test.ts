@@ -1,11 +1,13 @@
 import { patronRecordToUser } from '../src/helpers';
+import { PatronRecord } from '@weco/sierra-client';
 
-const testPatronRecord = {
+const testPatronRecord: PatronRecord = {
   recordNumber: 1234567,
   barcode: '1234567',
   firstName: 'Test',
   lastName: 'Testing',
   email: 'test@test.test',
+  role: 'Reader',
 };
 
 describe('patronRecordToUser', () => {
@@ -19,6 +21,7 @@ describe('patronRecordToUser', () => {
       family_name: 'Testing',
       app_metadata: {
         barcode: '1234567',
+        role: 'Reader',
       },
     });
   });

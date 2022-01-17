@@ -115,23 +115,23 @@ export type EventTransaction = {
 
 // https://auth0.com/docs/actions/triggers/post-login/api-object
 export type API<UserType extends User = User> = {
-  access: APIAccess;
-  accessToken: APIAccessToken;
-  idToken: APIIdToken;
-  multifactor: APIMultifactor;
+  access: APIAccess<UserType>;
+  accessToken: APIAccessToken<UserType>;
+  idToken: APIIdToken<UserType>;
+  multifactor: APIMultifactor<UserType>;
   user: APIUser<UserType>;
 };
 
-export type APIAccess = {
-  deny: (reason: string) => API;
+export type APIAccess<UserType extends User = User> = {
+  deny: (reason: string) => API<UserType>;
 };
 
-export type APIAccessToken = {
-  setCustomClaim: <T>(name: string, value: T) => API;
+export type APIAccessToken<UserType extends User = User> = {
+  setCustomClaim: <T>(name: string, value: T) => API<UserType>;
 };
 
-export type APIIdToken = {
-  setCustomClaim: <T>(name: string, value: T) => API;
+export type APIIdToken<UserType extends User = User> = {
+  setCustomClaim: <T>(name: string, value: T) => API<UserType>;
 };
 
 export type APIMultifactorProvider =
@@ -144,20 +144,20 @@ export type APIMultifactorOptions = {
   allRememberBrowser?: boolean;
 };
 
-export type APIMultifactor = {
+export type APIMultifactor<UserType extends User = User> = {
   enable: (
     provider: APIMultifactorProvider,
     options?: APIMultifactorOptions
-  ) => API;
+  ) => API<UserType>;
 };
 
 export type APIUser<UserType extends User = User> = {
   setUserMetadata: <K extends keyof UserType['user_metadata']>(
     name: K,
     value: UserType['user_metadata'][K] | null
-  ) => API;
+  ) => API<UserType>;
   setAppMetadata: <K extends keyof UserType['app_metadata']>(
     name: K,
     value: UserType['app_metadata'][K] | null
-  ) => API;
+  ) => API<UserType>;
 };

@@ -4,6 +4,7 @@ describe('toPatronRecord', () => {
   it('creates a patron name from MARC subfields', () => {
     const recordMarc: any = {
       id: 123456,
+      patronType: 7,
       varFields: [
         {
           fieldTag: 'b',
@@ -41,6 +42,7 @@ describe('toPatronRecord', () => {
   it('strips the trailing comma from names', () => {
     const recordMarc: any = {
       id: 1101796,
+      patronType: 7,
       varFields: [
         {
           fieldTag: 'b',
