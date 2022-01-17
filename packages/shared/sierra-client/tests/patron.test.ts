@@ -79,4 +79,50 @@ describe('toPatronRecord', () => {
     expect(result.firstName).toEqual('Requesting');
     expect(result.lastName).toEqual('TEST');
   });
+
+  const createRecordWithPatronType = (patronType: number) => ({
+    id: 123456,
+    patronType,
+    varFields: [
+      {
+        fieldTag: 'b',
+        content: '1234567',
+      },
+      {
+        fieldTag: 'z',
+        content: 'h.wellcome@wellcome.org',
+      },
+      {
+        fieldTag: 'n',
+        marcTag: '100',
+        ind1: ' ',
+        ind2: ' ',
+        subfields: [
+          {
+            tag: 'a',
+            content: 'Wellcome',
+          },
+          {
+            tag: 'b',
+            content: 'Henry',
+          },
+        ],
+      },
+    ],
+  });
+
+  test.each([
+    { patronType: 7, role: 'Reader' },
+    { patronType: 8, role: 'Staff' },
+    { patronType: 29, role: 'SelfRegistered' },
+    { patronType: 6, role: 'Excluded' },
+  ])('maps patronType $patronType to role $role', ({ patronType, role }) => {
+    const record = createRecordWithPatronType(patronType);
+    expect(toPatronRecord(record).role).toBe(role);
+  });
+
+  it('throws an error for unexpected patron types', () => {
+    const record = createRecordWithPatronType(15); // Inter Lib Loans
+    expect(() => toPatronRecord(record)).toThrow();
+  });
 });

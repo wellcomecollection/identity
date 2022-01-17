@@ -1,10 +1,11 @@
-export function toPatronRecord(patronRecord: any): PatronRecord {
-  const patronName = getPatronName(patronRecord.varFields);
+export function toPatronRecord(patronResponse: any): PatronRecord {
+  const patronName = getPatronName(patronResponse.varFields);
   return {
     ...patronName,
-    recordNumber: patronRecord.id,
-    barcode: getVarFieldContent(patronRecord.varFields, 'b'),
-    email: getVarFieldContent(patronRecord.varFields, 'z'),
+    recordNumber: patronResponse.id,
+    barcode: getVarFieldContent(patronResponse.varFields, 'b'),
+    email: getVarFieldContent(patronResponse.varFields, 'z'),
+    role: patronTypeToRole(patronResponse.patronType),
   };
 }
 
@@ -96,17 +97,41 @@ function getPatronNameNonMarc(
   };
 }
 
-export interface PatronRecord {
+export type Role = 'Reader' | 'Staff' | 'SelfRegistered' | 'Excluded';
+
+// You can find an up-to-date list of patronType codes and descriptions
+// in the Sierra API at: /v5/patrons/metadata
+const patronTypeToRole = (patronType: number): Role => {
+  switch (patronType) {
+    case 7: // Reader
+    case 5: // Student (Loan)
+    case 10: // Students (EPQ, 16-18)
+      return 'Reader';
+    case 0: // Wellcome Trust Staff
+    case 8: // Wellcome Collection Staff
+    case 1: // WT Contract Staff
+      return 'Staff';
+    case 29: // Self Registered
+      return 'SelfRegistered';
+    case 6:
+      return 'Excluded';
+    default:
+      throw new Error(`Unexpected patronType: ${patronType}`);
+  }
+};
+
+export type PatronRecord = {
   recordNumber: number;
   barcode: string;
   firstName: string;
   lastName: string;
   email: string;
-}
+  role: Role;
+};
 
 // This represents the data required to create a Patron record in Sierra. The 'fixedFields' a bit odd, as the keys of
 // the embedded objects appear to be array indices of some description, but 'fixedFields' itself isn't an array...?
-export interface PatronCreate {
+export type PatronCreate = {
   pin: string;
   pMessage: string;
   homeLibraryCode: string;
@@ -125,15 +150,15 @@ export interface PatronCreate {
       content: string;
     }[];
   }[];
-}
+};
 
-interface VarField {
+type VarField = {
   fieldTag: string;
   content?: string;
   subfields?: SubField[];
-}
+};
 
-interface SubField {
+type SubField = {
   tag: string;
   content: string;
-}
+};
