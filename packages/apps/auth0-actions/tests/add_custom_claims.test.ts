@@ -5,7 +5,7 @@ import { Auth0User } from '@weco/auth0-client';
 describe('add_custom_claims', () => {
   const barcode = '1234567';
   const user: Auth0User = {
-    app_metadata: { barcode },
+    app_metadata: { barcode, role: 'Reader' },
   } as Auth0User;
   const createEvent = (user: Auth0User, scopes: string[]): Event<Auth0User> =>
     ({
@@ -59,4 +59,4 @@ const mockPostLoginApi: API<Auth0User> = {
     setUserMetadata: jest.fn(() => mockPostLoginApi),
     setAppMetadata: jest.fn(() => mockPostLoginApi),
   },
-} as API<Auth0User>;
+};

@@ -10,6 +10,7 @@ export const patronRecordToUser = (patronRecord: PatronRecord): Auth0User => ({
   family_name: patronRecord.lastName,
   app_metadata: {
     barcode: patronRecord.barcode,
+    role: patronRecord.role,
   },
 });
 

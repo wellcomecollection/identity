@@ -1,5 +1,5 @@
 import { errorResponse, ResponseStatus } from '@weco/identity-common';
-import { MockSierraClient } from '@weco/sierra-client';
+import { MockSierraClient, PatronRecord } from '@weco/sierra-client';
 import { User } from 'auth0';
 import login from '../src/login';
 import { patronRecordToUser } from '../src/helpers';
@@ -15,12 +15,13 @@ jest.mock('@weco/sierra-client', () => {
   };
 });
 
-const testPatronRecord = {
+const testPatronRecord: PatronRecord = {
   recordNumber: 1234567,
   barcode: '7654321',
   firstName: 'Test',
   lastName: 'Testing',
   email: 'test@test.test',
+  role: 'Reader',
 };
 
 const testPatronPassword = 'super-secret';

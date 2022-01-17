@@ -15,6 +15,7 @@ export const auth0IdToPublic = (subjectClaim?: string): string | undefined => {
 // for the difference between these.
 export type UserMetadata = {};
 export type AppMetadata = {
+  role: string;
   barcode?: string;
   deleteRequested?: string;
 };

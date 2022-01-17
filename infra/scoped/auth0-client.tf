@@ -218,6 +218,9 @@ resource "auth0_client" "openathens_saml_idp" {
 
   addons {
     samlp {
+      // This stops us mapping claims which we haven't explicitly provided below
+      passthrough_claims_with_no_mapping = true
+      map_unknown_claims_as_is           = false
 
       mappings = {
         user_id     = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
@@ -227,6 +230,11 @@ resource "auth0_client" "openathens_saml_idp" {
         family_name = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname"
         upn         = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn"
         groups      = "http://schemas.xmlsoap.org/claims/Group"
+        // The app_metadata attributes get flattened into the user object and so this maps
+        // to the 'role' property on app_metadata
+        // This uses the role claim that Microsoft define
+        // https://docs.microsoft.com/en-us/azure/active-directory/develop/reference-saml-tokens
+        role = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
       }
       name_identifier_probes = [
         "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"

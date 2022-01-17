@@ -4,6 +4,7 @@ import {
   ResponseStatus,
   successResponse,
 } from '@weco/identity-common';
+import { Role } from './patron';
 
 export default class MockSierraClient implements SierraClient {
   private patrons: Map<number, PatronRecord> = new Map();
@@ -26,13 +27,15 @@ export default class MockSierraClient implements SierraClient {
 
   static randomPatronRecord = (
     firstName?: string,
-    lastName?: string
+    lastName?: string,
+    role?: Role
   ): PatronRecord => ({
     recordNumber: Math.floor(Math.random() * 1e8),
     barcode: Math.floor(Math.random() * 1e8).toString(),
     firstName: firstName ?? 'Test',
     lastName: lastName ?? 'Patron',
     email: 'test' + Math.floor(Math.random() * 100).toString() + '@patron',
+    role: role ?? 'Reader',
   });
 
   getPatronRecordByEmail = jest.fn(async (email: string) => {

@@ -65,7 +65,7 @@ export default class HttpSierraClient implements SierraClient {
       return instance
         .get('/patrons/' + recordNumber, {
           params: {
-            fields: 'varFields,deleted',
+            fields: 'varFields,deleted,patronType',
           },
           validateStatus: (status) => status === 200,
         })
@@ -110,7 +110,7 @@ export default class HttpSierraClient implements SierraClient {
           params: {
             varFieldTag: 'z',
             varFieldContent: email.toLowerCase(),
-            fields: 'varFields',
+            fields: 'varFields,patronType',
           },
           validateStatus: (status) => status === 200,
         })

@@ -12,6 +12,7 @@ export type ExistingUser = {
   password?: string;
   markedForDeletion?: boolean;
   emailValidated?: boolean;
+  role?: string;
 };
 
 const apiGatewayHeaders = (data: object = {}) => {
@@ -51,6 +52,7 @@ export const mockedApi = (existingUsers: ExistingUser[] = []) => {
             ? new Date().toISOString()
             : undefined,
           barcode: Math.floor(Math.random() * 1e8).toString(),
+          role: user.role ?? 'Reader',
         },
       },
       user.password
