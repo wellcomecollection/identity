@@ -9,7 +9,7 @@ terraform {
     }
     auth0 = {
       source  = "alexkappa/auth0"
-      version = "~> 0.24.1"
+      version = "~> 0.25.0"
     }
     aws = {
       source  = "hashicorp/aws"
