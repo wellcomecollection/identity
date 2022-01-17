@@ -113,7 +113,7 @@ const patronTypeToRole = (patronType: number): Role => {
       return 'Staff';
     case 29: // Self Registered
       return 'SelfRegistered';
-    case 6:
+    case 6: // Excluded
       return 'Excluded';
     default:
       throw new Error(`Unexpected patronType: ${patronType}`);
