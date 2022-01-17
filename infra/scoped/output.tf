@@ -62,6 +62,5 @@ output "auth0_actions" {
     names = {
       add_custom_claims = auth0_action.add_custom_claims.name
     }
-    triggers = local.auth0_triggers
   }
 }
