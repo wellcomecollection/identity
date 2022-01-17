@@ -218,6 +218,10 @@ resource "auth0_client" "openathens_saml_idp" {
 
   addons {
     samlp {
+      // This stops us mapping claims which we haven't explicitly provided below
+      passthrough_claims_with_no_mapping = true
+      map_unknown_claims_as_is           = false
+
       mappings = {
         user_id     = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
         email       = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
