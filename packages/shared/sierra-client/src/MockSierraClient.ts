@@ -63,7 +63,7 @@ export default class MockSierraClient implements SierraClient {
     return errorResponse('Not found', ResponseStatus.NotFound);
   });
 
-  updatePatronRecord = jest.fn(async (recordNumber: number, email: string) => {
+  updatePatronEmail = jest.fn(async (recordNumber: number, email: string) => {
     const maybePatron = this.patrons.get(recordNumber);
     if (maybePatron) {
       const updatedPatron = {

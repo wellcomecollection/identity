@@ -12,7 +12,7 @@ export default interface SierraClient {
   ): Promise<APIResponse<PatronRecord>>;
   getPatronRecordByEmail(email: string): Promise<APIResponse<PatronRecord>>;
 
-  updatePatronRecord(
+  updatePatronEmail(
     recordNumber: number,
     email: string
   ): Promise<APIResponse<PatronRecord>>;

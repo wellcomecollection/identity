@@ -131,7 +131,7 @@ export default class HttpSierraClient implements SierraClient {
     });
   }
 
-  async updatePatronRecord(
+  async updatePatronEmail(
     recordNumber: number,
     email: string
   ): Promise<APIResponse<PatronRecord>> {

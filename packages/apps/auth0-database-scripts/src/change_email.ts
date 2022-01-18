@@ -27,7 +27,7 @@ async function changeEmail(
     return false;
   }
 
-  const patronRecordUpdate = await sierraClient.updatePatronRecord(
+  const patronRecordUpdate = await sierraClient.updatePatronEmail(
     recordNumber,
     newEmail
   );
