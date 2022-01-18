@@ -1,8 +1,9 @@
 // A resource server in OAuth2 parlance is an "API" in Auth0 parlance
 resource "auth0_resource_server" "identity_api" {
-  name        = "Identity API"
-  identifier  = local.identity_v1_endpoint
-  signing_alg = "RS256"
+  name          = "Identity API"
+  identifier    = local.identity_v1_endpoint
+  signing_alg   = "RS256"
+  token_dialect = "access_token"
 
   // These are, by convention, permissions related to the user holding the token only
   // ie they do not mean "read any patron's info"

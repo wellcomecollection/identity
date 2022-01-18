@@ -13,16 +13,11 @@ resource "auth0_action" "add_custom_claims" {
   }
 }
 
-locals {
-  // Unfortunately we can't actually make this binding in Terraform yet.
-  // It gets done in the deployment script.
-  // https://github.com/alexkappa/terraform-provider-auth0/issues/480
-  auth0_triggers = {
-    post-login = [
-      {
-        action_name  = auth0_action.add_custom_claims.name,
-        display_name = auth0_action.add_custom_claims.name
-      }
-    ]
+resource "auth0_trigger_binding" "post_login" {
+  trigger = "post-login"
+
+  actions {
+    id           = auth0_action.add_custom_claims.id
+    display_name = auth0_action.add_custom_claims.name
   }
 }

@@ -26,9 +26,6 @@ function __do_deployment() {
     cp -v "${ACTIONS_BUILD_DIR}/${action}.js" "${AUTH0_EXPORT_DIR}/actions/${action_name}/code.js"
   done
 
-  # Update action triggers
-  jq .triggers ${AUTH0_ACTIONS_FILE} > ${AUTH0_EXPORT_DIR}/triggers/triggers.json
-
   a0deploy import --input_file "${AUTH0_EXPORT_DIR}/"
 }
 

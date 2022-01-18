@@ -165,7 +165,11 @@ resource "auth0_client" "account_management_system" {
     expiration_type         = "expiring"
     token_lifetime          = local.session_absolute_lifetime_hours * local.one_hour_s
     infinite_token_lifetime = false
-    leeway                  = 10
+    // This is actually ignored due to the below, just here to stop tf churn because for
+    // some reason it can't be changed from this value
+    idle_token_lifetime          = (local.session_absolute_lifetime_hours * local.one_hour_s) - 1
+    infinite_idle_token_lifetime = true
+    leeway                       = 10
   }
 
   grant_types = [
