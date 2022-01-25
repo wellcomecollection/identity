@@ -36,6 +36,7 @@ export default class MockSierraClient implements SierraClient {
     lastName: lastName ?? 'Patron',
     email: 'test' + Math.floor(Math.random() * 100).toString() + '@patron',
     role: role ?? 'Reader',
+    emailVerified: false,
   });
 
   getPatronRecordByEmail = jest.fn(async (email: string) => {
@@ -63,12 +64,28 @@ export default class MockSierraClient implements SierraClient {
     return errorResponse('Not found', ResponseStatus.NotFound);
   });
 
-  updatePatronEmail = jest.fn(async (recordNumber: number, email: string) => {
+  updatePatronEmail = jest.fn(
+    async (recordNumber: number, email: string, verified: boolean = false) => {
+      const maybePatron = this.patrons.get(recordNumber);
+      if (maybePatron) {
+        const updatedPatron = {
+          ...maybePatron,
+          email,
+          emailVerified: verified,
+        };
+        this.patrons.set(recordNumber, updatedPatron);
+        return successResponse(updatedPatron);
+      }
+      return errorResponse('Not found', ResponseStatus.NotFound);
+    }
+  );
+
+  markPatronEmailVerified = jest.fn(async (recordNumber: number) => {
     const maybePatron = this.patrons.get(recordNumber);
     if (maybePatron) {
       const updatedPatron = {
         ...maybePatron,
-        email,
+        emailVerified: true,
       };
       this.patrons.set(recordNumber, updatedPatron);
       return successResponse(updatedPatron);

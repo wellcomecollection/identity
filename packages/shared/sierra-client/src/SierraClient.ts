@@ -14,7 +14,13 @@ export default interface SierraClient {
 
   updatePatronEmail(
     recordNumber: number,
-    email: string
+    email: string,
+    verified: boolean
+  ): Promise<APIResponse<PatronRecord>>;
+
+  markPatronEmailVerified(
+    recordNumber: number,
+    verificationWasAssumed?: boolean
   ): Promise<APIResponse<PatronRecord>>;
 
   updatePassword(
