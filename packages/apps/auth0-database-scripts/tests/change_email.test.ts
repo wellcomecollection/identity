@@ -38,6 +38,26 @@ describe('change email script', () => {
     changeEmail(testPatron.email, newEmail, false, callback);
   });
 
+  it('adds a email verification note if the verified flag is true', (done) => {
+    const testPatron = MockSierraClient.randomPatronRecord();
+    mockSierraClient.addPatron(testPatron);
+    const newEmail = 'new@email.com';
+
+    const callback = (
+      error?: NodeJS.ErrnoException | null,
+      success?: boolean
+    ) => {
+      expect(error).toBe(null);
+      expect(success).toBe(true);
+      expect(
+        mockSierraClient.get(testPatron.recordNumber)?.verifiedEmails
+      ).toContain(newEmail);
+      done();
+    };
+
+    changeEmail(testPatron.email, newEmail, true, callback);
+  });
+
   it('returns false if the user does not exist in Sierra', (done) => {
     const callback = (
       error?: NodeJS.ErrnoException | null,
