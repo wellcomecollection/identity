@@ -1,7 +1,7 @@
 import {
   addVerificationNote,
-  deleteVerificationNotes,
-  isVerified,
+  deleteOldVerificationNotes,
+  verifiedEmails,
 } from '../src/email-verification-notes';
 import { VarField, varFieldTags } from '../src/patron';
 
@@ -60,15 +60,16 @@ describe('email verification notes', () => {
     });
   });
 
-  describe('deleteVerificationNote', () => {
-    it('deletes notes that adhere to our format and ignores all others', () => {
-      const result = deleteVerificationNotes([
+  describe('deleteOldVerificationNotes', () => {
+    it('deletes notes containing an email other than the current user email and ignores all others', () => {
+      const result = deleteOldVerificationNotes([
         {
           fieldTag: varFieldTags.email,
-          content: 'unrelated@varField.com',
+          content: 'new@email.com',
         },
         ...notesToVarFields(
-          'Auth0: email@example.com assumed to be verified at login 2022-02-22T00:00:00.000Z',
+          'Auth0: email@example.com assumed to be verified at login 2022-02-22T00:00:00.000Z', // This is the only note that should be deleted
+          'Auth0: new@email.com verified at 2022-02-22T00:00:00.000Z',
           'Auth1: email@example.com assumed to be verified at login 2022-02-22T00:00:00.000Z',
           'Auth0: email@example.com arble garble blarble 2022-02-22T00:00:00.000Z',
           'Auth0: email@example.com verified about a week ago, I think',
@@ -77,69 +78,52 @@ describe('email verification notes', () => {
         ),
       ]);
 
-      expect(result).toHaveLength(6);
+      expect(result).toHaveLength(7);
       expect(result.map((field) => field.content)).not.toContain(
         'Auth0: email@example.com assumed to be verified at login 2022-02-22T00:00:00.000Z'
       );
     });
   });
 
-  describe('isVerified', () => {
-    it('returns true for all variants of verification notes', () => {
-      expect(
-        isVerified('example@example.com', [
-          {
-            fieldTag: varFieldTags.notes,
-            content:
-              'Auth0: example@example.com verified at 2022-02-21T00:00:00.000Z',
-          },
-        ])
-      ).toBe(true);
-
-      expect(
-        isVerified('example@example.com', [
-          {
-            fieldTag: varFieldTags.notes,
-            content:
-              'Auth0: example@example.com assumed to be verified at login 2022-02-21T00:00:00.000Z',
-          },
-        ])
-      ).toBe(true);
+  describe('verifiedEmails', () => {
+    const noteField = (note: string) => ({
+      fieldTag: varFieldTags.notes,
+      content: note,
     });
 
-    it('returns false if the given email does not match the note', () => {
+    it('returns the verified emails for all variants of verification notes', () => {
       expect(
-        isVerified('another@email.com', [
-          {
-            fieldTag: varFieldTags.notes,
-            content:
-              'Auth0: example@example.com verified at 2022-02-21T00:00:00.000Z',
-          },
+        verifiedEmails([
+          noteField(
+            'Auth0: example@example.com verified at 2022-02-21T00:00:00.000Z'
+          ),
+          noteField(
+            'Auth0: example2@example.com assumed to be verified at login 2022-02-21T00:00:00.000Z'
+          ),
         ])
-      ).toBe(false);
+      ).toEqual(['example@example.com', 'example2@example.com']);
     });
 
-    it('returns false if the verification date is in the future', () => {
+    it('ignores notes where the date is in the future', () => {
       expect(
-        isVerified('example@example.com', [
-          {
-            fieldTag: varFieldTags.notes,
-            content:
-              'Auth0: example@example.com verified at 2022-02-23T00:00:00.000Z',
-          },
+        verifiedEmails([
+          noteField(
+            'Auth0: example@example.com verified at 2022-02-23T00:00:00.000Z'
+          ),
         ])
-      ).toBe(false);
+      ).toEqual([]);
     });
 
-    it('returns false if no note is present', () => {
+    it('ignores other notes and fields', () => {
       expect(
-        isVerified('example@example.com', [
+        verifiedEmails([
+          noteField('another@email.com'),
           {
-            fieldTag: varFieldTags.email,
-            content: 'example@example.com',
+            fieldTag: varFieldTags.barcode,
+            content: '1234567',
           },
         ])
-      ).toBe(false);
+      ).toEqual([]);
     });
   });
 });

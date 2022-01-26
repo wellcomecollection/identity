@@ -36,7 +36,7 @@ export default class MockSierraClient implements SierraClient {
     lastName: lastName ?? 'Patron',
     email: 'test' + Math.floor(Math.random() * 100).toString() + '@patron',
     role: role ?? 'Reader',
-    emailVerified: false,
+    verifiedEmails: [],
   });
 
   getPatronRecordByEmail = jest.fn(async (email: string) => {
@@ -71,7 +71,9 @@ export default class MockSierraClient implements SierraClient {
         const updatedPatron = {
           ...maybePatron,
           email,
-          emailVerified: verified,
+          verifiedEmails: verified
+            ? [...maybePatron.verifiedEmails, email]
+            : maybePatron.verifiedEmails,
         };
         this.patrons.set(recordNumber, updatedPatron);
         return successResponse(updatedPatron);
@@ -85,7 +87,22 @@ export default class MockSierraClient implements SierraClient {
     if (maybePatron) {
       const updatedPatron = {
         ...maybePatron,
-        emailVerified: true,
+        verifiedEmails: [...maybePatron.verifiedEmails, maybePatron.email],
+      };
+      this.patrons.set(recordNumber, updatedPatron);
+      return successResponse(updatedPatron);
+    }
+    return errorResponse('Not found', ResponseStatus.NotFound);
+  });
+
+  deleteOldVerificationNotes = jest.fn(async (recordNumber: number) => {
+    const maybePatron = this.patrons.get(recordNumber);
+    if (maybePatron) {
+      const updatedPatron = {
+        ...maybePatron,
+        verifiedEmails: maybePatron.verifiedEmails.filter(
+          (verifiedEmail) => verifiedEmail === maybePatron.email
+        ),
       };
       this.patrons.set(recordNumber, updatedPatron);
       return successResponse(updatedPatron);

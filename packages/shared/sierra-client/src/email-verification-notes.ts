@@ -87,16 +87,13 @@ const addNotesVarfields = (
   })),
 ];
 
-export const isVerified = (email: string, varFields: VarField[]): boolean =>
-  getVarFieldContent(varFields, varFieldTags.notes).some((note) => {
-    const verified = parseVerificationNote(note);
-    if (verified) {
-      const hellp = verified.date.getTime();
-      const halldsf = Date.now();
-      return verified.email === email && hellp <= halldsf;
-    }
-    return false;
-  });
+export const verifiedEmails = (varFields: VarField[]): string[] =>
+  getVarFieldContent(varFields, varFieldTags.notes)
+    .map(parseVerificationNote)
+    .filter((verified): verified is VerificationNote =>
+      Boolean(verified && verified.date.getTime() <= Date.now())
+    )
+    .map((note) => note.email);
 
 export const addVerificationNote = (
   varFields: VarField[],
@@ -116,9 +113,16 @@ export const addVerificationNote = (
   return addNotesVarfields(updatedNotes, varFields);
 };
 
-export const deleteVerificationNotes = (varFields: VarField[]): VarField[] => {
+export const deleteOldVerificationNotes = (
+  varFields: VarField[]
+): VarField[] => {
   const currentNotes = getVarFieldContent(varFields, varFieldTags.notes);
-  const updatedNotes = filterVerificationNotes(currentNotes);
+  const email = getVarFieldContent(varFields, varFieldTags.email)[0] || '';
+  console.log(email);
+  const updatedNotes = currentNotes.filter((note) => {
+    const verified = parseVerificationNote(note);
+    return !verified || verified.email === email;
+  });
 
   return addNotesVarfields(updatedNotes, varFields);
 };

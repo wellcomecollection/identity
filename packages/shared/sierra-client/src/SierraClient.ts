@@ -23,6 +23,10 @@ export default interface SierraClient {
     verificationWasAssumed?: boolean
   ): Promise<APIResponse<PatronRecord>>;
 
+  deleteOldVerificationNotes(
+    recordNumber: number
+  ): Promise<APIResponse<PatronRecord>>;
+
   updatePassword(
     recordNumber: number,
     password: string
