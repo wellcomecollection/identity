@@ -59,7 +59,7 @@ describe('change email script', () => {
   it('throws an error if the Sierra request returns an error', (done) => {
     const testPatron = MockSierraClient.randomPatronRecord();
     mockSierraClient.addPatron(testPatron);
-    mockSierraClient.updatePatronRecord.mockResolvedValueOnce(
+    mockSierraClient.updatePatronEmail.mockResolvedValueOnce(
       errorResponse('bad computer', ResponseStatus.UnknownError)
     );
     const callback = (
