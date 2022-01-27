@@ -22,7 +22,7 @@ const testPatronRecord: PatronRecord = {
   lastName: 'Testing',
   email: 'test@test.test',
   role: 'Reader',
-  verifiedEmails: [],
+  verifiedEmails: ['test@test.test'],
 };
 
 const testPatronPassword = 'super-secret';
@@ -78,7 +78,10 @@ describe('login script', () => {
   });
 
   it('adds a verification note if the user does not have one already', (done) => {
-    mockSierraClient.addPatron(testPatronRecord, testPatronPassword);
+    mockSierraClient.addPatron(
+      { ...testPatronRecord, verifiedEmails: [] },
+      testPatronPassword
+    );
 
     const callback = (error?: NodeJS.ErrnoException | null, data?: User) => {
       expect(error).toBe(null);

@@ -8,6 +8,7 @@ const testPatronRecord: PatronRecord = {
   lastName: 'Testing',
   email: 'test@test.test',
   role: 'Reader',
+  verifiedEmails: ['test@test.test'],
 };
 
 describe('patronRecordToUser', () => {
@@ -19,6 +20,7 @@ describe('patronRecordToUser', () => {
       name: 'Test Testing',
       given_name: 'Test',
       family_name: 'Testing',
+      email_verified: true,
       app_metadata: {
         barcode: '1234567',
         role: 'Reader',
