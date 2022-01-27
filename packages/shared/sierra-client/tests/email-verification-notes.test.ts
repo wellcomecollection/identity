@@ -1,6 +1,6 @@
 import {
   addVerificationNote,
-  deleteOldVerificationNotes,
+  deleteNonCurrentVerificationNotes,
   verifiedEmails,
 } from '../src/email-verification-notes';
 import { VarField, varFieldTags } from '../src/patron';
@@ -60,9 +60,9 @@ describe('email verification notes', () => {
     });
   });
 
-  describe('deleteOldVerificationNotes', () => {
+  describe('deleteNonCurrentVerificationNotes', () => {
     it('deletes notes containing an email other than the current user email and ignores all others', () => {
-      const result = deleteOldVerificationNotes([
+      const result = deleteNonCurrentVerificationNotes([
         {
           fieldTag: varFieldTags.email,
           content: 'new@email.com',

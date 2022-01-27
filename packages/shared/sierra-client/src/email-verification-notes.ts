@@ -113,7 +113,7 @@ export const addVerificationNote = (
   return addNotesVarfields(updatedNotes, varFields);
 };
 
-export const deleteOldVerificationNotes = (
+export const deleteNonCurrentVerificationNotes = (
   varFields: VarField[]
 ): VarField[] => {
   const currentNotes = getVarFieldContent(varFields, varFieldTags.notes);

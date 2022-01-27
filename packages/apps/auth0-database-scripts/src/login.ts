@@ -48,7 +48,7 @@ async function login(email: string, password: string): Promise<Auth0User> {
             patronRecord.recordNumber,
             true
           )
-        : await sierraClient.deleteOldVerificationNotes(
+        : await sierraClient.deleteNonCurrentVerificationNotes(
             patronRecord.recordNumber
           );
     if (updatedRecordResponse.status !== ResponseStatus.Success) {

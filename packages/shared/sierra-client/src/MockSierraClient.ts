@@ -95,7 +95,7 @@ export default class MockSierraClient implements SierraClient {
     return errorResponse('Not found', ResponseStatus.NotFound);
   });
 
-  deleteOldVerificationNotes = jest.fn(async (recordNumber: number) => {
+  deleteNonCurrentVerificationNotes = jest.fn(async (recordNumber: number) => {
     const maybePatron = this.patrons.get(recordNumber);
     if (maybePatron) {
       const updatedPatron = {

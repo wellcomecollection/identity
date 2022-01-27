@@ -11,8 +11,10 @@ import {
   recordNonMarc,
   recordNumber,
   role,
+  verifiedEmails,
 } from './test-patron';
 import { rest } from 'msw';
+import { varFieldTags } from '../src/patron';
 
 describe('HTTP sierra client', () => {
   const clientKey = 'abcdefghijklmnopqrstuvwxyz';
@@ -68,6 +70,7 @@ describe('HTTP sierra client', () => {
         lastName,
         recordNumber,
         role,
+        verifiedEmails,
       });
     });
 
@@ -83,6 +86,7 @@ describe('HTTP sierra client', () => {
         lastName,
         recordNumber,
         role,
+        verifiedEmails,
       });
     });
 
@@ -135,6 +139,7 @@ describe('HTTP sierra client', () => {
         lastName,
         recordNumber,
         role,
+        verifiedEmails,
       });
     });
 
@@ -150,6 +155,7 @@ describe('HTTP sierra client', () => {
         lastName,
         recordNumber,
         role,
+        verifiedEmails,
       });
     });
 
@@ -172,6 +178,86 @@ describe('HTTP sierra client', () => {
     });
   });
 
+  describe('mark patron email verified', () => {
+    it('adds a verification note for the current email', async () => {
+      const response = await client.markPatronEmailVerified(recordNumber);
+      expect(response.status).toBe(ResponseStatus.Success);
+
+      const result = (<SuccessResponse<PatronRecord>>response).result;
+      expect(result).toEqual({
+        barcode,
+        email,
+        firstName,
+        lastName,
+        recordNumber,
+        role,
+        verifiedEmails: [email],
+      });
+    });
+
+    it('returns a NotFound if there is no user', async () => {
+      mockSierraServer.use(
+        rest.put(routeUrls.patron, (req, res, ctx) => res(ctx.status(404)))
+      );
+
+      const response = await client.markPatronEmailVerified(recordNumber);
+      expect(response.status).toBe(ResponseStatus.NotFound);
+    });
+  });
+
+  describe('delete non-current verification notes', () => {
+    it('removes verification notes for non-current emails', async () => {
+      mockSierraServer.use(
+        rest.get(routeUrls.patron, (req, res, ctx) =>
+          res(
+            ctx.json({
+              ...recordMarc,
+              varFields: [
+                ...recordMarc.varFields,
+                {
+                  fieldTag: varFieldTags.notes,
+                  content:
+                    'Auth0: another@email.com verified at 2011-01-11T00:00:00.000Z',
+                },
+                {
+                  fieldTag: varFieldTags.notes,
+                  content: `Auth0: ${email} verified at 2011-01-11T00:00:00.000Z`,
+                },
+              ],
+            })
+          )
+        )
+      );
+
+      const response = await client.deleteNonCurrentVerificationNotes(
+        recordNumber
+      );
+      expect(response.status).toBe(ResponseStatus.Success);
+
+      const result = (<SuccessResponse<PatronRecord>>response).result;
+      expect(result).toEqual({
+        barcode,
+        email,
+        firstName,
+        lastName,
+        recordNumber,
+        role,
+        verifiedEmails: [email],
+      });
+    });
+
+    it('returns a NotFound if there is no user', async () => {
+      mockSierraServer.use(
+        rest.put(routeUrls.patron, (req, res, ctx) => res(ctx.status(404)))
+      );
+
+      const response = await client.deleteNonCurrentVerificationNotes(
+        recordNumber
+      );
+      expect(response.status).toBe(ResponseStatus.NotFound);
+    });
+  });
+
   describe('update patron email', () => {
     it('updates the email', async () => {
       const response = await client.updatePatronEmail(recordNumber, email);
@@ -185,6 +271,7 @@ describe('HTTP sierra client', () => {
         lastName,
         recordNumber,
         role,
+        verifiedEmails,
       });
     });
 

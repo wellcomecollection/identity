@@ -11,7 +11,7 @@ import { PatronRecord, PatronResponse, toPatronRecord } from './patron';
 import SierraClient from './SierraClient';
 import {
   addVerificationNote,
-  deleteOldVerificationNotes,
+  deleteNonCurrentVerificationNotes,
 } from './email-verification-notes';
 
 export default class HttpSierraClient implements SierraClient {
@@ -241,7 +241,7 @@ export default class HttpSierraClient implements SierraClient {
     }
   }
 
-  async deleteOldVerificationNotes(
+  async deleteNonCurrentVerificationNotes(
     recordNumber: number
   ): Promise<APIResponse<PatronRecord>> {
     try {
@@ -254,7 +254,7 @@ export default class HttpSierraClient implements SierraClient {
         }
       );
 
-      const updatedVarFields = deleteOldVerificationNotes(
+      const updatedVarFields = deleteNonCurrentVerificationNotes(
         currentRecordResponse.data.varFields
       );
 
