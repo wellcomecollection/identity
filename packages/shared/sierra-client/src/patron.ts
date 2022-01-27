@@ -1,17 +1,28 @@
-export function toPatronRecord(patronResponse: any): PatronRecord {
-  const patronName = getPatronName(patronResponse.varFields);
+import { verifiedEmails } from './email-verification-notes';
+
+export function toPatronRecord(response: PatronResponse): PatronRecord {
+  const patronName = getPatronName(response.varFields);
+  const patronEmail =
+    getVarFieldContent(response.varFields, varFieldTags.email)[0] || '';
   return {
     ...patronName,
-    recordNumber: patronResponse.id,
-    barcode: getVarFieldContent(patronResponse.varFields, 'b'),
-    email: getVarFieldContent(patronResponse.varFields, 'z'),
-    role: patronTypeToRole(patronResponse.patronType),
+    recordNumber: response.id,
+    barcode:
+      getVarFieldContent(response.varFields, varFieldTags.barcode)[0] || '',
+    role: patronTypeToRole(response.patronType),
+    email: patronEmail,
+    verifiedEmails: verifiedEmails(response.varFields),
   };
 }
 
-function getVarFieldContent(varFields: VarField[], fieldTag: string): string {
-  const found = varFields.find((varField) => varField.fieldTag === fieldTag);
-  return found ? found.content || '' : '';
+export function getVarFieldContent(
+  varFields: VarField[],
+  fieldTag: string
+): string[] {
+  return varFields
+    .filter((varField) => varField.fieldTag === fieldTag)
+    .map((field) => field.content)
+    .filter((content): content is string => !!content);
 }
 
 // Sierra stores the names of Patron records in two formats: MARC and non-MARC. In the former, names are represented as
@@ -120,6 +131,16 @@ const patronTypeToRole = (patronType: number): Role => {
   }
 };
 
+export const varFieldTags = {
+  barcode: 'b',
+  email: 'z',
+  notes: 'x',
+  name: 'n',
+  message: 'm',
+} as const;
+
+type VarFieldTag = typeof varFieldTags[keyof typeof varFieldTags];
+
 export type PatronRecord = {
   recordNumber: number;
   barcode: string;
@@ -127,6 +148,14 @@ export type PatronRecord = {
   lastName: string;
   email: string;
   role: Role;
+  verifiedEmails: string[];
+};
+
+export type PatronResponse = {
+  id: number;
+  patronType: number;
+  deleted: boolean;
+  varFields: VarField[];
 };
 
 // This represents the data required to create a Patron record in Sierra. The 'fixedFields' a bit odd, as the keys of
@@ -152,9 +181,12 @@ export type PatronCreate = {
   }[];
 };
 
-type VarField = {
-  fieldTag: string;
+export type VarField = {
+  fieldTag: VarFieldTag;
+  marcTag?: string;
   content?: string;
+  ind1?: string;
+  ind2?: string;
   subfields?: SubField[];
 };
 

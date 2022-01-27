@@ -1,4 +1,4 @@
-import { toPatronRecord } from '../src/patron';
+import { PatronResponse, toPatronRecord } from '../src/patron';
 
 describe('toPatronRecord', () => {
   it('creates a patron name from MARC subfields', () => {
@@ -40,9 +40,10 @@ describe('toPatronRecord', () => {
   });
 
   it('strips the trailing comma from names', () => {
-    const recordMarc: any = {
+    const recordMarc: PatronResponse = {
       id: 1101796,
       patronType: 7,
+      deleted: false,
       varFields: [
         {
           fieldTag: 'b',
@@ -82,9 +83,10 @@ describe('toPatronRecord', () => {
     expect(result.lastName).toEqual('TEST');
   });
 
-  const createRecordWithPatronType = (patronType: number) => ({
+  const createRecordWithPatronType = (patronType: number): PatronResponse => ({
     id: 123456,
     patronType,
+    deleted: false,
     varFields: [
       {
         fieldTag: 'b',
