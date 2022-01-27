@@ -30,14 +30,34 @@ async function login(email: string, password: string): Promise<Auth0User> {
 
   const patronRecord = patronRecordResponse.result;
   const validationResponse = await sierraClient.validateCredentials(
-    patronRecord.barcode,
+    patronRecordResponse.result.barcode,
     password
   );
   if (validationResponse.status !== ResponseStatus.Success) {
     throw new WrongUsernameOrPasswordError(email, invalidCredentialsMessage);
   }
 
-  return patronRecordToUser(patronRecord);
+  // If a patron is logging in and has no verified emails, we can infer that
+  // they're logging in for the first time: because the library signup process
+  // requires that they set a password via email, we assume that their current
+  // email address is verified, and mark it as such.
+  if (patronRecord.verifiedEmails.length !== 1) {
+    const updatedRecordResponse =
+      patronRecord.verifiedEmails.length === 0
+        ? await sierraClient.markPatronEmailVerified(
+            patronRecord.recordNumber,
+            true
+          )
+        : await sierraClient.deleteNonCurrentVerificationNotes(
+            patronRecord.recordNumber
+          );
+    if (updatedRecordResponse.status !== ResponseStatus.Success) {
+      throw new Error(updatedRecordResponse.message);
+    }
+    return patronRecordToUser(updatedRecordResponse.result);
+  } else {
+    return patronRecordToUser(patronRecord);
+  }
 }
 
 export default callbackify(login);

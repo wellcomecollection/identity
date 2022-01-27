@@ -22,7 +22,7 @@ const testPatronRecord: PatronRecord = {
   lastName: 'Testing',
   email: 'test@test.test',
   role: 'Reader',
-  verifiedEmails: [],
+  verifiedEmails: ['test@test.test'],
 };
 
 const testPatronPassword = 'super-secret';
@@ -72,6 +72,47 @@ describe('login script', () => {
     const callback = (error?: NodeJS.ErrnoException | null, data?: User) => {
       expect(error).toBe(null);
       expect(data).toMatchObject(patronRecordToUser(testPatronRecord));
+      done();
+    };
+    login(testPatronRecord.email, testPatronPassword, callback);
+  });
+
+  it('adds a verification note if the user does not have one already', (done) => {
+    mockSierraClient.addPatron(
+      { ...testPatronRecord, verifiedEmails: [] },
+      testPatronPassword
+    );
+
+    const callback = (error?: NodeJS.ErrnoException | null, data?: User) => {
+      expect(error).toBe(null);
+      expect(data).toMatchObject(
+        patronRecordToUser({
+          ...testPatronRecord,
+          verifiedEmails: [testPatronRecord.email],
+        })
+      );
+      done();
+    };
+    login(testPatronRecord.email, testPatronPassword, callback);
+  });
+
+  it('removes verification notes for old email addresses', (done) => {
+    mockSierraClient.addPatron(
+      {
+        ...testPatronRecord,
+        verifiedEmails: [testPatronRecord.email, 'old@email.com'],
+      },
+      testPatronPassword
+    );
+
+    const callback = (error?: NodeJS.ErrnoException | null, data?: User) => {
+      expect(error).toBe(null);
+      expect(data).toMatchObject(
+        patronRecordToUser({
+          ...testPatronRecord,
+          verifiedEmails: [testPatronRecord.email],
+        })
+      );
       done();
     };
     login(testPatronRecord.email, testPatronPassword, callback);
