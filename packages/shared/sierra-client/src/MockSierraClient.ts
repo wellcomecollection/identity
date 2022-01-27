@@ -64,12 +64,45 @@ export default class MockSierraClient implements SierraClient {
     return errorResponse('Not found', ResponseStatus.NotFound);
   });
 
-  updatePatronRecord = jest.fn(async (recordNumber: number, email: string) => {
+  updatePatronEmail = jest.fn(
+    async (recordNumber: number, email: string, verified: boolean = false) => {
+      const maybePatron = this.patrons.get(recordNumber);
+      if (maybePatron) {
+        const updatedPatron = {
+          ...maybePatron,
+          email,
+          verifiedEmails: verified
+            ? [...maybePatron.verifiedEmails, email]
+            : maybePatron.verifiedEmails,
+        };
+        this.patrons.set(recordNumber, updatedPatron);
+        return successResponse(updatedPatron);
+      }
+      return errorResponse('Not found', ResponseStatus.NotFound);
+    }
+  );
+
+  markPatronEmailVerified = jest.fn(async (recordNumber: number) => {
     const maybePatron = this.patrons.get(recordNumber);
     if (maybePatron) {
       const updatedPatron = {
         ...maybePatron,
-        email,
+        verifiedEmails: [...maybePatron.verifiedEmails, maybePatron.email],
+      };
+      this.patrons.set(recordNumber, updatedPatron);
+      return successResponse(updatedPatron);
+    }
+    return errorResponse('Not found', ResponseStatus.NotFound);
+  });
+
+  deleteNonCurrentVerificationNotes = jest.fn(async (recordNumber: number) => {
+    const maybePatron = this.patrons.get(recordNumber);
+    if (maybePatron) {
+      const updatedPatron = {
+        ...maybePatron,
+        verifiedEmails: maybePatron.verifiedEmails.filter(
+          (verifiedEmail) => verifiedEmail === maybePatron.email
+        ),
       };
       this.patrons.set(recordNumber, updatedPatron);
       return successResponse(updatedPatron);
