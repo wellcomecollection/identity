@@ -36,6 +36,7 @@ export default class MockSierraClient implements SierraClient {
     lastName: lastName ?? 'Patron',
     email: 'test' + Math.floor(Math.random() * 100).toString() + '@patron',
     role: role ?? 'Reader',
+    verifiedEmails: [],
   });
 
   getPatronRecordByEmail = jest.fn(async (email: string) => {

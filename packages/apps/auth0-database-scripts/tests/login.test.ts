@@ -22,6 +22,7 @@ const testPatronRecord: PatronRecord = {
   lastName: 'Testing',
   email: 'test@test.test',
   role: 'Reader',
+  verifiedEmails: [],
 };
 
 const testPatronPassword = 'super-secret';
