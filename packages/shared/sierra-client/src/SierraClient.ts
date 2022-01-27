@@ -12,9 +12,19 @@ export default interface SierraClient {
   ): Promise<APIResponse<PatronRecord>>;
   getPatronRecordByEmail(email: string): Promise<APIResponse<PatronRecord>>;
 
-  updatePatronRecord(
+  updatePatronEmail(
     recordNumber: number,
-    email: string
+    email: string,
+    verified: boolean
+  ): Promise<APIResponse<PatronRecord>>;
+
+  markPatronEmailVerified(
+    recordNumber: number,
+    verificationWasAssumed?: boolean
+  ): Promise<APIResponse<PatronRecord>>;
+
+  deleteNonCurrentVerificationNotes(
+    recordNumber: number
   ): Promise<APIResponse<PatronRecord>>;
 
   updatePassword(
