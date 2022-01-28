@@ -10,8 +10,8 @@ import {
 import { PatronRecord, PatronResponse, toPatronRecord } from './patron';
 import SierraClient from './SierraClient';
 import {
-  addVerificationNote,
-  deleteNonCurrentVerificationNotes,
+  updateVerificationNote,
+  NoteOptions,
 } from './email-verification-notes';
 
 export default class HttpSierraClient implements SierraClient {
@@ -151,7 +151,7 @@ export default class HttpSierraClient implements SierraClient {
       );
 
       const updatedVarFields = verified
-        ? addVerificationNote(currentRecordResponse.data.varFields)
+        ? updateVerificationNote(currentRecordResponse.data.varFields)
         : currentRecordResponse.data.varFields;
 
       await instance.put(
@@ -191,7 +191,7 @@ export default class HttpSierraClient implements SierraClient {
 
   async markPatronEmailVerified(
     recordNumber: number,
-    verificationWasAssumed: boolean = false
+    options: NoteOptions = { type: 'Explicit' }
   ): Promise<APIResponse<PatronRecord>> {
     try {
       const instance = await this.getInstance();
@@ -203,59 +203,9 @@ export default class HttpSierraClient implements SierraClient {
         }
       );
 
-      const updatedVarFields = addVerificationNote(
+      const updatedVarFields = updateVerificationNote(
         currentRecordResponse.data.varFields,
-        verificationWasAssumed
-      );
-
-      await instance.put(
-        '/patrons/' + recordNumber,
-        {
-          varFields: updatedVarFields,
-        },
-        {
-          validateStatus: (status) => status === 204,
-        }
-      );
-
-      return successResponse(
-        toPatronRecord({
-          ...currentRecordResponse.data,
-          varFields: updatedVarFields,
-        })
-      );
-    } catch (error) {
-      if (error.response) {
-        switch (error.response.status) {
-          case 404:
-            return errorResponse(
-              'Patron record with record number [' +
-                recordNumber +
-                '] not found',
-              ResponseStatus.NotFound,
-              error
-            );
-        }
-      }
-      return unhandledError(error);
-    }
-  }
-
-  async deleteNonCurrentVerificationNotes(
-    recordNumber: number
-  ): Promise<APIResponse<PatronRecord>> {
-    try {
-      const instance = await this.getInstance();
-      const currentRecordResponse = await instance.get<PatronResponse>(
-        `/patrons/${recordNumber}`,
-        {
-          params: { fields: 'varFields' },
-          validateStatus: (status) => status === 200,
-        }
-      );
-
-      const updatedVarFields = deleteNonCurrentVerificationNotes(
-        currentRecordResponse.data.varFields
+        options
       );
 
       await instance.put(

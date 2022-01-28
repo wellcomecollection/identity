@@ -1,4 +1,4 @@
-import { verifiedEmails } from './email-verification-notes';
+import { verifiedEmail } from './email-verification-notes';
 
 export function toPatronRecord(response: PatronResponse): PatronRecord {
   const patronName = getPatronName(response.varFields);
@@ -11,7 +11,7 @@ export function toPatronRecord(response: PatronResponse): PatronRecord {
       getVarFieldContent(response.varFields, varFieldTags.barcode)[0] || '',
     role: patronTypeToRole(response.patronType),
     email: patronEmail,
-    verifiedEmails: verifiedEmails(response.varFields),
+    verifiedEmail: verifiedEmail(response.varFields),
   };
 }
 
@@ -148,7 +148,7 @@ export type PatronRecord = {
   lastName: string;
   email: string;
   role: Role;
-  verifiedEmails: string[];
+  verifiedEmail?: string;
 };
 
 export type PatronResponse = {
