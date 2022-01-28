@@ -10,7 +10,7 @@ declare const configuration: {
 };
 
 // See https://auth0.com/docs/connections/database/custom-db/templates/change-email
-// TODO do something with the verified flag
+// TODO do something with the explicitlyVerified flag
 async function changeEmail(
   email: string,
   newEmail: string,
