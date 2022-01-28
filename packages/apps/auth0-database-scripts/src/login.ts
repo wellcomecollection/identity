@@ -41,16 +41,11 @@ async function login(email: string, password: string): Promise<Auth0User> {
   // they're logging in for the first time: because the library signup process
   // requires that they set a password via email, we assume that their current
   // email address is verified, and mark it as such.
-  if (patronRecord.verifiedEmails.length !== 1) {
-    const updatedRecordResponse =
-      patronRecord.verifiedEmails.length === 0
-        ? await sierraClient.markPatronEmailVerified(
-            patronRecord.recordNumber,
-            true
-          )
-        : await sierraClient.deleteNonCurrentVerificationNotes(
-            patronRecord.recordNumber
-          );
+  if (!patronRecord.verifiedEmail) {
+    const updatedRecordResponse = await sierraClient.markPatronEmailVerified(
+      patronRecord.recordNumber,
+      { type: 'Implicit' }
+    );
     if (updatedRecordResponse.status !== ResponseStatus.Success) {
       throw new Error(updatedRecordResponse.message);
     }

@@ -49,9 +49,9 @@ describe('change email script', () => {
     ) => {
       expect(error).toBe(null);
       expect(success).toBe(true);
-      expect(
-        mockSierraClient.get(testPatron.recordNumber)?.verifiedEmails
-      ).toContain(newEmail);
+      expect(mockSierraClient.get(testPatron.recordNumber)?.verifiedEmail).toBe(
+        newEmail
+      );
       done();
     };
 

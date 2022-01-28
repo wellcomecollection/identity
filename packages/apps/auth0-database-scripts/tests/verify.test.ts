@@ -30,7 +30,7 @@ describe('email verification script', () => {
       expect(data?.email_verified).toBe(true);
 
       const updatedRecord = mockSierraClient.get(testRecord.recordNumber);
-      expect(updatedRecord?.verifiedEmails).toContain(testRecord.email);
+      expect(updatedRecord?.verifiedEmail).toBe(testRecord.email);
       done();
     };
     verify(testRecord.email, callback);
