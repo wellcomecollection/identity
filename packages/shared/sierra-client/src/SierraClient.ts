@@ -1,5 +1,6 @@
 import { APIResponse } from '@weco/identity-common';
 import { PatronRecord } from './patron';
+import { NoteOptions } from './email-verification-notes';
 
 export default interface SierraClient {
   validateCredentials(
@@ -20,11 +21,7 @@ export default interface SierraClient {
 
   markPatronEmailVerified(
     recordNumber: number,
-    verificationWasAssumed?: boolean
-  ): Promise<APIResponse<PatronRecord>>;
-
-  deleteNonCurrentVerificationNotes(
-    recordNumber: number
+    options?: NoteOptions
   ): Promise<APIResponse<PatronRecord>>;
 
   updatePassword(
