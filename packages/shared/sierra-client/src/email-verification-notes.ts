@@ -39,7 +39,7 @@ type VerificationNote = {
   date: Date;
 };
 
-type NoteOptions = {
+export type NoteOptions = {
   type: 'Implicit' | 'Explicit';
 };
 
