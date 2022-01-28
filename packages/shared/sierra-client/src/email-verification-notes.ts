@@ -4,6 +4,9 @@ const auth0NotePrefix = 'Auth0:';
 
 // See https://stackoverflow.com/a/9204568
 // Matches string@string.string
+// There are some email addresses in Sierra that don't match this - because of whitespace,
+// nonsense values, NONE values, etc. We're OK with not matching them because we need to be
+// able to look them up and deal with them as email addresses, regardless.
 const emailRegex = '\\S+@\\S+\\.\\S+';
 
 // See https://stackoverflow.com/a/3143231
@@ -12,11 +15,12 @@ const isoDateRegex =
   '\\d{4}-[01]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d:[0-5]\\d\\.\\d+(?:[+-][0-2]\\d:[0-5]\\d|Z)';
 
 // The distinction here is that we assume that users who exist already in Sierra
-// are verified, because they must've used their registered email address to set a password.
+// are explicitlyVerified, because they must've used their registered email address to set a password.
 // We distinguish between them in the message to maximise readability and to ease debugging.
 const messages = {
-  verified: 'verified at',
-  assumedVerified: 'assumed to be verified at login',
+  explicitlyVerified: 'verified by the user clicking a verification email at',
+  implicitlyVerified:
+    'implicitly verified on initial Auth0 login with an existing Sierra account at',
 };
 
 const messageRegex = Object.values(messages).join('|');
@@ -33,6 +37,10 @@ const emailNoteRegex = new RegExp(
 type VerificationNote = {
   email: string;
   date: Date;
+};
+
+type NoteOptions = {
+  type: 'Implicit' | 'Explicit';
 };
 
 const parseVerificationNote = (note: string): VerificationNote | undefined => {
@@ -52,16 +60,18 @@ const parseVerificationNote = (note: string): VerificationNote | undefined => {
 
 const createVerificationNote = (
   { email, date = new Date() }: VerificationNote,
-  verificationWasAssumed: boolean = false
+  { type }: NoteOptions
 ): string =>
   [
     auth0NotePrefix,
     email,
-    verificationWasAssumed ? messages.assumedVerified : messages.verified,
+    type === 'Implicit'
+      ? messages.implicitlyVerified
+      : messages.explicitlyVerified,
     date.toISOString(),
   ].join(' ');
 
-const filterVerificationNotes = (notes: string[]): string[] =>
+const removeVerificationNotes = (notes: string[]): string[] =>
   notes.filter((note) => {
     const parsedNote = parseVerificationNote(note);
     return !parsedNote;
@@ -69,11 +79,11 @@ const filterVerificationNotes = (notes: string[]): string[] =>
 
 const upsertVerificationNote = (
   note: VerificationNote,
-  verificationWasAssumed: boolean = false,
+  opts: NoteOptions,
   notes: string[]
 ): string[] => [
-  ...filterVerificationNotes(notes),
-  createVerificationNote(note, verificationWasAssumed),
+  ...removeVerificationNotes(notes),
+  createVerificationNote(note, opts),
 ];
 
 const addNotesVarfields = (
@@ -87,17 +97,16 @@ const addNotesVarfields = (
   })),
 ];
 
-export const verifiedEmails = (varFields: VarField[]): string[] =>
+export const verifiedEmail = (varFields: VarField[]): string | undefined =>
   getVarFieldContent(varFields, varFieldTags.notes)
     .map(parseVerificationNote)
-    .filter((verified): verified is VerificationNote =>
+    .find((verified): verified is VerificationNote =>
       Boolean(verified && verified.date.getTime() <= Date.now())
-    )
-    .map((note) => note.email);
+    )?.email;
 
-export const addVerificationNote = (
+export const updateVerificationNote = (
   varFields: VarField[],
-  verificationWasAssumed: boolean = false
+  opts: NoteOptions = { type: 'Explicit' }
 ): VarField[] => {
   const currentNotes = getVarFieldContent(varFields, varFieldTags.notes);
   const email = getVarFieldContent(varFields, varFieldTags.email)[0] || '';
@@ -106,7 +115,7 @@ export const addVerificationNote = (
       email,
       date: new Date(),
     },
-    verificationWasAssumed,
+    opts,
     currentNotes
   );
 
@@ -118,7 +127,6 @@ export const deleteNonCurrentVerificationNotes = (
 ): VarField[] => {
   const currentNotes = getVarFieldContent(varFields, varFieldTags.notes);
   const email = getVarFieldContent(varFields, varFieldTags.email)[0] || '';
-  console.log(email);
   const updatedNotes = currentNotes.filter((note) => {
     const verified = parseVerificationNote(note);
     return !verified || verified.email === email;
