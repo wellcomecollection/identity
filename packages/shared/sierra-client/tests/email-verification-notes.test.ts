@@ -2,13 +2,7 @@ import {
   updateVerificationNote,
   verifiedEmail,
 } from '../src/email-verification-notes';
-import { VarField, varFieldTags } from '../src/patron';
-
-const notesToVarFields = (...notes: string[]): VarField[] =>
-  notes.map((content) => ({
-    fieldTag: varFieldTags.notes,
-    content,
-  }));
+import { varFieldTags } from '../src/patron';
 
 describe('email verification notes', () => {
   beforeAll(() => {
