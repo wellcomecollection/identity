@@ -121,16 +121,3 @@ export const updateVerificationNote = (
 
   return addNotesVarfields(updatedNotes, varFields);
 };
-
-export const deleteNonCurrentVerificationNotes = (
-  varFields: VarField[]
-): VarField[] => {
-  const currentNotes = getVarFieldContent(varFields, varFieldTags.notes);
-  const email = getVarFieldContent(varFields, varFieldTags.email)[0] || '';
-  const updatedNotes = currentNotes.filter((note) => {
-    const verified = parseVerificationNote(note);
-    return !verified || verified.email === email;
-  });
-
-  return addNotesVarfields(updatedNotes, varFields);
-};

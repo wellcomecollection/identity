@@ -1,15 +1,8 @@
 import {
   updateVerificationNote,
-  deleteNonCurrentVerificationNotes,
   verifiedEmail,
 } from '../src/email-verification-notes';
-import { VarField, varFieldTags } from '../src/patron';
-
-const notesToVarFields = (...notes: string[]): VarField[] =>
-  notes.map((content) => ({
-    fieldTag: varFieldTags.notes,
-    content,
-  }));
+import { varFieldTags } from '../src/patron';
 
 describe('email verification notes', () => {
   beforeAll(() => {
@@ -90,31 +83,6 @@ describe('email verification notes', () => {
       expect(result).toHaveLength(2);
       expect(result[1].content).toBe(
         'Auth0: example@example.com implicitly verified on initial Auth0 login with an existing Sierra account at 2022-02-22T00:00:00.000Z'
-      );
-    });
-  });
-
-  describe('deleteNonCurrentVerificationNotes', () => {
-    it('deletes notes containing an email other than the current user email and ignores all others', () => {
-      const result = deleteNonCurrentVerificationNotes([
-        {
-          fieldTag: varFieldTags.email,
-          content: 'new@email.com',
-        },
-        ...notesToVarFields(
-          'Auth0: email@example.com implicitly verified on initial Auth0 login with an existing Sierra account at 2022-02-22T00:00:00.000Z', // This is the only note that should be deleted
-          'Auth0: new@email.com verified by the user clicking a verification email at 2022-02-22T00:00:00.000Z',
-          'Auth1: email@example.com implicitly verified on initial Auth0 login with an existing Sierra account at 2022-02-22T00:00:00.000Z',
-          'Auth0: email@example.com arble garble blarble 2022-02-22T00:00:00.000Z',
-          'Auth0: email@example.com verified by the user clicking a verification email at about a week ago, I think',
-          'Auth0: invalid@email verified by the user clicking a verification email at 2022-02-22T00:00:00.000Z',
-          'Werewolf, barred from the library on full moons'
-        ),
-      ]);
-
-      expect(result).toHaveLength(7);
-      expect(result.map((field) => field.content)).not.toContain(
-        'Auth0: email@example.com implicitly verified on initial Auth0 login with an existing Sierra account at 2022-02-22T00:00:00.000Z'
       );
     });
   });
