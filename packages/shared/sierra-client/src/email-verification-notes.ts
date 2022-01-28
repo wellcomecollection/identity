@@ -4,6 +4,9 @@ const auth0NotePrefix = 'Auth0:';
 
 // See https://stackoverflow.com/a/9204568
 // Matches string@string.string
+// There are some email addresses in Sierra that don't match this - because of whitespace,
+// nonsense values, NONE values, etc. We're OK with not matching them because we need to be
+// able to look them up and deal with them as email addresses, regardless.
 const emailRegex = '\\S+@\\S+\\.\\S+';
 
 // See https://stackoverflow.com/a/3143231
