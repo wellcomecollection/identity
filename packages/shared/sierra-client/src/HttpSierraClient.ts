@@ -7,8 +7,12 @@ import {
   successResponse,
   unhandledError,
 } from '@weco/identity-common';
-import { PatronRecord, toPatronRecord } from './patron';
+import { PatronRecord, PatronResponse, toPatronRecord } from './patron';
 import SierraClient from './SierraClient';
+import {
+  updateVerificationNote,
+  NoteOptions,
+} from './email-verification-notes';
 
 export default class HttpSierraClient implements SierraClient {
   private readonly apiRoot: string;
@@ -131,44 +135,110 @@ export default class HttpSierraClient implements SierraClient {
     });
   }
 
-  async updatePatronRecord(
+  async updatePatronEmail(
     recordNumber: number,
-    email: string
+    email: string,
+    verified: boolean = false
   ): Promise<APIResponse<PatronRecord>> {
-    return this.getInstance().then((instance) => {
-      return instance
-        .put(
-          '/patrons/' + recordNumber,
-          {
-            emails: [email],
-          },
-          {
-            validateStatus: (status) => status === 204,
-          }
-        )
-        .then(() => this.getPatronRecordByRecordNumber(recordNumber))
-        .catch((error) => {
-          if (error.response) {
-            switch (error.response.status) {
-              case 400:
-                return errorResponse(
-                  'Malformed or invalid Patron record update request',
-                  ResponseStatus.MalformedRequest,
-                  error
-                );
-              case 404:
-                return errorResponse(
-                  'Patron record with record number [' +
-                    recordNumber +
-                    '] not found',
-                  ResponseStatus.NotFound,
-                  error
-                );
-            }
-          }
-          return unhandledError(error);
-        });
-    });
+    try {
+      const instance = await this.getInstance();
+      const currentRecordResponse = await instance.get<PatronResponse>(
+        `/patrons/${recordNumber}`,
+        {
+          params: { fields: 'varFields' },
+          validateStatus: (status) => status === 200,
+        }
+      );
+
+      const updatedVarFields = verified
+        ? updateVerificationNote(currentRecordResponse.data.varFields)
+        : currentRecordResponse.data.varFields;
+
+      await instance.put(
+        '/patrons/' + recordNumber,
+        {
+          emails: [email],
+          varFields: updatedVarFields,
+        },
+        {
+          validateStatus: (status) => status === 204,
+        }
+      );
+
+      return this.getPatronRecordByRecordNumber(recordNumber);
+    } catch (error) {
+      if (error.response) {
+        switch (error.response.status) {
+          case 400:
+            return errorResponse(
+              'Malformed or invalid Patron record update request',
+              ResponseStatus.MalformedRequest,
+              error
+            );
+          case 404:
+            return errorResponse(
+              'Patron record with record number [' +
+                recordNumber +
+                '] not found',
+              ResponseStatus.NotFound,
+              error
+            );
+        }
+      }
+      return unhandledError(error);
+    }
+  }
+
+  async markPatronEmailVerified(
+    recordNumber: number,
+    options: NoteOptions = { type: 'Explicit' }
+  ): Promise<APIResponse<PatronRecord>> {
+    try {
+      const instance = await this.getInstance();
+      const currentRecordResponse = await instance.get<PatronResponse>(
+        `/patrons/${recordNumber}`,
+        {
+          params: { fields: 'varFields' },
+          validateStatus: (status) => status === 200,
+        }
+      );
+
+      const updatedVarFields = updateVerificationNote(
+        currentRecordResponse.data.varFields,
+        options
+      );
+
+      await instance.put(
+        '/patrons/' + recordNumber,
+        {
+          varFields: updatedVarFields,
+        },
+        {
+          validateStatus: (status) => status === 204,
+        }
+      );
+
+      return successResponse(
+        toPatronRecord({
+          ...currentRecordResponse.data,
+          varFields: updatedVarFields,
+        })
+      );
+    } catch (error) {
+      if (error.response) {
+        switch (error.response.status) {
+          case 404:
+            return errorResponse(
+              'Patron record with record number [' +
+                recordNumber +
+                '] not found',
+              ResponseStatus.NotFound,
+              error
+            );
+        }
+      }
+      return unhandledError(error);
+    }
   }
 
   async updatePassword(

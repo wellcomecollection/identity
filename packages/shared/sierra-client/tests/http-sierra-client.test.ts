@@ -177,9 +177,36 @@ describe('HTTP sierra client', () => {
     });
   });
 
-  describe('update patron record', () => {
-    it('updates the record', async () => {
-      const response = await client.updatePatronRecord(recordNumber, email);
+  describe('mark patron email verified', () => {
+    it('adds a verification note for the current email', async () => {
+      const response = await client.markPatronEmailVerified(recordNumber);
+      expect(response.status).toBe(ResponseStatus.Success);
+
+      const result = (<SuccessResponse<PatronRecord>>response).result;
+      expect(result).toEqual({
+        barcode,
+        email,
+        firstName,
+        lastName,
+        recordNumber,
+        role,
+        verifiedEmail: email,
+      });
+    });
+
+    it('returns a NotFound if there is no user', async () => {
+      mockSierraServer.use(
+        rest.put(routeUrls.patron, (req, res, ctx) => res(ctx.status(404)))
+      );
+
+      const response = await client.markPatronEmailVerified(recordNumber);
+      expect(response.status).toBe(ResponseStatus.NotFound);
+    });
+  });
+
+  describe('update patron email', () => {
+    it('updates the email', async () => {
+      const response = await client.updatePatronEmail(recordNumber, email);
       expect(response.status).toBe(ResponseStatus.Success);
 
       const result = (<SuccessResponse<PatronRecord>>response).result;
@@ -199,7 +226,7 @@ describe('HTTP sierra client', () => {
         rest.put(routeUrls.patron, (req, res, ctx) => res(ctx.status(400)))
       );
 
-      const response = await client.updatePatronRecord(recordNumber, email);
+      const response = await client.updatePatronEmail(recordNumber, email);
       expect(response.status).toBe(ResponseStatus.MalformedRequest);
     });
 
@@ -208,7 +235,7 @@ describe('HTTP sierra client', () => {
         rest.put(routeUrls.patron, (req, res, ctx) => res(ctx.status(404)))
       );
 
-      const response = await client.updatePatronRecord(recordNumber, email);
+      const response = await client.updatePatronEmail(recordNumber, email);
       expect(response.status).toBe(ResponseStatus.NotFound);
     });
 
@@ -217,7 +244,7 @@ describe('HTTP sierra client', () => {
         rest.put(routeUrls.patron, (req, res, ctx) => res(ctx.status(500)))
       );
 
-      const response = await client.updatePatronRecord(recordNumber, email);
+      const response = await client.updatePatronEmail(recordNumber, email);
       expect(response.status).toBe(ResponseStatus.UnknownError);
     });
   });
