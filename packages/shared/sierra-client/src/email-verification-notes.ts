@@ -30,6 +30,9 @@ const messageRegex = Object.values(messages).join('|');
 // - the prefix is followed by an email address (captured in group `email`)
 // - that is followed by one of the messages
 // - it ends with an ISO 8601 datetime string (captured in group `date`)
+//
+// For example, it would match:
+// `Auth0: example@example.com verified by the user clicking a verification email at 2022-02-22T00:00:00.000Z`
 const emailNoteRegex = new RegExp(
   `^${auth0NotePrefix}\\s+(?<email>${emailRegex})\\s+(?:${messageRegex})\\s+(?<date>${isoDateRegex})\$`
 );
