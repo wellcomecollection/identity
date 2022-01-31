@@ -11,6 +11,7 @@ import {
   recordNonMarc,
   recordNumber,
   role,
+  verifiedEmail,
 } from './test-patron';
 import { rest } from 'msw';
 
@@ -68,6 +69,7 @@ describe('HTTP sierra client', () => {
         lastName,
         recordNumber,
         role,
+        verifiedEmail,
       });
     });
 
@@ -83,6 +85,7 @@ describe('HTTP sierra client', () => {
         lastName,
         recordNumber,
         role,
+        verifiedEmail,
       });
     });
 
@@ -135,6 +138,7 @@ describe('HTTP sierra client', () => {
         lastName,
         recordNumber,
         role,
+        verifiedEmail,
       });
     });
 
@@ -150,6 +154,7 @@ describe('HTTP sierra client', () => {
         lastName,
         recordNumber,
         role,
+        verifiedEmail,
       });
     });
 
@@ -185,6 +190,7 @@ describe('HTTP sierra client', () => {
         lastName,
         recordNumber,
         role,
+        verifiedEmail,
       });
     });
 

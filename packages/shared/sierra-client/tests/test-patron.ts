@@ -5,6 +5,7 @@ export const firstName: string = 'Test';
 export const lastName: string = 'User';
 export const email: string = 'test.user@example.com';
 export const role: string = 'Reader';
+export const verifiedEmail: string | undefined = undefined;
 
 export const recordMarc: any = {
   id: 123456,
