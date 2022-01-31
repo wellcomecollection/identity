@@ -10,7 +10,6 @@ declare const configuration: {
 };
 
 // See https://auth0.com/docs/connections/database/custom-db/templates/change-email
-// TODO do something with the explicitlyVerified flag
 async function changeEmail(
   email: string,
   newEmail: string,
@@ -29,7 +28,8 @@ async function changeEmail(
 
   const patronRecordUpdate = await sierraClient.updatePatronEmail(
     recordNumber,
-    newEmail
+    newEmail,
+    verified
   );
   if (patronRecordUpdate.status !== ResponseStatus.Success) {
     throw new Error(patronRecordUpdate.message);

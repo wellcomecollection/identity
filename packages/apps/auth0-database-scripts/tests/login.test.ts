@@ -22,6 +22,7 @@ const testPatronRecord: PatronRecord = {
   lastName: 'Testing',
   email: 'test@test.test',
   role: 'Reader',
+  verifiedEmail: 'test@test.test',
 };
 
 const testPatronPassword = 'super-secret';
@@ -71,6 +72,25 @@ describe('login script', () => {
     const callback = (error?: NodeJS.ErrnoException | null, data?: User) => {
       expect(error).toBe(null);
       expect(data).toMatchObject(patronRecordToUser(testPatronRecord));
+      done();
+    };
+    login(testPatronRecord.email, testPatronPassword, callback);
+  });
+
+  it('adds a verification note if the user does not have one already', (done) => {
+    mockSierraClient.addPatron(
+      { ...testPatronRecord, verifiedEmail: undefined },
+      testPatronPassword
+    );
+
+    const callback = (error?: NodeJS.ErrnoException | null, data?: User) => {
+      expect(error).toBe(null);
+      expect(data).toMatchObject(
+        patronRecordToUser({
+          ...testPatronRecord,
+          verifiedEmail: testPatronRecord.email,
+        })
+      );
       done();
     };
     login(testPatronRecord.email, testPatronPassword, callback);

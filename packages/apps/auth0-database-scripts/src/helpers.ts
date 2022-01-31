@@ -8,6 +8,7 @@ export const patronRecordToUser = (patronRecord: PatronRecord): Auth0User => ({
   name: patronRecord.firstName + ' ' + patronRecord.lastName,
   given_name: patronRecord.firstName,
   family_name: patronRecord.lastName,
+  email_verified: patronRecord.verifiedEmail === patronRecord.email,
   app_metadata: {
     barcode: patronRecord.barcode,
     role: patronRecord.role,
