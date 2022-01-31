@@ -9,6 +9,7 @@ export const verifiedEmail: string | undefined = undefined;
 
 export const recordMarc: any = {
   id: 123456,
+  deleted: false,
   patronType: 7,
   varFields: [
     {
@@ -41,6 +42,7 @@ export const recordMarc: any = {
 export const recordNonMarc: any = {
   id: 123456,
   patronType: 7,
+  deleted: false,
   varFields: [
     {
       fieldTag: 'b',

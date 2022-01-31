@@ -47,7 +47,14 @@ const handlers = [
     if (!hasCurrentToken(req)) {
       return res(ctx.status(401));
     }
-    return res(ctx.json(recordMarc));
+    const fields = [
+      'id',
+      ...(req.url.searchParams.get('fields')?.split(',') || []),
+    ];
+    const response = Object.fromEntries(
+      fields.map((field) => [field, recordMarc[field]])
+    );
+    return res(ctx.json(response));
   }),
   rest.put(routeUrls.patron, (req, res, ctx) => {
     if (!hasCurrentToken(req)) {
