@@ -7,7 +7,12 @@ import {
   successResponse,
   unhandledError,
 } from '@weco/identity-common';
-import { PatronRecord, PatronResponse, toPatronRecord } from './patron';
+import {
+  PatronRecord,
+  PatronResponse,
+  toPatronRecord,
+  varFieldTags,
+} from './patron';
 import SierraClient from './SierraClient';
 import {
   updateVerificationNote,
@@ -152,15 +157,17 @@ export default class HttpSierraClient implements SierraClient {
         }
       );
 
-      const updatedVarFields = verified
+      const notesVarFields = verified
         ? updateVerificationNote(currentRecordResponse.data.varFields)
-        : currentRecordResponse.data.varFields;
+        : // The way that varFields patches work in the Sierra API means
+          // that PUTting an empty array will be a no-op
+          [];
 
       await instance.put(
         '/patrons/' + recordNumber,
         {
           emails: [email],
-          varFields: updatedVarFields,
+          varFields: notesVarFields,
         },
         {
           validateStatus: (status) => status === 204,
@@ -205,7 +212,7 @@ export default class HttpSierraClient implements SierraClient {
         }
       );
 
-      const updatedVarFields = updateVerificationNote(
+      const notesVarFields = updateVerificationNote(
         currentRecordResponse.data.varFields,
         options
       );
@@ -213,7 +220,7 @@ export default class HttpSierraClient implements SierraClient {
       await instance.put(
         '/patrons/' + recordNumber,
         {
-          varFields: updatedVarFields,
+          varFields: notesVarFields,
         },
         {
           validateStatus: (status) => status === 204,
@@ -223,7 +230,12 @@ export default class HttpSierraClient implements SierraClient {
       return successResponse(
         toPatronRecord({
           ...currentRecordResponse.data,
-          varFields: updatedVarFields,
+          varFields: [
+            ...notesVarFields,
+            ...currentRecordResponse.data.varFields.filter(
+              ({ fieldTag }) => fieldTag !== varFieldTags.notes
+            ),
+          ],
         })
       );
     } catch (error) {

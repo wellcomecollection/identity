@@ -15,7 +15,7 @@ describe('email verification notes', () => {
   });
 
   describe('updateVerificationNote', () => {
-    it('updates a verification note varfield while leaving others alone', () => {
+    it('returns a list of the notes varfields including the new verification note and any other notes', () => {
       const varFields = [
         {
           fieldTag: varFieldTags.notes,
@@ -37,16 +37,12 @@ describe('email verification notes', () => {
       ];
       const result = updateVerificationNote(varFields);
 
-      expect(result).toHaveLength(4);
-      const notes = result
-        .filter(({ fieldTag }) => fieldTag === varFieldTags.notes)
-        .map(({ content }) => content);
+      expect(result).toHaveLength(2);
+      const notes = result.map(({ content }) => content);
       expect(notes).toContain(
         'Auth0: example@example.com verified by the user clicking a verification email at 2022-02-22T00:00:00.000Z'
       );
       expect(notes).toContain('Something else');
-      expect(result).toContainEqual(varFields[2]);
-      expect(result).toContainEqual(varFields[3]);
     });
 
     it('adds a new a verification note varfield if one does not exist already', () => {
@@ -61,10 +57,8 @@ describe('email verification notes', () => {
         },
       ]);
 
-      expect(result).toHaveLength(3);
-      expect(
-        result.find(({ fieldTag }) => fieldTag === varFieldTags.notes)?.content
-      ).toBe(
+      expect(result).toHaveLength(1);
+      expect(result[0]?.content).toBe(
         'Auth0: example@example.com verified by the user clicking a verification email at 2022-02-22T00:00:00.000Z'
       );
     });
@@ -80,8 +74,8 @@ describe('email verification notes', () => {
         { type: 'Implicit' }
       );
 
-      expect(result).toHaveLength(2);
-      expect(result[1].content).toBe(
+      expect(result).toHaveLength(1);
+      expect(result[0].content).toBe(
         'Auth0: example@example.com implicitly verified on initial Auth0 login with an existing Sierra account at 2022-02-22T00:00:00.000Z'
       );
     });
