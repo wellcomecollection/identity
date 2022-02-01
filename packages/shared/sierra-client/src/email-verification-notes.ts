@@ -89,17 +89,6 @@ const upsertVerificationNote = (
   createVerificationNote(note, opts),
 ];
 
-const addNotesVarfields = (
-  notes: string[],
-  varFields: VarField[]
-): VarField[] => [
-  ...varFields.filter((field) => field.fieldTag !== varFieldTags.notes),
-  ...notes.map((content) => ({
-    fieldTag: varFieldTags.notes,
-    content,
-  })),
-];
-
 export const verifiedEmail = (varFields: VarField[]): string | undefined =>
   getVarFieldContent(varFields, varFieldTags.notes)
     .map(parseVerificationNote)
@@ -122,5 +111,8 @@ export const updateVerificationNote = (
     currentNotes
   );
 
-  return addNotesVarfields(updatedNotes, varFields);
+  return updatedNotes.map((note) => ({
+    fieldTag: varFieldTags.notes,
+    content: note,
+  }));
 };

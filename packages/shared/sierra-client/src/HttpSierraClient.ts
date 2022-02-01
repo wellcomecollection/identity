@@ -7,7 +7,12 @@ import {
   successResponse,
   unhandledError,
 } from '@weco/identity-common';
-import { PatronRecord, PatronResponse, toPatronRecord } from './patron';
+import {
+  PatronRecord,
+  PatronResponse,
+  toPatronRecord,
+  varFieldTags,
+} from './patron';
 import SierraClient from './SierraClient';
 import {
   updateVerificationNote,
@@ -152,15 +157,26 @@ export default class HttpSierraClient implements SierraClient {
         }
       );
 
-      const updatedVarFields = verified
+      const notesVarFields = verified
         ? updateVerificationNote(currentRecordResponse.data.varFields)
-        : currentRecordResponse.data.varFields;
+        : // The Sierra API's behaviour re varFields is non-intuitive:
+          // we pass an array of varFields that we want to _add_. These
+          // have to be x, m, or y varFields (notes, messages, images)
+          // and anything else gets ignored.
+          //
+          // If we want to remove one, we do this by passing the
+          // varField with empty content. As such, passing an empty array
+          // is a no-op (there's nothing to add). This is observed
+          // behaviour, which is quite vaguely documented:
+          //
+          // https://techdocs.iii.com/sierraapi/Content/zObjects/requestObjectDescriptions.htm#patronPUT
+          [];
 
       await instance.put(
         '/patrons/' + recordNumber,
         {
           emails: [email],
-          varFields: updatedVarFields,
+          varFields: notesVarFields,
         },
         {
           validateStatus: (status) => status === 204,
@@ -205,7 +221,7 @@ export default class HttpSierraClient implements SierraClient {
         }
       );
 
-      const updatedVarFields = updateVerificationNote(
+      const notesVarFields = updateVerificationNote(
         currentRecordResponse.data.varFields,
         options
       );
@@ -213,7 +229,7 @@ export default class HttpSierraClient implements SierraClient {
       await instance.put(
         '/patrons/' + recordNumber,
         {
-          varFields: updatedVarFields,
+          varFields: notesVarFields,
         },
         {
           validateStatus: (status) => status === 204,
@@ -223,7 +239,12 @@ export default class HttpSierraClient implements SierraClient {
       return successResponse(
         toPatronRecord({
           ...currentRecordResponse.data,
-          varFields: updatedVarFields,
+          varFields: [
+            ...notesVarFields,
+            ...currentRecordResponse.data.varFields.filter(
+              ({ fieldTag }) => fieldTag !== varFieldTags.notes
+            ),
+          ],
         })
       );
     } catch (error) {
