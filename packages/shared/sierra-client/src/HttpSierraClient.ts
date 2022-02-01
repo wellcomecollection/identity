@@ -159,8 +159,17 @@ export default class HttpSierraClient implements SierraClient {
 
       const notesVarFields = verified
         ? updateVerificationNote(currentRecordResponse.data.varFields)
-        : // The way that varFields patches work in the Sierra API means
-          // that PUTting an empty array will be a no-op
+        : // The Sierra API's behaviour re varFields is non-intuitive:
+          // we pass an array of varFields that we want to _add_. These
+          // have to be x, m, or y varFields (notes, messages, images)
+          // and anything else gets ignored.
+          //
+          // If we want to remove one, we do this by passing the
+          // varField with empty content. As such, passing an empty array
+          // is a no-op (there's nothing to add). This is observed
+          // behaviour, which is quite vaguely documented:
+          // 
+          // https://techdocs.iii.com/sierraapi/Content/zObjects/requestObjectDescriptions.htm#patronPUT
           [];
 
       await instance.put(
