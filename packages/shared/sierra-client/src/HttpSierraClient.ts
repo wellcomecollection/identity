@@ -168,7 +168,7 @@ export default class HttpSierraClient implements SierraClient {
           // varField with empty content. As such, passing an empty array
           // is a no-op (there's nothing to add). This is observed
           // behaviour, which is quite vaguely documented:
-          // 
+          //
           // https://techdocs.iii.com/sierraapi/Content/zObjects/requestObjectDescriptions.htm#patronPUT
           [];
 
