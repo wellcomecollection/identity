@@ -73,6 +73,7 @@ function __deploy_api_gateway() {
 
 __update_alias_for_bundle 'identity-api'
 __update_alias_for_bundle 'identity-authorizer'
+__update_alias_for_bundle 'patron-deletion-tracker'
 
 __deploy_api_gateway
 __deploy_api_documentation
