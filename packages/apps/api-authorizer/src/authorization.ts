@@ -26,11 +26,19 @@ export const hasScopes = (...requiredScopes: string[]): AccessControlRule => (
   jwt,
   parameters
 ) => {
+  if (typeof jwt.payload === 'string') {
+    return false;
+  }
+
   const tokenScopes: string[] = jwt.payload.scope?.split(' ') || [];
   return tokenScopes.some((tokenScope) => requiredScopes.includes(tokenScope));
 };
 
 export const isSelf: AccessControlRule = (jwt, parameters) => {
+  if (typeof jwt.payload === 'string') {
+    return false;
+  }
+
   const tokenUserId = auth0IdToPublic(jwt.payload.sub);
   const parameterUserId = parameters?.userId;
   return Boolean(

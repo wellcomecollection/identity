@@ -79,12 +79,16 @@ export const createLambdaHandler = (validateToken: TokenValidator) => async (
   if (requestIsAllowed) {
     authorizerResultEffect = 'Allow';
   }
+  const tokenSubject =
+    typeof validatedToken.payload === 'string'
+      ? undefined
+      : validatedToken.payload.sub;
 
   return authorizerResult({
     policyDocument: policyDocument({
       effect: authorizerResultEffect,
       resource: event.methodArn,
     }),
-    principalId: auth0IdToPublic(validatedToken.payload.sub) || '',
+    principalId: auth0IdToPublic(tokenSubject) || '',
   });
 };
