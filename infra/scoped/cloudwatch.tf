@@ -37,3 +37,12 @@ resource "aws_cloudwatch_log_group" "lambda_api" {
     "Name" = "/aws/lambda/identity-api-${terraform.workspace}"
   }
 }
+
+resource "aws_cloudwatch_log_group" "lambda_patron_deletion_tracker" {
+  name              = "/aws/lambda/patron-deletion-tracker-${terraform.workspace}"
+  retention_in_days = aws_ssm_parameter.cloudwatch_retention.value
+
+  tags = {
+    "Name" = "/aws/lambda/patron-deletion-tracker-${terraform.workspace}"
+  }
+}
