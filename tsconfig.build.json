@@ -7,6 +7,9 @@
       "path": "./packages/apps/api-authorizer/tsconfig.build.json"
     },
     {
+      "path": "./packages/apps/patron-deletion-tracker/tsconfig.build.json"
+    },
+    {
       "path": "./packages/shared/auth0-client/tsconfig.build.json"
     },
     {

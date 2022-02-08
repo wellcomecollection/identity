@@ -1,11 +1,9 @@
 {
   "name": "@weco/identity",
   "version": "0.1.0",
-  "description": "Identity services for Wellcome Collection useres",
-  "main": "index.js",
+  "description": "Identity services for Wellcome Collection users",
   "repository": "git@github.com:/wellcomecollection/identity.git",
-  "author": "Gary Tierney <gary.tierney@fastmail.com>",
-  "private": true,
+  "author": "Wellcome Collection <digital@wellcomecollection.org>",
   "license": "MIT",
   "scripts": {
     "build": "tsc --build tsconfig.build.json",
@@ -22,7 +20,8 @@
     ],
     "nohoist": [
       "@weco/identity-api/**",
-      "@weco/identity-api-authorizer/**"
+      "@weco/identity-api-authorizer/**",
+      "@weco/patron-deletion-tracker/**"
     ]
   },
   "devDependencies": {
