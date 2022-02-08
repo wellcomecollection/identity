@@ -171,3 +171,12 @@ resource "aws_lambda_alias" "patron_deletion_tracker_current" {
     ignore_changes = [function_version]
   }
 }
+
+resource "aws_lambda_permission" "allow_cloudwatch_to_call_patron_deletion_tracker" {
+  statement_id = "AllowExecutionFromCloudWatch"
+  action       = "lambda:InvokeFunction"
+  principal    = "events.amazonaws.com"
+
+  function_name = aws_lambda_function.patron_deletion_tracker.function_name
+  source_arn    = aws_cloudwatch_event_rule.patron_deletion_tracker.arn
+}
