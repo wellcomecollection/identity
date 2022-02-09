@@ -26,6 +26,9 @@ export const hasScopes = (...requiredScopes: string[]): AccessControlRule => (
   jwt,
   parameters
 ) => {
+  // JWTs can - per the spec - contain opaque/non-JSON payloads. Ours don't,
+  // but doing this check keeps us faithful to the types we're given, as 
+  // after all a user could be providing a malformed JWT.
   if (typeof jwt.payload === 'string') {
     return false;
   }
