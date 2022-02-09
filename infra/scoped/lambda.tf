@@ -141,6 +141,7 @@ resource "aws_lambda_function" "patron_deletion_tracker" {
   handler       = "app.lambdaHandler"
   role          = aws_iam_role.patron_deletion_tracker.arn
   runtime       = "nodejs14.x"
+  timeout       = 15 * local.one_minute_s // This is the maximum
 
   // This creates an empty function on the first apply, as it will be managed by
   // the deployment scripts and ignored by TF (see lifecycle block)

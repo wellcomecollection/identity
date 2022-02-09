@@ -100,7 +100,8 @@ locals {
   # See https://wellcome.slack.com/archives/CUA669WHH/p1628089731008800
   per_user_hold_limit = 15
 
-  one_hour_s = 60 * 60
+  one_minute_s = 60
+  one_hour_s   = 60 * local.one_minute_s
 
   // These should match the values used by the frontend app
   // See: https://github.com/wellcomecollection/wellcomecollection.org/blob/f98e423c1ba75a703c9be07bba12c6060d55acab/identity/webapp/src/utility/auth0.ts#L80-L81
