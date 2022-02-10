@@ -158,7 +158,7 @@ resource "aws_lambda_function" "patron_deletion_tracker" {
   }
 
   tags = {
-    "name" = "identity-authorizer-${terraform.workspace}"
+    "name" = "patron-deletion-tracker-${terraform.workspace}"
   }
 }
 
