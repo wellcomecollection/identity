@@ -110,6 +110,45 @@ export default class HttpSierraClient implements SierraClient {
     });
   }
 
+  async getDeletedRecordNumbers({
+    start,
+    end,
+  }: {
+    start?: Date;
+    end?: Date;
+  } = {}): Promise<APIResponse<number[]>> {
+    try {
+      const instance = await this.getInstance();
+      const startDateString = start?.toISOString().slice(0, 10);
+      const endDateString = (end ?? new Date()).toISOString().slice(0, 10);
+
+      const deletedDate = startDateString
+        ? `[${startDateString}, ${endDateString}]`
+        : undefined;
+
+      const response = await instance.get<{ entries: Array<{ id: number }> }>(
+        '/patrons',
+        {
+          params: {
+            deleted: true,
+            deletedDate,
+          },
+          validateStatus: (status) => status === 200,
+        }
+      );
+      return successResponse(response.data.entries.map((entry) => entry.id));
+    } catch (error) {
+      if (error.response) {
+        switch (error.response.status) {
+          // Sierra returns a 404 rather than an empty list
+          case 404:
+            return successResponse([]);
+        }
+      }
+      return unhandledError(error);
+    }
+  }
+
   async getPatronRecordByEmail(
     email: string
   ): Promise<APIResponse<PatronRecord>> {

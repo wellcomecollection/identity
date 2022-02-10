@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { DefaultRequestBody, rest, RestRequest } from 'msw';
+import { rest, RestRequest } from 'msw';
 import { setupServer } from 'msw/node';
 import { barcode, email, pin, recordMarc } from './test-patron';
 
@@ -19,6 +19,7 @@ export const routeUrls = {
   credentials: `${apiRoot}/v6/patrons/auth`,
   patron: `${apiRoot}/v6/patrons/:patronId`,
   find: `${apiRoot}/v6/patrons/find`,
+  patrons: `${apiRoot}/v6/patrons`,
 };
 
 const handlers = [
@@ -56,22 +57,22 @@ const handlers = [
     );
     return res(ctx.json(response));
   }),
+  rest.get(routeUrls.patrons, (req, res, ctx) => {
+    return res(ctx.status(404));
+  }),
   rest.put(routeUrls.patron, (req, res, ctx) => {
     if (!hasCurrentToken(req)) {
       return res(ctx.status(401));
     }
     return res(ctx.status(204));
   }),
-  rest.get<
-    DefaultRequestBody,
-    { varFieldTag?: string; varFieldContent?: string; fields: string }
-  >(routeUrls.find, (req, res, ctx) => {
+  rest.get(routeUrls.find, (req, res, ctx) => {
     if (!hasCurrentToken(req)) {
       return res(ctx.status(401));
     }
     if (
-      req.params.varFieldTag === 'z' &&
-      req.params.varFieldContent === email
+      req.url.searchParams.get('varFieldTag') === 'z' &&
+      req.url.searchParams.get('varFieldContent') === email
     ) {
       return res(ctx.json(recordMarc));
     }

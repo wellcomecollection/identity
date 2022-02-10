@@ -4,4 +4,5 @@ module.exports = {
   ...base,
   name: '@weco/sierra-client',
   displayName: 'Sierra Client',
+  setupFilesAfterEnv: ['jest-extended/all'],
 };

@@ -50,6 +50,101 @@ describe('HTTP sierra client', () => {
     });
   });
 
+  describe('get deleted patron numbers', () => {
+    const patrons: Array<{ id: number; deletedDate?: Date }> = [
+      { id: 1234560, deletedDate: new Date('2020-01-01') },
+      { id: 1234561, deletedDate: new Date('2020-02-01') },
+      { id: 1234562, deletedDate: new Date('2020-03-01') },
+      { id: 1234563, deletedDate: new Date('2020-04-01') },
+      { id: 1234564, deletedDate: new Date('2020-05-01') },
+      { id: 1234565, deletedDate: new Date('2020-06-01') },
+      { id: 1234566, deletedDate: new Date('2020-07-01') },
+      { id: 1234567, deletedDate: new Date('2020-08-01') },
+      { id: 1234568 },
+      { id: 1234569 },
+    ];
+
+    beforeEach(() => {
+      mockSierraServer.use(
+        rest.get(routeUrls.patrons, (req, res, ctx) => {
+          const deletedDateParam =
+            req.url.searchParams.get('deletedDate') || '';
+          // We are trying to parse a string that looks like either yyyy-mm-dd or [yyyy-mm-dd, yyyy-mm-dd]
+          const [startParam, endParam] = deletedDateParam.split(',');
+          const start = startParam
+            ? new Date(startParam.slice(1, 11))
+            : undefined;
+          const end = endParam ? new Date(endParam.slice(1, 11)) : undefined;
+
+          const entries = patrons.filter(
+            ({ deletedDate }) =>
+              deletedDate &&
+              (!start || deletedDate.getTime() >= start.getTime()) &&
+              (!end || deletedDate.getTime() <= end.getTime())
+          );
+
+          if (entries.length === 0) {
+            res(ctx.status(404));
+          }
+
+          return res(
+            ctx.json({
+              total: entries.length,
+              start: 0,
+              entries: entries.map(({ id }) => ({ id })),
+            })
+          );
+        })
+      );
+    });
+
+    it('gets deleted patron IDs', async () => {
+      const response = await client.getDeletedRecordNumbers();
+      expect(response.status).toBe(ResponseStatus.Success);
+
+      const result = (<SuccessResponse<number[]>>response).result;
+      expect(result).toContainAllValues(
+        patrons.slice(0, 8).map(({ id }) => id)
+      );
+    });
+
+    it('gets deleted patron IDs after a given date', async () => {
+      const response = await client.getDeletedRecordNumbers({
+        start: new Date('2020-05-01'),
+      });
+      expect(response.status).toBe(ResponseStatus.Success);
+
+      const result = (<SuccessResponse<number[]>>response).result;
+      expect(result).toContainAllValues(
+        patrons.slice(4, 8).map(({ id }) => id)
+      );
+    });
+
+    it('gets deleted patron IDs in a given date range', async () => {
+      const response = await client.getDeletedRecordNumbers({
+        start: new Date('2020-04-01'),
+        end: new Date('2020-05-01'),
+      });
+      expect(response.status).toBe(ResponseStatus.Success);
+
+      const result = (<SuccessResponse<number[]>>response).result;
+      expect(result).toContainAllValues(
+        patrons.slice(3, 5).map(({ id }) => id)
+      );
+    });
+
+    it('returns an empty list if the API 404s', async () => {
+      const response = await client.getDeletedRecordNumbers({
+        start: new Date('1999-01-01'),
+        end: new Date('1999-01-02'),
+      });
+      expect(response.status).toBe(ResponseStatus.Success);
+
+      const result = (<SuccessResponse<number[]>>response).result;
+      expect(result).toBeEmpty();
+    });
+  });
+
   describe('get patron record by record number', () => {
     it('gets a record where the name is not in MARC format', async () => {
       mockSierraServer.use(
