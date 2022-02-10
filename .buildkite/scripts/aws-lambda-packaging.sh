@@ -29,3 +29,4 @@ function __package_lambda() {
 
 __package_lambda "/app/packages/apps/api" "identity-api"
 __package_lambda "/app/packages/apps/api-authorizer" "identity-authorizer"
+__package_lambda "/app/packages/apps/patron-deletion-tracker" "patron-deletion-tracker"

@@ -2,28 +2,34 @@
 
 resource "aws_iam_role" "identity_api_gateway_lambda_role" {
   name               = "identity-api-gateway-lambda-role-${terraform.workspace}"
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": "sts:AssumeRole",
-      "Principal": {
-        "Service": "lambda.amazonaws.com"
-      },
-      "Effect": "Allow",
-      "Sid": ""
-    }
-  ]
-}
-EOF
+  assume_role_policy = data.aws_iam_policy_document.assume_role.json
 
   tags = {
     "Name" = "identity-api-gateway-lambda-role-${terraform.workspace}"
   }
 }
 
-data "aws_iam_policy_document" "identity_api_gateway_lambda_policy" {
+resource "aws_iam_role" "patron_deletion_tracker" {
+  name               = "patron-deletion-tracker-${terraform.workspace}"
+  assume_role_policy = data.aws_iam_policy_document.assume_role.json
+
+  tags = {
+    "Name" = "patron-deletion-tracker-${terraform.workspace}"
+  }
+}
+
+data "aws_iam_policy_document" "assume_role" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["lambda.amazonaws.com"]
+    }
+    effect = "Allow"
+  }
+}
+
+data "aws_iam_policy_document" "log_creation" {
   statement {
     actions = [
       "logs:CreateLogStream",
@@ -34,7 +40,9 @@ data "aws_iam_policy_document" "identity_api_gateway_lambda_policy" {
     ]
     effect = "Allow"
   }
+}
 
+data "aws_iam_policy_document" "send_email" {
   statement {
     actions = [
       "ses:SendEmail"
@@ -45,14 +53,29 @@ data "aws_iam_policy_document" "identity_api_gateway_lambda_policy" {
   }
 }
 
-resource "aws_iam_policy" "identity_api_gateway_lambda_policy" {
-  name   = "identity-api-gateway-lambda-policy-${terraform.workspace}"
-  policy = data.aws_iam_policy_document.identity_api_gateway_lambda_policy.json
+resource "aws_iam_policy" "log_creation" {
+  name   = "log-creation-policy-${terraform.workspace}"
+  policy = data.aws_iam_policy_document.log_creation.json
 }
 
-resource "aws_iam_role_policy_attachment" "identity_api_gateway_lambda_policy" {
+resource "aws_iam_policy" "send_email" {
+  name   = "send-email-policy-${terraform.workspace}"
+  policy = data.aws_iam_policy_document.send_email.json
+}
+
+resource "aws_iam_role_policy_attachment" "patron_deletion_tracker_log_creation" {
+  role       = aws_iam_role.patron_deletion_tracker.name
+  policy_arn = aws_iam_policy.log_creation.arn
+}
+
+resource "aws_iam_role_policy_attachment" "identity_api_gateway_lambda_log_creation" {
   role       = aws_iam_role.identity_api_gateway_lambda_role.name
-  policy_arn = aws_iam_policy.identity_api_gateway_lambda_policy.arn
+  policy_arn = aws_iam_policy.log_creation.arn
+}
+
+resource "aws_iam_role_policy_attachment" "identity_api_gateway_lambda_send_email" {
+  role       = aws_iam_role.identity_api_gateway_lambda_role.name
+  policy_arn = aws_iam_policy.send_email.arn
 }
 
 resource "aws_iam_role_policy_attachment" "AWSLambdaVPCAccessExecutionRole" {

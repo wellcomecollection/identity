@@ -1,0 +1,19 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "lib",
+    "rootDir": "src"
+  },
+  "include": ["src", "tests"],
+  "references": [
+    {
+      "path": "../../shared/auth0-client"
+    },
+    {
+      "path": "../../shared/sierra-client"
+    },
+    {
+      "path": "../../shared/identity-common"
+    }
+  ]
+}

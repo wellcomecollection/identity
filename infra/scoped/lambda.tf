@@ -133,3 +133,51 @@ resource "aws_lambda_permission" "api" {
   action       = "lambda:InvokeFunction"
   principal    = "apigateway.amazonaws.com"
 }
+
+# packages/apps/patron-deletion-tracker
+
+resource "aws_lambda_function" "patron_deletion_tracker" {
+  function_name = "patron-deletion-tracker-${terraform.workspace}"
+  handler       = "app.lambdaHandler"
+  role          = aws_iam_role.patron_deletion_tracker.arn
+  runtime       = "nodejs14.x"
+  timeout       = 15 * local.one_minute_s // This is the maximum
+
+  // This creates an empty function on the first apply, as it will be managed by
+  // the deployment scripts and ignored by TF (see lifecycle block)
+  filename = "data/empty.zip"
+
+  depends_on = [
+    aws_cloudwatch_log_group.lambda_patron_deletion_tracker
+  ]
+
+  lifecycle {
+    ignore_changes = [
+      filename
+    ]
+  }
+
+  tags = {
+    "name" = "patron-deletion-tracker-${terraform.workspace}"
+  }
+}
+
+resource "aws_lambda_alias" "patron_deletion_tracker_current" {
+  name             = "current"
+  description      = "Current deployment"
+  function_name    = aws_lambda_function.patron_deletion_tracker.function_name
+  function_version = aws_lambda_function.patron_deletion_tracker.version
+
+  lifecycle {
+    ignore_changes = [function_version]
+  }
+}
+
+resource "aws_lambda_permission" "allow_cloudwatch_to_call_patron_deletion_tracker" {
+  statement_id = "AllowExecutionFromCloudWatch"
+  action       = "lambda:InvokeFunction"
+  principal    = "events.amazonaws.com"
+
+  function_name = aws_lambda_function.patron_deletion_tracker.function_name
+  source_arn    = aws_cloudwatch_event_rule.patron_deletion_tracker.arn
+}

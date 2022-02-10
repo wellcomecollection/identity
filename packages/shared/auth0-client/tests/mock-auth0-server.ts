@@ -50,7 +50,9 @@ const handlers = [
       ctx.json({
         ...testUser,
         email:
-          typeof req.body === 'object' && 'email' in req.body
+          typeof req.body === 'object' &&
+          req.body !== null &&
+          'email' in req.body
             ? req.body.email
             : testUser.email,
       })

@@ -37,3 +37,27 @@ resource "aws_cloudwatch_log_group" "lambda_api" {
     "Name" = "/aws/lambda/identity-api-${terraform.workspace}"
   }
 }
+
+resource "aws_cloudwatch_log_group" "lambda_patron_deletion_tracker" {
+  name              = "/aws/lambda/patron-deletion-tracker-${terraform.workspace}"
+  retention_in_days = aws_ssm_parameter.cloudwatch_retention.value
+
+  tags = {
+    "Name" = "/aws/lambda/patron-deletion-tracker-${terraform.workspace}"
+  }
+}
+
+# Events
+
+resource "aws_cloudwatch_event_rule" "patron_deletion_tracker" {
+  name                = "patron-deletion-tracker-${terraform.workspace}"
+  description         = "Triggers the Patron deletion tracker lambda"
+  schedule_expression = "rate(1 day)"
+  is_enabled          = true
+}
+
+resource "aws_cloudwatch_event_target" "patron_deletion_tracker" {
+  rule      = aws_cloudwatch_event_rule.patron_deletion_tracker.name
+  target_id = "patron-deletion-tracker-${terraform.workspace}"
+  arn       = aws_lambda_function.patron_deletion_tracker.arn
+}
