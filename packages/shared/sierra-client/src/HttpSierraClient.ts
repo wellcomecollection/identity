@@ -18,6 +18,7 @@ import {
   updateVerificationNote,
   NoteOptions,
 } from './email-verification-notes';
+import { paginatedSierraResults } from './pagination';
 
 const minimumPatronFields = ['varFields', 'patronType'];
 
@@ -126,17 +127,19 @@ export default class HttpSierraClient implements SierraClient {
         ? `[${startDateString}, ${endDateString}]`
         : undefined;
 
-      const response = await instance.get<{ entries: Array<{ id: number }> }>(
-        '/patrons',
+      const entries = await paginatedSierraResults<{ id: number }>(
         {
+          url: '/patrons',
+          method: 'GET',
           params: {
             deleted: true,
             deletedDate,
           },
           validateStatus: (status) => status === 200,
-        }
+        },
+        instance
       );
-      return successResponse(response.data.entries.map((entry) => entry.id));
+      return successResponse(entries.map((entry) => entry.id));
     } catch (error) {
       if (error.response) {
         switch (error.response.status) {
