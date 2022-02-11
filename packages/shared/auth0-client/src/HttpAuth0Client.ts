@@ -2,12 +2,12 @@ import axios from 'axios';
 import jwt from 'jsonwebtoken';
 import {
   APIResponse,
+  authenticatedInstanceFactory,
   errorResponse,
   responseCodeIs,
   ResponseStatus,
   successResponse,
   unhandledError,
-  authenticatedInstanceFactory,
 } from '@weco/identity-common';
 import { Auth0User, SierraConnection, SierraUserIdPrefix } from './auth0';
 import Auth0Client from './Auth0Client';
@@ -84,6 +84,33 @@ export default class HttpAuth0Client implements Auth0Client {
         }
         return unhandledError(error);
       });
+  }
+
+  async deleteUser(userId: number): Promise<APIResponse<void>> {
+    try {
+      const instance = await this.getMachineToMachineInstance();
+      await instance.delete(`/users/${SierraUserIdPrefix + userId}`, {
+        // If the user doesn't exist, the API will still return a 204
+        validateStatus: (status) => status === 204,
+      });
+      return successResponse(undefined);
+    } catch (error) {
+      if (error.response) {
+        switch (error.response.status) {
+          case 403:
+            return errorResponse(
+              'Client has insufficient scope to delete users',
+              ResponseStatus.InvalidCredentials
+            );
+          case 429:
+            return errorResponse(
+              'User deletion was rate limited',
+              ResponseStatus.RateLimited
+            );
+        }
+      }
+      return unhandledError(error);
+    }
   }
 
   async updateUser(

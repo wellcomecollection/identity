@@ -54,6 +54,29 @@ describe('HTTP Auth0 client', () => {
     });
   });
 
+  describe('delete user', () => {
+    it('deletes a user', async () => {
+      const requestSpy = jest.fn();
+      mockAuth0Server.events.on('request:start', requestSpy);
+      const response = await client.deleteUser(userId);
+
+      expect(response.status).toBe(ResponseStatus.Success);
+      expect(requestSpy.mock.calls[1][0].url.toString()).toEqual(
+        `http://auth0.test/api/v2/users/auth0%7Cp${userId}`
+      );
+      expect(requestSpy.mock.calls[1][0].method).toBe('DELETE');
+    });
+
+    it('returns a RateLimited error if the API returns a 429', async () => {
+      mockAuth0Server.use(
+        rest.delete(routeUrls.user, (req, res, ctx) => res(ctx.status(429)))
+      );
+      const response = await client.deleteUser(userId);
+
+      expect(response.status).toBe(ResponseStatus.RateLimited);
+    });
+  });
+
   describe('updates a user', () => {
     it('updates the email address of the user', async () => {
       const newEmail = 'new@email.com';

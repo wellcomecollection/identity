@@ -14,6 +14,8 @@ export default interface Auth0Client {
 
   getUserByUserId(userId: number): Promise<APIResponse<Auth0User>>;
 
+  deleteUser(userId: number): Promise<APIResponse<void>>;
+
   updateUser(userId: number, email: string): Promise<APIResponse<Auth0User>>;
 
   setAppMetadata(
