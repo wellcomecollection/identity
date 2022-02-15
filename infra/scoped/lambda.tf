@@ -138,7 +138,7 @@ resource "aws_lambda_permission" "api" {
 
 resource "aws_lambda_function" "patron_deletion_tracker" {
   function_name = "patron-deletion-tracker-${terraform.workspace}"
-  handler       = "app.lambdaHandler"
+  handler       = "lambda.handler"
   role          = aws_iam_role.patron_deletion_tracker.arn
   runtime       = "nodejs14.x"
   timeout       = 15 * local.one_minute_s // This is the maximum
