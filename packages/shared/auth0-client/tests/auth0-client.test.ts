@@ -61,10 +61,11 @@ describe('HTTP Auth0 client', () => {
       const response = await client.deleteUser(userId);
 
       expect(response.status).toBe(ResponseStatus.Success);
-      expect(requestSpy.mock.calls[1][0].url.toString()).toEqual(
+      const lastCall = requestSpy.mock.calls[requestSpy.mock.calls.length - 1];
+      expect(lastCall[0].url.toString()).toEqual(
         `http://auth0.test/api/v2/users/auth0%7Cp${userId}`
       );
-      expect(requestSpy.mock.calls[1][0].method).toBe('DELETE');
+      expect(lastCall[0].method).toBe('DELETE');
     });
 
     it('returns a RateLimited error if the API returns a 429', async () => {
