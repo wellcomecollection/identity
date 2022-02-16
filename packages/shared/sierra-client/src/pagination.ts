@@ -33,7 +33,8 @@ export const paginatedSierraResults = async <Entry extends HasId>(
 
     const entries = response.status === 404 ? [] : response.data.entries;
     if (entries.length >= pageLimit) {
-      return getResults(entries[entries.length - 1].id, [
+      const lastId = entries[entries.length - 1].id
+      return getResults(lastId, [
         ...currentEntries,
         ...entries,
       ]);
