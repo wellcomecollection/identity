@@ -18,6 +18,7 @@ import {
   updateVerificationNote,
   NoteOptions,
 } from './email-verification-notes';
+import { paginatedSierraResults } from './pagination';
 
 const minimumPatronFields = ['varFields', 'patronType'];
 
@@ -108,6 +109,47 @@ export default class HttpSierraClient implements SierraClient {
           return unhandledError(error);
         });
     });
+  }
+
+  async getDeletedRecordNumbers({
+    start,
+    end,
+  }: {
+    start?: Date;
+    end?: Date;
+  } = {}): Promise<APIResponse<number[]>> {
+    try {
+      const instance = await this.getInstance();
+      const startDateString = start?.toISOString().slice(0, 10);
+      const endDateString = (end ?? new Date()).toISOString().slice(0, 10);
+
+      const deletedDate = startDateString
+        ? `[${startDateString}, ${endDateString}]`
+        : undefined;
+
+      const entries = await paginatedSierraResults<{ id: number }>(
+        {
+          url: '/patrons',
+          method: 'GET',
+          params: {
+            deleted: true,
+            deletedDate,
+          },
+          validateStatus: (status) => status === 200,
+        },
+        instance
+      );
+      return successResponse(entries.map((entry) => entry.id));
+    } catch (error) {
+      if (error.response) {
+        switch (error.response.status) {
+          // Sierra returns a 404 rather than an empty list
+          case 404:
+            return successResponse([]);
+        }
+      }
+      return unhandledError(error);
+    }
   }
 
   async getPatronRecordByEmail(

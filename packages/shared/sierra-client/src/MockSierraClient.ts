@@ -1,5 +1,6 @@
 import { PatronRecord, SierraClient } from '../src';
 import {
+  APIResponse,
   errorResponse,
   ResponseStatus,
   successResponse,
@@ -9,6 +10,7 @@ import { Role } from './patron';
 export default class MockSierraClient implements SierraClient {
   private patrons: Map<number, PatronRecord> = new Map();
   private passwords: Map<number, string | undefined> = new Map();
+  private deletions: Map<number, Date> = new Map();
 
   get = (recordNumber: number) => this.patrons.get(recordNumber);
   getPassword = (recordNumber: number) => this.passwords.get(recordNumber);
@@ -18,9 +20,12 @@ export default class MockSierraClient implements SierraClient {
     this.passwords.clear();
   };
 
-  addPatron = (patron: PatronRecord, password?: string) => {
+  addPatron = (patron: PatronRecord, password?: string, deletedDate?: Date) => {
     this.patrons.set(patron.recordNumber, patron);
     this.passwords.set(patron.recordNumber, password);
+    if (deletedDate) {
+      this.deletions.set(patron.recordNumber, deletedDate);
+    }
   };
 
   contains = (userId: number) => this.patrons.has(userId);
@@ -46,6 +51,29 @@ export default class MockSierraClient implements SierraClient {
     }
     return errorResponse('Not found', ResponseStatus.NotFound);
   });
+
+  getDeletedRecordNumbers = jest.fn(
+    async ({
+      start,
+      end,
+    }: {
+      start?: Date;
+      end?: Date;
+    } = {}): Promise<APIResponse<number[]>> => {
+      const deletions = this.deletions.entries();
+      function* filteredDeletions() {
+        for (const [recordNumber, deletedDate] of deletions) {
+          if (
+            (!start || deletedDate.getTime() >= start.getTime()) &&
+            (!end || deletedDate.getTime() <= end.getTime())
+          ) {
+            yield recordNumber;
+          }
+        }
+      }
+      return successResponse(Array.from(filteredDeletions()));
+    }
+  );
 
   getPatronRecordByRecordNumber = jest.fn(async (recordNumber: number) => {
     const maybePatron = this.patrons.get(recordNumber);

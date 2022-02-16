@@ -8,6 +8,11 @@ export default interface SierraClient {
     password: string
   ): Promise<APIResponse<{}>>;
 
+  getDeletedRecordNumbers(options?: {
+    start?: Date;
+    end?: Date;
+  }): Promise<APIResponse<number[]>>;
+
   getPatronRecordByRecordNumber(
     recordNumber: number
   ): Promise<APIResponse<PatronRecord>>;

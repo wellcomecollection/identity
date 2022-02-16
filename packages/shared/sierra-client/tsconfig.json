@@ -5,6 +5,7 @@
     "rootDirs": ["src", "tests"]
   },
   "include": ["src", "tests"],
+  "files": ["./tests/global.d.ts"],
   "references": [
     {
       "path": "../identity-common"
