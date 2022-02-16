@@ -42,6 +42,7 @@ const handlers = [
     );
   }),
   rest.get(routeUrls.user, resolveUser(testUser)),
+  rest.delete(routeUrls.user, (req, res, ctx) => res(ctx.status(204))),
   rest.patch(routeUrls.user, (req, res, ctx) => {
     if (!hasCurrentToken(req)) {
       return res(ctx.status(401));

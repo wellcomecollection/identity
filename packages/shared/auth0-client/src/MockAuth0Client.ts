@@ -1,5 +1,6 @@
 import Auth0Client from './Auth0Client';
 import {
+  APIResponse,
   errorResponse,
   ResponseStatus,
   successResponse,
@@ -53,6 +54,15 @@ export default class MockAuth0Client implements Auth0Client {
     }
     return errorResponse('Not found', ResponseStatus.NotFound);
   });
+
+  deleteUser = jest.fn(
+    async (userId: number): Promise<APIResponse<void>> => {
+      this.users.delete(userId.toString());
+      this.passwords.delete(userId.toString());
+      this.accessTokens.delete(userId.toString());
+      return successResponse(undefined);
+    }
+  );
 
   setAppMetadata = jest.fn(async (userId: number, metadata: AppMetadata) => {
     const maybeUser = this.users.get(userId.toString());
