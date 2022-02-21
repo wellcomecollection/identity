@@ -37,26 +37,24 @@ export const createApp = (
   console.log(`Found ${deletedRecordNumbers.length} patron records to delete`);
 
   const remaining = new Set(deletedRecordNumbers);
-  await auth0RateLimited(
-    deletedRecordNumbers.map((recordNumber) => async () => {
-      if (context.getRemainingTimeInMillis() < lambdaExitThreshold) {
-        throw new Error(
-          `Lambda is about to exit and may not have deleted some records: ${Array.from(
-            remaining
-          ).join(', ')}`
-        );
-      }
-      await auth0Client.deleteUser(recordNumber);
-      remaining.delete(recordNumber);
-    })
-  );
-  if (remaining.size !== 0) {
-    throw new Error(
-      `Something went wrong, some records were not deleted: ${Array.from(
-        remaining
-      ).join(', ')}`
+  try {
+    await auth0RateLimited(
+      deletedRecordNumbers.map((recordNumber) => async () => {
+        if (context.getRemainingTimeInMillis() < lambdaExitThreshold) {
+          throw new Error('Lambda is about to exit');
+        }
+        await auth0Client.deleteUser(recordNumber);
+        remaining.delete(recordNumber);
+      })
     );
+  } catch (error) {
+    if (remaining.size !== 0) {
+      const remainingRecordsString = Array.from(remaining).join(', ');
+      console.error(
+        `Some records may not have been deleted: ${remainingRecordsString}`
+      );
+    }
+    throw error;
   }
-
   console.log('Finished deleting records');
 };

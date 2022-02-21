@@ -122,6 +122,7 @@ describe('patron deletion tracker', () => {
       getRemainingTimeInMillis.mockReturnValueOnce(remainingTime);
     }
 
+    const errorSpy = jest.spyOn(console, 'error');
     expect.hasAssertions();
     try {
       await app(
@@ -130,9 +131,9 @@ describe('patron deletion tracker', () => {
         () => {}
       );
     } catch (error) {
-      const message: string = error.message;
+      const message: string = errorSpy.mock.calls[0][0];
       const match = message.match(
-        /Lambda is about to exit and may not have deleted some records: (?<recordsList>.+)/
+        /Some records may not have been deleted: (?<recordsList>.+)/
       );
       expect(match).not.toBe(null);
       const warnedRecords: number[] = match!
