@@ -28,18 +28,23 @@ const messageRegex = Object.values(messages).join('|');
 // This matches a note where:
 // - it begins with the prefix (Auth0:)
 // - the prefix is followed by an email address (captured in group `email`)
-// - that is followed by one of the messages
-// - it ends with an ISO 8601 datetime string (captured in group `date`)
+// - that is followed either by one of the messages or at the very least, a string containing "verified"
+// - it optionally ends with an ISO 8601 datetime string (captured in group `date`)
 //
 // For example, it would match:
 // `Auth0: example@example.com verified by the user clicking a verification email at 2022-02-22T00:00:00.000Z`
+// `Auth0: example@example.com verified by the user clicking a verification email at`
+// `Auth0: example@example.com foo bar verified beep boop`
+//
+// The intention of this is that a note that has been accidentally modified is still parseable if the bare
+// minimum of information is present
 const emailNoteRegex = new RegExp(
-  `^${auth0NotePrefix}\\s+(?<email>${emailRegex})\\s+(?:${messageRegex})\\s+(?<date>${isoDateRegex})\$`
+  `^${auth0NotePrefix}\\s+(?<email>${emailRegex})\\s*(?:${messageRegex}|(.*verified.*))?\\s*(?<date>${isoDateRegex})?\$`
 );
 
 type VerificationNote = {
   email: string;
-  date: Date;
+  date?: Date;
 };
 
 export type NoteOptions = {
@@ -54,11 +59,11 @@ const parseVerificationNote = (note: string): VerificationNote | undefined => {
 
   const { email, date: dateString } = match.groups;
   const date = new Date(dateString);
-  if (!email || isNaN(date.getDate())) {
+  if (!email) {
     return undefined;
   }
 
-  return { email, date };
+  return { email, date: isNaN(date.getDate()) ? undefined : date };
 };
 
 const createVerificationNote = (
@@ -93,7 +98,9 @@ export const verifiedEmail = (varFields: VarField[]): string | undefined =>
   getVarFieldContent(varFields, varFieldTags.notes)
     .map(parseVerificationNote)
     .find((verified): verified is VerificationNote =>
-      Boolean(verified && verified.date.getTime() <= Date.now())
+      Boolean(
+        verified && (!verified.date || verified.date.getTime() <= Date.now())
+      )
     )?.email;
 
 export const updateVerificationNote = (

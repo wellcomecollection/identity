@@ -112,6 +112,17 @@ describe('email verification notes', () => {
       ).toEqual(undefined);
     });
 
+    it('is tolerant of partially modified/malformed notes', () => {
+      expect([
+        verifiedEmail([noteField('Auth0: example@example.com verified')]),
+        verifiedEmail([
+          noteField(
+            'Auth0: example2@example.com implicitly verified Auasdfgdfgs(*^&%T(IYGUdfkjhgchgfc 2022-02-21T00:00:00.000Z'
+          ),
+        ]),
+      ]).toEqual(['example@example.com', 'example2@example.com']);
+    });
+
     it('ignores other notes and fields', () => {
       expect(
         verifiedEmail([
