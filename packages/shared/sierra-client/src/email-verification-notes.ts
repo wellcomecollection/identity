@@ -58,12 +58,12 @@ const parseVerificationNote = (note: string): VerificationNote | undefined => {
   }
 
   const { email, date: dateString } = match.groups;
-  const date = new Date(dateString);
+  const maybeDate = new Date(dateString);
   if (!email) {
     return undefined;
   }
 
-  return { email, date: isNaN(date.getDate()) ? undefined : date };
+  return { email, date: isNaN(maybeDate.getDate()) ? undefined : maybeDate };
 };
 
 const createVerificationNote = (
