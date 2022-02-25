@@ -2,7 +2,8 @@
 import fs from 'fs';
 import { AxiosInstance } from 'axios';
 import { RateLimiter } from 'limiter';
-import { getAuthenticatedInstance } from './scripts/auth0-management';
+import { Env, getAuthenticatedInstance } from './scripts/auth0-management';
+import { applyTemplates } from './scripts/templates';
 
 type Template = 'universal-login';
 const prompts = ['login', 'reset-password', 'email-verification'] as const;
@@ -16,17 +17,8 @@ const emails = [
 type Prompt = typeof prompts[number];
 type Email = typeof emails[number];
 
-// For the non-production tenant the management API is limited to (in the worst case)
-// 2 req/second - this ensures we never hit that
-// https://auth0.com/docs/troubleshoot/customer-support/operational-policies/rate-limit-policy/management-api-endpoint-rate-limits
-const rateLimiter = new RateLimiter({
-  tokensPerInterval: 2,
-  interval: 'second',
-});
-
-const doDeploy = async () => {
+const doDeploy = async (env: Env) => {
   try {
-    const env = process.argv[2] as 'stage' | 'prod';
     console.log(`Updating environment: ${env}`);
 
     const axiosInstance = await getAuthenticatedInstance(env);
@@ -44,7 +36,12 @@ const doDeploy = async () => {
     for (const email of emails) {
       await rateLimiter.removeTokens(1);
       console.log(`Updating ${email} email`);
-      await updateEmail(axiosInstance, email);
+      await updateEmail(axiosInstance, email, {
+        site_host:
+          env === 'prod'
+            ? 'wellcomecollection.org'
+            : 'www-stage.wellcomecollection.org',
+      });
     }
 
     console.log('Updates completed successfully');
@@ -53,6 +50,14 @@ const doDeploy = async () => {
     process.exit(1);
   }
 };
+
+// For the non-production tenant the management API is limited to (in the worst case)
+// 2 req/second - this ensures we never hit that
+// https://auth0.com/docs/troubleshoot/customer-support/operational-policies/rate-limit-policy/management-api-endpoint-rate-limits
+const rateLimiter = new RateLimiter({
+  tokensPerInterval: 2,
+  interval: 'second',
+});
 
 function loadPrompt(prompt: Prompt): Record<string, unknown> {
   const data = fs.readFileSync(`prompt/${prompt}.json`, 'utf8');
@@ -82,7 +87,7 @@ function updateTextPrompt(
   const promptData = loadPrompt(prompt);
   const textPromptEndpoint = `/api/v2/prompts/${prompt}/custom-text/${language}`;
 
-  return instance.put(textPromptEndpoint, { data: promptData });
+  return instance.put(textPromptEndpoint, promptData);
 }
 
 function updateLoginPageTemplate(
@@ -92,17 +97,27 @@ function updateLoginPageTemplate(
   const templateData = loadHTMLTemplate(template);
   const templateEndpoint = `/api/v2/branding/templates/${template}`;
 
-  return instance.put(templateEndpoint, { data: templateData });
+  return instance.put(templateEndpoint, templateData, {
+    headers: { 'content-type': 'text/html' },
+  });
 }
 
 async function updateEmail(
   instance: AxiosInstance,
-  email: Email
+  email: Email,
+  config: Record<string, string>
 ): Promise<void> {
   const emailData = loadEmail(email);
   const emailEndpoint = `/api/v2/email-templates/${email}`;
 
-  return instance.put(emailEndpoint, { data: emailData });
+  for (const [key, value] of Object.entries(emailData)) {
+    if (typeof value === 'string') {
+      emailData[key] = applyTemplates(value, config);
+    }
+  }
+
+  return instance.put(emailEndpoint, emailData);
 }
 
-doDeploy();
+const env = process.argv[2] as Env;
+doDeploy(env);

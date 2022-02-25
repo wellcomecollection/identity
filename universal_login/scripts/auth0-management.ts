@@ -1,7 +1,7 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { getParameter, getSecret } from './aws';
 
-type Env = 'stage' | 'prod';
+export type Env = 'stage' | 'prod';
 type ClientCredentials = {
   clientId: string;
   clientSecret: string;
@@ -29,25 +29,22 @@ export const getAuthenticatedInstance = async (
 ): Promise<AxiosInstance> => {
   const credentialsLocation = `identity/${env}/buildkite/credentials`;
   const credentials = await getSecret<ClientCredentials>(credentialsLocation);
-  const auth0Hostname = getParameter(`identity-auth0_domain-${env}`);
+  const auth0Hostname = await getParameter(`identity-auth0_domain-${env}`);
 
   const tokenEndpoint = `https://${auth0Hostname}/oauth/token`;
   const audience = `https://${auth0Hostname}/api/v2/`;
 
-  const tokenRequest = {
-    method: 'POST',
-    url: tokenEndpoint,
-    headers: { 'content-type': 'application/json' },
-    data: {
+  const axiosResult: AxiosResponse<BearerToken> = await axios.post(
+    tokenEndpoint,
+    {
       grant_type: 'client_credentials',
       client_id: credentials.clientId,
       client_secret: credentials.clientSecret,
-      audience: audience,
+      audience,
     },
-  } as AxiosRequestConfig;
-
-  const axiosResult: AxiosResponse<BearerToken> = await axios.request(
-    tokenRequest
+    {
+      headers: { 'content-type': 'application/json' },
+    }
   );
   const token = axiosResult.data.access_token;
 
