@@ -6,16 +6,19 @@ import { startOfYesterday, endOfYesterday } from 'date-fns';
 import { rateLimit } from './rate-limits';
 
 const auth0RateLimited = rateLimit({
-  // See https://auth0.com/docs/troubleshoot/customer-support/operational-policies/rate-limit-policy/management-api-endpoint-rate-limits#self-service-subscription-limits
+  // See "Write Users" in the table at
+  // https://auth0.com/docs/troubleshoot/customer-support/operational-policies/rate-limit-policy/management-api-endpoint-rate-limits#self-service-subscription-limits
   rateLimits: {
     minute: 200,
     second: 20,
   },
+  // This is set by us (not enforced by Auth0) and is fairly arbitrary
   maxConcurrency: 5,
 });
 
 // The time before the Lambda will exit at which we should log an error that we
-// won't be able to complete the deletions
+// won't be able to complete the deletions, telling us which records we might
+// have missed.
 const lambdaExitThreshold = 2000;
 
 export const createApp = (
