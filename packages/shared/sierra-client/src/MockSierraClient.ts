@@ -14,6 +14,8 @@ export default class MockSierraClient implements SierraClient {
 
   get = (recordNumber: number) => this.patrons.get(recordNumber);
   getPassword = (recordNumber: number) => this.passwords.get(recordNumber);
+  markDeleted = (recordNumber: number, deletedDate: Date) =>
+    this.deletions.set(recordNumber, deletedDate);
 
   reset = () => {
     this.patrons.clear();
