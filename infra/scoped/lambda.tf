@@ -147,6 +147,10 @@ resource "aws_lambda_function" "patron_deletion_tracker" {
   // the deployment scripts and ignored by TF (see lifecycle block)
   filename = "data/empty.zip"
 
+  dead_letter_config {
+    target_arn = aws_sqs_queue.deletion_lambda_dlq.arn
+  }
+
   depends_on = [
     aws_cloudwatch_log_group.lambda_patron_deletion_tracker
   ]

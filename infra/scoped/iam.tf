@@ -18,6 +18,13 @@ resource "aws_iam_role" "patron_deletion_tracker" {
   }
 }
 
+data "aws_iam_policy_document" "deletion_lambda_dlq" {
+  statement {
+    actions   = ["sqs:SendMessage"]
+    resources = [aws_sqs_queue.deletion_lambda_dlq.arn]
+  }
+}
+
 data "aws_iam_policy_document" "assume_role" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -63,9 +70,19 @@ resource "aws_iam_policy" "send_email" {
   policy = data.aws_iam_policy_document.send_email.json
 }
 
+resource "aws_iam_policy" "deletion_lambda_dlq" {
+  name   = "deletion-lambda-dlq-policy-${terraform.workspace}"
+  policy = data.aws_iam_policy_document.deletion_lambda_dlq.json
+}
+
 resource "aws_iam_role_policy_attachment" "patron_deletion_tracker_log_creation" {
   role       = aws_iam_role.patron_deletion_tracker.name
   policy_arn = aws_iam_policy.log_creation.arn
+}
+
+resource "aws_iam_role_policy_attachment" "deletion_lambda_dlq" {
+  role       = aws_iam_role.patron_deletion_tracker.name
+  policy_arn = aws_iam_policy.deletion_lambda_dlq.arn
 }
 
 resource "aws_iam_role_policy_attachment" "identity_api_gateway_lambda_log_creation" {
