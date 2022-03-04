@@ -1,7 +1,8 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { getParameter, getSecret } from './aws';
 
-export type Env = 'stage' | 'prod';
+export const environments = ['stage', 'prod'] as const;
+export type Env = typeof environments[number];
 type ClientCredentials = {
   clientId: string;
   clientSecret: string;

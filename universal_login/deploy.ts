@@ -2,7 +2,11 @@
 import fs from 'fs';
 import { AxiosInstance } from 'axios';
 import { RateLimiter } from 'limiter';
-import { Env, getAuthenticatedInstance } from './scripts/auth0-management';
+import {
+  Env,
+  environments,
+  getAuthenticatedInstance,
+} from './scripts/auth0-management';
 import { applyTemplates } from './scripts/templates';
 
 type Template = 'universal-login';
@@ -120,4 +124,9 @@ async function updateEmail(
 }
 
 const env = process.argv[2] as Env;
-doDeploy(env);
+if (environments.includes(env)) {
+  doDeploy(env);
+} else {
+  console.error('Environment must be specified as command line parameter');
+  console.error(`Must be one of: ${environments.join(', ')}`);
+}
