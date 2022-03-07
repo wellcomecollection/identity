@@ -1,9 +1,9 @@
 import { SierraClient } from '@weco/sierra-client';
 import { Auth0Client } from '@weco/auth0-client';
 import { ResponseStatus } from '@weco/identity-common';
-import { ScheduledHandler } from 'aws-lambda';
-import { startOfYesterday, endOfYesterday } from 'date-fns';
+import { Context } from 'aws-lambda';
 import { rateLimit } from './rate-limits';
+import { getSierraQueryOptions, WindowConfig } from './windows';
 
 const auth0RateLimited = rateLimit({
   // See "Write Users" in the table at
@@ -21,14 +21,23 @@ const auth0RateLimited = rateLimit({
 // have missed.
 const lambdaExitThreshold = 2000;
 
+export type PatronDeletionEvent = {
+  window: WindowConfig;
+};
+
+type PatronDeletionHandler = (
+  event: PatronDeletionEvent,
+  context: Context
+) => Promise<void>;
+
 export const createApp = (
   auth0Client: Auth0Client,
   sierraClient: SierraClient
-): ScheduledHandler => async (event, context) => {
-  const deletedPatronsResponse = await sierraClient.getDeletedRecordNumbers({
-    start: startOfYesterday(),
-    end: endOfYesterday(),
-  });
+): PatronDeletionHandler => async (event, context) => {
+  const sierraQueryOptions = getSierraQueryOptions(event.window);
+  const deletedPatronsResponse = await sierraClient.getDeletedRecordNumbers(
+    sierraQueryOptions
+  );
   if (deletedPatronsResponse.status !== ResponseStatus.Success) {
     throw new Error(
       'Could not fetch deleted patron record numbers: ' +
