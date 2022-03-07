@@ -108,4 +108,8 @@ locals {
   // See: https://github.com/wellcomecollection/wellcomecollection.org/blob/f98e423c1ba75a703c9be07bba12c6060d55acab/identity/webapp/src/utility/auth0.ts#L80-L81
   session_absolute_lifetime_hours = 7 * 24
   session_rolling_lifetime_hours  = 8
+
+  // The duration of the window in which to check for deleted Sierra patrons
+  // and remove them from Auth0 if present
+  deletion_tracking_window_days = 1
 }
