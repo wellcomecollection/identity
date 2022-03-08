@@ -30,7 +30,10 @@ export function getVarFieldContent(
 // case of non-MARC, it's a single string value with various prefixes.
 function getPatronName(
   varFields: VarField[]
-): { firstName: string; lastName: string } {
+): {
+  firstName: string;
+  lastName: string;
+} {
   const found = varFields.find((varField) => varField.fieldTag === 'n');
   if (found && found.content) {
     return getPatronNameNonMarc(found.content);
@@ -46,7 +49,10 @@ function getPatronName(
 
 function getPatronNameMarc(
   subFields: SubField[]
-): { firstName: string; lastName: string } {
+): {
+  firstName: string;
+  lastName: string;
+} {
   const firstName = subFields.find((subField) => subField.tag === 'b');
   const lastName = subFields.find((subField) => subField.tag === 'a');
 
@@ -80,7 +86,10 @@ function getPatronNameMarc(
 
 function getPatronNameNonMarc(
   content: string
-): { firstName: string; lastName: string } {
+): {
+  firstName: string;
+  lastName: string;
+} {
   if (!content.trim()) {
     return {
       firstName: '',
@@ -119,8 +128,11 @@ const patronTypeToRole = (patronType: number): Role => {
     case 10: // Students (EPQ, 16-18)
       return 'Reader';
     case 0: // Wellcome Trust Staff
-    case 8: // Wellcome Collection Staff
     case 1: // WT Contract Staff
+    case 8: // Wellcome Collection Staff
+    case 16: // Photography
+    case 19: // Exhibitions & Events
+    case 22: // Conservation
       return 'Staff';
     case 29: // Self Registered
       return 'SelfRegistered';
