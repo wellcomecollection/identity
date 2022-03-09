@@ -155,6 +155,7 @@ resource "auth0_client" "account_management_system" {
   is_first_party       = true
   custom_login_page_on = true
   oidc_conformant      = true
+  initiate_login_uri   = local.ams_login_uri
 
   jwt_configuration {
     alg = "RS256"
@@ -215,6 +216,11 @@ resource "auth0_client" "openathens_saml_idp" {
   name           = "OpenAthens SAML IDP${local.environment_qualifier}"
   app_type       = "regular_web"
   is_first_party = true
+
+  // This appears to be the login URL for the OpenAthens org (it isn't secret)
+  // It's here as per https://auth0.com/docs/authenticate/login/auth0-universal-login/configure-default-login-routes
+  // in order (hopefully) to prevent warnings during login as described in the above docs
+  initiate_login_uri = "https://login.openathens.net/auth/wellcome.org/o/72496070"
 
   callbacks = [
     data.aws_secretsmanager_secret_version.openathens_callback_url.secret_string
