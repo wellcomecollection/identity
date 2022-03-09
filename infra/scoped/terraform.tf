@@ -8,8 +8,8 @@ terraform {
       version = "~> 2.0.0"
     }
     auth0 = {
-      source  = "alexkappa/auth0"
-      version = "~> 0.25.0"
+      source  = "auth0/auth0"
+      version = "~> 0.28.0"
     }
     aws = {
       source  = "hashicorp/aws"
