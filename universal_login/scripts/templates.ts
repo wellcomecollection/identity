@@ -3,4 +3,10 @@
 export const applyTemplates = (
   originalString: string,
   data: Record<string, string>
-): string => originalString.replace(/{{(.+)}}/g, (_, key) => data[key]);
+): string => {
+  const templatedKeys = Object.keys(data);
+  // Only match template strings for which we have data
+  const templatedKeysRegex = templatedKeys.map((key) => `(${key})`).join('|');
+  const templateRegex = new RegExp(`{{(${templatedKeysRegex})}}`, 'g');
+  return originalString.replace(templateRegex, (_, key) => data[key]);
+};
