@@ -130,7 +130,9 @@ const patronTypeToRole = (patronType: number): Role => {
     case 0: // Wellcome Trust Staff
     case 1: // WT Contract Staff
     case 8: // Wellcome Collection Staff
+    case 15: // Inter Lib Loans
     case 16: // Photography
+    case 17: // The Hub
     case 19: // Exhibitions & Events
     case 22: // Conservation
       return 'Staff';

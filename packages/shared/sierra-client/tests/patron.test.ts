@@ -126,7 +126,7 @@ describe('toPatronRecord', () => {
   });
 
   it('throws an error for unexpected patron types', () => {
-    const record = createRecordWithPatronType(15); // Inter Lib Loans
+    const record = createRecordWithPatronType(1000); // Higher than all known patron types
     expect(() => toPatronRecord(record)).toThrow();
   });
 });
