@@ -1,24 +1,24 @@
 # This file is maintained automatically by "terraform init".
 # Manual edits may be lost in future updates.
 
-provider "registry.terraform.io/alexkappa/auth0" {
-  version     = "0.25.0"
-  constraints = "~> 0.25.0"
+provider "registry.terraform.io/auth0/auth0" {
+  version     = "0.28.0"
+  constraints = "~> 0.28.0"
   hashes = [
-    "h1:r96ypaMIoq7jMZ01oQZXlXYHajOc1+6jFOJ1mhJ0sJ8=",
-    "zh:144c500cf207b062d861975d76ded75f7f3e580a0f19a089644f74b87d4b4fc5",
-    "zh:2fbca38f402b5ef35a80df4291edc30d57100d12210ec9cfe4dfb31f7aad2d98",
-    "zh:424604ba5f0d265cb67d81b3ac8de861d47bbe908d9ff6e81cb573eaa5e31aef",
-    "zh:4db668973be9ad46f9848335e267ecfef6dcd2f32821ea83b67c3492b254b6e5",
-    "zh:4e6b314464ca836d511127b2221962e8c254f4611a37597e2437ff138c829041",
-    "zh:58fc5d63afb092f1ae00e00a6ee78ed2c327bd1e5d3634fb959f73bb67c4e811",
-    "zh:6226d520e3c76e64ebfc9bc448d72146c9efa13e2985af87f54436df25d8eb18",
-    "zh:70f7f178d12c78d3cf7b210a9d42ca7eb4738eb1401af6f3065ea3f03facf44b",
-    "zh:87c20ba6ca3d4cbbf9b32edc5e0be43961c1f5e2865201b4f548c4a50ce6aa21",
-    "zh:92688d0a0558819a65547d453fa1edc3fcd80cf8f02c218b24f13d8e9070b132",
-    "zh:a393ae012e6fa83cdb7250bafabae9ff7a843b183b06b09dcc18752d3d554836",
-    "zh:cb8354ed542d4ab9ac6132d12b772acd9988122320f5f8a874ad23e46faf8787",
-    "zh:e66d8e7055faf8b1b243530b44ddab1aa825b767c733527ba8c5af5808a39617",
+    "h1:tBVvZ8PzxNkpv/xm6UCsWlHLzcddT9pXmLNyDHEuAzk=",
+    "zh:01d091fcb82089b2701e9b862111e0f69d867832f444413cc2a34b332862bfbc",
+    "zh:097348b19c000ef5d7bb8262844ae7f6748caf8ee5a9417de0cb11c5223e36e7",
+    "zh:1a64e97746a211416b0eb8b1788663d86e9c7f28c4c3578cb9e5c63c91ab0160",
+    "zh:27f949663144efa03c1909899848d66ab95fd58913f338fc0dfd80cdf8079cab",
+    "zh:2d7a8e2322de1c1a65af9fd41942ae488f662e60858e2da1c8f6febcb8efdeef",
+    "zh:3462b5bcb4c80b9fb279ea28f1e4beb98a2d5df8186e27111303eca8f3ddb169",
+    "zh:366860e5f870064e08232c70b56b9ed0a0c1e7d1f06a4d627871eb0647a692c8",
+    "zh:49703868d4d5595d4a608af483f6041f52e97dd62ca53461bd30f44eaed541b4",
+    "zh:4cc973942ab247be282771cee5fe40f67fda4a016336a5ef22365c6155adc7af",
+    "zh:5879cb3e30a5f6556e811c066ac1fcf689256745e7e98f15240303644e469298",
+    "zh:6cca5715e3514594416a1bba93635bb099ef6aa1de525b8d2e17e309e83ff7a3",
+    "zh:79610a96ac961ccec682cd1382aed23f06894984ee71a0acc23d03e136e6df24",
+    "zh:e4eb3fc9342ccc708a64bd216cd0ec7845981e61fb1df21a9ca2c9d2c20cc9c8",
   ]
 }
 
