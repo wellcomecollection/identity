@@ -2,7 +2,7 @@ import { Auth0User, MockAuth0Client } from '@weco/auth0-client';
 import { MockSierraClient, PatronRecord } from '@weco/sierra-client';
 import { createApp } from '../src/app';
 import { startOfYesterday, subDays, setHours } from 'date-fns';
-import { Context, ScheduledEvent } from 'aws-lambda';
+import { Context } from 'aws-lambda';
 
 const mockClients = () => ({
   auth0: new MockAuth0Client(),
@@ -23,7 +23,7 @@ const patronRecordToAuth0User = (patronRecord: PatronRecord): Auth0User => ({
 });
 
 describe('patron deletion tracker', () => {
-  it('deletes all patrons in Auth0 who were deleted in Sierra yesterday', async () => {
+  it('deletes all patrons in Auth0 who were deleted in Sierra in the configured window', async () => {
     const { auth0, sierra } = mockClients();
     const deletedPatrons = Array.from({ length: 10 }).map(() => {
       const deletedPatron = MockSierraClient.randomPatronRecord();
@@ -38,33 +38,29 @@ describe('patron deletion tracker', () => {
     });
     const app = createApp(auth0, sierra);
 
-    await app(
-      {} as ScheduledEvent,
-      { getRemainingTimeInMillis: () => 30000 } as Context,
-      () => {}
-    );
+    await app({ window: { durationDays: 1 } }, {
+      getRemainingTimeInMillis: () => 30000,
+    } as Context);
 
     for (const deletedPatron of deletedPatrons) {
       expect(auth0.contains(deletedPatron.recordNumber)).toBe(false);
     }
   });
 
-  it('does not delete patrons who were deleted in Sierra before yesterday', async () => {
+  it('does not delete patrons who were deleted in Sierra outside of the configured window', async () => {
     const { auth0, sierra } = mockClients();
     const deletedPatron = MockSierraClient.randomPatronRecord();
     sierra.addPatron(deletedPatron);
     sierra.markDeleted(
       deletedPatron.recordNumber,
-      subDays(startOfYesterday(), 1)
+      subDays(startOfYesterday(), 10)
     );
     auth0.addUser(patronRecordToAuth0User(deletedPatron));
     const app = createApp(auth0, sierra);
 
-    await app(
-      {} as ScheduledEvent,
-      { getRemainingTimeInMillis: () => 30000 } as Context,
-      () => {}
-    );
+    await app({ window: { durationDays: 9 } }, {
+      getRemainingTimeInMillis: () => 30000,
+    } as Context);
 
     expect(auth0.contains(deletedPatron.recordNumber)).toBe(true);
   });
@@ -76,11 +72,9 @@ describe('patron deletion tracker', () => {
     const app = createApp(auth0, sierra);
 
     await expect(
-      app(
-        {} as ScheduledEvent,
-        { getRemainingTimeInMillis: () => 30000 } as Context,
-        () => {}
-      )
+      app({ window: { durationDays: 1 } }, {
+        getRemainingTimeInMillis: () => 30000,
+      } as Context)
     ).rejects.toThrowError(errorMessage);
   });
 
@@ -94,11 +88,9 @@ describe('patron deletion tracker', () => {
     const app = createApp(auth0, sierra);
 
     await expect(
-      app(
-        {} as ScheduledEvent,
-        { getRemainingTimeInMillis: () => 30000 } as Context,
-        () => {}
-      )
+      app({ window: { durationDays: 1 } }, {
+        getRemainingTimeInMillis: () => 30000,
+      } as Context)
     ).rejects.toThrowError(errorMessage);
   });
 
@@ -125,11 +117,9 @@ describe('patron deletion tracker', () => {
     const errorSpy = jest.spyOn(console, 'error');
     expect.hasAssertions();
     try {
-      await app(
-        {} as ScheduledEvent,
-        ({ getRemainingTimeInMillis } as unknown) as Context,
-        () => {}
-      );
+      await app({ window: { durationDays: 1 } }, ({
+        getRemainingTimeInMillis,
+      } as unknown) as Context);
     } catch (error) {
       const message: string = errorSpy.mock.calls[0][0];
       const match = message.match(

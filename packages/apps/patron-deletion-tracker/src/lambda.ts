@@ -1,4 +1,3 @@
-import { ScheduledHandler } from 'aws-lambda';
 import { HttpSierraClient, SierraClient } from '@weco/sierra-client';
 import { Auth0Client, HttpAuth0Client } from '@weco/auth0-client';
 import { createApp } from './app';
@@ -16,4 +15,4 @@ const sierraClient: SierraClient = new HttpSierraClient(
   process.env.SIERRA_CLIENT_SECRET!
 );
 
-export const handler: ScheduledHandler = createApp(auth0Client, sierraClient);
+export const handler = createApp(auth0Client, sierraClient);

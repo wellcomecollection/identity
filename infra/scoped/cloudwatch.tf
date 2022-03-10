@@ -60,6 +60,11 @@ resource "aws_cloudwatch_event_target" "patron_deletion_tracker" {
   rule      = aws_cloudwatch_event_rule.patron_deletion_tracker.name
   target_id = "patron-deletion-tracker-${terraform.workspace}"
   arn       = aws_lambda_function.patron_deletion_tracker.arn
+  input = jsonencode({
+    window = {
+      durationDays = local.deletion_tracking_window_days
+    }
+  })
 }
 
 resource "aws_cloudwatch_metric_alarm" "lambda_alarm" {
