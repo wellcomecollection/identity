@@ -13,7 +13,9 @@
     "target": "es2017",
     "baseUrl": "./packages/shared",
     "paths": {
-      "@weco/*": ["./*/src"]
+      "@weco/auth0-client": ["./auth0-client/src"],
+      "@weco/sierra-client": ["./sierra-client/src"],
+      "@weco/identity-common": ["./identity-common/src"]
     }
   }
 }

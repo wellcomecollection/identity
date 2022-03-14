@@ -23,6 +23,7 @@ const lambdaExitThreshold = 2000;
 
 export type PatronDeletionEvent = {
   window: WindowConfig;
+  dryRun?: boolean;
 };
 
 type PatronDeletionHandler = (
@@ -55,7 +56,11 @@ export const createApp = (
         if (context.getRemainingTimeInMillis() < lambdaExitThreshold) {
           throw new Error('Lambda is about to exit');
         }
-        await auth0Client.deleteUser(recordNumber);
+        if (!event.dryRun) {
+          await auth0Client.deleteUser(recordNumber);
+        } else {
+          console.log(`[dry run] Deleted patron ${recordNumber}`);
+        }
         remaining.delete(recordNumber);
       })
     );
