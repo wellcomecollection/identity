@@ -5,7 +5,7 @@ import yargs from 'yargs/yargs';
 import ora from 'ora';
 
 // Only check for deletions after this date - this will include all Patrons that have ever been imported into Auth0
-const startDate = new Date();
+const startDate = new Date('2022-01-01T00:00:00.000Z');
 
 type Options = {
   environment: 'stage' | 'prod';
