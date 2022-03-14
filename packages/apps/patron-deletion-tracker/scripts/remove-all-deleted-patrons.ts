@@ -13,12 +13,12 @@ type Options = {
 };
 
 const removeAllDeletedPatrons = async ({ environment, dryRun }: Options) => {
-  const credentials = getCreds('identity');
-  const lambda = new Lambda(credentials);
+  const credentials = await getCreds('identity', 'developer');
+  const lambdaClient = new Lambda({ credentials });
 
   const spinner = ora('Invoking patron deletion lambda').start();
   try {
-    const lambdaResult = await lambda.invoke({
+    const lambdaResult = await lambdaClient.invoke({
       FunctionName: `patron-deletion-tracker-${environment}`,
       Payload: fromUtf8(
         JSON.stringify({
@@ -26,6 +26,7 @@ const removeAllDeletedPatrons = async ({ environment, dryRun }: Options) => {
             start: startDate.toISOString(),
             end: new Date().toISOString(),
           },
+          dryRun: Boolean(dryRun),
         })
       ),
     });
