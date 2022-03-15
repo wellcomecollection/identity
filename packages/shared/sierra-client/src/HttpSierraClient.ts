@@ -126,7 +126,7 @@ export default class HttpSierraClient implements SierraClient {
       const deletedDate = startDateString
         ? `[${startDateString}, ${endDateString}]`
         : undefined;
-
+      console.log(start, end, deletedDate);
       const entries = await paginatedSierraResults<{ id: number }>(
         {
           url: '/patrons',

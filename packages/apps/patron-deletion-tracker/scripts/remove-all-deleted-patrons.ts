@@ -32,11 +32,13 @@ const removeAllDeletedPatrons = async ({ environment, dryRun }: Options) => {
     });
     if (lambdaResult.StatusCode === 200) {
       spinner.succeed('Invocation succeeded');
+      console.log(
+        'Note: this does not necessarily mean the Lambda itself succeeded.'
+      );
+      console.log('Check the Lambda logs for more information.');
     } else {
       spinner.fail('Invocation failed');
     }
-    console.log('Logs:');
-    console.log(lambdaResult.LogResult);
   } catch (e) {
     spinner.fail('Invocation failed');
     console.error(e);
