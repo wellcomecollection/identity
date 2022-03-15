@@ -12,7 +12,7 @@ export const rateLimit = ({
 }: {
   rateLimits: RateLimits;
   maxConcurrency: number;
-}) => {
+}) => async <T>(calls: Array<() => Promise<T>>): Promise<T[]> => {
   const secondsLimiter = new RateLimiter({
     tokensPerInterval: rateLimits.second,
     interval: 'second',
@@ -24,11 +24,10 @@ export const rateLimit = ({
     intervalCap: rateLimits.minute,
   });
 
-  return <T>(calls: Array<() => Promise<T>>): Promise<T[]> =>
-    queue.addAll(
-      calls.map((call) => async () => {
-        await secondsLimiter.removeTokens(1);
-        return call();
-      })
-    );
+  return queue.addAll(
+    calls.map((call) => async () => {
+      await secondsLimiter.removeTokens(1);
+      return call();
+    })
+  );
 };
