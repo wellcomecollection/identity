@@ -124,9 +124,9 @@ export default class HttpSierraClient implements SierraClient {
       const endDateString = (end ?? new Date()).toISOString().slice(0, 10);
 
       const deletedDate = startDateString
-        ? `[${startDateString}, ${endDateString}]`
+        ? `[${startDateString},${endDateString}]`
         : undefined;
-      console.log(start, end, deletedDate);
+
       const entries = await paginatedSierraResults<{ id: number }>(
         {
           url: '/patrons',
