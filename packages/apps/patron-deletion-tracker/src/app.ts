@@ -47,14 +47,20 @@ export const createApp = (
   }
 
   const deletedRecordNumbers = deletedPatronsResponse.result;
-  console.log(`Found ${deletedRecordNumbers.length} patron records to delete`);
+  const nRecords = deletedRecordNumbers.length;
+  console.log(`Found ${nRecords} patron records to delete`);
 
   const remaining = new Set(deletedRecordNumbers);
   try {
     await auth0RateLimited(
-      deletedRecordNumbers.map((recordNumber) => async () => {
+      deletedRecordNumbers.map((recordNumber, i) => async () => {
         if (context.getRemainingTimeInMillis() < lambdaExitThreshold) {
           throw new Error('Lambda is about to exit');
+        }
+        if (i % 100 === 0) {
+          console.log(
+            `[in progress] Deleted ${nRecords - remaining.size} of ${nRecords}`
+          );
         }
         if (!event.dryRun) {
           await auth0Client.deleteUser(recordNumber);
