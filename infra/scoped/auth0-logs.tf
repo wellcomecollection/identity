@@ -31,10 +31,14 @@ resource "aws_cloudwatch_event_rule" "auth0_logs" {
   event_pattern = jsonencode({
     // This is a code that corresponds to the event type as per
     // https://auth0.com/docs/deploy-monitor/logs/log-event-type-codes
-    type = [
-      // Ignore any successes
-      { anything-but : { prefix = "s" } },
-    ]
+    detail = {
+      data = {
+        type = [
+          // Ignore any successes
+          { anything-but : { prefix = "s" } },
+        ]
+      }
+    }
   })
 }
 
@@ -48,7 +52,7 @@ resource "aws_cloudwatch_event_target" "auth0_logs_lambda" {
 
   input_transformer {
     input_paths = {
-      log_id = "$.log_id"
+      log_id = "$.detail.log_id"
     }
 
     input_template = jsonencode({
