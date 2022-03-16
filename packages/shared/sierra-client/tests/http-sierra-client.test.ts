@@ -74,7 +74,7 @@ describe('HTTP sierra client', () => {
           const start = startParam
             ? new Date(startParam.slice(1, 11))
             : undefined;
-          const end = endParam ? new Date(endParam.slice(1, 11)) : undefined;
+          const end = endParam ? new Date(endParam.slice(0, 10)) : undefined;
 
           const entries = patrons.filter(
             ({ deletedDate }) =>

@@ -4,7 +4,7 @@
     "outDir": "lib",
     "rootDir": "src"
   },
-  "include": ["src", "tests"],
+  "include": ["src", "scripts", "tests"],
   "references": [
     {
       "path": "../../shared/auth0-client"

@@ -155,6 +155,18 @@ resource "aws_lambda_function" "patron_deletion_tracker" {
     aws_cloudwatch_log_group.lambda_patron_deletion_tracker
   ]
 
+  environment {
+    variables = {
+      AUTH0_API_ROOT       = local.auth0_endpoint
+      AUTH0_API_AUDIENCE   = auth0_client_grant.api_gateway_identity.audience,
+      AUTH0_CLIENT_ID      = auth0_client.api_gateway_identity.client_id,
+      AUTH0_CLIENT_SECRET  = auth0_client.api_gateway_identity.client_secret,
+      SIERRA_API_ROOT      = aws_ssm_parameter.sierra_api_hostname.value,
+      SIERRA_CLIENT_KEY    = local.sierra_api_credentials.client_key,
+      SIERRA_CLIENT_SECRET = local.sierra_api_credentials.client_secret
+    }
+  }
+
   lifecycle {
     ignore_changes = [
       filename
