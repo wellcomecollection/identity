@@ -36,6 +36,13 @@ resource "aws_cloudwatch_event_rule" "auth0_logs" {
         type = [
           // Ignore any successes
           { anything-but : { prefix = "s" } },
+          // Ignore expected errors,
+          {
+            anything-but : [
+              "fcpr", // Failed change password request (account doesn't exist)
+              "fp"    // Failed login (incorrect password)
+            ]
+          }
         ]
       }
     }
