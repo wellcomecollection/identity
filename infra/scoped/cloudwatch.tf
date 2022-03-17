@@ -68,7 +68,7 @@ resource "aws_cloudwatch_event_target" "patron_deletion_tracker" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "lambda_alarm" {
-  alarm_name          = "patron-deletion-tracker-errors-${terraform.workspace}"
+  alarm_name          = "lambda-patron-deletion-tracker-${terraform.workspace}-errors"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "1"
   metric_name         = "Errors"
