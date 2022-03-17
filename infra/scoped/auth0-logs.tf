@@ -29,23 +29,7 @@ resource "aws_cloudwatch_event_rule" "auth0_logs" {
   event_bus_name = aws_cloudwatch_event_bus.auth0_logs.name
 
   event_pattern = jsonencode({
-    // This is a code that corresponds to the event type as per
-    // https://auth0.com/docs/deploy-monitor/logs/log-event-type-codes
-    detail = {
-      data = {
-        type = [
-          // Ignore any successes
-          { anything-but : { prefix = "s" } },
-          // Ignore expected errors,
-          {
-            anything-but : [
-              "fcpr", // Failed change password request (account doesn't exist)
-              "fp"    // Failed login (incorrect password)
-            ]
-          }
-        ]
-      }
-    }
+    source = [local.auth0_logs_event_source]
   })
 }
 
@@ -59,14 +43,16 @@ resource "aws_cloudwatch_event_target" "auth0_log_stream_topic" {
 
   input_transformer {
     input_paths = {
-      log_id = "$.detail.log_id"
+      log_id         = "$.detail.log_id"
+      log_event_type = "$.detail.data.type"
     }
 
     input_template = <<EOF
 {
   "environment": "${terraform.workspace}",
   "tenant_name": "${local.tenant_name}",
-  "log_id": <log_id>
+  "log_id": <log_id>,
+  "log_event_type": <log_event_type>
 }
 EOF
   }
