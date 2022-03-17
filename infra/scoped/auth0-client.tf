@@ -142,7 +142,11 @@ resource "auth0_client_grant" "buildkite" {
     "create:organization_connections",
     "read:organization_connections",
     "update:organization_connections",
-    "delete:organization_connections"
+    "delete:organization_connections",
+    "create:log_streams",
+    "read:log_streams",
+    "update:log_streams",
+    "delete:log_streams",
   ]
 }
 
