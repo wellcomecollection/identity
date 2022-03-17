@@ -52,14 +52,16 @@ resource "aws_cloudwatch_event_target" "auth0_log_stream_topic" {
 
   input_transformer {
     input_paths = {
-      log_id = "$.detail.log_id"
+      log_id     = "$.detail.log_id"
+      event_type = "$.detail.data.type"
     }
 
     input_template = <<EOF
 {
   "environment": "${terraform.workspace}",
   "tenant_name": "${local.tenant_name}",
-  "log_id": <log_id>
+  "log_id": <log_id>,
+  "event_type": <event_type>
 }
 EOF
   }
