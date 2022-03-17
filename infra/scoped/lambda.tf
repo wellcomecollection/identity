@@ -9,7 +9,7 @@ resource "aws_lambda_function" "authorizer" {
   // This creates an empty function on the first apply, as it will be managed by
   // the deployment scripts and ignored by TF (see lifecycle block)
   filename = "data/empty.zip"
-  
+
   // Although usually the authorizer takes about 2ms to run, sometimes we see longer
   // durations, even up to timeouts (with the AWS default of 3s).
   // My guess (17/3/2022) is that there's a delay in fetching the JWKS keys,
