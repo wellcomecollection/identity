@@ -90,6 +90,7 @@ locals {
 
   api_gateway_alerts_topic_arn = local.monitoring_outputs["identity_api_gateway_alerts_topic_arn"]
   lambda_alerts_topic_arn      = local.monitoring_outputs["identity_lambda_error_alerts_topic_arn"]
+  auth0_log_stream_topic_arn   = local.monitoring_outputs["auth0_log_stream_topic_arn"]
 
   # This should be the max number of items that a user can order in Sierra.
   #

@@ -42,10 +42,10 @@ resource "aws_cloudwatch_event_rule" "auth0_logs" {
   })
 }
 
-resource "aws_cloudwatch_event_target" "auth0_logs_lambda" {
+resource "aws_cloudwatch_event_target" "auth0_log_stream_topic" {
   target_id = "auth0-logs-lambda-${terraform.workspace}"
 
-  arn = local.monitoring_outputs["auth0_log_stream_lambda_arn"]
+  arn = local.auth0_log_stream_topic_arn
 
   rule           = aws_cloudwatch_event_rule.auth0_logs.name
   event_bus_name = aws_cloudwatch_event_bus.auth0_logs.name
@@ -55,11 +55,32 @@ resource "aws_cloudwatch_event_target" "auth0_logs_lambda" {
       log_id = "$.detail.log_id"
     }
 
-    input_template = jsonencode({
-      environment = terraform.workspace
-      tenant_name = local.tenant_name,
-      log_id      = "<log_id>"
-    })
+    input_template = <<EOF
+{
+  "environment": "${terraform.workspace}",
+  "tenant_name": "${local.tenant_name}",
+  "log_id": <log_id>
+}
+EOF
+  }
+}
+
+resource "aws_sns_topic_policy" "allow_eventbridge_publish" {
+  arn    = local.auth0_log_stream_topic_arn
+  policy = data.aws_iam_policy_document.sns_topic_policy.json
+}
+
+data "aws_iam_policy_document" "sns_topic_policy" {
+  statement {
+    effect  = "Allow"
+    actions = ["SNS:Publish"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["events.amazonaws.com"]
+    }
+
+    resources = [local.auth0_log_stream_topic_arn]
   }
 }
 
