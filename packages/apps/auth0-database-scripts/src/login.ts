@@ -13,6 +13,9 @@ declare const configuration: {
 const invalidCredentialsMessage =
   "We don't recognise the email and/or password you entered. Please check your entry and try again.";
 
+const duplicateEmailCredentialMessage = 
+"There is an issue with this library account. To resolve this, please contact the library team (library@wellcomecollection.org)."
+
 async function login(email: string, password: string): Promise<Auth0User> {
   const apiRoot = configuration.API_ROOT;
   const clientKey = configuration.CLIENT_KEY;
@@ -24,9 +27,13 @@ async function login(email: string, password: string): Promise<Auth0User> {
   if (patronRecordResponse.status === ResponseStatus.NotFound) {
     throw new WrongUsernameOrPasswordError(email, invalidCredentialsMessage);
   }
+  if (patronRecordResponse.status === ResponseStatus.MalformedRequest) {
+    throw new WrongUsernameOrPasswordError(email, invalidCredentialsMessage);
+  }
   if (patronRecordResponse.status !== ResponseStatus.Success) {
     throw new Error(patronRecordResponse.message);
   }
+  
 
   const patronRecord = patronRecordResponse.result;
   const validationResponse = await sierraClient.validateCredentials(
