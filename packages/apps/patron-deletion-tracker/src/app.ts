@@ -63,7 +63,10 @@ export const createApp = (
           );
         }
         if (!event.dryRun) {
-          await auth0Client.deleteUser(recordNumber);
+          const response = await auth0Client.deleteUser(recordNumber);
+          if (response.status !== ResponseStatus.Success) {
+            throw new Error('Error deleting user: ' + response.message);
+          }
         } else {
           console.log(`[dry run] Deleted patron ${recordNumber}`);
         }

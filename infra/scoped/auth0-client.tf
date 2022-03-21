@@ -29,6 +29,25 @@ resource "auth0_client" "dummy_test" {
   }
 }
 
+# Patron deletion tracker
+resource "auth0_client" "deletion_tracker" {
+  name                 = "Patron Deletion Tracker${local.environment_qualifier}"
+  app_type             = "non_interactive"
+  custom_login_page_on = false
+
+  grant_types = ["client_credentials"]
+}
+
+resource "auth0_client_grant" "deletion_tracker" {
+  client_id = auth0_client.deletion_tracker.id
+
+  # Management API
+  audience = "https://${aws_ssm_parameter.auth0_domain.value}/api/v2/"
+  scope = [
+    "delete:users"
+  ]
+}
+
 # API Gateway / Lambda
 # Lets the API Gateway and underlying Lambda Functions interact with the Auth0 Management API
 
