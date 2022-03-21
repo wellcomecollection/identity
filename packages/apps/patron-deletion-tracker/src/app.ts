@@ -10,8 +10,8 @@ const auth0RateLimited = rateLimit({
   // https://auth0.com/docs/troubleshoot/customer-support/operational-policies/rate-limit-policy/management-api-endpoint-rate-limits#self-service-subscription-limits
   // These limits are 5% lower than the documented ones as we've seen issues when using the exact limit
   rateLimits: {
-    minute: 190, // Rate limit is 200
-    second: 19, // Rate limit is 20
+    minute: 190, // documented limit is 200
+    second: 19, // documented limit is 20
   },
   // This is set by us (not enforced by Auth0) and is fairly arbitrary
   maxConcurrency: 5,
