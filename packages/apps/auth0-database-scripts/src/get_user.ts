@@ -25,8 +25,8 @@ async function getUser(email: string): Promise<Auth0User | undefined> {
   } else if (patronRecordResponse.status === ResponseStatus.NotFound) {
     return undefined;
   } else if (patronRecordResponse.status === ResponseStatus.MalformedRequest) {
-    //Sierra returns status 409 for duplicate patrons, our error handling calls this a MalformedRequest
-    //here we return undefined to fail silently to progress to login where we will catch the duplicate error
+    // Sierra returns status 409 for duplicate patrons, our error handling calls this a MalformedRequest
+    // here we return undefined to fail silently to progress to login where we will catch the duplicate error
     return undefined;
   } else {
     throw new Error(patronRecordResponse.message);
