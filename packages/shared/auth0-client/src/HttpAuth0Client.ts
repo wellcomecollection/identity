@@ -89,10 +89,13 @@ export default class HttpAuth0Client implements Auth0Client {
   async deleteUser(userId: number): Promise<APIResponse<void>> {
     try {
       const instance = await this.getMachineToMachineInstance();
-      await instance.delete(`/users/${SierraUserIdPrefix + userId}`, {
+      const url = `/users/${SierraUserIdPrefix + userId}`;
+      console.log('Deleting at ' + url);
+      const resp = await instance.delete(url, {
         // If the user doesn't exist, the API will still return a 204
         validateStatus: (status) => status === 204,
       });
+      console.log(resp);
       return successResponse(undefined);
     } catch (error) {
       if (error.response) {

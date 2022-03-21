@@ -63,6 +63,7 @@ export const createApp = (
           );
         }
         if (!event.dryRun) {
+          console.log('Deleting ' + recordNumber);
           await auth0Client.deleteUser(recordNumber);
         } else {
           console.log(`[dry run] Deleted patron ${recordNumber}`);
