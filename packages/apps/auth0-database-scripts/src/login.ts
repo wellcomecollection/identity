@@ -28,7 +28,7 @@ async function login(email: string, password: string): Promise<Auth0User> {
     throw new WrongUsernameOrPasswordError(email, invalidCredentialsMessage);
   }
   if (patronRecordResponse.status === ResponseStatus.MalformedRequest) {
-    throw new WrongUsernameOrPasswordError(email, invalidCredentialsMessage);
+    throw new WrongUsernameOrPasswordError(email, duplicateEmailCredentialMessage);
   }
   if (patronRecordResponse.status !== ResponseStatus.Success) {
     throw new Error(patronRecordResponse.message);

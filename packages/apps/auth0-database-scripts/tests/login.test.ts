@@ -55,6 +55,20 @@ describe('login script', () => {
     login(testPatronRecord.email, testPatronPassword, callback);
   });
 
+  it('throws an error if Sierra returns a status 409 Malformed Request (duplicate patrons found) Error', (done) => {
+    mockSierraClient.getPatronRecordByEmail.mockResolvedValueOnce(
+      errorResponse('duplicate patrons found', ResponseStatus.MalformedRequest)
+    );
+
+    const callback = (error?: NodeJS.ErrnoException | null, data?: User) => {
+      expect(data).toBe(undefined);
+      expect(error).toBeInstanceOf(Error);
+      expect(error?.message).toBe("There is an issue with this library account. To resolve this, please contact the library team (library@wellcomecollection.org).")
+      done();
+    };
+    login(testPatronRecord.email, testPatronPassword, callback);
+  });
+
   it('throws a credentials error if Sierra credentials validation fails', (done) => {
     mockSierraClient.addPatron(testPatronRecord, testPatronPassword);
 
