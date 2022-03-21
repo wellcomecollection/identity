@@ -333,7 +333,10 @@ export default class HttpAuth0Client implements Auth0Client {
         throw new Error("Can't extract expiry claim from token");
       }
     },
-    () => ({ baseURL: `${this.apiRoot}/api/v2` })
+    () => ({
+      baseURL: `${this.apiRoot}/api/v2`,
+      timeout: 10 * 1000, // 10 seconds
+    })
   );
 
   private validateCredentials(
