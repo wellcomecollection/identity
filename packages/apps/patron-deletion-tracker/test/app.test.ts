@@ -1,8 +1,9 @@
 import { Auth0User, MockAuth0Client } from '@weco/auth0-client';
 import { MockSierraClient, PatronRecord } from '@weco/sierra-client';
 import { createApp } from '../src/app';
-import { startOfYesterday, subDays, setHours } from 'date-fns';
+import { setHours, startOfYesterday, subDays } from 'date-fns';
 import { Context } from 'aws-lambda';
+import { errorResponse, ResponseStatus } from '@weco/identity-common';
 
 const mockClients = () => ({
   auth0: new MockAuth0Client(),
@@ -69,6 +70,24 @@ describe('patron deletion tracker', () => {
     const { auth0, sierra } = mockClients();
     const errorMessage = 'test: error fetching patrons';
     sierra.getDeletedRecordNumbers.mockRejectedValue(new Error(errorMessage));
+    const app = createApp(auth0, sierra);
+
+    await expect(
+      app({ window: { durationDays: 1 } }, {
+        getRemainingTimeInMillis: () => 30000,
+      } as Context)
+    ).rejects.toThrowError(errorMessage);
+  });
+
+  it('throws an error if the Auth0 client does not return a success', async () => {
+    const { auth0, sierra } = mockClients();
+    const deletedPatron = MockSierraClient.randomPatronRecord();
+    sierra.addPatron(deletedPatron);
+    sierra.markDeleted(deletedPatron.recordNumber, startOfYesterday());
+    const errorMessage = 'test: error deleting patron';
+    auth0.deleteUser.mockResolvedValue(
+      errorResponse(errorMessage, ResponseStatus.InvalidCredentials)
+    );
     const app = createApp(auth0, sierra);
 
     await expect(
