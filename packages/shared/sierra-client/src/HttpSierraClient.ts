@@ -379,6 +379,9 @@ export default class HttpSierraClient implements SierraClient {
         expiresAt: Math.floor(Date.now() / 1000) + response.data.expires_in,
       };
     },
-    () => ({ baseURL: `${this.apiRoot}/v6` })
+    () => ({
+      baseURL: `${this.apiRoot}/v6`,
+      timeout: 10 * 1000, // 10 seconds
+    })
   );
 }

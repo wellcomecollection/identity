@@ -22,6 +22,8 @@ export const rateLimit = ({
     concurrency: maxConcurrency,
     interval: 1000 * 60, // 1 minute
     intervalCap: rateLimits.minute,
+    timeout: 1000 * 30, // 30 seconds
+    throwOnTimeout: true,
   });
 
   return queue.addAll(
