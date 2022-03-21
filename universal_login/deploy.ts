@@ -59,7 +59,7 @@ const doDeploy = async (env: Env) => {
 // 2 req/second - this ensures we never hit that
 // https://auth0.com/docs/troubleshoot/customer-support/operational-policies/rate-limit-policy/management-api-endpoint-rate-limits
 const rateLimiter = new RateLimiter({
-  tokensPerInterval: 2,
+  tokensPerInterval: 1, // Lower than the threshold as we've seen errors when it's equal
   interval: 'second',
 });
 
