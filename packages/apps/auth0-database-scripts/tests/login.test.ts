@@ -63,7 +63,7 @@ describe('login script', () => {
     const callback = (error?: NodeJS.ErrnoException | null, data?: User) => {
       expect(data).toBe(undefined);
       expect(error).toBeInstanceOf(Error);
-      expect(error?.message).toBe("There is an issue with this library account. To resolve this, please contact the library team (library@wellcomecollection.org).")
+      expect(error?.message).toBe("There is an issue with this library account. To resolve this, please contact the library team (library@wellcomecollection.org).");
       done();
     };
     login(testPatronRecord.email, testPatronPassword, callback);
