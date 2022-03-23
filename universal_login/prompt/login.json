@@ -2,6 +2,7 @@
   "login": {
     "pageTitle": "Sign in to your library account",
     "description": " ",
-    "buttonText": "Sign in"
+    "buttonText": "Sign in",
+    "custom-script-error-code": "There is an issue with this library account. To resolve this, please contact Library Enquiries (library@wellcomecollection.org)."
   }
 }
