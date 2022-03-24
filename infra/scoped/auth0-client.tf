@@ -193,7 +193,9 @@ resource "auth0_client" "account_management_system" {
     // some reason it can't be changed from this value
     idle_token_lifetime          = (local.session_absolute_lifetime_hours * local.one_hour_s) - 1
     infinite_idle_token_lifetime = true
-    leeway                       = 10
+    // This value *may* have an effect on intermittent refresh token errors
+    // See: https://github.com/wellcomecollection/identity/issues/277#issuecomment-1077632386
+    leeway = 120
   }
 
   grant_types = [
