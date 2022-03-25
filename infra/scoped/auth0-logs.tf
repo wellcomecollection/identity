@@ -30,6 +30,15 @@ resource "aws_cloudwatch_event_rule" "auth0_logs" {
 
   event_pattern = jsonencode({
     source = [local.auth0_logs_event_source]
+    data = {
+      type = [
+        // Ignore any successes
+        // This filter is here as well as in the monitoring stack Lambda
+        // in order to reduce invocations of the former (as there are a lot of Auth0 events)
+        // https://github.com/wellcomecollection/platform-infrastructure/blob/main/monitoring/slack_alerts/auth0_log_stream_alert/src/auth0_log_stream_alert.py
+        { anything-but : { prefix = "s" } },
+      ]
+    }
   })
 }
 
