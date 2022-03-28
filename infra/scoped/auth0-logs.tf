@@ -52,8 +52,9 @@ resource "aws_cloudwatch_event_target" "auth0_log_stream_topic" {
 
   input_transformer {
     input_paths = {
-      log_id         = "$.detail.log_id"
-      log_event_type = "$.detail.data.type"
+      log_id          = "$.detail.log_id"
+      log_event_type  = "$.detail.data.type"
+      log_description = "$.detail.data.description"
     }
 
     input_template = <<EOF
@@ -61,7 +62,8 @@ resource "aws_cloudwatch_event_target" "auth0_log_stream_topic" {
   "environment": "${terraform.workspace}",
   "tenant_name": "${local.tenant_name}",
   "log_id": <log_id>,
-  "log_event_type": <log_event_type>
+  "log_event_type": <log_event_type>,
+  "log_description": <log_description>
 }
 EOF
   }
