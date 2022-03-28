@@ -1,6 +1,8 @@
 steps:
   # Deploy any changes to Auth0 scripts/actions
   - name: "auth0 deployment"
+    concurrency: 1
+    concurrency_group: "identity-deployment/auth0"
     command:
       - ". /app/.buildkite/scripts/init-environment.sh"
       - "yarn --frozen-lockfile"
@@ -26,6 +28,8 @@ steps:
 
   # Deploy any changes to Auth0 universal-login
   - name: "auth0 universal-login deployment"
+    concurrency: 1
+    concurrency_group: "identity-deployment/universal-login"
     plugins:
       - wellcomecollection/aws-assume-role#v0.2.2:
           role: "arn:aws:iam::770700576653:role/identity-ci"
@@ -42,6 +46,8 @@ steps:
 
   # Deploy Lambdas to AWS
   - name: "lambda deployment"
+    concurrency: 1
+    concurrency_group: "identity-deployment/lambdas"
     command:
       - ". /app/.buildkite/scripts/init-environment.sh"
       - "/app/.buildkite/scripts/aws-lambda-deployment.sh"
