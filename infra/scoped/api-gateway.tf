@@ -91,10 +91,6 @@ resource "aws_api_gateway_method_response" "users_userid_get_200" {
   http_method = aws_api_gateway_method.users_userid_get.http_method
   status_code = "200"
 
-  response_models = {
-    "application/json" = aws_api_gateway_model.user.name
-  }
-
   response_parameters = {
     "method.response.header.Access-Control-Allow-Origin" = true
   }
@@ -179,10 +175,6 @@ resource "aws_api_gateway_method" "users_userid_put" {
   api_key_required     = true
   request_validator_id = aws_api_gateway_request_validator.full.id
 
-  request_models = {
-    "application/json" = aws_api_gateway_model.update-user.name
-  }
-
   request_parameters = {
     "method.request.path.userId" = true
   }
@@ -195,10 +187,6 @@ resource "aws_api_gateway_method_response" "users_userid_put_200" {
   resource_id = aws_api_gateway_resource.users_userid.id
   http_method = aws_api_gateway_method.users_userid_put.http_method
   status_code = "200"
-
-  response_models = {
-    "application/json" = aws_api_gateway_model.user.name
-  }
 
   response_parameters = {
     "method.response.header.Access-Control-Allow-Origin" = true
@@ -353,10 +341,6 @@ resource "aws_api_gateway_method" "users_userid_password_put" {
   authorizer_id        = aws_api_gateway_authorizer.token_authorizer.id
   api_key_required     = true
   request_validator_id = aws_api_gateway_request_validator.full.id
-
-  request_models = {
-    "application/json" = aws_api_gateway_model.update-password.name
-  }
 
   request_parameters = {
     "method.request.path.userId" = true
@@ -532,10 +516,6 @@ resource "aws_api_gateway_method" "users_userid_deletion-request_put" {
   request_parameters = {
     "method.request.path.userId" = true
   }
-
-  request_models = {
-    "application/json" = aws_api_gateway_model.deletion-request.name
-  }
 }
 
 # 200 OK
@@ -686,10 +666,6 @@ resource "aws_api_gateway_method" "users_userid_validate_post" {
   authorizer_id        = aws_api_gateway_authorizer.token_authorizer.id
   api_key_required     = true
   request_validator_id = aws_api_gateway_request_validator.full.id
-
-  request_models = {
-    "application/json" = aws_api_gateway_model.validate.name
-  }
 }
 
 # 200 OK
@@ -841,10 +817,6 @@ resource "aws_api_gateway_method" "users_userid_item-requests_post" {
   api_key_required     = true
   request_validator_id = aws_api_gateway_request_validator.full.id
 
-  request_models = {
-    "application/json" = aws_api_gateway_model.item-request.name
-  }
-
   request_parameters = {
     "method.request.path.userId" = true
   }
@@ -992,10 +964,6 @@ resource "aws_api_gateway_method_response" "users_userid_item-requests_get_200" 
   resource_id = aws_api_gateway_resource.users_userid_item-requests.id
   http_method = aws_api_gateway_method.users_userid_item-requests_get.http_method
   status_code = "200"
-
-  response_models = {
-    "application/json" = aws_api_gateway_model.item-request-list.name
-  }
 
   response_parameters = {
     "method.response.header.Access-Control-Allow-Origin" = true
