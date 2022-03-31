@@ -210,6 +210,18 @@ export default class HttpAuth0Client implements Auth0Client {
                     ResponseStatus.PasswordTooWeak,
                     error
                   );
+                } else if (
+                  error.response.data?.message?.code === 136 &&
+                  error.responses.data?.message?.description.startsWith(
+                    'PIN is not valid : PIN is trivial'
+                  )
+                ) {
+                  return errorResponse(
+                    'Password contains repeated characters',
+                    ResponseStatus.PasswordTooWeak,
+                    error
+                  );
+                  // we need to also return this in a way that auth0 can use it
                 } else {
                   return errorResponse(
                     'Malformed or invalid Auth0 user creation request',
