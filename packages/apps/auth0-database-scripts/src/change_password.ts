@@ -31,7 +31,6 @@ async function changePassword(
       truncate(newPassword, 30)
     );
 
-    // if we get the error from auth0
     if (patronRecordUpdate.status === ResponseStatus.PasswordTooWeak) {
       throw new WrongUsernameOrPasswordError(
         email,
