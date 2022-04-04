@@ -8,6 +8,8 @@ declare const configuration: {
   CLIENT_KEY: string;
   CLIENT_SECRET: string;
 };
+const trivialPatternPasswordMessage =
+  "Passwords can't contain repeated characters such as aaaa, ababab, abcabc.";
 
 // See https://auth0.com/docs/connections/database/custom-db/templates/change-password
 
@@ -28,6 +30,13 @@ async function changePassword(
       // Sierra ignores passwords after the 30th character
       truncate(newPassword, 30)
     );
+
+    if (patronRecordUpdate.status === ResponseStatus.PasswordTooWeak) {
+      throw new WrongUsernameOrPasswordError(
+        email,
+        trivialPatternPasswordMessage
+      );
+    }
 
     if (patronRecordUpdate.status !== ResponseStatus.Success) {
       throw new Error(patronRecordUpdate.message);
