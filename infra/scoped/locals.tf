@@ -53,6 +53,13 @@ locals {
   }
   wellcome_collection_site_uri = "https://${local.wellcome_collection_hostnames[terraform.workspace]}"
 
+  # Catalogue API
+  catalogue_api_hostnames = {
+    stage = "api-stage.wellcomecollection.org"
+    prod  = "api.wellcomecollection.org"
+  }
+  catalogue_api_public_root = "https://${local.catalogue_api_hostnames[terraform.workspace]}/catalogue/v2"
+
   # Account Management System
   ams_context_path         = "account"
   ams_redirect_uri         = "${local.wellcome_collection_site_uri}/${local.ams_context_path}/api/auth/callback"

@@ -36,6 +36,8 @@ module "requests" {
     apm_service_name  = "requests-api"
     apm_environment   = terraform.workspace
     user_hold_limit   = local.per_user_hold_limit
+
+    catalogue_api_public_root = local.catalogue_api_public_root
   }
   secrets = merge(local.es_secrets, local.apm_secret_config, {
     sierra_api_key    = "sierra-api-credentials-${terraform.workspace}:SierraAPIKey"
