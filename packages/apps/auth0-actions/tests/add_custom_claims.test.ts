@@ -63,5 +63,5 @@ const mockPostLoginApi: API<Auth0User> = {
     encodeToken: jest.fn(() => mockPostLoginApi),
     validateToken: jest.fn(() => mockPostLoginApi),
     sendUserTo: jest.fn(() => mockPostLoginApi),
-  }
+  },
 };
