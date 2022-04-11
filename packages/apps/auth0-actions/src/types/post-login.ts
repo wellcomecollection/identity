@@ -120,6 +120,7 @@ export type API<UserType extends User = User> = {
   idToken: APIIdToken<UserType>;
   multifactor: APIMultifactor<UserType>;
   user: APIUser<UserType>;
+  redirect: APIRedirect<UserType>;
 };
 
 export type APIAccess<UserType extends User = User> = {
@@ -132,6 +133,12 @@ export type APIAccessToken<UserType extends User = User> = {
 
 export type APIIdToken<UserType extends User = User> = {
   setCustomClaim: <T>(name: string, value: T) => API<UserType>;
+};
+
+export type APIRedirect<UserType extends User = User> = {
+  sendUserTo: <T>(name: string, value: T) => API<UserType>;
+  encodeToken: <T>(value: T) => API<UserType>;
+  validateToken: <T>(value: T) => API<UserType>;
 };
 
 export type APIMultifactorProvider =
