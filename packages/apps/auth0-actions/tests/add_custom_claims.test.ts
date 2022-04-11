@@ -59,4 +59,9 @@ const mockPostLoginApi: API<Auth0User> = {
     setUserMetadata: jest.fn(() => mockPostLoginApi),
     setAppMetadata: jest.fn(() => mockPostLoginApi),
   },
+  redirect: {
+    encodeToken: jest.fn(() => mockPostLoginApi),
+    validateToken: jest.fn(() => mockPostLoginApi),
+    sendUserTo: jest.fn(() => mockPostLoginApi),
+  }
 };
