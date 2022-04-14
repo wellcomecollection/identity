@@ -71,7 +71,6 @@ describe('add_custom_claims', () => {
     );
   });
 
-
   it('does not add anything if the scope is not present', () => {
     jest.clearAllMocks();
     onExecutePostLogin(createEvent(user, []), mockPostLoginApi);
