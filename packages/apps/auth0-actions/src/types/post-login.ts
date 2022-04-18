@@ -150,7 +150,7 @@ export type APIRedirect<UserType extends User = User> = {
 export type SendUserObject = {
   url: Url;
   query: object;
-}
+};
 
 export type ValidateToken = {
   secret: string;
