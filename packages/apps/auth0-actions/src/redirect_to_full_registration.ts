@@ -1,22 +1,24 @@
 import { Auth0User } from '@weco/auth0-client';
 import { Event, API } from './types/post-login';
-//in theory we should not need to be encoding and decoding token here as we will already be within the auth0
-//session at the registration point - TODO: validate this
 
-const SESSION_TOKEN_SECRET = 'tbc';
-const CONSENT_FORM_URL = '/registration';
+const REGISTRATION_FORM_URL = 'http://localhost:3000/account/registration';
 export const onExecutePostLogin = async (
   event: Event<Auth0User>,
   api: API<Auth0User>
 ) => {
+  // We send the user straight to the full registration form after they first register email and password
+  // In Identity App (Weco) we decode the incoming session_token
+  // on filling out and submitting the full registration form Identity App (Weco) will sign the payload tokenise with jwt
   const sessionToken = api.redirect.encodeToken({
-    secret: SESSION_TOKEN_SECRET,
+    // this token must match the one used in Idenity App (Weco)
+    secret: event.secrets.AUTH0_ACTION_SECRET,
     payload: {
       iss: `https://${event.request.hostname}/`,
+      sub: event.client.client_id,
     },
   });
 
-  api.redirect.sendUserTo(CONSENT_FORM_URL, {
+  api.redirect.sendUserTo(REGISTRATION_FORM_URL, {
     query: {
       session_token: sessionToken,
       redirect_uri: `https://${event.request.hostname}/continue`,
@@ -31,29 +33,11 @@ export const onContinuePostLogin = async (
   event: Event<Auth0User>,
   api: API<Auth0User>
 ) => {
-  let newUser;
+  // Once the full registration form has been submitted, it is signed with JWT handler on Identity App (Weco)
+  // This jwt token is sent back to /continue on auth0 actions and we validate/decode the token to get formData
+  const payload = api.redirect.validateToken({
+    secret: event.secrets.AUTH0_ACTION_SECRET,
+  });
 
-  //again we are not using a third party site in a sense, we should already have this info from the session
-  try {
-    newUser = api.redirect.validateToken({
-      secret: SESSION_TOKEN_SECRET,
-      tokenParameterName: 'session_token',
-    });
-  } catch (error) {
-    console.log(error.message);
-    return api.access.deny('Error occurred during redirect.');
-  }
-
-  //we need to get the custom form field entries back from decoded token'd url of form
-  const customClaims = newUser.formData;
-
-  if (customClaims['tos_accepted'] !== 'yes') {
-    //stop the whole process if the patron hasn't accepted the terms
-    api.access.deny(`You must accept the terms before continuing`);
-  }
-
-  //update the user
-  for (const [key, value] of Object.entries(customClaims)) {
-    api.user.setUserMetadata(key, value);
-  }
+  // TODO: take the payload firstName, Surname and termsandconditions and pass to Sierra to create a patron
 };

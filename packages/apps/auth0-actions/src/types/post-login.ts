@@ -1,4 +1,5 @@
 import { User } from 'auth0';
+import { Url } from 'url';
 
 // https://auth0.com/docs/actions/triggers/post-login/event-object
 export type Event<UserType extends User = User> = {
@@ -13,6 +14,7 @@ export type Event<UserType extends User = User> = {
   tenant: EventTenant;
   transaction?: EventTransaction;
   user: UserType;
+  secrets: EventSecrets;
 };
 
 export type AuthenticationMethodName =
@@ -86,6 +88,10 @@ export type EventStats = {
   logins_count: number;
 };
 
+export type EventSecrets = {
+  AUTH0_ACTION_SECRET: string;
+};
+
 export type EventTenant = {
   id: string;
 };
@@ -136,9 +142,23 @@ export type APIIdToken<UserType extends User = User> = {
 };
 
 export type APIRedirect<UserType extends User = User> = {
-  sendUserTo: <T>(name: string, value: T) => API<UserType>;
-  encodeToken: <T>(value: T) => API<UserType>;
-  validateToken: <T>(value: T) => API<UserType>;
+  sendUserTo: <SendUserObject>(name: string, value: T) => API<UserType>;
+  encodeToken: <EncodeToken>(EncodeToken: EncodeToken) => API<UserType>;
+  validateToken: <ValidateToken>(ValidateToken: ValidateToken) => API<UserType>;
+};
+
+export type SendUserObject = {
+  url: Url;
+  query: object;
+}
+
+export type ValidateToken = {
+  secret: string;
+};
+
+export type EncodeToken = {
+  secret: string;
+  payload: object;
 };
 
 export type APIMultifactorProvider =
