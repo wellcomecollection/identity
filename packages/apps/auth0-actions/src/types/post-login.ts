@@ -142,13 +142,15 @@ export type APIIdToken<UserType extends User = User> = {
 };
 
 export type APIRedirect<UserType extends User = User> = {
-  sendUserTo: <SendUserObject>(SendUserObject: SendUserObject) => API<UserType>;
+  sendUserTo: <SendUserObject>(
+    url: Url,
+    SendUserObject: SendUserObject
+  ) => API<UserType>;
   encodeToken: <EncodeToken>(EncodeToken: EncodeToken) => API<UserType>;
   validateToken: <ValidateToken>(ValidateToken: ValidateToken) => API<UserType>;
 };
 
 export type SendUserObject = {
-  url: Url;
   query: object;
 };
 
