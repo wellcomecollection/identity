@@ -9,6 +9,7 @@ import {
   getUser,
   requestDelete,
   updateUser,
+  updateUserAfterRegistration,
   validatePassword,
 } from './handlers/user';
 import { errorHandler } from './handlers/errorHandler';
@@ -27,6 +28,7 @@ export function createApplication(clients: Clients): Application {
   app.use(awsServerlessExpressMiddleware.eventContext());
 
   [
+    registerUsersUserIdRegistrationResource,
     registerUsersUserIdResource,
     registerUsersUserIdPasswordResource,
     registerUsersUserIdDeletionRequestResource,
@@ -36,6 +38,23 @@ export function createApplication(clients: Clients): Application {
   app.use(errorHandler);
 
   return app;
+}
+
+function registerUsersUserIdRegistrationResource(
+  clients: Clients,
+  app: Application
+): void {
+  const corsOptions = cors({
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
+    methods: 'OPTIONS,PUT',
+    origin: process.env.API_ALLOWED_ORIGINS,
+  });
+  app.options('/users/:user_id/registration', corsOptions);
+  app.put(
+    '/users/:user_id/registration',
+    corsOptions,
+    asyncHandler(updateUserAfterRegistration(clients.auth0))
+  );
 }
 
 function registerUsersUserIdResource(clients: Clients, app: Application): void {
