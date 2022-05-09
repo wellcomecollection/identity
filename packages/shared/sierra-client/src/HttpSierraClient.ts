@@ -10,6 +10,7 @@ import {
 import {
   PatronRecord,
   PatronResponse,
+  PatronCreateResponse,
   toPatronRecord,
   varFieldTags,
 } from './patron';
@@ -67,6 +68,45 @@ export default class HttpSierraClient implements SierraClient {
           }
           return unhandledError(error);
         });
+    });
+  }
+
+  async createPatron(
+    lastName: string,
+    firstName: string,
+    email: string
+  ): Promise<APIResponse<PatronCreateResponse>> {
+    return this.getInstance().then(async (instance) => {
+      try {
+        const response = await instance.post('/patrons/', {
+          params: {
+            varFieldTags: {
+              fieldTag: {
+                z: email.toLowerCase(),
+                n: `${lastName}, ${firstName}`,
+                //TODO: Discuss with library staff to make sure this field being more specific is useful
+                // or if we add another fieldTag type to best express the type of registration
+                m: 's',
+              },
+            },
+          },
+          validateStatus: (status: number) => status === 200,
+        });
+        // A successful patron creation POST results in a url link to patron
+        return successResponse(response.data);
+      } catch (error) {
+        if (error.response) {
+          switch (error.response.status) {
+            case 400:
+              return errorResponse(
+                'Malformed or invalid Patron creation request',
+                ResponseStatus.MalformedRequest,
+                error
+              );
+          }
+        }
+        return unhandledError(error);
+      }
     });
   }
 

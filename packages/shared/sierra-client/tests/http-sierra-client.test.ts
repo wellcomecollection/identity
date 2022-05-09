@@ -50,6 +50,27 @@ describe('HTTP sierra client', () => {
     });
   });
 
+  describe('create a patron', () => {
+    const newPatron = {
+      lastName: 'Ravioli',
+      firstName: 'Ravi',
+      email: 'raviravioli@pastatimestest.com',
+    };
+    mockSierraServer.use(
+      rest.post(routeUrls.patron, (req, res, ctx) => res(ctx.json(newPatron)))
+    );
+
+    it('returns a link on successful creation of patron record', async () => {
+      const response = await client.createPatron(
+        'Ravioli',
+        'Ravi',
+        'raviravioli@ppastatimestest.com'
+      );
+
+      expect(response.status).toBe(ResponseStatus.Success);
+    });
+  });
+
   describe('get deleted patron numbers', () => {
     const patrons: Array<{ id: number; deletedDate?: Date }> = [
       { id: 1234560, deletedDate: new Date('2020-01-01') },

@@ -165,6 +165,10 @@ export type PatronRecord = {
   verifiedEmail?: string;
 };
 
+export type PatronCreateResponse = {
+  link: string;
+};
+
 export type PatronResponse = {
   id: number;
   patronType: number;

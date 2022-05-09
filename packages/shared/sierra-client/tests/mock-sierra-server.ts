@@ -60,6 +60,12 @@ const handlers = [
   rest.get(routeUrls.patrons, (req, res, ctx) => {
     return res(ctx.status(404));
   }),
+  rest.post(routeUrls.patrons, (req, res, ctx) => {
+    if (!hasCurrentToken(req)) {
+      return res(ctx.status(401));
+    }
+    return res(ctx.status(200));
+  }),
   rest.put(routeUrls.patron, (req, res, ctx) => {
     if (!hasCurrentToken(req)) {
       return res(ctx.status(401));
