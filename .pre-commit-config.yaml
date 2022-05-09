@@ -8,15 +8,12 @@ repos:
   rev: v3.3.0
   hooks:
     - id: check-added-large-files
-      exclude: ^infra/scoped/assets/swagger-ui
     - id: check-case-conflict
     - id: check-merge-conflict
     - id: check-symlinks
     - id: detect-private-key
     - id: end-of-file-fixer
-      exclude: ^infra/scoped/assets/swagger-ui
     - id: trailing-whitespace
-      exclude: ^infra/scoped/assets/swagger-ui
     - id: check-json
       exclude: ^infra/scoped/task-definitions
     - id: check-yaml

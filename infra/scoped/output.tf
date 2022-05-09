@@ -50,7 +50,6 @@ output "ci_environment_variables" {
     "export API_GATEWAY_ID=${aws_api_gateway_rest_api.identity.id}",
     "export API_GATEWAY_AUTHORIZER_ID=${aws_api_gateway_authorizer.token_authorizer.id}",
     "export AWS_ACCOUNT_ID=${data.aws_caller_identity.current.account_id}",
-    "export CLOUDFRONT_SWAGGER_UI_DISTRIBUTION_ID=${aws_cloudfront_distribution.swagger_ui_v1.id}",
     "export SMTP_PASS=${local.email_credentials["smtp_password"]}"
   ]
 
