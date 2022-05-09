@@ -40,6 +40,9 @@ export function createApplication(clients: Clients): Application {
   return app;
 }
 
+// The handler for this endpoint duplicates a lot of the work in the handler for
+// `/users/:user_id` This is deliberate as 1. they may diverge and 2. we can do
+//  a check that the user is at the correct stage of the signup process here
 function registerUsersUserIdRegistrationResource(
   clients: Clients,
   app: Application

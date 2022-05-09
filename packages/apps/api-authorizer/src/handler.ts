@@ -40,6 +40,9 @@ const validateRequest = resourceAuthorizationValidator({
     POST: allOf(isSelf, hasScopes('create:requests')),
     GET: allOf(isSelf, hasScopes('read:requests')),
   },
+  '/users/{userId}/registration': {
+    PUT: allOf(isSelf, hasScopes('update:user')),
+  },
 });
 
 export const createLambdaHandler = (validateToken: TokenValidator) => async (
