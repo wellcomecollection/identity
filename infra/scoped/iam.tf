@@ -99,20 +99,3 @@ resource "aws_iam_role_policy_attachment" "AWSLambdaVPCAccessExecutionRole" {
   role       = aws_iam_role.identity_api_gateway_lambda_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
 }
-
-# S3
-
-data "aws_iam_policy_document" "s3_swagger_ui_policy_v1" {
-  statement {
-    actions = [
-      "s3:GetObject"
-    ]
-    principals {
-      identifiers = ["*"]
-      type        = "AWS"
-    }
-    resources = [
-      "arn:aws:s3:::identity-public-swagger-ui-${local.identity_v1}-${terraform.workspace}/*"
-    ]
-  }
-}
