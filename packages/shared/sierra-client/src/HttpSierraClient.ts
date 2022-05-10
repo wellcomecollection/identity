@@ -10,6 +10,7 @@ import {
 import {
   PatronRecord,
   PatronResponse,
+  PatronCreateResponse,
   toPatronRecord,
   varFieldTags,
 } from './patron';
@@ -67,6 +68,69 @@ export default class HttpSierraClient implements SierraClient {
           }
           return unhandledError(error);
         });
+    });
+  }
+
+  async createPatron(
+    lastName: string,
+    firstName: string,
+    email: string
+  ): Promise<APIResponse<PatronCreateResponse>> {
+    return this.getInstance().then(async (instance) => {
+      try {
+        const response = await instance.post('/patrons/', {
+          // Create the patron in marc format
+          // Rationale: After a short discussion with Natalie on what we ideally want from a newly created patron
+          // the new patron format should be MARC - if we create in non-MARC, it will means someone
+          // in the library will eventually have to edit the patron record to make it MARC
+          // creating the patron in MARC format means less work for library staff
+          params: {
+            varFields: [
+              {
+                fieldTag: 'n',
+                marcTag: '100',
+                ind1: ' ',
+                ind2: ' ',
+                subfields: [
+                  {
+                    tag: 'a',
+                    content: lastName,
+                  },
+                  {
+                    tag: 'b',
+                    content: firstName,
+                  },
+                ],
+              },
+              {
+                fieldTag: 'z',
+                content: email.toLocaleLowerCase(),
+              },
+              // TODO: Discuss with library staff to make sure this field being more specific is useful
+              // or if we add another fieldTag type to best express the type of registration
+              {
+                fieldTag: 'm',
+                content: 's',
+              },
+            ],
+          },
+          validateStatus: (status: number) => status === 200,
+        });
+        // A successful patron creation POST results in a url link to patron
+        return successResponse(response.data);
+      } catch (error) {
+        if (error.response) {
+          switch (error.response.status) {
+            case 400:
+              return errorResponse(
+                'Malformed or invalid Patron creation request',
+                ResponseStatus.MalformedRequest,
+                error
+              );
+          }
+        }
+        return unhandledError(error);
+      }
     });
   }
 

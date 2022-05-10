@@ -1,5 +1,5 @@
 import { APIResponse } from '@weco/identity-common';
-import { PatronRecord } from './patron';
+import { PatronCreateResponse, PatronRecord } from './patron';
 import { NoteOptions } from './email-verification-notes';
 
 export default interface SierraClient {
@@ -7,6 +7,12 @@ export default interface SierraClient {
     barcode: string,
     password: string
   ): Promise<APIResponse<{}>>;
+
+  createPatron(
+    lastName: string,
+    email: string,
+    firstName: string
+  ): Promise<APIResponse<PatronCreateResponse>>;
 
   getDeletedRecordNumbers(options?: {
     start?: Date;

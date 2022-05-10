@@ -122,6 +122,27 @@ export default class MockSierraClient implements SierraClient {
     return errorResponse('Not found', ResponseStatus.NotFound);
   });
 
+  createPatron = jest.fn(
+    async (lastName: string, email: string, firstName: string) => {
+      const createPatronResultLink = 'http://sierra/patrons/123456';
+      const newPatronRecord = (
+        firstName: string,
+        lastName: string,
+        role?: Role
+      ): PatronRecord => ({
+        recordNumber: Math.floor(Math.random() * 1e8),
+        barcode: Math.floor(Math.random() * 1e8).toString(),
+        firstName,
+        lastName,
+        email,
+        role: role ?? 'Reader',
+      });
+
+      this.addPatron(newPatronRecord('Ravi', 'Ravioli', 'SelfRegistered'));
+      return successResponse({ link: createPatronResultLink });
+    }
+  );
+
   validateCredentials = jest.fn(async (barcode: string, password: string) => {
     for (const patron of this.patrons.values()) {
       if (
