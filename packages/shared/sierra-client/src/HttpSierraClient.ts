@@ -79,16 +79,30 @@ export default class HttpSierraClient implements SierraClient {
     return this.getInstance().then(async (instance) => {
       try {
         const response = await instance.post('/patrons/', {
+          // TODO (prepr) make less verbose
           params: {
-            varFieldTags: {
-              fieldTag: {
-                z: email.toLowerCase(),
-                n: `${lastName}, ${firstName}`,
-                //TODO: Discuss with library staff to make sure this field being more specific is useful
-                // or if we add another fieldTag type to best express the type of registration
-                m: 's',
+            varFieldTags: [
+              {
+                fieldTag: 'n',
+                subfields: [
+                  {
+                    tag: 'a',
+                    content: lastName,
+                  },
+                  {
+                    tag: 'b',
+                    content: firstName,
+                  },
+                ],
               },
-            },
+              {
+                fieldTag: 'z',
+                content: email.toLocaleLowerCase(),
+              },
+            ],
+            // //TODO: Discuss with library staff to make sure this field being more specific is useful
+            // // or if we add another fieldTag type to best express the type of registration
+            // m: 's',
           },
           validateStatus: (status: number) => status === 200,
         });
