@@ -79,11 +79,14 @@ export default class HttpSierraClient implements SierraClient {
     return this.getInstance().then(async (instance) => {
       try {
         const response = await instance.post('/patrons/', {
-          // TODO (prepr) make less verbose
+          // Create the patron in marc format
           params: {
-            varFieldTags: [
+            varFields: [
               {
                 fieldTag: 'n',
+                marcTag: '100',
+                ind1: ' ',
+                ind2: ' ',
                 subfields: [
                   {
                     tag: 'a',
@@ -99,10 +102,13 @@ export default class HttpSierraClient implements SierraClient {
                 fieldTag: 'z',
                 content: email.toLocaleLowerCase(),
               },
+              // TODO: Discuss with library staff to make sure this field being more specific is useful
+              // or if we add another fieldTag type to best express the type of registration
+              {
+                fieldTag: 'm',
+                content: 's',
+              },
             ],
-            // //TODO: Discuss with library staff to make sure this field being more specific is useful
-            // // or if we add another fieldTag type to best express the type of registration
-            // m: 's',
           },
           validateStatus: (status: number) => status === 200,
         });
