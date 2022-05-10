@@ -80,6 +80,10 @@ export default class HttpSierraClient implements SierraClient {
       try {
         const response = await instance.post('/patrons/', {
           // Create the patron in marc format
+          // Rationale: After a short discussion with Natalie on what we ideally want from a newly created patron
+          // the new patron format should be MARC - if we create in non-MARC, it will means someone
+          // in the library will eventually have to edit the patron record to make it MARC
+          // creating the patron in MARC format means less work for library staff
           params: {
             varFields: [
               {
