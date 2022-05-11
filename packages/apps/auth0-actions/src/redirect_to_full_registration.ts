@@ -12,10 +12,16 @@ declare const configuration: {
 
 
 const REGISTRATION_FORM_URL = 'http://localhost:3000/account/registration';
+const SUCCESS_URL = 'http://localhost:3000/account';
+
 export const onExecutePostLogin = async (
   event: Event<Auth0User>,
   api: API<Auth0User>
 ) => {
+
+  // If the user has accepted the terms already, we don't need to do anything else
+  if (event.user.app_metadata.terms_and_conditions_accepted) return;
+
   // We send the user straight to the full registration form after they first register email and password
   // In Identity App (Weco) we decode the incoming session_token
   // on filling out and submitting the full registration form Identity App (Weco) will sign the payload tokenise with jwt
@@ -24,7 +30,7 @@ export const onExecutePostLogin = async (
     secret: event.secrets.AUTH0_ACTION_SECRET,
     payload: {
       iss: `https://${event.request.hostname}/`,
-      sub: event.client.client_id,
+      sub: event.user.user_id,
     },
   });
 
@@ -47,14 +53,11 @@ export const onContinuePostLogin = async (
   // This jwt token is sent back to /continue on auth0 actions and we validate/decode the token to get formData
   const payload = api.redirect.validateToken({
     secret: event.secrets.AUTH0_ACTION_SECRET,
+    tokenParameterName: 'token',
   });
 
-  const apiRoot = configuration.API_ROOT;
-  const clientKey = configuration.CLIENT_KEY;
-  const clientSecret = configuration.CLIENT_SECRET;
-  
-
-  // TODO: take the payload firstName, Surname and termsandconditions and pass to Sierra to create a patron
-  const sierraClient = new HttpSierraClient(apiRoot, clientKey, clientSecret);
-  // const createPatron = await sierraClient.createPatron();
+  api.user.setUserMetadata('first_name', payload['https://wellcomecollection.org/first_name']);
+  api.user.setUserMetadata('last_name', payload['https://wellcomecollection.org/last_name']);
+  api.user.setAppMetadata('terms_and_conditions_accepted', payload['https://wellcomecollection.org/terms_agreed']);
+  api.redirect.sendUserTo(SUCCESS_URL, {query: {success: 'true'}})
 };
