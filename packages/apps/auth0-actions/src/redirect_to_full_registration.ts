@@ -1,14 +1,6 @@
 import { Auth0User } from '@weco/auth0-client';
 import { Event, API } from './types/post-login';
-import { HttpSierraClient } from '@weco/sierra-client';
-import { ResponseStatus } from '@weco/identity-common';
 import { callbackify } from 'util';
-
-declare const configuration: {
-  API_ROOT: string;
-  CLIENT_KEY: string;
-  CLIENT_SECRET: string;
-};
 
 
 const REGISTRATION_FORM_URL = 'http://localhost:3000/account/registration';
@@ -23,8 +15,16 @@ export const onExecutePostLogin = async (
   if (event.user.app_metadata.terms_and_conditions_accepted) return;
 
   // We send the user straight to the full registration form after they first register email and password
-  // In Identity App (Weco) we decode the incoming session_token
-  // on filling out and submitting the full registration form Identity App (Weco) will sign the payload tokenise with jwt
+  // In Identity App (Weco) we post the formData to updateUserAfterRegistration endpoint on Identity API
+  // updateUserAfterRegistration calls sierra http client and creates a patron
+  // updateUserAfterRegistration encodes formData and sends back to this auth0 action
+
+  // TODO: Confirm if we need to add firstname and lastname or if endpoint does that for us and we only need to redirect
+  // to success page on successful update of user in auth0 and sierra
+  
+  // the auth0 action continues below and adds firstname, username and if terms are accepted
+  // auth0 action will then redirect to success page
+
   const sessionToken = api.redirect.encodeToken({
     // this token must match the one used in Idenity App (Weco)
     secret: event.secrets.AUTH0_ACTION_SECRET,
