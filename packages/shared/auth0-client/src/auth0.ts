@@ -13,11 +13,15 @@ export const auth0IdToPublic = (subjectClaim?: string): string | undefined => {
 
 // See https://auth0.com/docs/users/metadata#metadata-types
 // for the difference between these.
-export type UserMetadata = {};
+export type UserMetadata = {
+  terms_and_conditions_accepted: boolean;
+};
+
 export type AppMetadata = {
   role: string;
   barcode?: string;
   deleteRequested?: string;
+  terms_and_conditions_accepted: boolean;
 };
 
 // Makes the keys K of T required

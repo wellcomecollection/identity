@@ -146,8 +146,12 @@ export type APIRedirect<UserType extends User = User> = {
     url: string,
     SendUserObject: SendUserObject
   ) => API<UserType>;
-  encodeToken: <EncodeToken>(EncodeToken: EncodeToken) => API<UserType>;
-  validateToken: <ValidateToken>(ValidateToken: ValidateToken) => API<UserType>;
+  encodeToken: <T>(EncodeToken: T) => API<UserType>;
+  validateToken: <T>(ValidateToken: T) => API<UserType>;
+};
+
+export type TokenPayloadObject = {
+  terms_and_conditions_accepted: boolean;
 };
 
 export type SendUserObject = {
@@ -160,7 +164,7 @@ export type ValidateToken = {
 
 export type EncodeToken = {
   secret: string;
-  payload: object;
+  payload: TokenPayloadObject;
 };
 
 export type APIMultifactorProvider =
@@ -181,12 +185,6 @@ export type APIMultifactor<UserType extends User = User> = {
 };
 
 export type APIUser<UserType extends User = User> = {
-  setUserMetadata: <K extends keyof UserType['user_metadata']>(
-    name: K,
-    value: UserType['user_metadata'][K] | null
-  ) => API<UserType>;
-  setAppMetadata: <K extends keyof UserType['app_metadata']>(
-    name: K,
-    value: UserType['app_metadata'][K] | null
-  ) => API<UserType>;
+  setUserMetadata: <T>(name: string, value: T) => API<UserType>;
+  setAppMetadata: <T>(name: string, value: T) => API<UserType>;
 };
