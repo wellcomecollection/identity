@@ -21,7 +21,7 @@ export const onExecutePostLogin = async (
   // auth0 action will then redirect to success page
 
   const sessionToken = api.redirect.encodeToken({
-    // this token must match the one used in Idenity API
+    // this token must match the one used in Identity API
     secret: event.secrets.AUTH0_ACTION_SECRET,
     payload: {
       iss: `https://${event.request.hostname}/`,
@@ -48,7 +48,7 @@ export const onContinuePostLogin = async (
   // This jwt token is sent back to /continue on auth0 actions and we validate/decode the token to get formData
   // On success of full registration form submission at Identity API updateUserAfterRegistration endpoint
   // we redirect to /continue with encoded formData from the endpoint
-  // any data we send to /continue is tokenised and validated below
+  // any data we send to /continue is tokenized and validated below
 
   const payload = api.redirect.validateToken({
     secret: event.secrets.AUTH0_ACTION_SECRET,
