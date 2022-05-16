@@ -160,11 +160,11 @@ export type SendUserObject = {
 
 export type ValidateToken = {
   secret: string;
+  payload: TokenPayloadObject;
 };
 
 export type EncodeToken = {
   secret: string;
-  payload: TokenPayloadObject;
 };
 
 export type APIMultifactorProvider =
