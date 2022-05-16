@@ -60,9 +60,11 @@ export function updateUserAfterRegistration(auth0Client: Auth0Client) {
     if (auth0UserIdGet.status !== ResponseStatus.Success) {
       throw clientResponseToHttpError(auth0UserIdGet);
     }
+    const auth0Profile: Auth0User = auth0UserIdGet.result;
 
-    const auth0Update: APIResponse<Auth0User> = await auth0Client.updateNames(
+    const auth0Update: APIResponse<Auth0User> = await auth0Client.updateUser(
       userId,
+      auth0Profile.email,
       firstName,
       lastName
     );

@@ -11,17 +11,17 @@ export default interface Auth0Client {
     userId: number,
     password: string
   ): Promise<APIResponse<Auth0User>>;
-  updateNames(
-    userId: number,
-    firstName: string,
-    lastName: string
-  ): Promise<APIResponse<Auth0User>>;
 
   getUserByUserId(userId: number): Promise<APIResponse<Auth0User>>;
 
   deleteUser(userId: number): Promise<APIResponse<void>>;
 
-  updateUser(userId: number, email: string): Promise<APIResponse<Auth0User>>;
+  updateUser(
+    userId: number,
+    email: string,
+    firstName?: string,
+    lastName?: string
+  ): Promise<APIResponse<Auth0User>>;
 
   setAppMetadata(
     userId: number,
