@@ -54,6 +54,49 @@ export default class HttpAuth0Client implements Auth0Client {
     });
   }
 
+  async updateNames(
+    userId: number,
+    firstName: string,
+    lastName: string
+  ): Promise<APIResponse<Auth0User>> {
+    return this.getMachineToMachineInstance().then((instance) => {
+      return instance
+        .patch(
+          '/users/' + SierraUserIdPrefix + userId,
+          {
+            // Automatically append the mandatory Auth0 prefix to the given user ID.
+            given_name: firstName,
+            family_name: lastName,
+            connection: SierraConnection,
+          },
+          {
+            validateStatus: (status) => status === 200,
+          }
+        )
+        .then((response) => successResponse(response.data))
+        .catch((error) => {
+          if (error.response) {
+            switch (error.response.status) {
+              case 400: {
+                return errorResponse(
+                  'Malformed or invalid Auth0 user update request',
+                  ResponseStatus.MalformedRequest,
+                  error
+                );
+              }
+              case 404:
+                return errorResponse(
+                  'Auth0 user with ID [' + userId + '] not found',
+                  ResponseStatus.NotFound,
+                  error
+                );
+            }
+          }
+          return unhandledError(error);
+        });
+    });
+  }
+
   // @TODO This call should only handle users that exist in the Sierra connection
   async validateUserCredentials(
     sourceIp: string,

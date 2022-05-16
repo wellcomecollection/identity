@@ -11,6 +11,11 @@ export default interface Auth0Client {
     userId: number,
     password: string
   ): Promise<APIResponse<Auth0User>>;
+  updateNames(
+    userId: number,
+    firstName: string,
+    lastName: string
+  ): Promise<APIResponse<Auth0User>>;
 
   getUserByUserId(userId: number): Promise<APIResponse<Auth0User>>;
 
