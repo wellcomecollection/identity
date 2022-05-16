@@ -55,11 +55,10 @@ export const onContinuePostLogin = async (
     tokenParameterName: 'token',
   });
 
-  const terms_and_conditions_accepted =
-    event.user.app_metadata?.terms_and_conditions_accepted;
-  if (terms_and_conditions_accepted) {
-    api.user.setAppMetadata('terms_and_conditions_accepted', true);
-  }
+  api.user.setAppMetadata(
+    'terms_and_conditions_accepted',
+    Boolean(event.user.app_metadata?.terms_and_conditions_accepted)
+  );
 
   api.redirect.sendUserTo(SUCCESS_URL, { query: { success: 'true' } });
 };
