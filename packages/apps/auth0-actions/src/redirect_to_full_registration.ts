@@ -1,20 +1,13 @@
 import { Auth0User } from '@weco/auth0-client';
 import { Event, API } from './types/post-login';
 
-export const environments = ['stage', 'prod'] as const;
-export type Env = typeof environments[number];
-const apiHosts: Record<Env, string> = {
-  stage: 'stage.wellcomecollection.org',
-  prod: 'wellcomecollection.org',
-};
-
-const REGISTRATION_FORM_URL = `https://${apiHosts[env]}/account/registration`;
-const SUCCESS_URL = `https://${apiHosts[env]}/account/success`;
-
 export const onExecutePostLogin = async (
   event: Event<Auth0User>,
   api: API<Auth0User>
 ) => {
+  const REGISTRATION_FORM_URL = `https://${
+    event.secrets
+  }.AUTH0_ACTION_URL_${event.tenant.id.toUpperCase()}`;
   // If the user has accepted the terms and we have their first and last name already, we don't need
   // to do anything else so bail out here
   if (
@@ -57,6 +50,10 @@ export const onContinuePostLogin = async (
   event: Event<Auth0User>,
   api: API<Auth0User>
 ) => {
+  const SUCCESS_URL = `https://${
+    event.secrets
+  }.AUTH0_ACTION_URL_${event.tenant.id.toUpperCase()}/success`;
+
   // Once the full registration form has been submitted, it is signed with JWT handler on Identity App (Weco)
   // This jwt token is sent back to /continue on auth0 actions and we validate/decode the token to get formData
   // On success of full registration form submission at Identity API updateUserAfterRegistration endpoint
