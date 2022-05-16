@@ -121,7 +121,6 @@ export type EventTransaction = {
 
 // https://auth0.com/docs/actions/triggers/post-login/api-object
 export type API<UserType extends User = User> = {
-  terms_and_conditions_accepted: boolean;
   access: APIAccess<UserType>;
   accessToken: APIAccessToken<UserType>;
   idToken: APIIdToken<UserType>;
