@@ -146,8 +146,8 @@ export type APIRedirect<UserType extends User = User> = {
     url: string,
     SendUserObject: SendUserObject
   ) => API<UserType>;
-  encodeToken: <T>(EncodeToken: T) => API<UserType>;
-  validateToken: <T>(ValidateToken: T) => API<UserType>;
+  encodeToken: <T>(EncodedToken: T) => API<UserType>;
+  validateToken: <T>(ValidatedToken: T) => API<UserType>;
 };
 
 export type TokenPayloadObject = {
@@ -158,12 +158,12 @@ export type SendUserObject = {
   query: object;
 };
 
-export type ValidateToken = {
+export type ValidatedToken = {
   secret: string;
   payload: TokenPayloadObject;
 };
 
-export type EncodeToken = {
+export type EncodedToken = {
   secret: string;
 };
 

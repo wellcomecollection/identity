@@ -1,15 +1,28 @@
 import { Auth0User } from '@weco/auth0-client';
 import { Event, API } from './types/post-login';
 
-const REGISTRATION_FORM_URL = 'http://localhost:3000/account/registration';
-const SUCCESS_URL = 'http://localhost:3000/account';
+export const environments = ['stage', 'prod'] as const;
+export type Env = typeof environments[number];
+const apiHosts: Record<Env, string> = {
+  stage: 'stage.wellcomecollection.org',
+  prod: 'wellcomecollection.org',
+};
+
+const REGISTRATION_FORM_URL = `https://${apiHosts[env]}/account/registration`;
+const SUCCESS_URL = `https://${apiHosts[env]}/account/success`;
 
 export const onExecutePostLogin = async (
   event: Event<Auth0User>,
   api: API<Auth0User>
 ) => {
-  // If the user has accepted the terms already, we don't need to do anything else so bail out here
-  if (event.user.app_metadata?.terms_and_conditions_accepted) return;
+  // If the user has accepted the terms and we have their first and last name already, we don't need
+  // to do anything else so bail out here
+  if (
+    event.user.app_metadata?.terms_and_conditions_accepted &&
+    event.user.given_name &&
+    event.user.family_name
+  )
+    return;
 
   // We send the user straight to the full registration form after they first register email and password
   // Full registration form has three fields aka formData: firstname, lastname and terms_and_conditions_accepted
