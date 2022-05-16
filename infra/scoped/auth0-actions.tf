@@ -14,7 +14,7 @@ resource "auth0_action" "add_custom_claims" {
 }
 
 resource "auth0_action" "redirect_to_full_registration" {
-  name   = "Add Custom Claims"
+  name   = "Redirect to full registration"
   code   = file("${path.module}/data/empty.js")
   deploy = true
 
@@ -28,7 +28,17 @@ resource "auth0_action" "redirect_to_full_registration" {
   }
 
   secrets {
-    name:
+    name: AUTH0_ACTION_URL_WELLCOMECOLLECTION
+    value: 
+  }
+
+  secrets {
+    name: AUTH0_ACTION_URL_WELLCOMECOLLECTION-STAGE
+    value: 
+  }
+
+  secrets {
+    name: AUTH0_ACTION_SECRET
     value: 
   }
 }
