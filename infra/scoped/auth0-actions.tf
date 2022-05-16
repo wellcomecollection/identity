@@ -29,17 +29,17 @@ resource "auth0_action" "redirect_to_full_registration" {
 
   secrets {
     name: AUTH0_ACTION_URL_WELLCOMECOLLECTION
-    value: auth0_client.redirect_action_url.client_secret
+    value: redirect_action_url.client_secret
   }
 
   secrets {
     name: AUTH0_ACTION_URL_WELLCOMECOLLECTION-STAGE
-    value: auth0_client.redirect_action_url_stage.client_secret
+    value: redirect_action_url_stage.client_secret
   }
 
   secrets {
     name: AUTH0_ACTION_SECRET
-    value: auth0_client.redirect_action_secret.client_secret
+    value: redirect_action_secret.client_secret
   }
 }
 
