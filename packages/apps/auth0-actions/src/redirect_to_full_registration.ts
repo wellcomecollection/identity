@@ -5,6 +5,7 @@ export const onExecutePostLogin = async (
   event: Event<Auth0User>,
   api: API<Auth0User>
 ) => {
+  console.log('<<< WE ARE IN POST LOGIN');
   const REGISTRATION_FORM_URL = `https://${
     event.secrets
   }.AUTH0_ACTION_URL_${event.tenant.id.toUpperCase()}`;
