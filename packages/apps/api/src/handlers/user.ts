@@ -107,10 +107,10 @@ export function updateUser(auth0Client: Auth0Client) {
       return;
     }
 
-    const auth0Update: APIResponse<Auth0User> = await auth0Client.updateUser(
+    const auth0Update: APIResponse<Auth0User> = await auth0Client.updateUser({
       userId,
-      newEmail
-    );
+      email: newEmail,
+    });
     if (auth0Update.status !== ResponseStatus.Success) {
       throw clientResponseToHttpError(auth0Update);
     }
