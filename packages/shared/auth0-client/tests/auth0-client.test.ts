@@ -82,7 +82,10 @@ describe('HTTP Auth0 client', () => {
     it('updates the email address of the user', async () => {
       const newEmail = 'new@email.com';
 
-      const response = await client.updateUser(userId, newEmail);
+      const response = await client.updateUser({
+        userId: userId,
+        email: newEmail,
+      });
       expect(response.status).toBe(ResponseStatus.Success);
 
       const result = (<SuccessResponse<Auth0User>>response).result;
@@ -105,7 +108,7 @@ describe('HTTP Auth0 client', () => {
           )
         )
       );
-      const response = await client.updateUser(userId, email);
+      const response = await client.updateUser({ userId, email });
       expect(response.status).toBe(ResponseStatus.UserAlreadyExists);
     });
 
@@ -114,7 +117,7 @@ describe('HTTP Auth0 client', () => {
         rest.patch(routeUrls.user, (req, res, ctx) => res(ctx.status(400)))
       );
 
-      const response = await client.updateUser(userId, email);
+      const response = await client.updateUser({ userId, email });
       expect(response.status).toBe(ResponseStatus.MalformedRequest);
     });
 
@@ -123,7 +126,7 @@ describe('HTTP Auth0 client', () => {
         rest.patch(routeUrls.user, (req, res, ctx) => res(ctx.status(404)))
       );
 
-      const response = await client.updateUser(userId, email);
+      const response = await client.updateUser({ userId, email });
       expect(response.status).toBe(ResponseStatus.NotFound);
     });
 
@@ -132,7 +135,7 @@ describe('HTTP Auth0 client', () => {
         rest.patch(routeUrls.user, (req, res, ctx) => res(ctx.status(500)))
       );
 
-      const response = await client.updateUser(userId, email);
+      const response = await client.updateUser({ userId, email });
       expect(response.status).toBe(ResponseStatus.UnknownError);
     });
   });
