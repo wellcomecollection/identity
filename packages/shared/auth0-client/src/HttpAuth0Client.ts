@@ -132,7 +132,11 @@ export default class HttpAuth0Client implements Auth0Client {
     return this.getMachineToMachineInstance().then((instance) => {
       const names =
         firstName && lastName
-          ? { given_name: firstName, family_name: lastName }
+          ? {
+              given_name: firstName,
+              family_name: lastName,
+              name: `${firstName} ${lastName}`,
+            }
           : {};
       return instance
         .patch(
