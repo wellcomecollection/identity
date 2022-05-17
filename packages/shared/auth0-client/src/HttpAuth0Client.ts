@@ -115,6 +115,16 @@ export default class HttpAuth0Client implements Auth0Client {
 
   async updateUser(
     userId: number,
+    email: string
+  ): Promise<APIResponse<Auth0User>>;
+  async updateUser(
+    userId: number,
+    email: string,
+    firstName: string,
+    lastName: string
+  ): Promise<APIResponse<Auth0User>>;
+  async updateUser(
+    userId: number,
     email: string,
     firstName?: string,
     lastName?: string

@@ -16,11 +16,12 @@ export default interface Auth0Client {
 
   deleteUser(userId: number): Promise<APIResponse<void>>;
 
+  updateUser(userId: number, email: string): Promise<APIResponse<Auth0User>>;
   updateUser(
     userId: number,
     email: string,
-    firstName?: string,
-    lastName?: string
+    firstName: string,
+    lastName: string
   ): Promise<APIResponse<Auth0User>>;
 
   setAppMetadata(
