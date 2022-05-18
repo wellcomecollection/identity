@@ -89,6 +89,8 @@ export type EventStats = {
 };
 
 export type EventSecrets = {
+  AUTH0_ACTION_URL_STAGE: string;
+  AUTH0_ACTION_URL: string;
   AUTH0_ACTION_SECRET: string;
 };
 
@@ -144,7 +146,7 @@ export type APIIdToken<UserType extends User = User> = {
 export type APIRedirect<UserType extends User = User> = {
   sendUserTo: <SendUserObject>(
     url: string,
-    SendUserObject: SendUserObject
+    query: SendUserObject
   ) => API<UserType>;
   encodeToken: <T>(EncodedToken: T) => API<UserType>;
   validateToken: <T>(ValidatedToken: T) => API<UserType>;
@@ -152,6 +154,13 @@ export type APIRedirect<UserType extends User = User> = {
 
 export type TokenPayloadObject = {
   terms_and_conditions_accepted: boolean;
+  iss: string;
+  sub: string;
+};
+
+export type encodedTokenPayloadObject = {
+  iss: string;
+  sub: string;
 };
 
 export type SendUserObject = {
@@ -165,6 +174,7 @@ export type ValidatedToken = {
 
 export type EncodedToken = {
   secret: string;
+  payload: encodedTokenPayloadObject;
 };
 
 export type APIMultifactorProvider =

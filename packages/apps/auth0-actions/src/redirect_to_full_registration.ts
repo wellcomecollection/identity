@@ -5,16 +5,16 @@ export const onExecutePostLogin = async (
   event: Event<Auth0User>,
   api: API<Auth0User>
 ) => {
-  console.log('<<< WE ARE IN POST LOGIN');
-  const REGISTRATION_FORM_URL = `https://${
-    event.secrets
-  }.AUTH0_ACTION_URL_${event.tenant.id.toUpperCase()}`;
-  // If the user has accepted the terms and we have their first and last name already, we don't need
+  const env = event.tenant.id.includes('stage')
+    ? event.secrets.AUTH0_ACTION_URL_STAGE
+    : event.secrets.AUTH0_ACTION_URL;
+  const REGISTRATION_FORM_URL: string = `https://${env}`;
+  // If the user has accepted the terms, and we have their first and last name already, we don't need
   // to do anything else so bail out here
   if (
     event.user.app_metadata?.terms_and_conditions_accepted &&
-    event.user.given_name &&
-    event.user.family_name
+    !event.user.given_name &&
+    !event.user.family_name
   )
     return;
 
@@ -36,12 +36,16 @@ export const onExecutePostLogin = async (
     },
   });
 
-  api.redirect.sendUserTo(REGISTRATION_FORM_URL, {
-    query: {
-      session_token: sessionToken,
-      redirect_uri: `https://${event.request.hostname}/continue`,
-    },
-  });
+  try {
+    api.redirect.sendUserTo(REGISTRATION_FORM_URL, {
+      query: {
+        session_token: sessionToken,
+        redirect_uri: `https://${event.request.hostname}/continue`,
+      },
+    });
+  } catch (error) {
+    console.error(error, 'Redirectiong to full registration form failed');
+  }
 };
 
 // Handler that will be invoked when this action is resuming after an external redirect. If your
@@ -56,7 +60,7 @@ export const onContinuePostLogin = async (
   }.AUTH0_ACTION_URL_${event.tenant.id.toUpperCase()}/success`;
 
   // Once the full registration form has been submitted, it is signed with JWT handler on Identity App (Weco)
-  // This jwt token is sent back to /continue on auth0 actions and we validate/decode the token to get formData
+  // This jwt token is sent back to /continue on auth0 actions, and we validate/decode the token to get formData
   // On success of full registration form submission at Identity API updateUserAfterRegistration endpoint
   // we redirect to /continue with encoded formData from the endpoint
   // any data we send to /continue is tokenized and validated below
