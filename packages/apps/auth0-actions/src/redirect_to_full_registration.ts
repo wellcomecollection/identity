@@ -55,9 +55,10 @@ export const onContinuePostLogin = async (
   event: Event<Auth0User>,
   api: API<Auth0User>
 ) => {
-  const SUCCESS_URL = `https://${
-    event.secrets
-  }.AUTH0_ACTION_URL_${event.tenant.id.toUpperCase()}/success`;
+  const envUrl = event.tenant.id.includes('stage')
+    ? event.secrets.AUTH0_ACTION_URL_STAGE
+    : event.secrets.AUTH0_ACTION_URL;
+  const SUCCESS_URL = `https://${envUrl}/success`;
 
   // Once the full registration form has been submitted, it is signed with JWT handler on Identity App (Weco)
   // This jwt token is sent back to /continue on auth0 actions, and we validate/decode the token to get formData
@@ -69,11 +70,9 @@ export const onContinuePostLogin = async (
     secret: event.secrets.AUTH0_ACTION_SECRET,
     tokenParameterName: 'token',
   });
-
   api.user.setAppMetadata(
     'terms_and_conditions_accepted',
     Boolean(event.user.app_metadata?.terms_and_conditions_accepted)
   );
-
   api.redirect.sendUserTo(SUCCESS_URL, { query: { success: 'true' } });
 };

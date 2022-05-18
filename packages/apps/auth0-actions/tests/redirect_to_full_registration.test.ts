@@ -1,4 +1,7 @@
-import { onExecutePostLogin } from '../src/redirect_to_full_registration';
+import {
+  onContinuePostLogin,
+  onExecutePostLogin,
+} from '../src/redirect_to_full_registration';
 import {
   API,
   EncodedToken,
@@ -81,6 +84,41 @@ describe('redirect_to_full_registration', () => {
       REGISTRATION_FORM_URL,
       sendUserQuery
     );
+  });
+
+  it('sets appMetadata terms_and_conditions_accepted to true once form is submitted to /continue', () => {
+    jest.clearAllMocks();
+    const auth0SecretsObject = {
+      AUTH0_ACTION_URL_STAGE: 'stage.wellcomecollection.org',
+      AUTH0_ACTION_SECRET: 'ABCDEFG1234',
+    };
+
+    const submittedFullRegistrationUser: Auth0User = {
+      app_metadata: { terms_and_conditions_accepted: true },
+    } as Auth0User;
+
+    const event = {
+      submittedFullRegistrationUser,
+      tenant: { id: 'tenant_stage' } as EventTenant,
+      request: { hostname: 'stage.wellcomecollection.org' } as EventRequest,
+      secrets: auth0SecretsObject as EventSecrets,
+    };
+
+    const continueNewUserEvent = (
+      submittedFullRegistrationUser: Auth0User
+    ): Event<Auth0User> =>
+      ({
+        user: submittedFullRegistrationUser as Auth0User,
+        tenant: { id: 'tenant_stage' } as EventTenant,
+        request: { hostname: 'stage.wellcomecollection.org' } as EventRequest,
+        secrets: auth0SecretsObject as EventSecrets,
+      } as Event<Auth0User>);
+    const envUrl = event.secrets.AUTH0_ACTION_URL_STAGE;
+    const successUrl = `https://${envUrl}/success`;
+    onContinuePostLogin(continueNewUserEvent(user), mockPostLoginApi);
+    expect(
+      mockPostLoginApi.redirect.sendUserTo
+    ).toHaveBeenLastCalledWith(successUrl, { query: { success: 'true' } });
   });
 });
 
