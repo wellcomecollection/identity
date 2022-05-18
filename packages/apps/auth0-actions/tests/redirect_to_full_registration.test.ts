@@ -16,9 +16,7 @@ describe('redirect_to_full_registration', () => {
   } as Auth0User;
 
   const createEvent = (user: Auth0User): Event<Auth0User> =>
-    ({
-      user,
-    } as Event<Auth0User>);
+    ({ user } as Event<Auth0User>);
 
   it('will not redirect the user if terms_and_conditions_accepted is false', () => {
     onExecutePostLogin(createEvent(user), mockPostLoginApi);
