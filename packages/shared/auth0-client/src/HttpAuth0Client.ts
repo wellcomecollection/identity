@@ -10,7 +10,7 @@ import {
   unhandledError,
 } from '@weco/identity-common';
 import { Auth0User, SierraConnection, SierraUserIdPrefix } from './auth0';
-import Auth0Client from './Auth0Client';
+import Auth0Client, { Auth0UserInput } from './Auth0Client';
 
 export default class HttpAuth0Client implements Auth0Client {
   private readonly apiRoot: string;
@@ -113,11 +113,17 @@ export default class HttpAuth0Client implements Auth0Client {
     }
   }
 
-  async updateUser(
-    userId: number,
-    email: string
-  ): Promise<APIResponse<Auth0User>> {
+  async updateUser(userInput: Auth0UserInput): Promise<APIResponse<Auth0User>> {
+    const { firstName, lastName, email, userId } = userInput;
     return this.getMachineToMachineInstance().then((instance) => {
+      const names =
+        firstName && lastName
+          ? {
+              given_name: firstName,
+              family_name: lastName,
+              name: `${firstName} ${lastName}`,
+            }
+          : {};
       return instance
         .patch(
           '/users/' + SierraUserIdPrefix + userId,
@@ -126,6 +132,7 @@ export default class HttpAuth0Client implements Auth0Client {
             email: email,
             verify_email: true,
             connection: SierraConnection,
+            ...names,
           },
           {
             validateStatus: (status) => status === 200,

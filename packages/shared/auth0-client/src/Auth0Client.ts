@@ -1,6 +1,13 @@
 import { APIResponse } from '@weco/identity-common';
 import { AppMetadata, Auth0User } from './auth0';
 
+export type Auth0UserInput = {
+  userId: number;
+  email: string;
+  firstName?: string;
+  lastName?: string;
+};
+
 export default interface Auth0Client {
   validateUserCredentials(
     sourceIp: string,
@@ -16,7 +23,7 @@ export default interface Auth0Client {
 
   deleteUser(userId: number): Promise<APIResponse<void>>;
 
-  updateUser(userId: number, email: string): Promise<APIResponse<Auth0User>>;
+  updateUser(userInput: Auth0UserInput): Promise<APIResponse<Auth0User>>;
 
   setAppMetadata(
     userId: number,
