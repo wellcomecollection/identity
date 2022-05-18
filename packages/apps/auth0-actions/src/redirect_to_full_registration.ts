@@ -5,10 +5,10 @@ export const onExecutePostLogin = async (
   event: Event<Auth0User>,
   api: API<Auth0User>
 ) => {
-  const env = event.tenant.id.includes('stage')
+  const envUrl = event.tenant.id.includes('stage')
     ? event.secrets.AUTH0_ACTION_URL_STAGE
     : event.secrets.AUTH0_ACTION_URL;
-  const REGISTRATION_FORM_URL: string = `https://${env}`;
+  const REGISTRATION_FORM_URL: string = `https://${envUrl}`;
   // If the user has accepted the terms, and we have their first and last name already, we don't need
   // to do anything else so bail out here
   if (

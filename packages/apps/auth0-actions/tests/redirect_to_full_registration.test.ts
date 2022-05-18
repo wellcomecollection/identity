@@ -56,8 +56,8 @@ describe('redirect_to_full_registration', () => {
       app_metadata: { terms_and_conditions_accepted: false, role: '' },
     };
 
-    const env = event.secrets.AUTH0_ACTION_URL_STAGE;
-    const REGISTRATION_FORM_URL = `https://${env}`;
+    const envUrl = event.secrets.AUTH0_ACTION_URL_STAGE;
+    const REGISTRATION_FORM_URL = `https://${envUrl}`;
 
     const encodeTokenPayload: EncodedToken = {
       secret: 'ABCDEFG1234',
