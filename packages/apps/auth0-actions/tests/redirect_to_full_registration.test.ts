@@ -7,7 +7,6 @@ import {
   EventTenant,
   EventSecrets,
   SendUserObject,
-  EventTransaction,
 } from '../src/types/post-login';
 import { Auth0User } from '@weco/auth0-client';
 
