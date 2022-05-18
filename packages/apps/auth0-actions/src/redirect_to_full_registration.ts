@@ -13,8 +13,8 @@ export const onExecutePostLogin = async (
   // to do anything else so bail out here
   if (
     event.user.app_metadata?.terms_and_conditions_accepted &&
-    !event.user.given_name &&
-    !event.user.family_name
+    Boolean(event.user.given_name) &&
+    Boolean(event.user.family_name)
   )
     return;
 
