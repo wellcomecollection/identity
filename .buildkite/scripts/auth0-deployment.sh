@@ -9,9 +9,12 @@ AUTH0_ACTIONS_FILE="/app/.buildkite/build/auth0-actions.json"
 DATABASE_SCRIPTS="get_user login change_password change_email verify create delete"
 ACTIONS="add_custom_claims"
 
+# Use --env=true with a0deploy as per
+# https://github.com/auth0/auth0-deploy-cli/issues/544
+
 function __do_deployment() {
   mkdir -p ${AUTH0_EXPORT_DIR}
-  a0deploy export --format directory --output_folder "${AUTH0_EXPORT_DIR}/"
+  a0deploy --env=true export --format directory --output_folder "${AUTH0_EXPORT_DIR}/"
 
   # Deploy database scripts
   for script in ${DATABASE_SCRIPTS}
@@ -26,7 +29,7 @@ function __do_deployment() {
     cp -v "${ACTIONS_BUILD_DIR}/${action}.js" "${AUTH0_EXPORT_DIR}/actions/${action_name}/code.js"
   done
 
-  a0deploy import --input_file "${AUTH0_EXPORT_DIR}/"
+  a0deploy --env=true import --input_file "${AUTH0_EXPORT_DIR}/"
 }
 
 __do_deployment
