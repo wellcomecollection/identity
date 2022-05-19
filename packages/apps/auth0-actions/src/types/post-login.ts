@@ -15,6 +15,7 @@ export type Event<UserType extends User = User> = {
   transaction?: EventTransaction;
   user: UserType;
   secrets: EventSecrets;
+  terms_and_conditions_accepted: boolean;
 };
 
 export type AuthenticationMethodName =
@@ -123,6 +124,7 @@ export type EventTransaction = {
 
 // https://auth0.com/docs/actions/triggers/post-login/api-object
 export type API<UserType extends User = User> = {
+  terms_and_conditions_accepted: boolean;
   access: APIAccess<UserType>;
   accessToken: APIAccessToken<UserType>;
   idToken: APIIdToken<UserType>;
@@ -149,13 +151,7 @@ export type APIRedirect<UserType extends User = User> = {
     query: SendUserObject
   ) => API<UserType>;
   encodeToken: <T>(EncodedToken: T) => API<UserType>;
-  validateToken: <T>(ValidatedToken: T) => API<UserType>;
-};
-
-export type TokenPayloadObject = {
-  terms_and_conditions_accepted: boolean;
-  iss: string;
-  sub: string;
+  validateToken: <T>(ValidateToken: T) => API<UserType>;
 };
 
 export type encodedTokenPayloadObject = {
@@ -167,9 +163,9 @@ export type SendUserObject = {
   query: object;
 };
 
-export type ValidatedToken = {
+export type ValidateToken = {
   secret: string;
-  payload: TokenPayloadObject;
+  tokenParameterName: string;
 };
 
 export type EncodedToken = {

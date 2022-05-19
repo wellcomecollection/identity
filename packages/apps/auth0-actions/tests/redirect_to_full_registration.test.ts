@@ -10,6 +10,8 @@ import {
   EventTenant,
   EventSecrets,
   SendUserObject,
+  ValidatedToken,
+  ValidateToken,
 } from '../src/types/post-login';
 import { Auth0User } from '@weco/auth0-client';
 
@@ -104,6 +106,11 @@ describe('redirect_to_full_registration', () => {
       secrets: auth0SecretsObject as EventSecrets,
     };
 
+    const validateTokenPayload: ValidateToken = {
+      secret: 'ABCDEFG1234',
+      tokenParameterName: 'token',
+    };
+
     const continueNewUserEvent = (
       submittedFullRegistrationUser: Auth0User
     ): Event<Auth0User> =>
@@ -115,7 +122,9 @@ describe('redirect_to_full_registration', () => {
       } as Event<Auth0User>);
     const envUrl = event.secrets.AUTH0_ACTION_URL_STAGE;
     const successUrl = `https://${envUrl}/success`;
+    const payload = { terms_and_conditions_accepted: true };
     onContinuePostLogin(continueNewUserEvent(user), mockPostLoginApi);
+    expect(mockPostLoginApi.redirect.validateToken).toReturnWith(payload);
     expect(
       mockPostLoginApi.redirect.sendUserTo
     ).toHaveBeenLastCalledWith(successUrl, { query: { success: 'true' } });
@@ -141,7 +150,9 @@ const mockPostLoginApi: API<Auth0User> = {
   },
   redirect: {
     encodeToken: jest.fn(() => mockPostLoginApi),
-    validateToken: jest.fn(() => mockPostLoginApi),
+    validateToken: jest
+      .fn()
+      .mockReturnValue({ terms_and_conditions_accepted: true }),
     sendUserTo: jest.fn(() => mockPostLoginApi),
   },
 };

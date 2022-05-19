@@ -1,5 +1,11 @@
 import { Auth0User } from '@weco/auth0-client';
-import { Event, API } from './types/post-login';
+import {
+  Event,
+  API,
+  ValidatedToken,
+  TokenPayloadObject,
+} from './types/post-login';
+import { AppMetadata, User } from 'auth0';
 
 export const onExecutePostLogin = async (
   event: Event<Auth0User>,
@@ -44,7 +50,7 @@ export const onExecutePostLogin = async (
       },
     });
   } catch (error) {
-    console.error(error, 'Redirectiong to full registration form failed');
+    console.error(error, 'Redirection to full registration form failed');
   }
 };
 
@@ -66,13 +72,18 @@ export const onContinuePostLogin = async (
   // we redirect to /continue with encoded formData from the endpoint
   // any data we send to /continue is tokenized and validated below
 
-  const payload = api.redirect.validateToken({
-    secret: event.secrets.AUTH0_ACTION_SECRET,
-    tokenParameterName: 'token',
-  });
-  api.user.setAppMetadata(
-    'terms_and_conditions_accepted',
-    Boolean(event.user.app_metadata?.terms_and_conditions_accepted)
-  );
-  api.redirect.sendUserTo(SUCCESS_URL, { query: { success: 'true' } });
+  try {
+    const payload = api.redirect.validateToken({
+      secret: event.secrets.AUTH0_ACTION_SECRET,
+      tokenParameterName: 'token',
+    });
+
+    api.user.setAppMetadata(
+      'terms_and_conditions_accepted',
+      Boolean(payload.terms_and_conditions_accepted)
+    );
+    api.redirect.sendUserTo(SUCCESS_URL, { query: { success: 'true' } });
+  } catch (error) {
+    console.error(error, 'Validation of redirect token failed');
+  }
 };
