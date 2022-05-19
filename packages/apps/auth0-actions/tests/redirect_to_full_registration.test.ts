@@ -132,6 +132,7 @@ describe('redirect_to_full_registration', () => {
 });
 
 const mockPostLoginApi: API<Auth0User> = {
+  terms_and_conditions_accepted: true,
   access: {
     deny: jest.fn(() => mockPostLoginApi),
   },
