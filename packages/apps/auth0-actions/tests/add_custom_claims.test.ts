@@ -43,6 +43,7 @@ describe('add_custom_claims', () => {
 });
 
 const mockPostLoginApi: API<Auth0User> = {
+  terms_and_conditions_accepted: true,
   access: {
     deny: jest.fn(() => mockPostLoginApi),
   },

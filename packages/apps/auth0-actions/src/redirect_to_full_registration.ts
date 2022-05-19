@@ -1,11 +1,5 @@
 import { Auth0User } from '@weco/auth0-client';
-import {
-  Event,
-  API,
-  ValidatedToken,
-  TokenPayloadObject,
-} from './types/post-login';
-import { AppMetadata, User } from 'auth0';
+import { Event, API } from './types/post-login';
 
 export const onExecutePostLogin = async (
   event: Event<Auth0User>,
