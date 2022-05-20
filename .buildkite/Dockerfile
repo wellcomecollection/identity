@@ -2,7 +2,7 @@ FROM fedora:33
 
 SHELL ["/bin/bash", "-ox", "pipefail", "-c"]
 
-ARG A0DEPLOY_VERSION=7.12.1
+ARG A0DEPLOY_VERSION=7.12.2
 RUN dnf -y install git zip unzip findutils python3 python3-pip npm jq tar xz which moreutils \
     && dnf clean all \
     && rm -rf /var/cache/yum \

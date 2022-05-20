@@ -1,6 +1,6 @@
 steps:
   # Deploy any changes to Auth0 scripts/actions
-  - name: "auth0 deployment"
+  - name: "auth0 scripts deployment"
     concurrency: 1
     concurrency_group: "identity-deployment/auth0"
     command:
