@@ -29,7 +29,8 @@ steps:
   # Deploy any changes to Auth0 universal-login
   - name: "auth0 universal-login deployment"
     concurrency: 1
-    concurrency_group: "identity-deployment/universal-login"
+    # Same as the Auth0 script deployment so as not to hit Auth0 API rate limits
+    concurrency_group: "identity-deployment/auth0"
     plugins:
       - wellcomecollection/aws-assume-role#v0.2.2:
           role: "arn:aws:iam::770700576653:role/identity-ci"
