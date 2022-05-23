@@ -28,18 +28,18 @@ resource "auth0_action" "redirect_to_full_registration" {
   }
 
   secrets {
-    name: AUTH0_ACTION_URL
-    value: redirect_action_url.client_secret
+    name  = AUTH0_ACTION_URL
+    value = redirect_action_url.client_secret
   }
 
   secrets {
-    name: AUTH0_ACTION_URL_STAGE
-    value: redirect_action_url_stage.client_secret
+    name  = AUTH0_ACTION_URL_STAGE
+    value = redirect_action_url_stage.client_secret
   }
 
   secrets {
-    name: AUTH0_ACTION_SECRET
-    value: redirect_action_secret.client_secret
+    name  = AUTH0_ACTION_SECRET
+    value = redirect_action_secret.client_secret
   }
 }
 
