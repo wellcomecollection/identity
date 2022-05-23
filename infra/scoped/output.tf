@@ -61,6 +61,7 @@ output "auth0_actions" {
   value = {
     names = {
       add_custom_claims = auth0_action.add_custom_claims.name
+      redirect_to_full_registration = auth0_action.redirect_to_full_registration.name
     }
   }
 }
