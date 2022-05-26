@@ -35,14 +35,6 @@ data "aws_secretsmanager_secret_version" "redirect_action_url" {
   secret_id = aws_secretsmanager_secret.redirect_action_url.id
 }
 
-resource "aws_secretsmanager_secret" "redirect_action_url_stage" {
-  name = "identity/${terraform.workspace}/redirect_action_url_stage"
-}
-
-data "aws_secretsmanager_secret_version" "redirect_action_url" {
-  secret_id = aws_secretsmanager_secret.redirect_action_url.id
-}
-
 resource "aws_secretsmanager_secret" "redirect_action_secret" {
   name = "identity/${terraform.workspace}/redirect_action_secret"
 }
