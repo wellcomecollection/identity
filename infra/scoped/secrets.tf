@@ -23,7 +23,7 @@ resource "aws_secretsmanager_secret" "openathens_callback_url" {
 }
 
 data "aws_secretsmanager_secret_version" "openathens_callback_url" {
-  secret_id = aws_secretsmanager_secret.openathens_callback_url.id
+  client_secret = aws_secretsmanager_secret.openathens_callback_url.id
 }
 
 # auth0 action configuration
@@ -32,7 +32,7 @@ resource "aws_secretsmanager_secret" "redirect_action_url" {
 }
 
 data "aws_secretsmanager_secret_version" "redirect_action_url" {
-  secret_id = aws_secretsmanager_secret.redirect_action_url.id
+  client_secret = aws_secretsmanager_secret.redirect_action_url.id
 }
 
 resource "aws_secretsmanager_secret" "redirect_action_secret" {
@@ -40,7 +40,7 @@ resource "aws_secretsmanager_secret" "redirect_action_secret" {
 }
 
 data "aws_secretsmanager_secret_version" "redirect_action_secret" {
-  secret_id = aws_secretsmanager_secret.redirect_action_secret.id
+  client_secret = aws_secretsmanager_secret.redirect_action_secret.id
 }
 
 # Email provider credentials
