@@ -29,17 +29,17 @@ resource "auth0_action" "redirect_to_full_registration" {
 
   secrets {
     name  = "AUTH0_ACTION_URL"
-    value = redirect_action_url.client_secret
+    value = redirect_action_url.secret_id
   }
 
   secrets {
     name  = "AUTH0_ACTION_URL_STAGE"
-    value = redirect_action_url_stage.client_secret
+    value = redirect_action_url_stage.secret_id
   }
 
   secrets {
     name  = "AUTH0_ACTION_SECRET"
-    value = redirect_action_secret.client_secret
+    value = redirect_action_secret.secret_id
   }
 }
 
