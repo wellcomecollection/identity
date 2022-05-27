@@ -32,7 +32,7 @@ resource "aws_secretsmanager_secret" "redirect_action_url" {
 }
 
 data "aws_secretsmanager_secret_version" "redirect_action_url" {
-  secret_id = aws_secretsmanager_secret.redirect_action_url.id
+  secret_id = data.aws_secretsmanager_secret.redirect_action_url.id
 }
 
 resource "aws_secretsmanager_secret" "redirect_action_secret" {
@@ -40,7 +40,7 @@ resource "aws_secretsmanager_secret" "redirect_action_secret" {
 }
 
 data "aws_secretsmanager_secret_version" "redirect_action_secret" {
-  secret_id = aws_secretsmanager_secret.redirect_action_secret.id
+  secret_id = data.aws_secretsmanager_secret.redirect_action_secret.id
 }
 
 # Email provider credentials
