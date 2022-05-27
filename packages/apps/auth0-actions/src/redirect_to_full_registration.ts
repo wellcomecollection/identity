@@ -5,7 +5,6 @@ export const onExecutePostLogin = async (
   event: Event<Auth0User>,
   api: API<Auth0User>
 ) => {
-
   const REGISTRATION_FORM_URL: string = event.secrets.IDENTITY_APP_BASEURL;
   // If the user has accepted the terms, and we have their first and last name already, we don't need
   // to do anything else so bail out here
@@ -53,8 +52,7 @@ export const onContinuePostLogin = async (
   event: Event<Auth0User>,
   api: API<Auth0User>
 ) => {
-
-  const SUCCESS_URL = `https://${IDENTITY_APP_BASEURL}/success`;
+  const SUCCESS_URL = `https://${event.secrets.IDENTITY_APP_BASEURL}/success`;
 
   // Once the full registration form has been submitted, it is signed with JWT handler on Identity App (Weco)
   // This jwt token is sent back to /continue on auth0 actions, and we validate/decode the token to get formData

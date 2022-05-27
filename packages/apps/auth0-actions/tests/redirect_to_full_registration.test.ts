@@ -30,8 +30,8 @@ describe('redirect_to_full_registration', () => {
   it('redirects the user if terms_and_conditions_accepted is true and firstname, surname is present', () => {
     jest.clearAllMocks();
     const auth0SecretsObject = {
-      AUTH0_ACTION_URL_STAGE: 'stage.wellcomecollection.org',
-      AUTH0_ACTION_SECRET: 'ABCDEFG1234',
+      IDENTITY_APP_BASEURL: 'stage.wellcomecollection.org',
+      AUTH0_PAYLOAD_SECRET: 'ABCDEFG1234',
     };
 
     const event = {
@@ -57,8 +57,7 @@ describe('redirect_to_full_registration', () => {
       app_metadata: { terms_and_conditions_accepted: false, role: '' },
     };
 
-    const envUrl = event.secrets.AUTH0_ACTION_URL_STAGE;
-    const REGISTRATION_FORM_URL = `https://${envUrl}`;
+    const REGISTRATION_FORM_URL = event.secrets.IDENTITY_APP_BASEURL;
 
     const encodeTokenPayload: EncodedToken = {
       secret: 'ABCDEFG1234',
@@ -90,8 +89,8 @@ describe('redirect_to_full_registration', () => {
   it('sets appMetadata terms_and_conditions_accepted to true once form is submitted to /continue', () => {
     jest.clearAllMocks();
     const auth0SecretsObject = {
-      AUTH0_ACTION_URL_STAGE: 'stage.wellcomecollection.org',
-      AUTH0_ACTION_SECRET: 'ABCDEFG1234',
+      IDENTITY_APP_BASEURL: 'stage.wellcomecollection.org',
+      AUTH0_PAYLOAD_SECRET: 'ABCDEFG1234',
     };
 
     const submittedFullRegistrationUser: Auth0User = {
@@ -119,8 +118,8 @@ describe('redirect_to_full_registration', () => {
         request: { hostname: 'stage.wellcomecollection.org' } as EventRequest,
         secrets: auth0SecretsObject as EventSecrets,
       } as Event<Auth0User>);
-    const envUrl = event.secrets.AUTH0_ACTION_URL_STAGE;
-    const successUrl = `https://${envUrl}/success`;
+
+    const successUrl = `https://${event.secrets.IDENTITY_APP_BASEURL}/success`;
     const payload = { terms_and_conditions_accepted: true };
     onContinuePostLogin(continueNewUserEvent(user), mockPostLoginApi);
     expect(mockPostLoginApi.redirect.validateToken).toReturnWith(payload);
