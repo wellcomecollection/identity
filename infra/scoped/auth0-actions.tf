@@ -34,7 +34,7 @@ resource "auth0_action" "redirect_to_full_registration" {
 
   secrets {
     name  = "AUTH0_PAYLOAD_SECRET"
-    value = data.aws_secretsmanager_secret_version.redirect_action_secret.secret_string   
+    value = data.aws_secretsmanager_secret_version.redirect_action_secret.secret_string
   }
 }
 
