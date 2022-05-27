@@ -67,6 +67,7 @@ locals {
   ams_error_uri            = "${local.wellcome_collection_site_uri}/${local.ams_context_path}/error"
   ams_validate_uri         = "${local.wellcome_collection_site_uri}/${local.ams_context_path}/validated"
   ams_delete_requested_uri = "${local.wellcome_collection_site_uri}/${local.ams_context_path}/delete-requested"
+  ams_registration_uri     = "${local.wellcome_collection_site_uri}/${local.ams_context_path}/registration"
 
   # Identity account VPC
   identity_account_state = data.terraform_remote_state.accounts_identity.outputs

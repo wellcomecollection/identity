@@ -26,6 +26,15 @@ data "aws_secretsmanager_secret_version" "openathens_callback_url" {
   secret_id = aws_secretsmanager_secret.openathens_callback_url.id
 }
 
+# auth0 action configuration
+resource "aws_secretsmanager_secret" "redirect_action_secret" {
+  name = "identity/${terraform.workspace}/redirect_action_secret"
+}
+
+data "aws_secretsmanager_secret_version" "redirect_action_secret" {
+  secret_id = aws_secretsmanager_secret.redirect_action_secret.id
+}
+
 # Email provider credentials
 # From the "static" stack - credentials are from mailtrap.io in stage and SES in prod
 data "aws_secretsmanager_secret_version" "email_credentials_secret_version" {

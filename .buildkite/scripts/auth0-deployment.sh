@@ -7,7 +7,7 @@ AUTH0_EXPORT_DIR="/app/.buildkite/build/auth0-export"
 AUTH0_ACTIONS_FILE="/app/.buildkite/build/auth0-actions.json"
 
 DATABASE_SCRIPTS="get_user login change_password change_email verify create delete"
-ACTIONS="add_custom_claims"
+ACTIONS="add_custom_claims redirect_to_full_registration"
 
 # Use --env=true with a0deploy as per
 # https://github.com/auth0/auth0-deploy-cli/issues/544
