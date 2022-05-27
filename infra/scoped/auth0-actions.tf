@@ -29,7 +29,7 @@ resource "auth0_action" "redirect_to_full_registration" {
 
   secrets {
     name  = "IDENTITY_APP_BASEURL"
-    value = locals.ams_registration_uri 
+    value = local.account_management_system.ams_registration_uri
   }
 
   secrets {
