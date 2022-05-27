@@ -6,8 +6,6 @@ locals {
   clamped_n_subnets        = min(local.n_private_subnets, local.desired_task_count)
   routable_private_subnets = slice(local.private_subnets, 0, local.clamped_n_subnets)
 
-  es_secrets = data.terraform_remote_state.catalogue_api_shared.outputs["es_requests_secret_config"]
-
   apm_secret_config = {
     apm_server_url = "identity/api/apm_server_url"
     apm_secret     = "identity/api/apm_secret"
@@ -36,8 +34,10 @@ module "requests" {
     apm_service_name  = "requests-api"
     apm_environment   = terraform.workspace
     user_hold_limit   = local.per_user_hold_limit
+
+    catalogue_api_public_root = local.catalogue_api_public_root
   }
-  secrets = merge(local.es_secrets, local.apm_secret_config, {
+  secrets = merge(local.apm_secret_config, {
     sierra_api_key    = "sierra-api-credentials-${terraform.workspace}:SierraAPIKey"
     sierra_api_secret = "sierra-api-credentials-${terraform.workspace}:SierraAPISecret"
   })

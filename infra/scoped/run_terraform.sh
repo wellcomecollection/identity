@@ -1,6 +1,17 @@
 #!/usr/bin/env bash
 
+set -o errexit
+set -o nounset
+
 TERRAFORM_WORKSPACE=$(terraform workspace show)
+
+# If you don't select a workspace, the commands further down will fail
+# with non-obvious errors about non-existent Parameters and Secrets.
+if [[ "$TERRAFORM_WORKSPACE" != "stage" ]] && [[ "$TERRAFORM_WORKSPACE" != "prod" ]]
+then
+  echo "You must select a workspace before continuing, e.g. 'terraform workspace select stage'"
+  exit 1
+fi
 
 AWS_CLI_PROFILE="identity-terraform"
 IDENTITY_DEVELOPER_ARN="arn:aws:iam::770700576653:role/identity-developer"

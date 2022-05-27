@@ -39,6 +39,11 @@ resource "auth0_resource_server" "identity_api" {
     description = "Update password"
   }
 
+  scopes {
+    value       = "update:user"
+    description = "Update user info"
+  }
+
   // Applications are allowed refresh tokens
   allow_offline_access                            = true
   token_lifetime                                  = 60 * 60 // 1 hour

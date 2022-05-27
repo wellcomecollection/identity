@@ -1,4 +1,4 @@
-import Auth0Client from './Auth0Client';
+import Auth0Client, { Auth0UserInput } from './Auth0Client';
 import {
   APIResponse,
   errorResponse,
@@ -86,7 +86,8 @@ export default class MockAuth0Client implements Auth0Client {
     return errorResponse('Not found', ResponseStatus.NotFound);
   });
 
-  updateUser = jest.fn(async (userId: number, email: string) => {
+  updateUser = jest.fn(async (userInput: Auth0UserInput) => {
+    const { userId, email } = userInput;
     const maybeUser = this.users.get(userId.toString());
     if (maybeUser) {
       for (const user of this.users.values()) {

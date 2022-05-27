@@ -48,6 +48,36 @@ export function getUser(auth0Client: Auth0Client) {
   };
 }
 
+export function updateUserAfterRegistration(auth0Client: Auth0Client) {
+  return async function (request: Request, response: Response): Promise<void> {
+    const userId: number = getTargetUserId(request);
+    const firstName: string = request.body.firstName;
+    const lastName: string = request.body.lastName;
+
+    const auth0UserIdGet: APIResponse<Auth0User> = await auth0Client.getUserByUserId(
+      userId
+    );
+    if (auth0UserIdGet.status !== ResponseStatus.Success) {
+      throw clientResponseToHttpError(auth0UserIdGet);
+    }
+    const auth0Profile: Auth0User = auth0UserIdGet.result;
+
+    const auth0Update: APIResponse<Auth0User> = await auth0Client.updateUser({
+      userId,
+      email: auth0Profile.email,
+      firstName,
+      lastName,
+    });
+    if (auth0Update.status !== ResponseStatus.Success) {
+      throw clientResponseToHttpError(auth0Update);
+    }
+
+    // TODO: create patron record in Sierra
+
+    response.status(200).json(toUser(auth0Update.result));
+  };
+}
+
 export function updateUser(auth0Client: Auth0Client) {
   const checkPassword = passwordCheckerForUser(auth0Client);
   return async function (request: Request, response: Response): Promise<void> {
@@ -77,10 +107,10 @@ export function updateUser(auth0Client: Auth0Client) {
       return;
     }
 
-    const auth0Update: APIResponse<Auth0User> = await auth0Client.updateUser(
+    const auth0Update: APIResponse<Auth0User> = await auth0Client.updateUser({
       userId,
-      newEmail
-    );
+      email: newEmail,
+    });
     if (auth0Update.status !== ResponseStatus.Success) {
       throw clientResponseToHttpError(auth0Update);
     }

@@ -1,4 +1,5 @@
 import { User } from 'auth0';
+import { Url } from 'url';
 
 // https://auth0.com/docs/actions/triggers/post-login/event-object
 export type Event<UserType extends User = User> = {
@@ -13,6 +14,8 @@ export type Event<UserType extends User = User> = {
   tenant: EventTenant;
   transaction?: EventTransaction;
   user: UserType;
+  secrets: EventSecrets;
+  terms_and_conditions_accepted: boolean;
 };
 
 export type AuthenticationMethodName =
@@ -86,6 +89,12 @@ export type EventStats = {
   logins_count: number;
 };
 
+export type EventSecrets = {
+  AUTH0_ACTION_URL_STAGE: string;
+  AUTH0_ACTION_URL: string;
+  AUTH0_ACTION_SECRET: string;
+};
+
 export type EventTenant = {
   id: string;
 };
@@ -115,11 +124,13 @@ export type EventTransaction = {
 
 // https://auth0.com/docs/actions/triggers/post-login/api-object
 export type API<UserType extends User = User> = {
+  terms_and_conditions_accepted: boolean;
   access: APIAccess<UserType>;
   accessToken: APIAccessToken<UserType>;
   idToken: APIIdToken<UserType>;
   multifactor: APIMultifactor<UserType>;
   user: APIUser<UserType>;
+  redirect: APIRedirect<UserType>;
 };
 
 export type APIAccess<UserType extends User = User> = {
@@ -132,6 +143,34 @@ export type APIAccessToken<UserType extends User = User> = {
 
 export type APIIdToken<UserType extends User = User> = {
   setCustomClaim: <T>(name: string, value: T) => API<UserType>;
+};
+
+export type APIRedirect<UserType extends User = User> = {
+  sendUserTo: <SendUserObject>(
+    url: string,
+    query: SendUserObject
+  ) => API<UserType>;
+  encodeToken: <T>(EncodedToken: T) => API<UserType>;
+  validateToken: <T>(ValidateToken: T) => API<UserType>;
+};
+
+export type encodedTokenPayloadObject = {
+  iss: string;
+  sub: string;
+};
+
+export type SendUserObject = {
+  query: object;
+};
+
+export type ValidateToken = {
+  secret: string;
+  tokenParameterName: string;
+};
+
+export type EncodedToken = {
+  secret: string;
+  payload: encodedTokenPayloadObject;
 };
 
 export type APIMultifactorProvider =
@@ -152,12 +191,6 @@ export type APIMultifactor<UserType extends User = User> = {
 };
 
 export type APIUser<UserType extends User = User> = {
-  setUserMetadata: <K extends keyof UserType['user_metadata']>(
-    name: K,
-    value: UserType['user_metadata'][K] | null
-  ) => API<UserType>;
-  setAppMetadata: <K extends keyof UserType['app_metadata']>(
-    name: K,
-    value: UserType['app_metadata'][K] | null
-  ) => API<UserType>;
+  setUserMetadata: <T>(name: string, value: T) => API<UserType>;
+  setAppMetadata: <T>(name: string, value: T) => API<UserType>;
 };

@@ -50,19 +50,24 @@
         font-weight: bold;
         font-style: normal;
       }
+
       * {
         box-sizing: border-box;
       }
+
       /* hacky overrides of prompt styling */
       ._prompt-box-outer {
         width: auto !important;
       }
+
       ._prompt-box-outer > div {
         box-shadow: none !important;
       }
+
       ._prompt-box-outer h1 {
         display: none;
       }
+
       ._prompt-box-outer header {
         padding-top: 0;
         padding-left: 0;
@@ -71,29 +76,36 @@
         font-size: 16px;
         font-family: 'helvetica neue', helvetica, arial, sans-serif;
       }
+
       ._prompt-box-outer header + div {
         padding-left: 0;
         padding-right: 0;
       }
+
       ._prompt-box-outer * {
         text-align: left !important;
         font-size: 16px !important;
       }
+
       ._prompt-box-outer button {
         width: auto !important;
       }
+
       ._prompt-box-outer div {
         min-height: auto !important;
       }
+
       ._prompt-box-outer .success-email,
       ._prompt-box-outer .error-cross,
       ._prompt-box-outer .success-lock {
         /* these are icons */
         display: none;
       }
+
       ._prompt-box-outer [data-event-id] {
         padding-left: 0 !important;
       }
+
       /* end of hacky overrides of prompt styling */
       body {
         margin: 0;
@@ -103,49 +115,58 @@
         font-size: 16px;
         line-height: 1.5;
       }
+
       @media (min-width: 803px) {
         body {
           background: #f0ede3;
         }
       }
+
       .header {
         background: #ffffff;
         border-bottom: 1px solid #d9d6ce;
         height: 85px;
         padding-top: 19px;
       }
+
       .header-inner {
         position: relative;
         margin: 0px auto;
         max-width: 1338px;
         padding: 0px 18px;
       }
+
       @media (min-width: 600px) {
         .header-inner {
           padding: 0px 42px;
         }
       }
+
       @media (min-width: 960px) {
         .header-inner {
           padding: 0px 60px;
         }
       }
+
       .logo {
         display: inline-block;
         margin-left: 50%;
         transform: translateX(-50%);
       }
+
       @media (min-width: 803px) {
         .logo {
           margin: 0 auto;
           transform: none;
         }
       }
+
       .container {
         max-width: 802px;
         margin: 0 auto;
         background: #ffffff;
       }
+
       @media (min-width: 803px) {
         .container {
           margin-top: 72px;
@@ -153,33 +174,40 @@
           border-radius: 8px;
         }
       }
+
       .container-inner {
         max-width: 550px;
         margin: 30px auto;
         padding: 0 30px;
       }
+
       @media (min-width: 803px) {
         .container-inner {
           margin: 68px auto;
         }
       }
+
       h1 {
         font-family: 'Wellcome Bold Web Subset';
         font-size: 20px;
         margin: 0 0 12px 0;
       }
+
       p {
         margin: 0 0 22px 0;
       }
+
       body a {
         font-size: 16px;
         color: #121212;
         text-decoration: underline;
         font-weight: normal !important;
       }
+
       body a:hover {
         text-decoration: none;
       }
+
       @media (max-width: 802px) and (min-width: 0) {
         .visually-hidden-small {
           border: 0;
@@ -193,6 +221,7 @@
           white-space: nowrap;
         }
       }
+
       @media (min-width: 803px) {
         .hidden-large {
           display: none;
@@ -229,12 +258,7 @@
       <div class="container-inner">
         <!-- Here we need to show the description message -->
         <h1>{{ prompt.screen.texts.pageTitle }}</h1>
-        {% if prompt.name == "reset-password" %}
-        <p>
-          <strong>Note:</strong> Repeating characters, such as aaaa, ababab,
-          abcabc, won't be accepted as a password.
-        </p>
-        {% endif %} {% if prompt.name == "login" %}
+        {% if prompt.name == "login" %}
         <p>
           <strong>Note:</strong> Please use the email address connected to your
           library account to sign in. You'll no longer be able to use your

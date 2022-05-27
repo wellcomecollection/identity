@@ -13,6 +13,10 @@ const barcodeName = 'patron_barcode';
 const barcodeClaim = `${CLAIM_NAMESPACE}/${barcodeName}`;
 const barcodeScope = `${SCOPE_NAMESPACE}:${barcodeName}`;
 
+const roleName = 'patron_role';
+const roleClaim = `${CLAIM_NAMESPACE}/${roleName}`;
+const roleScope = `${SCOPE_NAMESPACE}:${roleName}`;
+
 const hasScope = <T>(event: Event<T>, scope: string): boolean =>
   !!event.transaction?.requested_scopes?.includes(scope);
 
@@ -23,5 +27,10 @@ export const onExecutePostLogin = async (
   const barcode = event.user.app_metadata?.barcode;
   if (barcode && hasScope(event, barcodeScope)) {
     api.idToken.setCustomClaim(barcodeClaim, barcode);
+  }
+
+  const role = event.user.app_metadata?.role;
+  if (role && hasScope(event, roleScope)) {
+    api.idToken.setCustomClaim(roleClaim, role);
   }
 };
