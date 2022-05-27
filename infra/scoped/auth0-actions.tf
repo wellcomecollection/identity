@@ -29,17 +29,12 @@ resource "auth0_action" "redirect_to_full_registration" {
 
   secrets {
     name  = "AUTH0_ACTION_URL"
-    value = aws_secretsmanager_secret.redirect_action_url
-  }
-
-  secrets {
-    name  = "AUTH0_ACTION_URL_STAGE"
-    value = aws_secretsmanager_secret.redirect_action_url_stage
+    value = data.aws_secretsmanager_secret_version.redirect_action_url.secret_string   
   }
 
   secrets {
     name  = "AUTH0_ACTION_SECRET"
-    value = aws_secretsmanager_secret.redirect_action_secret
+    value = data.aws_secretsmanager_secret_version.redirect_action_secret
   }
 }
 
