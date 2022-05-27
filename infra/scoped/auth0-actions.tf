@@ -28,13 +28,13 @@ resource "auth0_action" "redirect_to_full_registration" {
   }
 
   secrets {
-    name  = "AUTH0_ACTION_URL"
-    value = data.aws_secretsmanager_secret_version.redirect_action_url.secret_string   
+    name  = "IDENTITY_APP_BASEURL"
+    value = locals.ams_registration_uri 
   }
 
   secrets {
-    name  = "AUTH0_ACTION_SECRET"
-    value = data.aws_secretsmanager_secret_version.redirect_action_secret
+    name  = "AUTH0_PAYLOAD_SECRET"
+    value = data.aws_secretsmanager_secret_version.redirect_action_secret.secret_string   
   }
 }
 
