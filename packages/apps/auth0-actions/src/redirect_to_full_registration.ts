@@ -6,14 +6,12 @@ export const onExecutePostLogin = async (
   api: API<Auth0User>
 ) => {
   const REGISTRATION_FORM_URL: string = event.secrets.IDENTITY_APP_BASEURL;
-  // If the user has accepted the terms, and we have their first and last name already, we don't need
-  // to do anything else so bail out here
-  if (
-    event.user.app_metadata?.terms_and_conditions_accepted &&
-    Boolean(event.user.given_name) &&
-    Boolean(event.user.family_name)
-  )
+  // If we have the user's first and last name already, we don't need to do anything else so bail out here
+  // TODO: It would be good to improve this further by checking for app_metadata.terms_and_conditions_accepted here
+
+  if (Boolean(event.user.given_name) && Boolean(event.user.family_name)) {
     return;
+  }
 
   // We send the user straight to the full registration form after they first register email and password
   // Full registration form has three fields aka formData: firstname, lastname and terms_and_conditions_accepted
