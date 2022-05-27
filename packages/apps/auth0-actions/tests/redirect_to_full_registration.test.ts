@@ -16,7 +16,7 @@ import { Auth0User } from '@weco/auth0-client';
 
 describe('redirect_to_full_registration', () => {
   const user: Auth0User = {
-    app_metadata: { terms_and_conditions_accepted: false },
+    app_metadata: {},
   } as Auth0User;
 
   const createEvent = (user: Auth0User): Event<Auth0User> =>
@@ -27,11 +27,16 @@ describe('redirect_to_full_registration', () => {
     expect(mockPostLoginApi.redirect.sendUserTo).not.toBeCalled();
   });
 
-  it('redirects the user if terms_and_conditions_accepted is true and firstname, surname is present', () => {
+  it('redirects if the user firstname, surname is not present', () => {
     jest.clearAllMocks();
     const auth0SecretsObject = {
       IDENTITY_APP_BASEURL: 'stage.wellcomecollection.org',
       AUTH0_PAYLOAD_SECRET: 'ABCDEFG1234',
+    };
+    const newUser: Auth0User = {
+      user_id: 'p|12345',
+      email: 'raviravioli@pastatimes.com',
+      app_metadata: { role: '' },
     };
 
     const event = {
@@ -48,14 +53,6 @@ describe('redirect_to_full_registration', () => {
         request: { hostname: 'stage.wellcomecollection.org' } as EventRequest,
         secrets: auth0SecretsObject as EventSecrets,
       } as Event<Auth0User>);
-
-    const newUser: Auth0User = {
-      user_id: 'p|12345',
-      given_name: 'Ravi',
-      family_name: 'Ravioli',
-      email: 'raviravioli@pastatimes.com',
-      app_metadata: { terms_and_conditions_accepted: false, role: '' },
-    };
 
     const REGISTRATION_FORM_URL = event.secrets.IDENTITY_APP_BASEURL;
 
