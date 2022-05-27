@@ -119,7 +119,7 @@ describe('redirect_to_full_registration', () => {
         secrets: auth0SecretsObject as EventSecrets,
       } as Event<Auth0User>);
 
-    const successUrl = `https://${event.secrets.IDENTITY_APP_BASEURL}/success`;
+    const successUrl = `${event.secrets.IDENTITY_APP_BASEURL}/success`;
     const payload = { terms_and_conditions_accepted: true };
     onContinuePostLogin(continueNewUserEvent(user), mockPostLoginApi);
     expect(mockPostLoginApi.redirect.validateToken).toReturnWith(payload);
