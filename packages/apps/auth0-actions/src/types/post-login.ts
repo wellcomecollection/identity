@@ -90,9 +90,8 @@ export type EventStats = {
 };
 
 export type EventSecrets = {
-  AUTH0_ACTION_URL_STAGE: string;
-  AUTH0_ACTION_URL: string;
-  AUTH0_ACTION_SECRET: string;
+  IDENTITY_APP_BASEURL: string;
+  AUTH0_PAYLOAD_SECRET: string;
 };
 
 export type EventTenant = {

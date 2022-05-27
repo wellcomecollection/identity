@@ -5,10 +5,8 @@ export const onExecutePostLogin = async (
   event: Event<Auth0User>,
   api: API<Auth0User>
 ) => {
-  const envUrl = event.tenant.id.includes('stage')
-    ? event.secrets.AUTH0_ACTION_URL_STAGE
-    : event.secrets.AUTH0_ACTION_URL;
-  const REGISTRATION_FORM_URL: string = `https://${envUrl}`;
+
+  const REGISTRATION_FORM_URL: string = event.secrets.IDENTITY_APP_BASEURL;
   // If the user has accepted the terms, and we have their first and last name already, we don't need
   // to do anything else so bail out here
   if (
@@ -29,7 +27,7 @@ export const onExecutePostLogin = async (
 
   const sessionToken = api.redirect.encodeToken({
     // this token must match the one used in Identity API
-    secret: event.secrets.AUTH0_ACTION_SECRET,
+    secret: event.secrets.AUTH0_PAYLOAD_SECRET,
     payload: {
       iss: `https://${event.request.hostname}/`,
       sub: event.user.user_id,
@@ -55,10 +53,8 @@ export const onContinuePostLogin = async (
   event: Event<Auth0User>,
   api: API<Auth0User>
 ) => {
-  const envUrl = event.tenant.id.includes('stage')
-    ? event.secrets.AUTH0_ACTION_URL_STAGE
-    : event.secrets.AUTH0_ACTION_URL;
-  const SUCCESS_URL = `https://${envUrl}/success`;
+
+  const SUCCESS_URL = `https://${IDENTITY_APP_BASEURL}/success`;
 
   // Once the full registration form has been submitted, it is signed with JWT handler on Identity App (Weco)
   // This jwt token is sent back to /continue on auth0 actions, and we validate/decode the token to get formData
@@ -68,7 +64,7 @@ export const onContinuePostLogin = async (
 
   try {
     const payload = api.redirect.validateToken({
-      secret: event.secrets.AUTH0_ACTION_SECRET,
+      secret: event.secrets.AUTH0_PAYLOAD_SECRET,
       tokenParameterName: 'token',
     });
 
