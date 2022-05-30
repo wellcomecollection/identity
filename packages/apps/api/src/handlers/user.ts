@@ -5,6 +5,7 @@ import { toMessage } from '../models/common';
 import { clientResponseToHttpError, HttpError } from '../models/HttpError';
 import { toUser } from '../models/user';
 import { EmailClient } from '../utils/EmailClient';
+import { SierraClient } from '@weco/sierra-client';
 
 export function validatePassword(auth0Client: Auth0Client) {
   const checkPassword = passwordCheckerForUser(auth0Client);
@@ -48,7 +49,10 @@ export function getUser(auth0Client: Auth0Client) {
   };
 }
 
-export function updateUserAfterRegistration(auth0Client: Auth0Client) {
+export function updateUserAfterRegistration(
+  auth0Client: Auth0Client,
+  sierraClient: SierraClient
+) {
   return async function (request: Request, response: Response): Promise<void> {
     const userId: number = getTargetUserId(request);
     const firstName: string = request.body.firstName;
@@ -72,7 +76,14 @@ export function updateUserAfterRegistration(auth0Client: Auth0Client) {
       throw clientResponseToHttpError(auth0Update);
     }
 
-    // TODO: create patron record in Sierra
+    const createPatronResponse = await sierraClient.createPatron(
+      lastName,
+      firstName,
+      auth0Profile.email
+    );
+    if (createPatronResponse.status !== ResponseStatus.Success) {
+      throw clientResponseToHttpError(createPatronResponse);
+    }
 
     response.status(200).json(toUser(auth0Update.result));
   };
