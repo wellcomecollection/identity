@@ -1,4 +1,4 @@
-FROM fedora:33
+FROM public.ecr.aws/docker/library/fedora:33
 
 SHELL ["/bin/bash", "-ox", "pipefail", "-c"]
 
