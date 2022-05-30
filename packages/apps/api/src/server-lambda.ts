@@ -2,6 +2,7 @@ import { APIGatewayProxyEvent, Context } from 'aws-lambda';
 import * as awsServerlessExpress from 'aws-serverless-express';
 import { Server } from 'http';
 import { HttpAuth0Client, Auth0Client } from '@weco/auth0-client';
+import { HttpSierraClient } from '@weco/sierra-client';
 import { createApplication } from './app';
 import HttpEmailClient, { EmailClient } from './utils/EmailClient';
 
@@ -27,9 +28,16 @@ const emailClient: EmailClient = new HttpEmailClient(
   process.env.SUPPORT_URL!
 );
 
+const sierraClient = new HttpSierraClient(
+  process.env.API_ROOT,
+  process.env.CLIENT_KEY,
+  process.env.CLIENT_SECRET
+);
+
 const app = createApplication({
   auth0: auth0Client,
   email: emailClient,
+  sierra: sierraClient,
 });
 
 const server: Server = awsServerlessExpress.createServer(app, undefined, []);
