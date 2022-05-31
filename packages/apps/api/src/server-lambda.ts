@@ -29,9 +29,9 @@ const emailClient: EmailClient = new HttpEmailClient(
 );
 
 const sierraClient = new HttpSierraClient(
-  process.env.API_ROOT,
-  process.env.CLIENT_KEY,
-  process.env.CLIENT_SECRET
+  process.env.SIERRA_API_ROOT!,
+  process.env.SIERRA_CLIENT_KEY!,
+  process.env.SIERRA_CLIENT_SECRET!
 );
 
 const app = createApplication({
