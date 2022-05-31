@@ -10,7 +10,12 @@ import {
 import { applyTemplates } from './scripts/templates';
 
 type Template = 'universal-login';
-const prompts = ['login', 'reset-password', 'email-verification'] as const;
+const prompts = [
+  'login',
+  'reset-password',
+  'email-verification',
+  'signup',
+] as const;
 const emails = [
   'verify_email',
   'welcome_email',

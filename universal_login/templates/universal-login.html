@@ -264,19 +264,21 @@
           library account to sign in. You'll no longer be able to use your
           library card number or username.
         </p>
-        {% endif %} {%- auth0:widget -%} {% if prompt.name == "login" or
-        prompt.name == "signup" %}
+        {% endif %} {% if prompt.name == "signup" %}
         <p>
-          {% if prompt.name == "login" %}
+          For free access to our requesting service, subscription databases and
+          other online resources, please apply for a library membership.
+        </p>
+        <p>
+          <strong>Note:</strong> You don’t need a membership to visit the
+          library for the day or to view our digital collections.
+        </p>
+        {% endif %} {%- auth0:widget -%} {% if prompt.name == "login" %}
+        <p>
           <strong>Having trouble accessing your account?</strong>
           <a href="mailto:library@wellcomecollection.org"
             >Contact the library team.</a
           ><br />
-          {% endif %}
-          <strong>Not a library member?</strong>
-          <a href="https://wellcomecollection.org/pages/X_2eexEAACQAZLBi"
-            >Read more about joining the library.</a
-          >
         </p>
         {% endif %} {% if prompt.screen.name == "reset-password-success" %}
         <p>
