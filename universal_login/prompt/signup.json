@@ -1,0 +1,9 @@
+{
+  "signup": {
+    "pageTitle": "Apply for a library membership",
+    "description": " ",
+    "buttonText": "Continue",
+    "loginActionText": "Already have an account?",
+    "loginActionLinkText": "Sign in"
+  }
+}
