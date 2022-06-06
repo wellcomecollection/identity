@@ -14,6 +14,7 @@
   "dependencies": {
     "@weco/auth0-client": "*",
     "@weco/identity-common": "*",
+    "@weco/sierra-client": "*",
     "aws-serverless-express": "^3.3.8",
     "express": "^4.17.1",
     "express-async-handler": "^1.1.4",
