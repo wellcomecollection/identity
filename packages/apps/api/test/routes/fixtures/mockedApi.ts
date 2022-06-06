@@ -1,5 +1,6 @@
 import supertest = require('supertest');
 import { MockAuth0Client } from '@weco/auth0-client';
+import { MockSierraClient } from '@weco/sierra-client';
 import MockEmailClient from './MockEmailClient';
 import { createApplication } from '../../../src/app';
 import { Request } from 'supertest';
@@ -37,6 +38,7 @@ export const mockedApi = (existingUsers: ExistingUser[] = []) => {
   const mockClients = {
     auth0: new MockAuth0Client(),
     email: new MockEmailClient(),
+    sierra: new MockSierraClient(),
   };
 
   for (const user of existingUsers) {

@@ -14,10 +14,12 @@ import {
 } from './handlers/user';
 import { errorHandler } from './handlers/errorHandler';
 import { EmailClient } from './utils/EmailClient';
+import { SierraClient } from '@weco/sierra-client';
 
 export type Clients = {
   auth0: Auth0Client;
   email: EmailClient;
+  sierra: SierraClient;
 };
 
 export function createApplication(clients: Clients): Application {
@@ -56,7 +58,7 @@ function registerUsersUserIdRegistrationResource(
   app.put(
     '/users/:user_id/registration',
     corsOptions,
-    asyncHandler(updateUserAfterRegistration(clients.auth0))
+    asyncHandler(updateUserAfterRegistration(clients.auth0, clients.sierra))
   );
 }
 
