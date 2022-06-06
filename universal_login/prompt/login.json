@@ -5,6 +5,8 @@
     "buttonText": "Sign in",
     "signupActionText": "Not a library member?",
     "signupActionLinkText": "Apply for a membership",
+    "footerText": "Not a library member?",
+    "footerLinkText": "Apply for a membership",
     "custom-script-error-code": "There is an issue with this library account. To resolve this, please contact Library Enquiries (library@wellcomecollection.org)."
   }
 }
