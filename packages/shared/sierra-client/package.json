@@ -16,7 +16,6 @@
     "axios": "^0.21.1"
   },
   "devDependencies": {
-    "@types/node": "^17.0.0",
     "jest": "^27.4.3",
     "jest-extended": "^2.0.0",
     "msw": "^0.36.3",
