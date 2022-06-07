@@ -273,9 +273,7 @@
           <strong>Note:</strong> You don’t need a membership to visit the
           library for the day or to view our digital collections.
         </p>
-        *** PROMPT SCREEN TEXTS *** {% prompt.screen.texts %} *** END PROMPT
-        SCREEN TEXTS *** {% endif %} {%- auth0:widget -%} {% if prompt.name ==
-        "login" %}
+        {% endif %} {%- auth0:widget -%} {% if prompt.name == "login" %}
         <p>
           <strong>Having trouble accessing your account?</strong>
           <a href="mailto:library@wellcomecollection.org"
