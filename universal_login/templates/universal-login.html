@@ -105,6 +105,10 @@
         padding-left: 0 !important;
       }
 
+      ._alternate-action {
+        display: none;
+      }
+
       ._alternate-action p {
         font-weight: bold;
         color: #121212;
@@ -234,6 +238,16 @@
       }
     </style>
     <title>{{ prompt.screen.texts.pageTitle }}</title>
+    <script type="text/javascript">
+      var alternateAction = document.querySelector('._alternate-action');
+      var isSelfRegistrationToggleOn = document.cookie.includes(
+        'toggle_selfRegistration=true'
+      );
+
+      if (isSelfRegistrationToggleOn) {
+        alternateAction.style.display = 'block';
+      }
+    </script>
   </head>
 
   <body class="_hide-prompt-logo">
