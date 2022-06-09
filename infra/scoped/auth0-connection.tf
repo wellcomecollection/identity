@@ -13,7 +13,7 @@ resource "auth0_connection" "sierra" {
   options {
     import_mode                    = false
     enabled_database_customization = true
-    disable_signup                 = true
+    disable_signup                 = false
     requires_username              = false
     brute_force_protection         = true
     password_policy                = "fair"
