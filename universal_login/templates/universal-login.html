@@ -238,16 +238,6 @@
       }
     </style>
     <title>{{ prompt.screen.texts.pageTitle }}</title>
-    <script type="text/javascript">
-      var alternateAction = document.querySelector('._alternate-action');
-      var isSelfRegistrationToggleOn = document.cookie.includes(
-        'toggle_selfRegistration=true'
-      );
-
-      if (isSelfRegistrationToggleOn) {
-        alternateAction.style.display = 'block';
-      }
-    </script>
   </head>
 
   <body class="_hide-prompt-logo">
@@ -308,5 +298,15 @@
         {% endif %}
       </div>
     </div>
+    <script type="text/javascript">
+      var alternateAction = document.querySelector('._alternate-action');
+      var isSelfRegistrationToggleOn = document.cookie.includes(
+        'toggle_selfRegistration=true'
+      );
+
+      if (isSelfRegistrationToggleOn) {
+        alternateAction.style.display = 'block';
+      }
+    </script>
   </body>
 </html>
