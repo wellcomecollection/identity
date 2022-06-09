@@ -300,11 +300,11 @@
     </div>
     <script type="text/javascript">
       var alternateAction = document.querySelector('._alternate-action');
-      var isSelfRegistrationToggleOn = document.cookie.includes(
-        'toggle_selfRegistration=true'
-      );
+      var urlParams = new URLSearchParams(window.location.search);
+      var params = (Object.fromEntries && Object.fromEntries(urlParams)) || {};
+      var showRegistration = params.showRegistration === 'true';
 
-      if (isSelfRegistrationToggleOn) {
+      if (showRegistration && alternateAction) {
         alternateAction.style.display = 'block';
       }
     </script>
