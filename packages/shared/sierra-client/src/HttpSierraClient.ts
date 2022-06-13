@@ -78,6 +78,18 @@ export default class HttpSierraClient implements SierraClient {
   ): Promise<APIResponse<PatronCreateResponse>> {
     return this.getInstance().then(async (instance) => {
       try {
+        // Messages: we want to be able to add notes to new patrons who registered via the new sign-up process through auth0
+        const registrationNotePrefix = 'Auth0_Registration:';
+        const messages = {
+          // When new Membership self registration testing phase 1 is over we can query by registrationTestingNote and remove any test accounts from Sierra
+          registrationTestingNote:
+            'this user was created during initial testing for registration. Please contact the Digital Engagement team if you encounter any issues or have any questions digitalengagement@wellcome.org',
+          // We will want to keep a permanent record of any users who have registered through the new Membership self registration through auth0
+          registrationDetails:
+            'this user was created using membership sign-up via auth0 from weco.org',
+        };
+        const messagesCombined = Object.values(messages).join('|');
+
         const response = await instance.post('/patrons/', {
           // Create the patron in marc format
           // Rationale: After a short discussion with Natalie on what we ideally want from a newly created patron
@@ -106,8 +118,10 @@ export default class HttpSierraClient implements SierraClient {
                 fieldTag: 'z',
                 content: email.toLocaleLowerCase(),
               },
-              // TODO: Discuss with library staff to make sure this field being more specific is useful
-              // or if we add another fieldTag type to best express the type of registration
+              {
+                fieldTag: 'x',
+                content: `${registrationNotePrefix} ${messagesCombined}`,
+              },
               {
                 fieldTag: 'm',
                 content: 's',
