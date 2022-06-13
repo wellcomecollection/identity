@@ -300,11 +300,9 @@
     </div>
     <script type="text/javascript">
       var alternateAction = document.querySelector('._alternate-action');
-      var urlParams = new URLSearchParams(window.location.search);
-      var params = (Object.fromEntries && Object.fromEntries(urlParams)) || {};
-      var showRegistration = params.showRegistration === 'true';
+      var isStage = window.location.host.includes('stage');
 
-      if (showRegistration && alternateAction) {
+      if (isStage && alternateAction) {
         alternateAction.style.display = 'block';
       }
     </script>
