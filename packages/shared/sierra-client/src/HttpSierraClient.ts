@@ -96,38 +96,37 @@ export default class HttpSierraClient implements SierraClient {
           // the new patron format should be MARC - if we create in non-MARC, it will means someone
           // in the library will eventually have to edit the patron record to make it MARC
           // creating the patron in MARC format means less work for library staff
-          params: {
-            varFields: [
-              {
-                fieldTag: 'n',
-                marcTag: '100',
-                ind1: ' ',
-                ind2: ' ',
-                subfields: [
-                  {
-                    tag: 'a',
-                    content: lastName,
-                  },
-                  {
-                    tag: 'b',
-                    content: firstName,
-                  },
-                ],
-              },
-              {
-                fieldTag: 'z',
-                content: email.toLocaleLowerCase(),
-              },
-              {
-                fieldTag: 'x',
-                content: `${registrationNotePrefix} ${messagesCombined}`,
-              },
-              {
-                fieldTag: 'm',
-                content: 's',
-              },
-            ],
-          },
+          patronType: 29,
+          varFields: [
+            {
+              fieldTag: 'n',
+              marcTag: '100',
+              ind1: ' ',
+              ind2: ' ',
+              subfields: [
+                {
+                  tag: 'a',
+                  content: lastName,
+                },
+                {
+                  tag: 'b',
+                  content: firstName,
+                },
+              ],
+            },
+            {
+              fieldTag: 'z',
+              content: email.toLocaleLowerCase(),
+            },
+            {
+              fieldTag: 'x',
+              content: `${registrationNotePrefix} ${messagesCombined}`,
+            },
+            {
+              fieldTag: 'm',
+              content: 's',
+            },
+          ],
           validateStatus: (status: number) => status === 200,
         });
         // A successful patron creation POST results in a url link to patron
