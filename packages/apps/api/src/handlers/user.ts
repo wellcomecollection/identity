@@ -76,14 +76,7 @@ export function updateUserAfterRegistration(
       throw clientResponseToHttpError(auth0Update);
     }
 
-    const createPatronResponse = await sierraClient.createPatron(
-      lastName,
-      firstName,
-      auth0Profile.email
-    );
-    if (createPatronResponse.status !== ResponseStatus.Success) {
-      throw clientResponseToHttpError(createPatronResponse);
-    }
+    // TODO: Update patron firstName and lastName in sierra
 
     response.status(200).json(toUser(auth0Update.result));
   };
