@@ -83,7 +83,7 @@ export default class HttpSierraClient implements SierraClient {
         const messages = {
           // When new Membership self registration testing phase 1 is over we can query by registrationTestingNote and remove any test accounts from Sierra
           registrationTestingNote:
-            'this user was created during initial testing for registration. Please contact the Digital Engagement team if you encounter any issues or have any questions digitalengagement@wellcome.org',
+            'this user was created during initial testing for registration. Please contact the Digital Engagement team if you encounter any issues or have any questions digital@wellcomecollection.org',
           // We will want to keep a permanent record of any users who have registered through the new Membership self registration through auth0
           registrationDetails:
             'this user was created using membership sign-up via auth0 from weco.org',
