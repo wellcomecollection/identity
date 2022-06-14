@@ -23,7 +23,9 @@ async function getUser(email: string): Promise<Auth0User | undefined> {
     const patronRecord = patronRecordResponse.result;
     return patronRecordToUser(patronRecord);
   } else if (patronRecordResponse.status === ResponseStatus.NotFound) {
-    return undefined;
+    // If a user is not found in sierra, we should be able to create the user in
+    // the next script that runs, 'create'
+    return;
   } else {
     throw new Error(patronRecordResponse.message);
   }
