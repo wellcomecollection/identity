@@ -74,7 +74,8 @@ export default class HttpSierraClient implements SierraClient {
   async createPatron(
     lastName: string,
     firstName: string,
-    email: string
+    email: string,
+    password: string
   ): Promise<APIResponse<PatronCreateResponse>> {
     return this.getInstance().then(async (instance) => {
       try {
@@ -99,6 +100,7 @@ export default class HttpSierraClient implements SierraClient {
           '/patrons/',
           {
             patronType: 29,
+            pin: password,
             varFields: [
               {
                 fieldTag: 'n',
