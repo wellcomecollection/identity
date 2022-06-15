@@ -463,7 +463,7 @@ export default class HttpSierraClient implements SierraClient {
           switch (error.response.status) {
             case 404:
               return errorResponse(
-                'Patron record with email address [' +
+                'Patron record with recordNumber [' +
                   recordNumber +
                   '] not found',
                 ResponseStatus.NotFound,
