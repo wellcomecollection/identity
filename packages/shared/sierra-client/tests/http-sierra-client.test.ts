@@ -55,6 +55,7 @@ describe('HTTP sierra client', () => {
       lastName: 'Ravioli',
       firstName: 'Ravi',
       email: 'raviravioli@pastatimestest.com',
+      password: '12345abcdefg',
     };
     mockSierraServer.use(
       rest.post(routeUrls.patron, (req, res, ctx) => res(ctx.json(newPatron)))
@@ -64,7 +65,8 @@ describe('HTTP sierra client', () => {
       const response = await client.createPatron(
         'Ravioli',
         'Ravi',
-        'raviravioli@ppastatimestest.com'
+        'raviravioli@ppastatimestest.com',
+        '12345abcdefg'
       );
 
       expect(response.status).toBe(ResponseStatus.Success);

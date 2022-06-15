@@ -11,7 +11,8 @@ export default interface SierraClient {
   createPatron(
     lastName: string,
     email: string,
-    firstName: string
+    firstName: string,
+    password: string
   ): Promise<APIResponse<PatronCreateResponse>>;
 
   getDeletedRecordNumbers(options?: {
