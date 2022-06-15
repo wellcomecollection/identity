@@ -208,6 +208,11 @@ export type VarField = {
   subfields?: SubField[];
 };
 
+export type UpdateOptions = {
+  barcodes?: [barcode: string];
+  fieldTag?: VarFieldTag;
+};
+
 type SubField = {
   tag: string;
   content: string;

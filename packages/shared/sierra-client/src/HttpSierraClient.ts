@@ -13,6 +13,8 @@ import {
   PatronCreateResponse,
   toPatronRecord,
   varFieldTags,
+  VarField,
+  UpdateOptions,
 } from './patron';
 import SierraClient from './SierraClient';
 import {
@@ -443,21 +445,15 @@ export default class HttpSierraClient implements SierraClient {
     });
   }
 
-  async updateBarcode(
+  async updatePatron(
     recordNumber: number,
-    barcode: string
+    options: UpdateOptions
   ): Promise<APIResponse<PatronRecord>> {
     return this.getInstance().then((instance) => {
       return instance
-        .put(
-          '/patrons/' + recordNumber,
-          {
-            barcodes: [barcode],
-          },
-          {
-            validateStatus: (status) => status === 204,
-          }
-        )
+        .put('/patrons/' + recordNumber, options, {
+          validateStatus: (status) => status === 204,
+        })
         .then(() => this.getPatronRecordByRecordNumber(recordNumber))
         .catch((error) => {
           switch (error.response.status) {
