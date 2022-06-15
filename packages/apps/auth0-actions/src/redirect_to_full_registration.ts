@@ -6,10 +6,16 @@ export const onExecutePostLogin = async (
   api: API<Auth0User>
 ) => {
   const REGISTRATION_FORM_URL: string = event.secrets.IDENTITY_APP_BASEURL;
-  // If we have the user's first and last name already, we don't need to do anything else so bail out here
+  // We now temporarily set the user firstName and lastName in the create script
+  // We need the below conditional to bail out of the redirect only if this is not a temporary name
+  // Using Auth0_Registration_tempLastName is a better coverall, so we check against this
   // TODO: It would be good to improve this further by checking for app_metadata.terms_and_conditions_accepted here
 
-  if (Boolean(event.user.given_name) && Boolean(event.user.family_name)) {
+  if (
+    Boolean(event.user.given_name) &&
+    Boolean(event.user.family_name) &&
+    Boolean(event.user.family_name !== 'Auth0_Registration_tempLastName')
+  ) {
     return;
   }
 
