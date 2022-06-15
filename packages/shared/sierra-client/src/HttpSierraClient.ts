@@ -443,6 +443,38 @@ export default class HttpSierraClient implements SierraClient {
     });
   }
 
+  async updateBarcode(
+    recordNumber: number,
+    barcode: string
+  ): Promise<APIResponse<PatronRecord>> {
+    return this.getInstance().then((instance) => {
+      return instance
+        .put(
+          '/patrons/' + recordNumber,
+          {
+            barcode: [barcode],
+          },
+          {
+            validateStatus: (status) => status === 204,
+          }
+        )
+        .then(() => this.getPatronRecordByRecordNumber(recordNumber))
+        .catch((error) => {
+          switch (error.response.status) {
+            case 404:
+              return errorResponse(
+                'Patron record with email address [' +
+                  recordNumber +
+                  '] not found',
+                ResponseStatus.NotFound,
+                error
+              );
+          }
+          return unhandledError(error);
+        });
+    });
+  }
+
   private getInstance = authenticatedInstanceFactory(
     async () => {
       const response = await axios.post(

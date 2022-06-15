@@ -1,7 +1,6 @@
 import { callbackify } from 'util';
-import { Auth0User } from '@weco/auth0-client';
 import { ResponseStatus } from '@weco/identity-common';
-import { HttpSierraClient, SierraClient } from '@weco/sierra-client';
+import { HttpSierraClient } from '@weco/sierra-client';
 import { Auth0UserWithPassword } from '@weco/auth0-client/src/auth0';
 
 declare const configuration: {
@@ -39,6 +38,25 @@ async function create(user: Auth0UserWithPassword) {
   }
   if (createPatronResponse.status !== ResponseStatus.Success) {
     throw new Error(createPatronResponse.message);
+  }
+
+  // We now need to find the patron we created and eventually update their barcode
+  const findPatronResponse = await sierraClient.getPatronRecordByEmail(
+    user.email
+  );
+  if (findPatronResponse.status !== ResponseStatus.Success) {
+    throw new Error(findPatronResponse.message);
+  }
+  const { recordNumber } = findPatronResponse.result;
+
+  // Now we update the patron record with a barcode based on the recordNumber
+  // We make the recordNumber (patron id) the barcode, sierra expects barcode to be a string
+  const updatePatronBarcodeResponse = await sierraClient.updateBarcode(
+    recordNumber,
+    recordNumber.toString()
+  );
+  if (updatePatronBarcodeResponse.status !== ResponseStatus.Success) {
+    throw new Error(updatePatronBarcodeResponse.message);
   }
 }
 
