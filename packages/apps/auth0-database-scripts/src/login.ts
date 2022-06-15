@@ -10,8 +10,13 @@ declare const configuration: {
   CLIENT_SECRET: string;
 };
 
-const invalidCredentialsMessage =
-  "We don't recognise the email and/or password you entered. Please check your entry and try again.";
+const notFoundPatronErrorMessage = 'We have not found the patron in Sierra';
+const otherFindingSierraPatronErrorMessage =
+  'There was some other error in finding the patron in Sierra';
+const sierraPatronValidationErrorMessage =
+  'We had an issue in running validation of the patron in Sierra';
+const markingPatronVerifiedErrorMessage =
+  'We encountered an error in marking the patron as verified in Sierra';
 
 async function login(email: string, password: string): Promise<Auth0User> {
   const apiRoot = configuration.API_ROOT;
@@ -22,16 +27,12 @@ async function login(email: string, password: string): Promise<Auth0User> {
 
   const patronRecordResponse = await sierraClient.getPatronRecordByEmail(email);
   if (patronRecordResponse.status === ResponseStatus.NotFound) {
-    console.log(
-      'LOG >> login script >> line 24 >> We have not found the patron in Sierra '
-    );
-    throw new WrongUsernameOrPasswordError(email, invalidCredentialsMessage);
+    throw new WrongUsernameOrPasswordError(email, notFoundPatronErrorMessage);
   }
   if (patronRecordResponse.status !== ResponseStatus.Success) {
-    console.log(
-      'LOG >> login script >> line 30 >> There was some other error in finding the patron in Sierra '
+    throw new Error(
+      patronRecordResponse.message + ' ' + otherFindingSierraPatronErrorMessage
     );
-    throw new Error(patronRecordResponse.message);
   }
 
   const patronRecord = patronRecordResponse.result;
@@ -40,10 +41,10 @@ async function login(email: string, password: string): Promise<Auth0User> {
     password
   );
   if (validationResponse.status !== ResponseStatus.Success) {
-    console.log(
-      'LOG >> login script >> line 42 >> We had an issue in running validation of the patron in Sierra'
+    throw new WrongUsernameOrPasswordError(
+      email,
+      sierraPatronValidationErrorMessage
     );
-    throw new WrongUsernameOrPasswordError(email, invalidCredentialsMessage);
   }
 
   // If a patron is logging in and has no verified emails, we can infer that
@@ -59,10 +60,9 @@ async function login(email: string, password: string): Promise<Auth0User> {
       { type: 'Implicit' }
     );
     if (updatedRecordResponse.status !== ResponseStatus.Success) {
-      console.log(
-        'LOG >> login script >> line 61 >> We encountered an error in marking the patron as verified in Sierra '
+      throw new Error(
+        updatedRecordResponse.message + ' ' + markingPatronVerifiedErrorMessage
       );
-      throw new Error(updatedRecordResponse.message);
     }
     return patronRecordToUser(updatedRecordResponse.result);
   } else {
