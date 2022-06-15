@@ -24,12 +24,15 @@ async function create(user: Auth0User) {
   const tempLastName = 'Auth0_Registration_tempLastName';
 
   const sierraClient = new HttpSierraClient(apiRoot, clientKey, clientSecret);
+
   const createPatronResponse = await sierraClient.createPatron(
     // We temporarily set a first and lastName that is easier to find that way we
     // can delete users that don't finish the full registration process
     tempLastName,
     tempFirstName,
-    user.email
+    user.email,
+    // @ts-ignore
+    user.password
   );
   if (createPatronResponse.status === ResponseStatus.UserAlreadyExists) {
     throw new ValidationError(user.email, userAlreadyExistsMessage);
