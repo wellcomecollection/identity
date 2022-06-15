@@ -10,9 +10,6 @@ declare const configuration: {
   CLIENT_SECRET: string;
 };
 
-// const invalidCredentialsMessage =
-//   "We don't recognise the email and/or password you entered. Please check your entry and try again.";
-
 const notFoundPatronErrorMessage = 'We have not found the patron in Sierra';
 const otherFindingSierraPatronErrorMessage =
   'There was some other error in finding the patron in Sierra';
