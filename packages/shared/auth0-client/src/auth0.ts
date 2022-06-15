@@ -25,6 +25,11 @@ export type AppMetadata = {
 // Makes the keys K of T required
 type WithRequiredFields<T, K extends keyof T> = T & Required<Pick<T, K>>;
 
+// In the create script we want to be able to get the password from the user object
+export type Auth0UserWithPassword = Auth0User & {
+  password: string;
+};
+
 export type Auth0User = WithRequiredFields<
   User<AppMetadata, UserMetadata>,
   'user_id' | 'email' // These fields are always present

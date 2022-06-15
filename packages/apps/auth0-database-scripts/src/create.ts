@@ -2,6 +2,7 @@ import { callbackify } from 'util';
 import { Auth0User } from '@weco/auth0-client';
 import { ResponseStatus } from '@weco/identity-common';
 import { HttpSierraClient, SierraClient } from '@weco/sierra-client';
+import { Auth0UserWithPassword } from '@weco/auth0-client/src/auth0';
 
 declare const configuration: {
   API_ROOT: string;
@@ -12,7 +13,7 @@ declare const configuration: {
 const userAlreadyExistsMessage =
   'A user with this email address already exists.';
 
-async function create(user: Auth0User) {
+async function create(user: Auth0UserWithPassword) {
   // We need to create the patron in sierra, we will update the patron info with firstName, lastName etc
   // when we get this information from the full registration form
 
@@ -31,7 +32,6 @@ async function create(user: Auth0User) {
     tempLastName,
     tempFirstName,
     user.email,
-    // @ts-ignore
     user.password
   );
   if (createPatronResponse.status === ResponseStatus.UserAlreadyExists) {
