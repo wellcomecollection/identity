@@ -65,7 +65,7 @@ describe('HTTP sierra client', () => {
       const response = await client.createPatron(
         'Ravioli',
         'Ravi',
-        'raviravioli@ppastatimestest.com',
+        'raviravioli@pastatimestest.com',
         '12345abcdefg'
       );
 
