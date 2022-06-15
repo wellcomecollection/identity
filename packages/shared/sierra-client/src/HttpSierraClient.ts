@@ -452,7 +452,7 @@ export default class HttpSierraClient implements SierraClient {
         .put(
           '/patrons/' + recordNumber,
           {
-            barcode: [barcode],
+            barcodes: [barcode],
           },
           {
             validateStatus: (status) => status === 204,
