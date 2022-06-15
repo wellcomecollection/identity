@@ -22,9 +22,15 @@ async function login(email: string, password: string): Promise<Auth0User> {
 
   const patronRecordResponse = await sierraClient.getPatronRecordByEmail(email);
   if (patronRecordResponse.status === ResponseStatus.NotFound) {
+    console.log(
+      'LOG >> login script >> line 24 >> We have not found the patron in Sierra '
+    );
     throw new WrongUsernameOrPasswordError(email, invalidCredentialsMessage);
   }
   if (patronRecordResponse.status !== ResponseStatus.Success) {
+    console.log(
+      'LOG >> login script >> line 28 >> There was some other error in finding the patron in Sierra '
+    );
     throw new Error(patronRecordResponse.message);
   }
 
@@ -34,6 +40,9 @@ async function login(email: string, password: string): Promise<Auth0User> {
     password
   );
   if (validationResponse.status !== ResponseStatus.Success) {
+    console.log(
+      'LOG >> login script >> line 38 >> We had an issue in running validation of the patron in Sierra'
+    );
     throw new WrongUsernameOrPasswordError(email, invalidCredentialsMessage);
   }
 
@@ -42,11 +51,17 @@ async function login(email: string, password: string): Promise<Auth0User> {
   // requires that they set a password via email, we assume that their current
   // email address is verified, and mark it as such.
   if (!patronRecord.verifiedEmail) {
+    console.log(
+      'LOG >> login script >> line 47 >> We we able to find out the patron was not verified in Sierra '
+    );
     const updatedRecordResponse = await sierraClient.markPatronEmailVerified(
       patronRecord.recordNumber,
       { type: 'Implicit' }
     );
     if (updatedRecordResponse.status !== ResponseStatus.Success) {
+      console.log(
+        'LOG >> login script >> line 53 >> We encountered an error in marking the patron as verified in Sierra '
+      );
       throw new Error(updatedRecordResponse.message);
     }
     return patronRecordToUser(updatedRecordResponse.result);
