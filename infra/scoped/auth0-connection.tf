@@ -56,8 +56,6 @@ resource "auth0_connection" "sierra" {
   }
 
   lifecycle {
-    ignore_changes = [
-      options["scripts"]
-    ]
+    ignore_changes = [options.0.custom_scripts]
   }
 }
