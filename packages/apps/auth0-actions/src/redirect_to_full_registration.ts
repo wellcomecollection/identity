@@ -34,7 +34,7 @@ export const onExecutePostLogin = async (
     payload: {
       iss: `https://${event.request.hostname}/`,
       sub: event.user.user_id,
-      email: event.user.email
+      email: event.user.email,
     },
   });
 
