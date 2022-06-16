@@ -153,7 +153,8 @@ export type APIRedirect<UserType extends User = User> = {
   validateToken: <T>(ValidateToken: T) => API<UserType>;
 };
 
-export type encodedTokenPayloadObject = {
+export type EncodedTokenPayloadObject = {
+  email: string;
   iss: string;
   sub: string;
 };
@@ -169,7 +170,7 @@ export type ValidateToken = {
 
 export type EncodedToken = {
   secret: string;
-  payload: encodedTokenPayloadObject;
+  payload: EncodedTokenPayloadObject;
 };
 
 export type APIMultifactorProvider =

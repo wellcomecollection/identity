@@ -59,6 +59,7 @@ describe('redirect_to_full_registration', () => {
     const encodeTokenPayload: EncodedToken = {
       secret: 'ABCDEFG1234',
       payload: {
+        email: 'raviravioli@pastatimes.com',
         iss: `https://${event.request.hostname}/`,
         sub: 'p|12345',
       },
