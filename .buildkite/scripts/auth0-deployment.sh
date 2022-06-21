@@ -17,9 +17,15 @@ function __do_deployment() {
   a0deploy --env=true export --format directory --output_folder "${AUTH0_EXPORT_DIR}/"
 
   # Deploy database scripts
+  #
+  # We prepend the date when the script was written to help debug issues
+  # with the deployment.
   for script in ${DATABASE_SCRIPTS}
   do
-    cp -v "${SCRIPTS_BUILD_DIR}/${script}.js" "${AUTH0_EXPORT_DIR}/database-connections/${AUTH0_CONNECTION_NAME}/"
+    dest_script="${AUTH0_EXPORT_DIR}/database-connections/${AUTH0_CONNECTION_NAME}/${script}.js"
+
+    cp -v "${SCRIPTS_BUILD_DIR}/${script}.js" "$dest_script"
+    echo -e "// Set by $0 at $(date)\n\n$(cat "$dest_script")" > "$dest_script"
   done
 
   # Deploy actions
