@@ -54,7 +54,7 @@ export const createLambdaHandler = (validateToken: TokenValidator) => async (
   console.log(token, '<<<<< TOKEN VALUE');
   console.log(event, '<<<<< WHOLE API GATEWAY REQUEST AUTHORIZER EVENT');
   if (token == undefined) {
-    throw new Error('Token is undefined');
+    console.log('Token is undefined');
   }
   if (!token) {
     return send401();
