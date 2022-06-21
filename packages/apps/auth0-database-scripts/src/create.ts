@@ -15,6 +15,7 @@ const userAlreadyExistsMessage =
 async function create(user: Auth0UserWithPassword) {
   // We need to create the patron in sierra, we will update the patron info with firstName, lastName etc
   // when we get this information from the full registration form
+  console.log('CREATE FUNCTION BEGINS');
 
   const apiRoot = configuration.API_ROOT;
   const clientKey = configuration.CLIENT_KEY;
@@ -34,9 +35,11 @@ async function create(user: Auth0UserWithPassword) {
     user.password
   );
   if (createPatronResponse.status === ResponseStatus.UserAlreadyExists) {
+    console.log('CREATE PATRON IN SIERRA ERRORS - USER ALREADY EXISTS');
     throw new ValidationError(user.email, userAlreadyExistsMessage);
   }
   if (createPatronResponse.status !== ResponseStatus.Success) {
+    console.log('CREATE PATRON IN SIERRA ERRORS');
     throw new Error(createPatronResponse.message);
   }
 
@@ -45,6 +48,7 @@ async function create(user: Auth0UserWithPassword) {
     user.email
   );
   if (findPatronResponse.status !== ResponseStatus.Success) {
+    console.log('FIND PATRON BARCODE - NOT SUCCESSFUL');
     throw new Error(findPatronResponse.message);
   }
   const { recordNumber } = findPatronResponse.result;
@@ -56,6 +60,7 @@ async function create(user: Auth0UserWithPassword) {
     recordNumber.toString()
   );
   if (updatePatronBarcodeResponse.status !== ResponseStatus.Success) {
+    console.log('UPDATE PATRON BARCODE NOT SUCCESSFUL');
     throw new Error(updatePatronBarcodeResponse.message);
   }
 }
