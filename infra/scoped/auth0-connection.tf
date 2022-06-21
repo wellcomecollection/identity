@@ -11,7 +11,18 @@ resource "auth0_connection" "sierra" {
   )
 
   options {
-    import_mode                    = false
+
+    # If import_mode = true, then Auth0 treats Sierra as legacy and will
+    # copy any existing data out of Sierra when users log in, but won't
+    # write anything back.  It treats itself as the canonical database.
+    #
+    # If import_mode = false, then Auth0 will copy any existing data as
+    # before, but it will also use the custom scripts to create/update users.
+    # This allows us to treat Sierra as the canonical database.
+    #
+    # If this gets flipped, the Auth0-Sierra connection will fail in bad ways.
+    import_mode = false
+
     enabled_database_customization = true
     disable_signup                 = false
     requires_username              = false
