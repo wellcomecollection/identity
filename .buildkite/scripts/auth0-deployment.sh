@@ -29,10 +29,17 @@ function __do_deployment() {
   done
 
   # Deploy actions
+  #
+  # We prepend the date when the script was written to help debug issues
+  # with the deployment.
   for action in ${ACTIONS}
   do
     action_name=$(jq -r ".names.${action}" ${AUTH0_ACTIONS_FILE})
-    cp -v "${ACTIONS_BUILD_DIR}/${action}.js" "${AUTH0_EXPORT_DIR}/actions/${action_name}/code.js"
+
+    dest_script="${AUTH0_EXPORT_DIR}/actions/${action_name}/code.js"
+
+    cp -v "${ACTIONS_BUILD_DIR}/${action}.js" "$dest_script"
+    echo -e "// Set by $0 at $(date)\n\n$(cat "$dest_script")" > "$dest_script"
   done
 
   a0deploy --env=true import --input_file "${AUTH0_EXPORT_DIR}/"
