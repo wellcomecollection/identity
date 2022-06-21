@@ -51,6 +51,7 @@ export const createLambdaHandler = (validateToken: TokenValidator) => async (
   // 1. Extract the token
   const authHeader = event.headers?.['Authorization'];
   const token = authHeader?.match(/^Bearer (.*)$/)?.[1];
+  console.log(token, '<<<<< TOKEN VALUE');
   if (!token) {
     return send401();
   }
