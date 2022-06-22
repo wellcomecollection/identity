@@ -5,7 +5,9 @@
   "author": "Wellcome Collection <digital@wellcomecollection.org>",
   "license": "MIT",
   "scripts": {
-    "build": "tsc --build tsconfig.build.json",
+    "build": "yarn compile && yarn add-debug-header",
+    "add-debug-header": "node ./add-debug-header.js ./lib",
+    "compile": "tsc --build tsconfig.build.json",
     "clean": "rimraf ./lib tsconfig.build.tsbuildinfo",
     "test": "jest"
   },
