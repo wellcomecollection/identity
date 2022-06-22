@@ -1,3 +1,3 @@
 function noop() {
-  // Do nothing
+  // This is an empty database action script set by Terraform
 }
