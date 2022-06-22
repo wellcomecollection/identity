@@ -20,16 +20,22 @@ config:
   plugins:
     expect: { }
     metrics-by-endpoint: { }
+
+# In these scenarios, 1109239 is the ID of a test user in Sierra.
+#
+# It's associated with the group email address digital@wellcomecollection.org,
+# and is explicitly meant for testing sign-in/requested related functionality
+# on the website.
 scenarios:
   - name: "/users/me"
     flow:
       - get:
-          url: "/users/1101796"
+          url: "/users/1109239"
           beforeRequest: addCredentials
           expect:
             statusCode: 200
       - get:
-          url: "/users/1101796/item-requests"
+          url: "/users/1109239/item-requests"
           beforeRequest: addCredentials
           expect:
             statusCode: 200
