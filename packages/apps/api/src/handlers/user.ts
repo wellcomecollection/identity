@@ -6,6 +6,7 @@ import { clientResponseToHttpError, HttpError } from '../models/HttpError';
 import { toUser } from '../models/user';
 import { EmailClient } from '../utils/EmailClient';
 import { SierraClient } from '@weco/sierra-client';
+import { varFieldTags } from '@weco/sierra-client/src/patron';
 
 export function validatePassword(auth0Client: Auth0Client) {
   const checkPassword = passwordCheckerForUser(auth0Client);
@@ -76,7 +77,34 @@ export function updateUserAfterRegistration(
       throw clientResponseToHttpError(auth0Update);
     }
 
-    // TODO: Update patron firstName and lastName in sierra
+    // Get the patron recordNumber
+    const getPatronRecordResponse = await sierraClient.getPatronRecordByEmail(
+      auth0Profile.email
+    );
+    if (getPatronRecordResponse.status !== ResponseStatus.Success) {
+      throw clientResponseToHttpError(getPatronRecordResponse);
+    }
+    const { recordNumber } = getPatronRecordResponse.result;
+
+    // Update the patron record with the incoming full registration first and lastname
+    const createPatronResponse = await sierraClient.updatePatron(recordNumber, {
+      varFields: {
+        fieldTag: varFieldTags.name,
+        subfields: [
+          {
+            tag: 'a',
+            content: lastName,
+          },
+          {
+            tag: 'b',
+            content: firstName,
+          },
+        ],
+      },
+    });
+    if (createPatronResponse.status !== ResponseStatus.Success) {
+      throw clientResponseToHttpError(createPatronResponse);
+    }
 
     response.status(200).json(toUser(auth0Update.result));
   };
