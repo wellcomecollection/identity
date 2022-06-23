@@ -51,11 +51,6 @@ export const createLambdaHandler = (validateToken: TokenValidator) => async (
   // 1. Extract the token
   const authHeader = event.headers?.['Authorization'];
   const token = authHeader?.match(/^Bearer (.*)$/)?.[1];
-  console.log(token, '<<<<< TOKEN VALUE');
-  console.log(event, '<<<<< WHOLE API GATEWAY REQUEST AUTHORIZER EVENT');
-  if (token == undefined) {
-    console.log('Token is undefined');
-  }
   if (!token) {
     return send401();
   }
