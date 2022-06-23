@@ -54,7 +54,7 @@ describe('redirect_to_full_registration', () => {
         secrets: auth0SecretsObject as EventSecrets,
       } as Event<Auth0User>);
 
-    const REGISTRATION_FORM_URL = event.secrets.IDENTITY_APP_BASEURL;
+    const REGISTRATION_FORM_URL = `${event.secrets.IDENTITY_APP_BASEURL}/registration`;
 
     const encodeTokenPayload: EncodedToken = {
       secret: 'ABCDEFG1234',
