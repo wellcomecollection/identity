@@ -13,6 +13,8 @@ import {
   PatronCreateResponse,
   toPatronRecord,
   varFieldTags,
+  VarField,
+  UpdateOptions,
 } from './patron';
 import SierraClient from './SierraClient';
 import {
@@ -388,76 +390,15 @@ export default class HttpSierraClient implements SierraClient {
     }
   }
 
-  async updatePassword(
+  async updatePatron(
     recordNumber: number,
-    password: string
+    options: UpdateOptions
   ): Promise<APIResponse<PatronRecord>> {
     return this.getInstance().then((instance) => {
       return instance
-        .put(
-          '/patrons/' + recordNumber,
-          {
-            pin: password,
-          },
-          {
-            validateStatus: (status) => status === 204,
-          }
-        )
-        .then(() => this.getPatronRecordByRecordNumber(recordNumber))
-        .catch((error) => {
-          if (error.response) {
-            switch (error.response.status) {
-              case 400:
-                // I think this is referring to API error code 136 "PIN is not valid"
-                // See https://techdocs.iii.com/sierraapi/Content/zReference/errorHandling.htm
-                // TODO: Check this is what's being tested here.
-                // TODO: What is specificCode == 3 for?
-                if (
-                  error.response.data?.code === 136 &&
-                  error.response.data?.specificCode === 3
-                ) {
-                  return errorResponse(
-                    'Password does not meet Sierra policy',
-                    ResponseStatus.PasswordTooWeak,
-                    error
-                  );
-                } else {
-                  return errorResponse(
-                    'Malformed or invalid Patron record update request',
-                    ResponseStatus.MalformedRequest,
-                    error
-                  );
-                }
-              case 404:
-                return errorResponse(
-                  'Patron record with record number [' +
-                    recordNumber +
-                    '] not found',
-                  ResponseStatus.NotFound,
-                  error
-                );
-            }
-          }
-          return unhandledError(error);
-        });
-    });
-  }
-
-  async updateBarcode(
-    recordNumber: number,
-    barcode: string
-  ): Promise<APIResponse<PatronRecord>> {
-    return this.getInstance().then((instance) => {
-      return instance
-        .put(
-          '/patrons/' + recordNumber,
-          {
-            barcodes: [barcode],
-          },
-          {
-            validateStatus: (status) => status === 204,
-          }
-        )
+        .put('/patrons/' + recordNumber, options, {
+          validateStatus: (status) => status === 204,
+        })
         .then(() => this.getPatronRecordByRecordNumber(recordNumber))
         .catch((error) => {
           switch (error.response.status) {
@@ -469,6 +410,27 @@ export default class HttpSierraClient implements SierraClient {
                 ResponseStatus.NotFound,
                 error
               );
+            case 400:
+              // I think this is referring to API error code 136 "PIN is not valid"
+              // See https://techdocs.iii.com/sierraapi/Content/zReference/errorHandling.htm
+              // TODO: Check this is what's being tested here.
+              // TODO: What is specificCode == 3 for?
+              if (
+                error.response.data?.code === 136 &&
+                error.response.data?.specificCode === 3
+              ) {
+                return errorResponse(
+                  'Password does not meet Sierra policy',
+                  ResponseStatus.PasswordTooWeak,
+                  error
+                );
+              } else {
+                return errorResponse(
+                  'Malformed or invalid Patron record update request',
+                  ResponseStatus.MalformedRequest,
+                  error
+                );
+              }
           }
           return unhandledError(error);
         });

@@ -25,10 +25,10 @@ async function changePassword(
   const recordNumber = await recordNumberForEmail(email, sierraClient);
 
   if (recordNumber) {
-    const patronRecordUpdate = await sierraClient.updatePassword(
+    const patronRecordUpdate = await sierraClient.updatePatron(
       recordNumber,
       // Sierra ignores passwords after the 30th character
-      truncate(newPassword, 30)
+      { pin: truncate(newPassword, 30) }
     );
 
     if (patronRecordUpdate.status === ResponseStatus.PasswordTooWeak) {

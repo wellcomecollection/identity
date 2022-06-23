@@ -55,9 +55,9 @@ async function create(user: Auth0UserWithPassword) {
 
   // Now we update the patron record with a barcode based on the recordNumber
   // We make the recordNumber (patron id) the barcode, sierra expects barcode to be a string
-  const updatePatronBarcodeResponse = await sierraClient.updateBarcode(
+  const updatePatronBarcodeResponse = await sierraClient.updatePatron(
     recordNumber,
-    recordNumber.toString()
+    { barcodes: [recordNumber.toString()] }
   );
   if (updatePatronBarcodeResponse.status !== ResponseStatus.Success) {
     console.log('UPDATE PATRON BARCODE NOT SUCCESSFUL');

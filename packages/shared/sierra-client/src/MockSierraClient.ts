@@ -5,7 +5,7 @@ import {
   ResponseStatus,
   successResponse,
 } from '@weco/identity-common';
-import { Role } from './patron';
+import { Role, UpdateOptions } from './patron';
 
 export default class MockSierraClient implements SierraClient {
   private patrons: Map<number, PatronRecord> = new Map();
@@ -84,14 +84,17 @@ export default class MockSierraClient implements SierraClient {
       : errorResponse('Not found', ResponseStatus.NotFound);
   });
 
-  updatePassword = jest.fn(async (recordNumber: number, password: string) => {
-    const maybePatron = this.patrons.get(recordNumber);
-    if (maybePatron) {
-      this.passwords.set(recordNumber, password);
-      return successResponse(maybePatron);
+  updatePatron = jest.fn(
+    async (recordNumber: number, options: UpdateOptions) => {
+      console.log(recordNumber);
+      const maybePatron = this.patrons.get(recordNumber);
+      if (maybePatron) {
+        this.passwords.set(recordNumber, options.pin);
+        return successResponse(maybePatron);
+      }
+      return errorResponse('Not found', ResponseStatus.NotFound);
     }
-    return errorResponse('Not found', ResponseStatus.NotFound);
-  });
+  );
 
   updatePatronEmail = jest.fn(
     async (recordNumber: number, email: string, verified: boolean = false) => {

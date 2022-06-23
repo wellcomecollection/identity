@@ -1,5 +1,5 @@
 import { APIResponse } from '@weco/identity-common';
-import { PatronCreateResponse, PatronRecord } from './patron';
+import { PatronCreateResponse, PatronRecord, UpdateOptions } from './patron';
 import { NoteOptions } from './email-verification-notes';
 
 export default interface SierraClient {
@@ -36,8 +36,8 @@ export default interface SierraClient {
     options?: NoteOptions
   ): Promise<APIResponse<PatronRecord>>;
 
-  updatePassword(
+  updatePatron(
     recordNumber: number,
-    password: string
+    options?: UpdateOptions
   ): Promise<APIResponse<PatronRecord>>;
 }

@@ -80,7 +80,7 @@ describe('change password script', () => {
   it('throws an error if the Sierra request returns an error', (done) => {
     const testPatron = MockSierraClient.randomPatronRecord();
     mockSierraClient.addPatron(testPatron);
-    mockSierraClient.updatePassword.mockResolvedValueOnce(
+    mockSierraClient.updatePatron.mockResolvedValueOnce(
       errorResponse('bad computer', ResponseStatus.UnknownError)
     );
     const callback = (
