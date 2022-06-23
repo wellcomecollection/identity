@@ -29,7 +29,7 @@ flowchart LR
 The canonical store of user information is **Sierra**, our library management system.
 
 We put **Auth0** in front of Sierra, which provides an additional layer of control and security.
-We use some pieces of Auth0 as-is or with light customisation (e.g. the login page); in other places we can inject our own code into the Auth0 flow (e.g. to push any changes to user data back into Sierra).
+We use some pieces of Auth0 as-is or with light customisation (e.g. the login page); in other places we run our own code inside Auth0 (e.g. to push any changes to user data back into Sierra).
 
 Our services don't interact with Auth0 or Sierra directly; instead they use the **identity API**.
 This includes APIs for retrieving user data, updating personal details, changing passwords, and so on.
@@ -40,7 +40,7 @@ It checks that a caller is allowed to perform the requested action (e.g. that a 
 The API authorizer also gates access to the **items API** and **requests API**, which are used to manage items which users have [requested from library stores][stores].
 These APIs are defined in the [catalogue-api repo][api].
 
-Users interact with these services through the **identity web app**, which is defined in the [wellcomecollection.org repo](https://github.com/wellcomecollection/wellcomecollection.org).
+Users experience these services/APIs through the **identity web app**, which is defined in the [wellcomecollection.org repo](https://github.com/wellcomecollection/wellcomecollection.org).
 
 [stores]: https://wellcomecollection.org/pages/X_2eexEAACQAZLBi
 [api]: https://github.com/wellcomecollection/catalogue-api
