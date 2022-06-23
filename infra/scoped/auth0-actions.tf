@@ -27,6 +27,21 @@ resource "auth0_action" "redirect_to_full_registration" {
     ignore_changes = [code]
   }
 
+  # We saw issues in the initial development of the registration feature
+  # where users were redirected to http://localhost:3000 rather than the
+  # actual site.
+  #
+  # We think this was caused by a bad value in `IDENTITY_APP_BASEURL`,
+  # because Terraform doesn't update secrets in an already-extant action.
+  # In particular, if you delete or modify the secret in the Auth0 console,
+  # Terraform won't try to revert the value of the secret.
+  #
+  # To fix this, we used the Auth0 console to updated the value of the secret:
+  #
+  #     IDENTITY_APP_BASEURL = https://www-stage.wellcomecollection.org/account
+  #
+  # Ideally this would be fully managed by Terraform, but we didn't have
+  # time to debug this properly.
   secrets {
     name  = "IDENTITY_APP_BASEURL"
     value = local.ams_registration_uri
