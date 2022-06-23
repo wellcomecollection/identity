@@ -77,17 +77,8 @@ export function updateUserAfterRegistration(
       throw clientResponseToHttpError(auth0Update);
     }
 
-    // Get the patron recordNumber
-    const getPatronRecordResponse = await sierraClient.getPatronRecordByEmail(
-      auth0Profile.email
-    );
-    if (getPatronRecordResponse.status !== ResponseStatus.Success) {
-      throw clientResponseToHttpError(getPatronRecordResponse);
-    }
-    const { recordNumber } = getPatronRecordResponse.result;
-
     // Update the patron record with the incoming full registration first and lastname
-    const createPatronResponse = await sierraClient.updatePatron(recordNumber, {
+    const updatePatronResponse = await sierraClient.updatePatron(userId, {
       varFields: {
         fieldTag: varFieldTags.name,
         subfields: [
@@ -102,8 +93,8 @@ export function updateUserAfterRegistration(
         ],
       },
     });
-    if (createPatronResponse.status !== ResponseStatus.Success) {
-      throw clientResponseToHttpError(createPatronResponse);
+    if (updatePatronResponse.status !== ResponseStatus.Success) {
+      throw clientResponseToHttpError(updatePatronResponse);
     }
 
     response.status(200).json(toUser(auth0Update.result));
