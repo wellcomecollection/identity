@@ -1,4 +1,4 @@
-import { Jwt, JwtPayload } from 'jsonwebtoken';
+import { Jwt } from 'jsonwebtoken';
 import { auth0IdToPublic } from '@weco/auth0-client';
 
 type HttpVerb =
@@ -12,9 +12,7 @@ type HttpVerb =
   | 'CONNECT';
 
 type AccessControlRule = (
-  jwt: Jwt & {
-    payload: (JwtPayload & { gty?: string }) | string
-  },
+  jwt: Jwt,
   parameters?: Record<string, string | undefined>
 ) => boolean;
 
@@ -44,11 +42,9 @@ export const isMachineUser: AccessControlRule = (jwt, parameters) => {
     return false;
   }
 
-  // This is relying on two implementation details of the Auth0
+  // This is relying on an implementation detail of the Auth0
   // client credentials flow:
   //
-  //    - An access token from the client-credentials flow will have the
-  //      field "gty": "client-credentials"
   //    - The subject field will be of the form "client ID@clients",
   //      e.g. "sub": "123@clients"
   //
@@ -67,11 +63,8 @@ export const isMachineUser: AccessControlRule = (jwt, parameters) => {
   // https://github.com/wellcomecollection/identity/blob/585882471c43b45b7578fab926fa384ca4e691dd/packages/apps/auth0-actions/src/add_custom_claims.ts
   // https://community.auth0.com/t/sub-claim-format-for-m2m-tokens/39451/5
   // https://wellcome.slack.com/archives/CUA669WHH/p1656055161485399
-  const isClientCredentials = jwt.payload.gty === 'client-credentials';
-  const isClientSubject = (jwt.payload.sub || '').endsWith('@clients');
-
-  return isClientCredentials && isClientSubject;
-}
+  return (jwt.payload.sub || '').endsWith('@clients');
+};
 
 export const isSelf: AccessControlRule = (jwt, parameters) => {
   if (typeof jwt.payload === 'string') {
