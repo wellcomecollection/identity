@@ -124,20 +124,14 @@ export default class HttpAuth0Client implements Auth0Client {
               name: `${firstName} ${lastName}`,
             }
           : {};
+      // We only need to update the email value if it is provided, this allows us to update first and lastname without needing an email too
+      const updateData = email
+        ? { email: email, verify_email: true, connection: SierraConnection }
+        : { connection: SierraConnection, ...names };
       return instance
-        .patch(
-          '/users/' + SierraUserIdPrefix + userId,
-          {
-            // Automatically append the mandatory Auth0 prefix to the given user ID.
-            email: email,
-            verify_email: true,
-            connection: SierraConnection,
-            ...names,
-          },
-          {
-            validateStatus: (status) => status === 200,
-          }
-        )
+        .patch('/users/' + SierraUserIdPrefix + userId, updateData, {
+          validateStatus: (status) => status === 200,
+        })
         .then((response) => successResponse(response.data))
         .catch((error) => {
           if (error.response) {

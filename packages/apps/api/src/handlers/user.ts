@@ -5,7 +5,7 @@ import { toMessage } from '../models/common';
 import { clientResponseToHttpError, HttpError } from '../models/HttpError';
 import { toUser } from '../models/user';
 import { EmailClient } from '../utils/EmailClient';
-import { SierraClient } from '@weco/sierra-client';
+import { SierraClient, varFieldTags } from '@weco/sierra-client';
 
 export function validatePassword(auth0Client: Auth0Client) {
   const checkPassword = passwordCheckerForUser(auth0Client);
@@ -58,17 +58,8 @@ export function updateUserAfterRegistration(
     const firstName: string = request.body.firstName;
     const lastName: string = request.body.lastName;
 
-    const auth0UserIdGet: APIResponse<Auth0User> = await auth0Client.getUserByUserId(
-      userId
-    );
-    if (auth0UserIdGet.status !== ResponseStatus.Success) {
-      throw clientResponseToHttpError(auth0UserIdGet);
-    }
-    const auth0Profile: Auth0User = auth0UserIdGet.result;
-
     const auth0Update: APIResponse<Auth0User> = await auth0Client.updateUser({
       userId,
-      email: auth0Profile.email,
       firstName,
       lastName,
     });
@@ -76,7 +67,25 @@ export function updateUserAfterRegistration(
       throw clientResponseToHttpError(auth0Update);
     }
 
-    // TODO: Update patron firstName and lastName in sierra
+    // Update the patron record with the incoming full registration first and lastname
+    const updatePatronResponse = await sierraClient.updatePatron(userId, {
+      varFields: {
+        fieldTag: varFieldTags.name,
+        subfields: [
+          {
+            tag: 'a',
+            content: lastName,
+          },
+          {
+            tag: 'b',
+            content: firstName,
+          },
+        ],
+      },
+    });
+    if (updatePatronResponse.status !== ResponseStatus.Success) {
+      throw clientResponseToHttpError(updatePatronResponse);
+    }
 
     response.status(200).json(toUser(auth0Update.result));
   };
@@ -248,27 +257,50 @@ function extractSourceIp(request: Request): string {
   return request.apiGateway?.event.requestContext.identity.sourceIp;
 }
 
-function getTargetUserId(request: Request): number {
-  const callerId: number = Number(
-    request.apiGateway?.event.requestContext.authorizer?.callerId
-  );
-
-  if (isNaN(callerId)) {
+export const validateUserId = ({
+  callerId,
+  paramUserId,
+}: {
+  callerId: string;
+  paramUserId: string;
+}): number => {
+  if (paramUserId !== 'me' && isNaN(Number(paramUserId))) {
     throw new HttpError({
       status: 401,
-      message: `Request was not authorised`,
+      message: 'Request was not authorised',
     });
   }
 
-  const paramUserId = request.params.user_id;
-  if (paramUserId !== 'me' && Number(paramUserId) !== callerId) {
+  // In the api-authorizer, if we get a request from a machine-to-machine flow,
+  // the caller ID will be set to `@machine`.
+  if (callerId === '@machine' && paramUserId !== 'me') {
+    return Number(paramUserId);
+  }
+
+  if (isNaN(Number(callerId))) {
+    throw new HttpError({
+      status: 401,
+      message: 'Request was not authorised',
+    });
+  }
+
+  if (paramUserId !== 'me' && Number(paramUserId) !== Number(callerId)) {
     throw new HttpError({
       status: 403,
-      message: `Caller cannot operate on resource`,
+      message: 'Caller cannot operate on resource',
     });
   }
 
-  return callerId;
+  return Number(callerId);
+};
+
+function getTargetUserId(request: Request): number {
+  const callerId =
+    request.apiGateway?.event.requestContext.authorizer?.callerId;
+
+  const paramUserId = request.params.user_id;
+
+  return validateUserId({ callerId, paramUserId });
 }
 
 function passwordCheckerForUser(auth0Client: Auth0Client) {
