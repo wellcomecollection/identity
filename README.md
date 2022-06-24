@@ -1,8 +1,51 @@
 # identity
 
-Identity services for Wellcome Collection users
-
 [![Build status](https://badge.buildkite.com/965e1197af1ac22887636ef8cbd4b5bba98e7ab656e42fa574.svg?branch=main)](https://buildkite.com/wellcomecollection/identity)
+
+This repo contains identity-related services for Wellcome Collection users.
+This allows users to sign in on wellcomecollection.org and keeps their personal information safe.
+
+
+
+## Key services
+
+```mermaid
+flowchart LR
+    W[identity web app] --> IA[API authorizer]
+    IA --> I_API[items API]
+    IA --> R_API[requests API]
+    IA --> API[identity API]
+    API --> A0[(Auth0)]
+    API --> SI[(Sierra)]
+    A0 --> SI
+
+    classDef externalNode fill:#e8e8e8,stroke:#8f8f8f
+    class W,I_API,R_API externalNode
+
+    classDef repoNode fill:#c8ecee,stroke:#298187,stroke-width:2px
+    class IA,API,A0,SI repoNode
+```
+
+The canonical store of user information is **Sierra**, our library management system.
+
+We put **Auth0** in front of Sierra, which provides an additional layer of control and security.
+We use some pieces of Auth0 as-is or with light customisation (e.g. the login page); in other places we run our own code inside Auth0 (e.g. to push any changes to user data back into Sierra).
+
+Our services don't interact with Auth0 or Sierra directly; instead they use the **identity API**.
+This includes APIs for retrieving user data, updating personal details, changing passwords, and so on.
+
+Access to the identity API is gated by the **API authorizer**.
+It checks that a caller is allowed to perform the requested action (e.g. that a user is looking up their own information, and not somebody else's).
+
+The API authorizer also gates access to the **items API** and **requests API**, which are used to manage items which users have [requested from library stores][stores].
+These APIs are defined in the [catalogue-api repo][api].
+
+Users experience these services/APIs through the **identity web app**, which is defined in the [wellcomecollection.org repo](https://github.com/wellcomecollection/wellcomecollection.org).
+
+[stores]: https://wellcomecollection.org/pages/X_2eexEAACQAZLBi
+[api]: https://github.com/wellcomecollection/catalogue-api
+
+
 
 ## Developing
 
