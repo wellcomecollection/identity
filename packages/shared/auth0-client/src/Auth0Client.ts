@@ -3,7 +3,7 @@ import { AppMetadata, Auth0User } from './auth0';
 
 export type Auth0UserInput = {
   userId: number;
-  email: string;
+  email?: string;
   firstName?: string;
   lastName?: string;
 };
