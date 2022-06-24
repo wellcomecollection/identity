@@ -7,7 +7,7 @@ export const auth0IdToPublic = (subjectClaim?: string): string | undefined => {
   if (subjectClaim?.startsWith(SierraUserIdPrefix)) {
     return subjectClaim.slice(SierraUserIdPrefix.length);
   } else {
-    return subjectClaim;
+    return undefined;
   }
 };
 
