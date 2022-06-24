@@ -6,7 +6,7 @@ ARG A0DEPLOY_VERSION=7.12.2
 RUN dnf -y install git zip unzip findutils python3 python3-pip npm jq tar xz which moreutils \
     && dnf clean all \
     && rm -rf /var/cache/yum \
-    && pip3 install pre-commit awscli \
+    && pip3 install awscli \
     && npm install --global auth0-deploy-cli@${A0DEPLOY_VERSION} yarn
 
 ARG TERRAFORM_VERSION=1.0.4
