@@ -12,7 +12,7 @@ import {
   isSelf,
   resourceAuthorizationValidator,
 } from './authorization';
-import { JsonWebTokenError } from 'jsonwebtoken';
+import { JsonWebTokenError, Jwt } from 'jsonwebtoken';
 
 // The presence of scope checking here is more about being descriptive than adding security,
 // as the ability to enforce which scopes a user is allowed is an additional piece of work
@@ -45,6 +45,36 @@ const validateRequest = resourceAuthorizationValidator({
     PUT: isMachineUser,
   },
 });
+
+/** The principal ID is used by the identity API as an extra belt-and-braces
+ * check on authorisation.
+ *
+ * e.g. if it gets a principal ID for user 123 but the operation is affecting
+ * user 456, then we know shenanigans are occurring!
+ *
+ */
+export const choosePrincipalId = (validatedToken: Jwt): string => {
+  const tokenSubject =
+    typeof validatedToken.payload === 'string'
+      ? undefined
+      : validatedToken.payload.sub;
+
+  // When we're acting on behalf of a user, the principal ID is a patron ID,
+  // e.g. p1234567
+  const patronId = auth0IdToPublic(tokenSubject);
+  if (patronId) {
+    return patronId;
+  }
+
+  // When this is a machine-to-machine flow, the principal ID is the static
+  // string '@machine'.  We do have the client ID here, but currently we don't
+  // have any restrictions on what machine clients can do.
+  if (isMachineUser(validatedToken, {})) {
+    return '@machine';
+  }
+
+  return tokenSubject || '';
+};
 
 export const createLambdaHandler = (validateToken: TokenValidator) => async (
   event: APIGatewayRequestAuthorizerEvent
@@ -83,16 +113,12 @@ export const createLambdaHandler = (validateToken: TokenValidator) => async (
   if (requestIsAllowed) {
     authorizerResultEffect = 'Allow';
   }
-  const tokenSubject =
-    typeof validatedToken.payload === 'string'
-      ? undefined
-      : validatedToken.payload.sub;
 
   return authorizerResult({
     policyDocument: policyDocument({
       effect: authorizerResultEffect,
       resource: event.methodArn,
     }),
-    principalId: auth0IdToPublic(tokenSubject) || '',
+    principalId: choosePrincipalId(validatedToken),
   });
 };
