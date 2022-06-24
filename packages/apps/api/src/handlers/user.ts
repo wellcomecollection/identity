@@ -248,11 +248,19 @@ function extractSourceIp(request: Request): string {
   return request.apiGateway?.event.requestContext.identity.sourceIp;
 }
 
-function getTargetUserId(request: Request): number {
-  const callerId: string =
-    request.apiGateway?.event.requestContext.authorizer?.callerId;
-
-  const paramUserId = request.params.user_id;
+export const validateUserId = ({
+  callerId,
+  paramUserId,
+}: {
+  callerId: string;
+  paramUserId: string;
+}): number => {
+  if (paramUserId !== 'me' && isNaN(Number(paramUserId))) {
+    throw new HttpError({
+      status: 401,
+      message: 'Request was not authorised',
+    });
+  }
 
   // In the api-authorizer, if we get a request from a machine-to-machine flow,
   // the caller ID will be set to `@machine`.
@@ -263,18 +271,27 @@ function getTargetUserId(request: Request): number {
   if (isNaN(Number(callerId))) {
     throw new HttpError({
       status: 401,
-      message: `Request was not authorised`,
+      message: 'Request was not authorised',
     });
   }
 
-  if (paramUserId !== 'me' && paramUserId !== callerId) {
+  if (paramUserId !== 'me' && Number(paramUserId) !== Number(callerId)) {
     throw new HttpError({
       status: 403,
-      message: `Caller cannot operate on resource`,
+      message: 'Caller cannot operate on resource',
     });
   }
 
   return Number(callerId);
+};
+
+function getTargetUserId(request: Request): number {
+  const callerId =
+    request.apiGateway?.event.requestContext.authorizer?.callerId;
+
+  const paramUserId = request.params.user_id;
+
+  return validateUserId({ callerId, paramUserId });
 }
 
 function passwordCheckerForUser(auth0Client: Auth0Client) {
