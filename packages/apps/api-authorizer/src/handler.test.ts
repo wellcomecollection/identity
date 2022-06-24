@@ -13,7 +13,7 @@ describe('choosePrincipalId', () => {
       },
     };
 
-    expect(choosePrincipalId(token)).toBe('p1234567');
+    expect(choosePrincipalId(token)).toBe('1234567');
   });
 
   it('sets a machine ID if we’re in the client-credentials flow', () => {
