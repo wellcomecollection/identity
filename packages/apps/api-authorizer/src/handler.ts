@@ -8,6 +8,7 @@ import { authorizerResult, policyDocument, send401 } from './api-gateway';
 import {
   allOf,
   hasScopes,
+  isMachineUser,
   isSelf,
   resourceAuthorizationValidator,
 } from './authorization';
@@ -41,7 +42,7 @@ const validateRequest = resourceAuthorizationValidator({
     GET: allOf(isSelf, hasScopes('read:requests')),
   },
   '/users/{userId}/registration': {
-    PUT: allOf(isSelf, hasScopes('update:user')),
+    PUT: isMachineUser,
   },
 });
 

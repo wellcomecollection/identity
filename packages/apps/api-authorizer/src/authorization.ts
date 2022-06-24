@@ -1,4 +1,4 @@
-import { Jwt } from 'jsonwebtoken';
+import { Jwt, JwtPayload } from 'jsonwebtoken';
 import { auth0IdToPublic } from '@weco/auth0-client';
 
 type HttpVerb =
@@ -12,7 +12,9 @@ type HttpVerb =
   | 'CONNECT';
 
 type AccessControlRule = (
-  jwt: Jwt,
+  jwt: Jwt & {
+    payload: (JwtPayload & { gty?: string }) | string
+  },
   parameters?: Record<string, string | undefined>
 ) => boolean;
 
@@ -36,6 +38,14 @@ export const hasScopes = (...requiredScopes: string[]): AccessControlRule => (
   const tokenScopes: string[] = jwt.payload.scope?.split(' ') || [];
   return tokenScopes.some((tokenScope) => requiredScopes.includes(tokenScope));
 };
+
+export const isMachineUser: AccessControlRule = (jwt, parameters) => {
+  if (typeof jwt.payload === 'string') {
+    return false;
+  }
+
+  return jwt.payload.gty === 'client-credentials';
+}
 
 export const isSelf: AccessControlRule = (jwt, parameters) => {
   if (typeof jwt.payload === 'string') {
