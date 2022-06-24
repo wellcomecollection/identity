@@ -249,26 +249,32 @@ function extractSourceIp(request: Request): string {
 }
 
 function getTargetUserId(request: Request): number {
-  const callerId: number = Number(
-    request.apiGateway?.event.requestContext.authorizer?.callerId
-  );
+  const callerId: string =
+    request.apiGateway?.event.requestContext.authorizer?.callerId;
 
-  if (isNaN(callerId)) {
+  const paramUserId = request.params.user_id;
+
+  // In the api-authorizer, if we get a request from a machine-to-machine flow,
+  // the caller ID will be set to `@machine`.
+  if (callerId === '@machine' && paramUserId !== 'me') {
+    return Number(paramUserId);
+  }
+
+  if (isNaN(Number(callerId))) {
     throw new HttpError({
       status: 401,
       message: `Request was not authorised`,
     });
   }
 
-  const paramUserId = request.params.user_id;
-  if (paramUserId !== 'me' && Number(paramUserId) !== callerId) {
+  if (paramUserId !== 'me' && paramUserId !== callerId) {
     throw new HttpError({
       status: 403,
       message: `Caller cannot operate on resource`,
     });
   }
 
-  return callerId;
+  return Number(callerId);
 }
 
 function passwordCheckerForUser(auth0Client: Auth0Client) {
