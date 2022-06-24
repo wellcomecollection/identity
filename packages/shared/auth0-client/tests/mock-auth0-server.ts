@@ -17,14 +17,14 @@ const createAccessToken = (expiresIn?: string) => {
 const hasCurrentToken = (req: RestRequest): boolean =>
   req.headers.get('Authorization') === `Bearer ${accessToken}`;
 
-export const resolveUser = (
-  user: Auth0User
-): ResponseResolver<RestRequest, RestContext> => (req, res, ctx) => {
-  if (!hasCurrentToken(req)) {
-    return res(ctx.status(401));
-  }
-  return res(ctx.json(user));
-};
+export const resolveUser =
+  (user: Auth0User): ResponseResolver<RestRequest, RestContext> =>
+  (req, res, ctx) => {
+    if (!hasCurrentToken(req)) {
+      return res(ctx.status(401));
+    }
+    return res(ctx.json(user));
+  };
 
 export const apiRoot = 'http://auth0.test';
 

@@ -67,9 +67,8 @@ describe('redirect_to_full_registration', () => {
 
     const sendUserQuery: SendUserObject = {
       query: {
-        session_token: mockPostLoginApi.redirect.encodeToken(
-          encodeTokenPayload
-        ),
+        session_token:
+          mockPostLoginApi.redirect.encodeToken(encodeTokenPayload),
         redirect_uri: `https://${event.request.hostname}/continue`,
       },
     };
@@ -121,9 +120,10 @@ describe('redirect_to_full_registration', () => {
     const payload = { terms_and_conditions_accepted: true };
     onContinuePostLogin(continueNewUserEvent(user), mockPostLoginApi);
     expect(mockPostLoginApi.redirect.validateToken).toReturnWith(payload);
-    expect(
-      mockPostLoginApi.redirect.sendUserTo
-    ).toHaveBeenLastCalledWith(successUrl, { query: { success: 'true' } });
+    expect(mockPostLoginApi.redirect.sendUserTo).toHaveBeenLastCalledWith(
+      successUrl,
+      { query: { success: 'true' } }
+    );
   });
 });
 

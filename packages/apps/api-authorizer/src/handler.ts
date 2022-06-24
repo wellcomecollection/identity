@@ -76,49 +76,51 @@ export const choosePrincipalId = (validatedToken: Jwt): string => {
   return tokenSubject || '';
 };
 
-export const createLambdaHandler = (validateToken: TokenValidator) => async (
-  event: APIGatewayRequestAuthorizerEvent
-): Promise<APIGatewayAuthorizerResult> => {
-  // 1. Extract the token
-  const authHeader = event.headers?.['Authorization'];
-  const token = authHeader?.match(/^Bearer (.*)$/)?.[1];
-  if (!token) {
-    return send401();
-  }
-
-  // 2. Validate the token
-  const validatedToken = await validateToken(token).catch((error) => {
-    // These are 'interesting' JWT errors as opposed to routine expiries
-    // They do not leak PII
-    // See https://github.com/auth0/node-jsonwebtoken#jsonwebtokenerror
-    if (error instanceof JsonWebTokenError) {
-      console.error('Invalid token', error);
+export const createLambdaHandler =
+  (validateToken: TokenValidator) =>
+  async (
+    event: APIGatewayRequestAuthorizerEvent
+  ): Promise<APIGatewayAuthorizerResult> => {
+    // 1. Extract the token
+    const authHeader = event.headers?.['Authorization'];
+    const token = authHeader?.match(/^Bearer (.*)$/)?.[1];
+    if (!token) {
+      return send401();
     }
-    return send401();
-  });
 
-  // 3. Check the request against the rules defined above
-  const requestIsAllowed = validateRequest({
-    path: event.resource,
-    method: event.httpMethod,
-    token: validatedToken,
-    parameters: event.pathParameters || undefined,
-  });
+    // 2. Validate the token
+    const validatedToken = await validateToken(token).catch((error) => {
+      // These are 'interesting' JWT errors as opposed to routine expiries
+      // They do not leak PII
+      // See https://github.com/auth0/node-jsonwebtoken#jsonwebtokenerror
+      if (error instanceof JsonWebTokenError) {
+        console.error('Invalid token', error);
+      }
+      return send401();
+    });
 
-  // 4. Return the appropriate result
+    // 3. Check the request against the rules defined above
+    const requestIsAllowed = validateRequest({
+      path: event.resource,
+      method: event.httpMethod,
+      token: validatedToken,
+      parameters: event.pathParameters || undefined,
+    });
 
-  // I've written this like so because a ternary is not so readable and doesn't
-  // really fulfill the desire of "deny by default" behaviour.
-  let authorizerResultEffect: 'Deny' | 'Allow' = 'Deny';
-  if (requestIsAllowed) {
-    authorizerResultEffect = 'Allow';
-  }
+    // 4. Return the appropriate result
 
-  return authorizerResult({
-    policyDocument: policyDocument({
-      effect: authorizerResultEffect,
-      resource: event.methodArn,
-    }),
-    principalId: choosePrincipalId(validatedToken),
-  });
-};
+    // I've written this like so because a ternary is not so readable and doesn't
+    // really fulfill the desire of "deny by default" behaviour.
+    let authorizerResultEffect: 'Deny' | 'Allow' = 'Deny';
+    if (requestIsAllowed) {
+      authorizerResultEffect = 'Allow';
+    }
+
+    return authorizerResult({
+      policyDocument: policyDocument({
+        effect: authorizerResultEffect,
+        resource: event.methodArn,
+      }),
+      principalId: choosePrincipalId(validatedToken),
+    });
+  };

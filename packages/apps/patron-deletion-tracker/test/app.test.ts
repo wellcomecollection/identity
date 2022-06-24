@@ -136,9 +136,9 @@ describe('patron deletion tracker', () => {
     const errorSpy = jest.spyOn(console, 'error');
     expect.hasAssertions();
     try {
-      await app({ window: { durationDays: 1 } }, ({
+      await app({ window: { durationDays: 1 } }, {
         getRemainingTimeInMillis,
-      } as unknown) as Context);
+      } as unknown as Context);
     } catch (error) {
       const message: string = errorSpy.mock.calls[0][0];
       const match = message.match(
