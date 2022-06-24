@@ -87,25 +87,46 @@ export default class MockAuth0Client implements Auth0Client {
   });
 
   updateUser = jest.fn(async (userInput: Auth0UserInput) => {
-    const { userId, email } = userInput;
-    const maybeUser = this.users.get(userId.toString());
-    if (maybeUser) {
-      for (const user of this.users.values()) {
-        if (user.email === email) {
-          return errorResponse(
-            'Already exists',
-            ResponseStatus.UserAlreadyExists
-          );
+    const { userId, email, firstName, lastName } = userInput;
+    if (email) {
+      const maybeUser = this.users.get(userId.toString());
+      if (maybeUser) {
+        for (const user of this.users.values()) {
+          if (user.email === email) {
+            return errorResponse(
+              'Already exists',
+              ResponseStatus.UserAlreadyExists
+            );
+          }
         }
+        const updatedUser: Auth0User = {
+          ...maybeUser,
+          email,
+        };
+        this.users.set(userId.toString(), updatedUser);
+        return successResponse(updatedUser);
       }
-      const updatedUser: Auth0User = {
-        ...maybeUser,
-        email,
-      };
-      this.users.set(userId.toString(), updatedUser);
-      return successResponse(updatedUser);
+      return errorResponse('Not found', ResponseStatus.NotFound);
+    } else {
+      const maybeUser = this.users.get(userId.toString());
+      const names =
+        firstName && lastName
+          ? {
+              given_name: firstName,
+              family_name: lastName,
+              name: `${firstName} ${lastName}`,
+            }
+          : {};
+      if (maybeUser) {
+        const updatedUser: Auth0User = {
+          ...maybeUser,
+          ...names,
+        };
+        this.users.set(userId.toString(), updatedUser);
+        return successResponse(updatedUser);
+      }
+      return errorResponse('Not found', ResponseStatus.NotFound);
     }
-    return errorResponse('Not found', ResponseStatus.NotFound);
   });
 
   validateUserCredentials = jest.fn(
