@@ -59,7 +59,7 @@ describe('/users/{userId}/registration', () => {
       }
     });
 
-    it('400s if a user is already registered', async () => {
+    it('409s if a user is already registered', async () => {
       const firstName = 'Silas';
       const lastName = 'Burroughs';
       const testUser = randomExistingUser({ firstName: 'Henry', lastName: 'Wellcome' });

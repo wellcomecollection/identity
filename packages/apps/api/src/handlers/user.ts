@@ -91,7 +91,7 @@ export function updateUserAfterRegistration(
     if (getPatronResponse.result.firstName !== 'Auth0_Registration_undefined' ||
         getPatronResponse.result.lastName !== 'Auth0_Registration_tempLastName') {
       throw new HttpError({
-        status: 400,
+        status: 409,
         message: `User ${userId} is already registered in Sierra.`
       });
     }
