@@ -49,7 +49,7 @@ Users experience these services/APIs through the **identity web app**, which is 
 
 ## Developing
 
-Developers should install https://pre-commit.com/, as the CI tests will run the checks present in [.pre-commit-config.yaml](https://github.com/wellcomecollection/identity/blob/main/.pre-commit-config.yaml).
+Installing the project dependencies (ie `yarn` at the root) will also set up [lint-staged](https://github.com/okonet/lint-staged) to run [prettier](https://prettier.io/) as a pre-commit hook. This formatting is also checked in CI. You might also want to [set up your editor](https://prettier.io/docs/en/editors.html) to run prettier on save!
 
 ### Terraform
 

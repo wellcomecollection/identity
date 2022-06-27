@@ -6,16 +6,18 @@ import { createLambdaHandler } from '../src/handler';
 import { TokenValidator } from '../src/authentication';
 import { JsonWebTokenError, Jwt } from 'jsonwebtoken';
 
-const alwaysSucceed = ({
-  userId = 'auth0|ptest',
-  scopes = [],
-}: {
-  userId?: string;
-  scopes?: string[];
-} = {}): TokenValidator => () =>
-  Promise.resolve(({
-    payload: { sub: userId, scope: scopes.join(' ') },
-  } as unknown) as Jwt);
+const alwaysSucceed =
+  ({
+    userId = 'auth0|ptest',
+    scopes = [],
+  }: {
+    userId?: string;
+    scopes?: string[];
+  } = {}): TokenValidator =>
+  () =>
+    Promise.resolve({
+      payload: { sub: userId, scope: scopes.join(' ') },
+    } as unknown as Jwt);
 
 const alwaysFail: TokenValidator = () =>
   Promise.reject(new JsonWebTokenError('invalid token'));

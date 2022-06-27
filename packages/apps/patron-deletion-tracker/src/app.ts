@@ -32,56 +32,60 @@ type PatronDeletionHandler = (
   context: Context
 ) => Promise<void>;
 
-export const createApp = (
-  auth0Client: Auth0Client,
-  sierraClient: SierraClient
-): PatronDeletionHandler => async (event, context) => {
-  const sierraQueryOptions = getSierraQueryOptions(event.window);
-  const deletedPatronsResponse = await sierraClient.getDeletedRecordNumbers(
-    sierraQueryOptions
-  );
-  if (deletedPatronsResponse.status !== ResponseStatus.Success) {
-    throw new Error(
-      'Could not fetch deleted patron record numbers: ' +
-        deletedPatronsResponse.message
+export const createApp =
+  (
+    auth0Client: Auth0Client,
+    sierraClient: SierraClient
+  ): PatronDeletionHandler =>
+  async (event, context) => {
+    const sierraQueryOptions = getSierraQueryOptions(event.window);
+    const deletedPatronsResponse = await sierraClient.getDeletedRecordNumbers(
+      sierraQueryOptions
     );
-  }
-
-  const deletedRecordNumbers = deletedPatronsResponse.result;
-  const nRecords = deletedRecordNumbers.length;
-  console.log(`Found ${nRecords} patron records to delete`);
-
-  const remaining = new Set(deletedRecordNumbers);
-  try {
-    await auth0RateLimited(
-      deletedRecordNumbers.map((recordNumber, i) => async () => {
-        if (context.getRemainingTimeInMillis() < lambdaExitThreshold) {
-          throw new Error('Lambda is about to exit');
-        }
-        if (i % 100 === 0) {
-          console.log(
-            `[in progress] Deleted ${nRecords - remaining.size} of ${nRecords}`
-          );
-        }
-        if (!event.dryRun) {
-          const response = await auth0Client.deleteUser(recordNumber);
-          if (response.status !== ResponseStatus.Success) {
-            throw new Error('Error deleting user: ' + response.message);
-          }
-        } else {
-          console.log(`[dry run] Deleted patron ${recordNumber}`);
-        }
-        remaining.delete(recordNumber);
-      })
-    );
-  } catch (error) {
-    if (remaining.size !== 0) {
-      const remainingRecordsString = Array.from(remaining).join(', ');
-      console.error(
-        `Some records may not have been deleted: ${remainingRecordsString}`
+    if (deletedPatronsResponse.status !== ResponseStatus.Success) {
+      throw new Error(
+        'Could not fetch deleted patron record numbers: ' +
+          deletedPatronsResponse.message
       );
     }
-    throw error;
-  }
-  console.log('Finished deleting records');
-};
+
+    const deletedRecordNumbers = deletedPatronsResponse.result;
+    const nRecords = deletedRecordNumbers.length;
+    console.log(`Found ${nRecords} patron records to delete`);
+
+    const remaining = new Set(deletedRecordNumbers);
+    try {
+      await auth0RateLimited(
+        deletedRecordNumbers.map((recordNumber, i) => async () => {
+          if (context.getRemainingTimeInMillis() < lambdaExitThreshold) {
+            throw new Error('Lambda is about to exit');
+          }
+          if (i % 100 === 0) {
+            console.log(
+              `[in progress] Deleted ${
+                nRecords - remaining.size
+              } of ${nRecords}`
+            );
+          }
+          if (!event.dryRun) {
+            const response = await auth0Client.deleteUser(recordNumber);
+            if (response.status !== ResponseStatus.Success) {
+              throw new Error('Error deleting user: ' + response.message);
+            }
+          } else {
+            console.log(`[dry run] Deleted patron ${recordNumber}`);
+          }
+          remaining.delete(recordNumber);
+        })
+      );
+    } catch (error) {
+      if (remaining.size !== 0) {
+        const remainingRecordsString = Array.from(remaining).join(', ');
+        console.error(
+          `Some records may not have been deleted: ${remainingRecordsString}`
+        );
+      }
+      throw error;
+    }
+    console.log('Finished deleting records');
+  };

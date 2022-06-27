@@ -1,13 +1,8 @@
 #!/usr/bin/env bash
-########################################################
-# Script name : linting.sh
-# Author      : Daniel Grant <daniel.grant@digirati.com>
-########################################################
-
 set -o errexit
 
-function __run_pre_commit() {
-  pre-commit run --all-files --verbose
-}
+yarn global add lint-staged prettier
+lint-staged --diff="main..$BUILDKITE_BRANCH"
 
-__run_pre_commit
+# Fail if any changes were made by linter
+git diff --cached --exit-code
