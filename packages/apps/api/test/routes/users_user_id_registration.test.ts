@@ -1,5 +1,6 @@
 import { mockedApi, withCallerId } from './fixtures/mockedApi';
-import { ResponseStatus } from '@weco/identity-common';
+import { ResponseStatus, SuccessResponse } from '@weco/identity-common';
+import { PatronRecord } from '@weco/sierra-client';
 import { randomExistingUser } from './fixtures/generators';
 
 describe('/users/{userId}/registration', () => {
@@ -51,12 +52,11 @@ describe('/users/{userId}/registration', () => {
         testUser.userId
       );
 
-      if (sierraUser.status === ResponseStatus.Success) {
-        expect(sierraUser.result.firstName).toBe(firstName);
-        expect(sierraUser.result.lastName).toBe(lastName);
-      } else {
-        throw new Error(`Unexpected failure from Sierra: ${sierraUser}`);
-      }
+      expect(sierraUser.status).toBe(ResponseStatus.Success);
+      const storedPatron = (sierraUser as SuccessResponse<PatronRecord>).result;
+
+      expect(storedPatron.firstName).toBe(firstName);
+      expect(storedPatron.lastName).toBe(lastName);
     });
 
     it('409s if a user is already registered', async () => {
@@ -80,12 +80,11 @@ describe('/users/{userId}/registration', () => {
         testUser.userId
       );
 
-      if (sierraUser.status === ResponseStatus.Success) {
-        expect(sierraUser.result.firstName).toBe('Henry');
-        expect(sierraUser.result.lastName).toBe('Wellcome');
-      } else {
-        throw new Error(`Unexpected failure from Sierra: ${sierraUser}`);
-      }
+      expect(sierraUser.status).toBe(ResponseStatus.Success);
+      const storedPatron = (sierraUser as SuccessResponse<PatronRecord>).result;
+
+      expect(storedPatron.firstName).toBe('Henry');
+      expect(storedPatron.lastName).toBe('Wellcome');
     });
 
     it('404s for users that do not exist', async () => {
