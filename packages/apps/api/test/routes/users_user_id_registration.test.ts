@@ -62,7 +62,10 @@ describe('/users/{userId}/registration', () => {
     it('409s if a user is already registered', async () => {
       const firstName = 'Silas';
       const lastName = 'Burroughs';
-      const testUser = randomExistingUser({ firstName: 'Henry', lastName: 'Wellcome' });
+      const testUser = randomExistingUser({
+        firstName: 'Henry',
+        lastName: 'Wellcome',
+      });
       const { api, clients } = mockedApi([testUser]);
 
       const response = await withCallerId('@machine')(

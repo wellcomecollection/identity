@@ -49,9 +49,7 @@ export function getUser(auth0Client: Auth0Client) {
   };
 }
 
-export function updateUserAfterRegistration(
-  sierraClient: SierraClient
-) {
+export function updateUserAfterRegistration(sierraClient: SierraClient) {
   return async function (request: Request, response: Response): Promise<void> {
     const userId: number = getTargetUserId(request);
     const firstName: string = request.body.firstName;
@@ -63,13 +61,15 @@ export function updateUserAfterRegistration(
     // We retrieve the existing patron record and check it has the placeholder
     // values we store for a user when they're created; if not, we reject the
     // request because something has gone wrong.
-    const getPatronResponse = await sierraClient.getPatronRecordByRecordNumber(userId);
+    const getPatronResponse = await sierraClient.getPatronRecordByRecordNumber(
+      userId
+    );
 
     if (getPatronResponse.status === ResponseStatus.NotFound) {
       throw new HttpError({
         status: 404,
-        message: 'User does not exist'
-      })
+        message: 'User does not exist',
+      });
     }
 
     if (getPatronResponse.status !== ResponseStatus.Success) {
@@ -81,18 +81,23 @@ export function updateUserAfterRegistration(
     //
     // This makes the endpoint idempotent, and guards against annoying errors,
     // e.g. if the identity web app sends the PUT request twice.
-    if (getPatronResponse.result.firstName === firstName && getPatronResponse.result.lastName === lastName) {
+    if (
+      getPatronResponse.result.firstName === firstName &&
+      getPatronResponse.result.lastName === lastName
+    ) {
       response.sendStatus(204);
       return;
     }
 
     // If somebody comes through this flow and the name in Sierra isn't our placeholder,
     // then shenanigans might be occurring. Throw an error; a human needs to look at this.
-    if (getPatronResponse.result.firstName !== 'Auth0_Registration_undefined' ||
-        getPatronResponse.result.lastName !== 'Auth0_Registration_tempLastName') {
+    if (
+      getPatronResponse.result.firstName !== 'Auth0_Registration_undefined' ||
+      getPatronResponse.result.lastName !== 'Auth0_Registration_tempLastName'
+    ) {
       throw new HttpError({
         status: 409,
-        message: `User ${userId} is already registered in Sierra.`
+        message: `User ${userId} is already registered in Sierra.`,
       });
     }
 
@@ -135,7 +140,7 @@ export function updateUserAfterRegistration(
               content: firstName,
             },
           ],
-        }
+        },
       ],
     });
     if (updatePatronResponse.status !== ResponseStatus.Success) {
