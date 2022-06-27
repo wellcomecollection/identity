@@ -205,7 +205,7 @@ export type VarField = {
 export type UpdateOptions = {
   pin?: string;
   barcodes?: [barcode: string];
-  varFields?: VarField;
+  varFields?: VarField[];
 };
 
 type SubField = {

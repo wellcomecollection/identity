@@ -5,7 +5,7 @@ import { toMessage } from '../models/common';
 import { clientResponseToHttpError, HttpError } from '../models/HttpError';
 import { toUser } from '../models/user';
 import { EmailClient } from '../utils/EmailClient';
-import { SierraClient, varFieldTags } from '@weco/sierra-client';
+import { SierraClient, PatronRecord, varFieldTags } from '@weco/sierra-client';
 
 export function validatePassword(auth0Client: Auth0Client) {
   const checkPassword = passwordCheckerForUser(auth0Client);
@@ -50,7 +50,6 @@ export function getUser(auth0Client: Auth0Client) {
 }
 
 export function updateUserAfterRegistration(
-  auth0Client: Auth0Client,
   sierraClient: SierraClient
 ) {
   return async function (request: Request, response: Response): Promise<void> {
@@ -58,36 +57,68 @@ export function updateUserAfterRegistration(
     const firstName: string = request.body.firstName;
     const lastName: string = request.body.lastName;
 
-    const auth0Update: APIResponse<Auth0User> = await auth0Client.updateUser({
-      userId,
-      firstName,
-      lastName,
-    });
-    if (auth0Update.status !== ResponseStatus.Success) {
-      throw clientResponseToHttpError(auth0Update);
+    // This is a very powerful endpoint, and we don't want it to be misused
+    // to overwrite the first/last name of existing patrons.
+    //
+    // We retrieve the existing patron record and check it has the placeholder
+    // values we store for a user when they're created; if not, we reject the
+    // request because something has gone wrong.
+    const patronResponse = await sierraClient.getPatronRecordByRecordNumber(userId);
+
+    if (patronResponse.status === ResponseStatus.NotFound) {
+      throw new HttpError({
+        status: 404,
+        message: 'User does not exist'
+      })
     }
 
     // Update the patron record with the incoming full registration first and lastname
+    //
+    // Note: we only update the patron record in Sierra, not Auth0, because you
+    // can't update the name of Auth0 with our setup.  If you try, you get an error:
+    //
+    //    The following user attributes cannot be updated: family_name, given_name, name.
+    //    The connection (Sierra-Connection) must either be a database connection (using
+    //    the Auth0 store), a passwordless connection (email or sms) or has disabled
+    //    'Sync user profile attributes at each login'.
+    //
+    //    For more information, see
+    //    https://auth0.com/docs/dashboard/guides/connections/configure-connection-sync
+    //
+    // Because patron data is refreshed every time a user authenticates, we think that
+    // this is okay:
+    //
+    //    1.  User goes to the email/password sign-up form.  This creates a stub user
+    //        in Sierra with a placeholder name.
+    //    2.  User goes to the "fill in your name" form.  At this point they aren't
+    //        logged in.
+    //    3.  User completes that form, gets logged in, triggering an authentication
+    //        and a refresh of patron data.
+    //
+    // We need the full flow working to test this, but this is why we think we can get
+    // away with just an update in Sierra.
     const updatePatronResponse = await sierraClient.updatePatron(userId, {
-      varFields: {
-        fieldTag: varFieldTags.name,
-        subfields: [
-          {
-            tag: 'a',
-            content: lastName,
-          },
-          {
-            tag: 'b',
-            content: firstName,
-          },
-        ],
-      },
+      varFields: [
+        {
+          fieldTag: varFieldTags.name,
+          subfields: [
+            {
+              tag: 'a',
+              content: lastName,
+            },
+            {
+              tag: 'b',
+              content: firstName,
+            },
+          ],
+        }
+      ],
     });
     if (updatePatronResponse.status !== ResponseStatus.Success) {
       throw clientResponseToHttpError(updatePatronResponse);
     }
 
-    response.status(200).json(toUser(auth0Update.result));
+    response.sendStatus(204);
   };
 }
 
