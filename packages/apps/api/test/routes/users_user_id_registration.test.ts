@@ -74,7 +74,7 @@ describe('/users/{userId}/registration', () => {
           .send({ firstName, lastName })
       );
 
-      expect(response.statusCode).toBe(400);
+      expect(response.statusCode).toBe(409);
 
       const sierraUser = await clients.sierra.getPatronRecordByRecordNumber(
         testUser.userId
