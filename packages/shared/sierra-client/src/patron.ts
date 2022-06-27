@@ -28,7 +28,7 @@ export function getVarFieldContent(
 // Sierra stores the names of Patron records in two formats: MARC and non-MARC. In the former, names are represented as
 // a JSON object, where each part of the name (first name, last name) is represented as a sub-object on its own. In the
 // case of non-MARC, it's a single string value with various prefixes.
-function getPatronName(varFields: VarField[]): {
+export function getPatronName(varFields: VarField[]): {
   firstName: string;
   lastName: string;
 } {
@@ -205,7 +205,7 @@ export type VarField = {
 export type UpdateOptions = {
   pin?: string;
   barcodes?: [barcode: string];
-  varFields?: VarField;
+  varFields?: VarField[];
 };
 
 type SubField = {

@@ -58,7 +58,7 @@ function registerUsersUserIdRegistrationResource(
   app.put(
     '/users/:user_id/registration',
     corsOptions,
-    asyncHandler(updateUserAfterRegistration(clients.auth0, clients.sierra))
+    asyncHandler(updateUserAfterRegistration(clients.sierra))
   );
 }
 

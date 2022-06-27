@@ -1,6 +1,6 @@
 import supertest = require('supertest');
 import { MockAuth0Client } from '@weco/auth0-client';
-import { MockSierraClient } from '@weco/sierra-client';
+import { MockSierraClient, Role } from '@weco/sierra-client';
 import MockEmailClient from './MockEmailClient';
 import { createApplication } from '../../../src/app';
 import { Request } from 'supertest';
@@ -13,7 +13,7 @@ export type ExistingUser = {
   password?: string;
   markedForDeletion?: boolean;
   emailValidated?: boolean;
-  role?: string;
+  role?: Role;
 };
 
 const apiGatewayHeaders = (data: object = {}) => {
@@ -56,6 +56,18 @@ export const mockedApi = (existingUsers: ExistingUser[] = []) => {
           barcode: Math.floor(Math.random() * 1e8).toString(),
           role: user.role ?? 'Reader',
         },
+      },
+      user.password
+    );
+
+    mockClients.sierra.addPatron(
+      {
+        recordNumber: user.userId,
+        barcode: user.userId.toString(),
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        role: user.role ?? 'Reader',
       },
       user.password
     );
