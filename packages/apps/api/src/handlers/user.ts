@@ -76,6 +76,26 @@ export function updateUserAfterRegistration(
       throw clientResponseToHttpError(getPatronResponse);
     }
 
+    // If somebody comes through this flow and enters the same name as the existing
+    // patron record, we treat it as okay.
+    //
+    // This makes the endpoint idempotent, and guards against annoying errors,
+    // e.g. if the identity web app sends the PUT request twice.
+    if (getPatronResponse.result.firstName === firstName && getPatronResponse.result.lastName === lastName) {
+      response.sendStatus(204);
+      return;
+    }
+
+    // If somebody comes through this flow and the name in Sierra isn't our placeholder,
+    // then shenanigans might be occurring. Throw an error; a human needs to look at this.
+    if (getPatronResponse.result.firstName !== 'Auth0_Registration_undefined' ||
+        getPatronResponse.result.lastName !== 'Auth0_Registration_tempLastName') {
+      throw new HttpError({
+        status: 400,
+        message: `User ${userId} is already registered in Sierra.`
+      });
+    }
+
     // Update the patron record with the incoming full registration first and lastname
     //
     // Note: we only update the patron record in Sierra, not Auth0, because you
