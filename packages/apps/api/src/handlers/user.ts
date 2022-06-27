@@ -63,13 +63,17 @@ export function updateUserAfterRegistration(
     // We retrieve the existing patron record and check it has the placeholder
     // values we store for a user when they're created; if not, we reject the
     // request because something has gone wrong.
-    const patronResponse = await sierraClient.getPatronRecordByRecordNumber(userId);
+    const getPatronResponse = await sierraClient.getPatronRecordByRecordNumber(userId);
 
-    if (patronResponse.status === ResponseStatus.NotFound) {
+    if (getPatronResponse.status === ResponseStatus.NotFound) {
       throw new HttpError({
         status: 404,
         message: 'User does not exist'
       })
+    }
+
+    if (getPatronResponse.status !== ResponseStatus.Success) {
+      throw clientResponseToHttpError(getPatronResponse);
     }
 
     // Update the patron record with the incoming full registration first and lastname
