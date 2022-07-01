@@ -57,14 +57,6 @@ export const onContinuePostLogin = async (
   event: Event<Auth0User>,
   api: API<Auth0User>
 ) => {
-  const SUCCESS_URL = `${event.secrets.IDENTITY_APP_BASEURL}/success`;
-
-  // Once the full registration form has been submitted, it is signed with JWT handler on Identity App (Weco)
-  // This jwt token is sent back to /continue on auth0 actions, and we validate/decode the token to get formData
-  // On success of full registration form submission at Identity API updateUserAfterRegistration endpoint
-  // we redirect to /continue with encoded formData from the endpoint
-  // any data we send to /continue is tokenized and validated below
-
   try {
     const payload = api.redirect.validateToken({
       secret: event.secrets.AUTH0_PAYLOAD_SECRET,
@@ -75,7 +67,6 @@ export const onContinuePostLogin = async (
       'terms_and_conditions_accepted',
       Boolean(payload.terms_and_conditions_accepted)
     );
-    api.redirect.sendUserTo(SUCCESS_URL, { query: { success: 'true' } });
   } catch (error) {
     console.error(error, 'Validation of redirect token failed');
   }
