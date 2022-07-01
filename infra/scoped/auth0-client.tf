@@ -173,7 +173,9 @@ resource "auth0_client_grant" "buildkite" {
 # Lets the Account Management System component initialise and process OAuth 2.0 / OIDC login requests through Auth0
 
 resource "auth0_client" "account_management_system" {
-  name                 = "Account Management System${local.environment_qualifier}"
+  name        = "Account Management System${local.environment_qualifier}"
+  description = "The identity web app, as defined in the wellcomecollection.org repo"
+
   app_type             = "regular_web"
   is_first_party       = true
   custom_login_page_on = true
