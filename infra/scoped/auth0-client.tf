@@ -200,6 +200,7 @@ resource "auth0_client" "account_management_system" {
 
   grant_types = [
     "authorization_code",
+    "client_credentials",
     "refresh_token"
   ]
 
@@ -209,6 +210,7 @@ resource "auth0_client" "account_management_system" {
 
   allowed_logout_urls = [
     local.wellcome_collection_site_uri,
+    "${local.wellcome_collection_site_uri}/account/success",
     local.ams_delete_requested_uri
   ]
 
