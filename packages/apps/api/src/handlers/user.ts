@@ -122,9 +122,15 @@ export function updateUserAfterRegistration(sierraClient: SierraClient) {
         {
           fieldTag: varFieldTags.name,
           subfields: [
+            // The trailing comma allows the MARC values to be concatenated into one string:
+            //
+            //         Smith, |cDr |bJane
+            //      => Smith, Dr Jane
+            //
+            // This also mirrors patron records that were created in the previous system.
             {
               tag: 'a',
-              content: lastName,
+              content: `${lastName},`,
             },
             {
               tag: 'b',
