@@ -114,26 +114,23 @@ export function updateUserAfterRegistration(sierraClient: SierraClient) {
     //    For more information, see
     //    https://auth0.com/docs/dashboard/guides/connections/configure-connection-sync
     //
-    // Because patron data is refreshed every time a user authenticates, we think that
-    // this is okay:
-    //
-    //    1.  User goes to the email/password sign-up form.  This creates a stub user
-    //        in Sierra with a placeholder name.
-    //    2.  User goes to the "fill in your name" form.  At this point they aren't
-    //        logged in.
-    //    3.  User completes that form, gets logged in, triggering an authentication
-    //        and a refresh of patron data.
-    //
-    // We need the full flow working to test this, but this is why we think we can get
-    // away with just an update in Sierra.
+    // Because patron data is only refreshed every time a user authenticates, we instead
+    // log the user out after they complete the sign-up process.  When they log back in,
+    // Auth0 will re-fetch their profile data from Sierra.
     const updatePatronResponse = await sierraClient.updatePatron(userId, {
       varFields: [
         {
           fieldTag: varFieldTags.name,
           subfields: [
+            // The trailing comma allows the MARC values to be concatenated into one string:
+            //
+            //         Smith, |cDr |bJane
+            //      => Smith, Dr Jane
+            //
+            // This also mirrors patron records that were created in the previous system.
             {
               tag: 'a',
-              content: lastName,
+              content: `${lastName},`,
             },
             {
               tag: 'b',
