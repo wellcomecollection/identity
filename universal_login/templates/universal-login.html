@@ -267,24 +267,50 @@
       <div class="container-inner">
         <!-- Here we need to show the description message -->
         <h1>{{ prompt.screen.texts.pageTitle }}</h1>
+
+        <!-- Text that appears before the login/sign-up form fields -->
         {% if prompt.name == "login" %}
         <p>
           <strong>Note:</strong> Please use the email address connected to your
-          library account to sign in. You'll no longer be able to use your
+          library account to sign in. You&rsquo;ll no longer be able to use your
           library card number or username.
         </p>
         {% endif %} {% if prompt.name == "signup" %}
         <p>
-          For free access to our requesting service, subscription databases and
-          other online resources, please apply for a library membership.
+          With a library membership and online account, you&rsquo;ll be able to:
+        </p>
+        <ul>
+          <li>
+            Request up to 15 items from our closed stores to view in the library
+          </li>
+          <li>Access subscription databases and other online resources.</li>
+        </ul>
+        <p>
+          <strong>Note:</strong> To access subscription databases and online
+          resources, you&rsquo;ll need to bring a form of personal
+          identification (ID) and proof of address to the Admissions desk in the
+          library to confirm your membership.
         </p>
         <p>
-          <strong>Note:</strong> You don’t need a membership to visit the
-          library for the day or to view our digital collections.
+          You don&rsquo;t need to apply for a membership if you wish to view our
+          digital collections or visit the library for the day.
         </p>
-        {% endif %} {%- auth0:widget -%} {% if prompt.name == "login" %}
+        {% endif %}
+
+        <!-- The login/sign-up form fields -->
+        {%- auth0:widget -%}
+
+        <!-- Text that appears after the login/sign-up form fields -->
+        {% if prompt.name == "login" %}
         <p>
           <strong>Having trouble accessing your account?</strong>
+          <a href="mailto:library@wellcomecollection.org"
+            >Contact the library team.</a
+          ><br />
+        </p>
+        {% endif %} {% if prompt.name == "signup" %}
+        <p>
+          <strong>Have any questions about library memberships?</strong>
           <a href="mailto:library@wellcomecollection.org"
             >Contact the library team.</a
           ><br />
