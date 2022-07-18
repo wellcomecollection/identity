@@ -217,6 +217,16 @@
         text-decoration: none;
       }
 
+      ul {
+        list-style: square;
+        margin-bottom: 22px;
+      }
+
+      .yellow-border {
+        border-left: 10px solid #ffce3c;
+        padding-left: 10px;
+      }
+
       @media (max-width: 802px) and (min-width: 0) {
         .visually-hidden-small {
           border: 0;
@@ -276,25 +286,26 @@
           library card number or username.
         </p>
         {% endif %} {% if prompt.name == "signup" %}
-        <p>
-          With a library membership and online account, you&rsquo;ll be able to:
-        </p>
+        <p>With a library membership and online account, you’ll be able to:</p>
         <ul>
           <li>
             Request up to 15 items from our closed stores to view in the library
           </li>
-          <li>Access subscription databases and other online resources.</li>
+          <li>Access subscription databases, e-journals and e-books</li>
         </ul>
-        <p>
-          <strong>Note:</strong> To access subscription databases and online
-          resources, you&rsquo;ll need to bring a form of personal
-          identification (ID) and proof of address to the Admissions desk in the
-          library to confirm your membership.
-        </p>
-        <p>
-          You don&rsquo;t need to apply for a membership if you wish to view our
-          digital collections or visit the library for the day.
-        </p>
+        <div class="yellow-border">
+          <p>
+            <strong>Note:</strong> To access subscription databases, e-journals
+            and e-books, you’ll need to bring a form of personal identification
+            (ID) and proof of address to the Library admissions desk to confirm
+            your membership.
+          </p>
+          <p>
+            You don’t need a membership to visit the Library to do your own
+            quiet study. You can collect a day visitor pass from the Library
+            admissions desk on each visit.
+          </p>
+        </div>
         {% endif %}
 
         <!-- The login/sign-up form fields -->
