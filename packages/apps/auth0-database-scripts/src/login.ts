@@ -1,4 +1,4 @@
-import { HttpSierraClient } from '@weco/sierra-client';
+import { HttpSierraClient, PatronRecord } from '@weco/sierra-client';
 import { ResponseStatus } from '@weco/identity-common';
 import { callbackify } from 'util';
 import { patronRecordToUser } from './helpers';
@@ -17,6 +17,20 @@ const sierraPatronValidationErrorMessage =
   'We had an issue in running validation of the patron in Sierra';
 const markingPatronVerifiedErrorMessage =
   'We encountered an error in marking the patron as verified in Sierra';
+
+const hasImplicitlyVerifiedEmail = (patronRecord: PatronRecord): boolean => {
+  // The old process for registering users using OPAC had an implicit step
+  // to verify email addresses: users set their password via email, so if
+  // they had an email address and a password, we know it's verified.
+  //
+  // The new process went live on 20 July 2022, so we require any users created
+  // after to this date to explicitly verify through Auth0.
+  const isNotVerified = !patronRecord.verifiedEmail;
+  const predatesAuth0Signup =
+    patronRecord.createdDate <= new Date('2022-07-19');
+
+  return isNotVerified && predatesAuth0Signup;
+};
 
 async function login(email: string, password: string): Promise<Auth0User> {
   const apiRoot = configuration.API_ROOT;
@@ -47,14 +61,8 @@ async function login(email: string, password: string): Promise<Auth0User> {
     );
   }
 
-  // If a patron is logging in and has no verified emails, we can infer that
-  // they're logging in for the first time: because the library signup process
-  // requires that they set a password via email, we assume that their current
-  // email address is verified, and mark it as such.
-  if (!patronRecord.verifiedEmail) {
-    console.log(
-      'LOG >> login script >> line 53 >> We we able to find out the patron was not verified in Sierra '
-    );
+  if (hasImplicitlyVerifiedEmail(patronRecord)) {
+    console.log('Patron’s email address is implicitly verified');
     const updatedRecordResponse = await sierraClient.markPatronEmailVerified(
       patronRecord.recordNumber,
       { type: 'Implicit' }
