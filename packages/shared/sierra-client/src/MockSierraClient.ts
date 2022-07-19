@@ -43,6 +43,7 @@ export default class MockSierraClient implements SierraClient {
     lastName: lastName ?? 'Patron',
     email: 'test' + Math.floor(Math.random() * 100).toString() + '@patron',
     role: role ?? 'Reader',
+    createdDate: new Date(),
   });
 
   getPatronRecordByEmail = jest.fn(async (email: string) => {
@@ -156,6 +157,7 @@ export default class MockSierraClient implements SierraClient {
         lastName,
         email,
         role: role ?? 'Reader',
+        createdDate: new Date(),
       });
 
       this.addPatron(newPatronRecord('Ravi', 'Ravioli', 'SelfRegistered'));

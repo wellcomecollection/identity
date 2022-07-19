@@ -53,7 +53,7 @@ const handlers = [
       ...(req.url.searchParams.get('fields')?.split(',') || []),
     ];
     const response = Object.fromEntries(
-      fields.map((field) => [field, recordMarc[field]])
+      fields.map((field) => [field, (recordMarc as any)[field]])
     );
     return res(ctx.json(response));
   }),
