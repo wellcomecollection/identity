@@ -22,7 +22,7 @@ import {
 } from './email-verification-notes';
 import { paginatedSierraResults } from './pagination';
 
-const minimumPatronFields = ['varFields', 'patronType'];
+const minimumPatronFields = ['varFields', 'patronType', 'createdDate'];
 
 export default class HttpSierraClient implements SierraClient {
   private readonly apiRoot: string;
