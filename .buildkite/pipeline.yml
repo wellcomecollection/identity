@@ -1,6 +1,5 @@
 steps:
-  # Carry out some basic linting across the codebase.
-  - name: "linting"
+  - name: "Run linting"
     command:
       - "/app/.buildkite/scripts/linting.sh"
     plugins:
@@ -14,8 +13,7 @@ steps:
 
   - wait
 
-  # Build and run the tests.
-  - name: "tests"
+  - name: "Run tests"
     command:
       - "yarn install --frozen-lockfile"
       - "yarn build"
@@ -37,7 +35,7 @@ steps:
   - wait
 
   # Build the Auth0 scripts (just to check for successful compilation)
-  - name: "Build auth0 scripts"
+  - name: "Build Auth0 scripts"
     command:
       - "yarn --frozen-lockfile"
       - "yarn build-auth0-database-scripts"
@@ -51,8 +49,7 @@ steps:
           run: app
           config: .buildkite/docker-compose.yml
 
-  # Package and persist the AWS Lambda Functions.
-  - name: "aws-lambda-packaging"
+  - name: "Package the AWS Lambda functions"
     command:
       - ". /app/.buildkite/scripts/init-environment.sh"
       - "yarn install --frozen-lockfile"
@@ -78,8 +75,7 @@ steps:
 
   - wait
 
-  # Deploy to stage
-  - name: "deploy-stage"
+  - name: "Deploy to stage"
     branches: "main"
     trigger: "identity-deploy-stage"
     async: true
