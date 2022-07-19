@@ -12,6 +12,7 @@ export function toPatronRecord(response: PatronResponse): PatronRecord {
     role: patronTypeToRole(response.patronType),
     email: patronEmail,
     verifiedEmail: verifiedEmail(response.varFields),
+    createdDate: new Date(response.createdDate),
   };
 }
 
@@ -157,6 +158,7 @@ export type PatronRecord = {
   email: string;
   role: Role;
   verifiedEmail?: string;
+  createdDate: Date;
 };
 
 export type PatronCreateResponse = {
@@ -168,6 +170,7 @@ export type PatronResponse = {
   patronType: number;
   deleted: boolean;
   varFields: VarField[];
+  createdDate: string;
 };
 
 // This represents the data required to create a Patron record in Sierra. The 'fixedFields' a bit odd, as the keys of

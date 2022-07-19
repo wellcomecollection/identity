@@ -3,6 +3,7 @@ import { PatronRecord, HttpSierraClient } from '../src';
 import mockSierraServer, { apiRoot, routeUrls } from './mock-sierra-server';
 import {
   barcode,
+  createdDate,
   email,
   firstName,
   lastName,
@@ -188,6 +189,7 @@ describe('HTTP sierra client', () => {
         recordNumber,
         role,
         verifiedEmail,
+        createdDate: new Date(createdDate),
       });
     });
 
@@ -204,6 +206,7 @@ describe('HTTP sierra client', () => {
         recordNumber,
         role,
         verifiedEmail,
+        createdDate: new Date(createdDate),
       });
     });
 
@@ -257,6 +260,7 @@ describe('HTTP sierra client', () => {
         recordNumber,
         role,
         verifiedEmail,
+        createdDate: new Date(createdDate),
       });
     });
 
@@ -273,6 +277,7 @@ describe('HTTP sierra client', () => {
         recordNumber,
         role,
         verifiedEmail,
+        createdDate: new Date(createdDate),
       });
     });
 
@@ -309,6 +314,7 @@ describe('HTTP sierra client', () => {
         recordNumber,
         role,
         verifiedEmail: email,
+        createdDate: new Date(createdDate),
       });
     });
 
@@ -336,6 +342,7 @@ describe('HTTP sierra client', () => {
         recordNumber,
         role,
         verifiedEmail,
+        createdDate: new Date(createdDate),
       });
     });
 

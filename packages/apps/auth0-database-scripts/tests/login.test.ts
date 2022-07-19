@@ -23,6 +23,7 @@ const testPatronRecord: PatronRecord = {
   email: 'test@test.test',
   role: 'Reader',
   verifiedEmail: 'test@test.test',
+  createdDate: new Date('2001-01-01T01:01:01Z'),
 };
 
 const testPatronPassword = 'super-secret';

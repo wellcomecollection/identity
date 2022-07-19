@@ -68,6 +68,7 @@ export const mockedApi = (existingUsers: ExistingUser[] = []) => {
         lastName: user.lastName,
         email: user.email,
         role: user.role ?? 'Reader',
+        createdDate: new Date(),
       },
       user.password
     );
