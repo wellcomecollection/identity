@@ -26,6 +26,7 @@
                 margin: 20px 0;
               "
             ></div>
+            {% if user.given_name != 'Auth0_Registration_undefined' %}
             <p
               style="
                 margin-bottom: 1.3em;
@@ -37,6 +38,7 @@
             >
               Hi {{user.given_name}},
             </p>
+            {% endif %}
             <p
               style="
                 margin-bottom: 1.3em;
