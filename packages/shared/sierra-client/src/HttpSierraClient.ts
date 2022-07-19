@@ -13,7 +13,6 @@ import {
   PatronCreateResponse,
   toPatronRecord,
   varFieldTags,
-  VarField,
   UpdateOptions,
 } from './patron';
 import SierraClient from './SierraClient';
