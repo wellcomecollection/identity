@@ -97,6 +97,29 @@ describe('login script', () => {
     login(testPatronRecord.email, testPatronPassword, callback);
   });
 
+  it('skips a verification note if the user was created after the new sign-up went live', (done) => {
+    mockSierraClient.addPatron(
+      {
+        ...testPatronRecord,
+        verifiedEmail: undefined,
+        createdDate: new Date(2023, 3, 4),
+      },
+      testPatronPassword
+    );
+
+    const callback = (error?: NodeJS.ErrnoException | null, data?: User) => {
+      expect(error).toBe(null);
+      expect(data).toMatchObject(
+        patronRecordToUser({
+          ...testPatronRecord,
+          verifiedEmail: undefined,
+        })
+      );
+      done();
+    };
+    login(testPatronRecord.email, testPatronPassword, callback);
+  });
+
   describe('calls the Sierra client correctly', () => {
     it('by searching for the given email', (done) => {
       const callback = (error?: NodeJS.ErrnoException | null, data?: User) => {
