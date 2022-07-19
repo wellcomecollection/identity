@@ -17,7 +17,6 @@ steps:
   # Build and run the tests.
   - name: "tests"
     command:
-      - ". /app/.buildkite/scripts/init-environment.sh"
       - "yarn install --frozen-lockfile"
       - "yarn build"
       - "yarn test"
