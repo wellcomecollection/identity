@@ -83,12 +83,10 @@ export default class HttpSierraClient implements SierraClient {
         // Messages: we want to be able to add notes to new patrons who registered via the new sign-up process through auth0
         const registrationNotePrefix = 'Auth0_Registration:';
         const messages = {
-          // When new Membership self registration testing phase 1 is over we can query by registrationTestingNote and remove any test accounts from Sierra
-          registrationTestingNote:
-            'this user was created during initial testing for registration. Please contact the Digital Engagement team if you encounter any issues or have any questions digital@wellcomecollection.org',
-          // We will want to keep a permanent record of any users who have registered through the new Membership self registration through auth0
+          // This is for debugging; it helps us know where users were created (through Auth0,
+          // the old process, directly in Sierra, etc).
           registrationDetails:
-            'this user was created using membership sign-up via auth0 from weco.org',
+            'this user was created using membership sign-up via Auth0 on wellcomecollection.org',
         };
         const messagesCombined = Object.values(messages).join('|');
 
