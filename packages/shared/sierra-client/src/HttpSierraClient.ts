@@ -100,6 +100,31 @@ export default class HttpSierraClient implements SierraClient {
           {
             patronType: 29,
             pin: password,
+            fixedFields: {
+              // This matches the previous sign-up process, which sets the user category
+              // to 13 ("Other").  If you don't set it, then it defaults to 0 ("University staff").
+              46: {
+                label: 'USER CAT.',
+                value: '13',
+              },
+              // We use this to show if someone first:
+              //
+              //  - registered in person ('home ')
+              //  - registered online ('sreg ')
+              //
+              53: {
+                label: 'HOME LIBR',
+                value: 'sreg ',
+              },
+              // Opens the message SELF REG when staff open a patron record. This is so they can see
+              // it's a self reg record and the person has not been in to the library to give us their address and IDs.
+              54: {
+                label: 'PMESSAGE',
+                value: 's',
+              },
+              // Here 'z' = 'email'
+              268: { label: 'Notice Preference', value: 'z' },
+            },
             varFields: [
               {
                 fieldTag: 'n',
