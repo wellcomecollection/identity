@@ -150,10 +150,6 @@ export default class HttpSierraClient implements SierraClient {
                 fieldTag: 'x',
                 content: `${registrationNotePrefix} ${messagesCombined}`,
               },
-              {
-                fieldTag: 'm',
-                content: 's',
-              },
             ],
           },
           { validateStatus: (status: number) => status === 200 }
