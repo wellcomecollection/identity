@@ -69,8 +69,8 @@ function getPatronNameNonMarc(content: string): Name {
     : '';
 
   const firstName = content.includes('|b')
-    ? content.substring(content.indexOf('|b') + 2, content.length)
-    : content.substring(content.indexOf(',') + 1, content.length);
+    ? content.substring(content.indexOf('|b') + 2)
+    : content.substring(content.indexOf(',') + 1);
 
   return {
     firstName: firstName.trim(),
