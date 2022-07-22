@@ -5,7 +5,8 @@ import {
   ResponseStatus,
   successResponse,
 } from '@weco/identity-common';
-import { Role, UpdateOptions, getPatronName } from './patron';
+import { Role, UpdateOptions } from './patron';
+import { getPatronName } from './marc';
 
 export default class MockSierraClient implements SierraClient {
   private patrons: Map<number, PatronRecord> = new Map();
