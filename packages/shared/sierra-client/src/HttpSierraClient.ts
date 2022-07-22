@@ -12,9 +12,9 @@ import {
   PatronResponse,
   PatronCreateResponse,
   toPatronRecord,
-  varFieldTags,
   UpdateOptions,
 } from './patron';
+import { varFieldTags } from './marc';
 import SierraClient from './SierraClient';
 import {
   updateVerificationNote,

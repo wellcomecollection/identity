@@ -1,4 +1,5 @@
 import { verifiedEmail } from './email-verification-notes';
+import { SubField, VarField, varFieldTags } from './marc';
 
 export function toPatronRecord(response: PatronResponse): PatronRecord {
   const patronName = getPatronName(response.varFields);
@@ -140,16 +141,6 @@ const patronTypeToRole = (patronType: number): Role => {
   }
 };
 
-export const varFieldTags = {
-  barcode: 'b',
-  email: 'z',
-  notes: 'x',
-  name: 'n',
-  message: 'm',
-} as const;
-
-type VarFieldTag = typeof varFieldTags[keyof typeof varFieldTags];
-
 export type PatronRecord = {
   recordNumber: number;
   barcode: string;
@@ -196,22 +187,8 @@ export type PatronCreate = {
   }[];
 };
 
-export type VarField = {
-  fieldTag: VarFieldTag;
-  marcTag?: string;
-  content?: string;
-  ind1?: string;
-  ind2?: string;
-  subfields?: SubField[];
-};
-
 export type UpdateOptions = {
   pin?: string;
   barcodes?: [barcode: string];
   varFields?: VarField[];
-};
-
-type SubField = {
-  tag: string;
-  content: string;
 };

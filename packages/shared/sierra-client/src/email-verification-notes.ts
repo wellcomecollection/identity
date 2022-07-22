@@ -1,4 +1,5 @@
-import { getVarFieldContent, VarField, varFieldTags } from './patron';
+import { getVarFieldContent } from './patron';
+import { VarField, varFieldTags } from './marc';
 
 const auth0NotePrefix = 'Auth0:';
 
