@@ -1,4 +1,4 @@
-import { SubField, VarField } from '.';
+import { SubField, VarField, varFieldTags } from '.';
 
 type Name = {
   firstName: string;
@@ -9,7 +9,9 @@ type Name = {
 // a JSON object, where each part of the name (first name, last name) is represented as a sub-object on its own. In the
 // case of non-MARC, it's a single string value with various prefixes.
 export function getPatronName(varFields: VarField[]): Name {
-  const found = varFields.find((varField) => varField.fieldTag === 'n');
+  const found = varFields.find(
+    (varField) => varField.fieldTag === varFieldTags.name
+  );
   if (found && found.content) {
     return getPatronNameNonMarc(found.content);
   } else if (found && found.subfields) {
