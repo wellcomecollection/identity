@@ -21,6 +21,7 @@ import {
   NoteOptions,
 } from './email-verification-notes';
 import { paginatedSierraResults } from './pagination';
+import { createNameVarField } from './marc';
 
 const minimumPatronFields = ['varFields', 'patronType', 'createdDate'];
 
@@ -126,22 +127,7 @@ export default class HttpSierraClient implements SierraClient {
               268: { label: 'Notice Preference', value: 'z' },
             },
             varFields: [
-              {
-                fieldTag: varFieldTags.name,
-                marcTag: '100',
-                ind1: ' ',
-                ind2: ' ',
-                subfields: [
-                  {
-                    tag: 'a',
-                    content: lastName,
-                  },
-                  {
-                    tag: 'b',
-                    content: firstName,
-                  },
-                ],
-              },
+              createNameVarField({ firstName, lastName }),
               {
                 fieldTag: 'z',
                 content: email.toLocaleLowerCase(),

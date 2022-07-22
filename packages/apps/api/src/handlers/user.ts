@@ -5,7 +5,8 @@ import { toMessage } from '../models/common';
 import { clientResponseToHttpError, HttpError } from '../models/HttpError';
 import { toUser } from '../models/user';
 import { EmailClient } from '../utils/EmailClient';
-import { SierraClient, varFieldTags } from '@weco/sierra-client';
+import { SierraClient } from '@weco/sierra-client';
+import { createNameVarField } from 'sierra-client/src/marc';
 
 export function validatePassword(auth0Client: Auth0Client) {
   const checkPassword = passwordCheckerForUser(auth0Client);
@@ -118,27 +119,7 @@ export function updateUserAfterRegistration(sierraClient: SierraClient) {
     // log the user out after they complete the sign-up process.  When they log back in,
     // Auth0 will re-fetch their profile data from Sierra.
     const updatePatronResponse = await sierraClient.updatePatron(userId, {
-      varFields: [
-        {
-          fieldTag: varFieldTags.name,
-          subfields: [
-            // The trailing comma allows the MARC values to be concatenated into one string:
-            //
-            //         Smith, |cDr |bJane
-            //      => Smith, Dr Jane
-            //
-            // This also mirrors patron records that were created in the previous system.
-            {
-              tag: 'a',
-              content: `${lastName},`,
-            },
-            {
-              tag: 'b',
-              content: firstName,
-            },
-          ],
-        },
-      ],
+      varFields: [createNameVarField({ firstName, lastName })],
     });
     if (updatePatronResponse.status !== ResponseStatus.Success) {
       throw clientResponseToHttpError(updatePatronResponse);
