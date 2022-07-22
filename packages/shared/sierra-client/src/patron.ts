@@ -1,5 +1,5 @@
 import { verifiedEmail } from './email-verification-notes';
-import { SubField, VarField, varFieldTags } from './marc';
+import { getVarFieldContent, SubField, VarField, varFieldTags } from './marc';
 
 export function toPatronRecord(response: PatronResponse): PatronRecord {
   const patronName = getPatronName(response.varFields);
@@ -15,16 +15,6 @@ export function toPatronRecord(response: PatronResponse): PatronRecord {
     verifiedEmail: verifiedEmail(response.varFields),
     createdDate: new Date(response.createdDate),
   };
-}
-
-export function getVarFieldContent(
-  varFields: VarField[],
-  fieldTag: string
-): string[] {
-  return varFields
-    .filter((varField) => varField.fieldTag === fieldTag)
-    .map((field) => field.content)
-    .filter((content): content is string => !!content);
 }
 
 // Sierra stores the names of Patron records in two formats: MARC and non-MARC. In the former, names are represented as

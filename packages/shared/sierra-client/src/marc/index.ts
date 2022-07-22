@@ -21,3 +21,13 @@ export type VarField = {
   ind2?: string;
   subfields?: SubField[];
 };
+
+export function getVarFieldContent(
+  varFields: VarField[],
+  fieldTag: string
+): string[] {
+  return varFields
+    .filter((varField) => varField.fieldTag === fieldTag)
+    .map((field) => field.content)
+    .filter((content): content is string => !!content);
+}
