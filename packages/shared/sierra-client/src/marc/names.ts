@@ -1,12 +1,14 @@
 import { SubField, VarField } from '.';
 
+type Name = {
+  firstName: string;
+  lastName: string;
+};
+
 // Sierra stores the names of Patron records in two formats: MARC and non-MARC. In the former, names are represented as
 // a JSON object, where each part of the name (first name, last name) is represented as a sub-object on its own. In the
 // case of non-MARC, it's a single string value with various prefixes.
-export function getPatronName(varFields: VarField[]): {
-  firstName: string;
-  lastName: string;
-} {
+export function getPatronName(varFields: VarField[]): Name {
   const found = varFields.find((varField) => varField.fieldTag === 'n');
   if (found && found.content) {
     return getPatronNameNonMarc(found.content);
@@ -20,10 +22,7 @@ export function getPatronName(varFields: VarField[]): {
   }
 }
 
-function getPatronNameMarc(subFields: SubField[]): {
-  firstName: string;
-  lastName: string;
-} {
+function getPatronNameMarc(subFields: SubField[]): Name {
   const firstName = subFields.find((subField) => subField.tag === 'b');
   const lastName = subFields.find((subField) => subField.tag === 'a');
 
@@ -55,10 +54,7 @@ function getPatronNameMarc(subFields: SubField[]): {
   };
 }
 
-function getPatronNameNonMarc(content: string): {
-  firstName: string;
-  lastName: string;
-} {
+function getPatronNameNonMarc(content: string): Name {
   if (!content.trim()) {
     return {
       firstName: '',
