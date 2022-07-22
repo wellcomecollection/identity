@@ -1,5 +1,12 @@
 import { getPatronName, varFieldTags } from '../../src/marc';
 
+// The initial set of tests for this method was created by fetching every
+// patron record in Sierra, and writing new tests until there was one for
+// every style of field-tag-n we saw.  The examples are based on real
+// patron records.
+//
+// Obviously we can't use real patron names, so all names have been replaced
+// with those of famous female doctors instead.
 describe('getPatronName', () => {
   it('returns an empty name if there are no matching varfields', () => {
     const name = getPatronName([]);
