@@ -64,17 +64,13 @@ function getPatronNameNonMarc(content: string): Name {
     };
   }
 
-  let lastName = '';
-  if (content.includes(',')) {
-    lastName = content.substring(0, content.indexOf(','));
-  }
+  const lastName = content.includes(',')
+    ? content.substring(0, content.indexOf(','))
+    : '';
 
-  let firstName = '';
-  if (content.includes('|b')) {
-    firstName = content.substring(content.indexOf('|b') + 2, content.length);
-  } else {
-    firstName = content.substring(content.indexOf(',') + 1, content.length);
-  }
+  const firstName = content.includes('|b')
+    ? content.substring(content.indexOf('|b') + 2, content.length)
+    : content.substring(content.indexOf(',') + 1, content.length);
 
   return {
     firstName: firstName.trim(),
