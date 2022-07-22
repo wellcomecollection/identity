@@ -64,8 +64,6 @@ function getPatronNameNonMarc(content: string): Name {
     };
   }
 
-  content = content.replace('100', '').replace('a|', '').replace('_', '');
-
   let lastName = '';
   if (content.includes(',')) {
     lastName = content.substring(0, content.indexOf(','));
