@@ -58,7 +58,7 @@ export const recordNonMarc: PatronResponse = {
     },
     {
       fieldTag: 'n',
-      content: 'a|' + lastName + ', |b' + firstName,
+      content: `${lastName}, |b${firstName}`,
     },
   ],
   createdDate,

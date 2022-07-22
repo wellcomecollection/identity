@@ -12,9 +12,9 @@ import {
   PatronResponse,
   PatronCreateResponse,
   toPatronRecord,
-  varFieldTags,
   UpdateOptions,
 } from './patron';
+import { varFieldTags } from './marc/fields';
 import SierraClient from './SierraClient';
 import {
   updateVerificationNote,
@@ -127,7 +127,7 @@ export default class HttpSierraClient implements SierraClient {
             },
             varFields: [
               {
-                fieldTag: 'n',
+                fieldTag: varFieldTags.name,
                 marcTag: '100',
                 ind1: ' ',
                 ind2: ' ',

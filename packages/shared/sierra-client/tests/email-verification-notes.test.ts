@@ -2,7 +2,7 @@ import {
   updateVerificationNote,
   verifiedEmail,
 } from '../src/email-verification-notes';
-import { varFieldTags } from '../src/patron';
+import { varFieldTags } from '../src/marc';
 
 describe('email verification notes', () => {
   beforeAll(() => {
