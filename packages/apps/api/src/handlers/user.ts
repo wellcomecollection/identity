@@ -5,8 +5,7 @@ import { toMessage } from '../models/common';
 import { clientResponseToHttpError, HttpError } from '../models/HttpError';
 import { toUser } from '../models/user';
 import { EmailClient } from '../utils/EmailClient';
-import { SierraClient } from '@weco/sierra-client';
-import { createNameVarField } from 'sierra-client/src/marc';
+import { createNameVarField, SierraClient } from '@weco/sierra-client';
 
 export function validatePassword(auth0Client: Auth0Client) {
   const checkPassword = passwordCheckerForUser(auth0Client);
