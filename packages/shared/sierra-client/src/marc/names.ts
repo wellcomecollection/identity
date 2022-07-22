@@ -5,6 +5,29 @@ type Name = {
   lastName: string;
 };
 
+export function createNameVarField({ firstName, lastName }: Name): VarField {
+  return {
+    fieldTag: varFieldTags.name,
+    marcTag: '100',
+    subfields: [
+      // The trailing comma allows the MARC values to be concatenated into one string:
+      //
+      //         Smith, |cDr |bJane
+      //      => Smith, Dr Jane
+      //
+      // This also mirrors patron records that were created in the previous system.
+      {
+        tag: 'a',
+        content: `${lastName},`,
+      },
+      {
+        tag: 'b',
+        content: firstName,
+      },
+    ],
+  };
+}
+
 // Sierra stores the names of Patron records in two formats: MARC and non-MARC. In the former, names are represented as
 // a JSON object, where each part of the name (first name, last name) is represented as a sub-object on its own. In the
 // case of non-MARC, it's a single string value with various prefixes.

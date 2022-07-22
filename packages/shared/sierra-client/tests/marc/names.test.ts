@@ -1,4 +1,8 @@
-import { getPatronName, varFieldTags } from '../../src/marc';
+import {
+  createNameVarField,
+  getPatronName,
+  varFieldTags,
+} from '../../src/marc';
 
 // The initial set of tests for this method was created by fetching every
 // patron record in Sierra, and writing new tests until there was one for
@@ -114,5 +118,27 @@ describe('getPatronName', () => {
       expect(name.firstName).toBe('Virginia Apgar');
       expect(name.lastName).toBe('');
     });
+  });
+});
+
+describe('createNameVarField', () => {
+  const varField = createNameVarField({
+    firstName: 'Ogino',
+    lastName: 'Ginko',
+  });
+
+  expect(varField).toStrictEqual({
+    fieldTag: 'n',
+    marcTag: '100',
+    subfields: [
+      {
+        content: 'Ginko,',
+        tag: 'a',
+      },
+      {
+        content: 'Ogino',
+        tag: 'b',
+      },
+    ],
   });
 });
