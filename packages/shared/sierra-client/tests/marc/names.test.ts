@@ -19,4 +19,23 @@ describe('getPatronName', () => {
     expect(name.firstName).toBe('');
     expect(name.lastName).toBe('');
   });
+
+  it('extracts a MARC-style name from field tag n', () => {
+    const name = getPatronName([
+      {
+        fieldTag: 'n',
+        ind1: ' ',
+        ind2: ' ',
+        marcTag: '100',
+        subfields: [
+          { content: 'Blackwell,', tag: 'a' },
+          { content: 'Dr', tag: 'c' },
+          { content: 'Elizabeth', tag: 'b' },
+        ],
+      },
+    ]);
+
+    expect(name.firstName).toBe('Elizabeth');
+    expect(name.lastName).toBe('Blackwell');
+  });
 });
