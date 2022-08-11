@@ -2,7 +2,7 @@
 
 resource "aws_api_gateway_integration" "users_userid_options" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = module.api_gw_resource_users_userid.id
+  resource_id = local.route_ids["/users/:user_id"]
   http_method = "OPTIONS"
 
   integration_http_method = "POST"
@@ -14,7 +14,7 @@ resource "aws_api_gateway_integration" "users_userid_options" {
 
 resource "aws_api_gateway_integration" "users_userid_get" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = module.api_gw_resource_users_userid.id
+  resource_id = local.route_ids["/users/:user_id"]
   http_method = "GET"
 
   integration_http_method = "POST"
@@ -30,7 +30,7 @@ resource "aws_api_gateway_integration" "users_userid_get" {
 
 resource "aws_api_gateway_integration" "users_userid_put" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = module.api_gw_resource_users_userid.id
+  resource_id = local.route_ids["/users/:user_id"]
   http_method = "PUT"
 
   integration_http_method = "POST"
@@ -46,7 +46,7 @@ resource "aws_api_gateway_integration" "users_userid_put" {
 
 resource "aws_api_gateway_integration" "users_userid_password_options" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = module.api_gw_resource_users_userid_password.id
+  resource_id = module.userid_routes["/users/:user_id/password"].id
   http_method = "OPTIONS"
 
   integration_http_method = "POST"
@@ -58,7 +58,7 @@ resource "aws_api_gateway_integration" "users_userid_password_options" {
 
 resource "aws_api_gateway_integration" "users_userid_password_put" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = module.api_gw_resource_users_userid_password.id
+  resource_id = module.userid_routes["/users/:user_id/password"].id
   http_method = "PUT"
 
   integration_http_method = "POST"
@@ -74,7 +74,7 @@ resource "aws_api_gateway_integration" "users_userid_password_put" {
 
 resource "aws_api_gateway_integration" "users_userid_registration_options" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = module.api_gw_resource_users_userid_registration.id
+  resource_id = module.userid_routes["/users/:user_id/registration"].id
   http_method = "OPTIONS"
 
   integration_http_method = "POST"
@@ -86,7 +86,7 @@ resource "aws_api_gateway_integration" "users_userid_registration_options" {
 
 resource "aws_api_gateway_integration" "users_userid_registration_put" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = module.api_gw_resource_users_userid_registration.id
+  resource_id = module.userid_routes["/users/:user_id/registration"].id
   http_method = "PUT"
 
   integration_http_method = "POST"
@@ -103,7 +103,7 @@ resource "aws_api_gateway_integration" "users_userid_registration_put" {
 
 resource "aws_api_gateway_integration" "users_userid_deletion-request_options" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = module.api_gw_resource_users_userid_deletion-request.id
+  resource_id = module.userid_routes["/users/:user_id/deletion-request"].id
   http_method = "OPTIONS"
 
   integration_http_method = "POST"
@@ -115,7 +115,7 @@ resource "aws_api_gateway_integration" "users_userid_deletion-request_options" {
 
 resource "aws_api_gateway_integration" "users_userid_deletion-request_put" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = module.api_gw_resource_users_userid_deletion-request.id
+  resource_id = module.userid_routes["/users/:user_id/deletion-request"].id
   http_method = "PUT"
 
   integration_http_method = "POST"
@@ -131,7 +131,7 @@ resource "aws_api_gateway_integration" "users_userid_deletion-request_put" {
 
 resource "aws_api_gateway_integration" "users_userid_validate_options" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = module.api_gw_resource_users_userid_validate.id
+  resource_id = module.userid_routes["/users/:user_id/validate"].id
   http_method = "OPTIONS"
 
   integration_http_method = "POST"
@@ -143,7 +143,7 @@ resource "aws_api_gateway_integration" "users_userid_validate_options" {
 
 resource "aws_api_gateway_integration" "users_userid_validate_post" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = module.api_gw_resource_users_userid_validate.id
+  resource_id = module.userid_routes["/users/:user_id/validate"].id
   http_method = "POST"
 
   integration_http_method = "POST"
@@ -168,7 +168,7 @@ locals {
 
 resource "aws_api_gateway_integration" "users_userid_item-requests_options" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = module.api_gw_resource_users_userid_item-requests.id
+  resource_id = module.userid_routes["/users/:user_id/item-requests"].id
   http_method = "OPTIONS"
 
   integration_http_method = "OPTIONS"
@@ -183,7 +183,7 @@ resource "aws_api_gateway_integration" "users_userid_item-requests_options" {
 
 resource "aws_api_gateway_integration" "users_userid_item-requests_post" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = module.api_gw_resource_users_userid_item-requests.id
+  resource_id = module.userid_routes["/users/:user_id/item-requests"].id
   http_method = "POST"
 
   integration_http_method = "POST"
@@ -205,7 +205,7 @@ resource "aws_api_gateway_integration" "users_userid_item-requests_post" {
 
 resource "aws_api_gateway_integration" "users_userid_item-requests_get" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = module.api_gw_resource_users_userid_item-requests.id
+  resource_id = module.userid_routes["/users/:user_id/item-requests"].id
   http_method = "GET"
 
   integration_http_method = "GET"
