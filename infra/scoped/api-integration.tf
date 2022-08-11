@@ -1,156 +1,3 @@
-# [OPTIONS] /users/:user_id
-
-resource "aws_api_gateway_integration" "users_userid_options" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid.id
-  http_method = aws_api_gateway_method.users_userid_options.http_method
-
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = aws_lambda_alias.api_current.invoke_arn
-}
-
-# [GET] /users/:user_id
-
-resource "aws_api_gateway_integration" "users_userid_get" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid.id
-  http_method = aws_api_gateway_method.users_userid_get.http_method
-
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = aws_lambda_alias.api_current.invoke_arn
-
-  request_parameters = {
-    "integration.request.path.userId" = "method.request.path.userId"
-  }
-}
-
-# [PUT] /users/:user_id
-
-resource "aws_api_gateway_integration" "users_userid_put" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid.id
-  http_method = aws_api_gateway_method.users_userid_put.http_method
-
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = aws_lambda_alias.api_current.invoke_arn
-
-  request_parameters = {
-    "integration.request.path.userId" = "method.request.path.userId"
-  }
-}
-
-# [OPTIONS] /users/:user_id/password
-
-resource "aws_api_gateway_integration" "users_userid_password_options" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_password.id
-  http_method = aws_api_gateway_method.users_userid_password_options.http_method
-
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = aws_lambda_alias.api_current.invoke_arn
-}
-
-# [PUT] /users/:user_id/password
-
-resource "aws_api_gateway_integration" "users_userid_password_put" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_password.id
-  http_method = aws_api_gateway_method.users_userid_password_put.http_method
-
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = aws_lambda_alias.api_current.invoke_arn
-
-  request_parameters = {
-    "integration.request.path.userId" = "method.request.path.userId"
-  }
-}
-
-# [OPTIONS] /users/:user_id/registration
-
-resource "aws_api_gateway_integration" "users_userid_registration_options" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_registration.id
-  http_method = aws_api_gateway_method.users_userid_registration_options.http_method
-
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = aws_lambda_alias.api_current.invoke_arn
-}
-
-# [PUT] /users/:user_id/registration
-
-resource "aws_api_gateway_integration" "users_userid_registration_put" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_registration.id
-  http_method = aws_api_gateway_method.users_userid_registration_put.http_method
-
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = aws_lambda_alias.api_current.invoke_arn
-
-  request_parameters = {
-    "integration.request.path.userId" = "method.request.path.userId"
-  }
-}
-
-
-# [OPTIONS] /users/:user_id/deletion-request
-
-resource "aws_api_gateway_integration" "users_userid_deletion-request_options" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_deletion-request.id
-  http_method = aws_api_gateway_method.users_userid_deletion-request_options.http_method
-
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = aws_lambda_alias.api_current.invoke_arn
-}
-
-# [PUT] /users/:user_id/deletion-request
-
-resource "aws_api_gateway_integration" "users_userid_deletion-request_put" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_deletion-request.id
-  http_method = aws_api_gateway_method.users_userid_deletion-request_put.http_method
-
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = aws_lambda_alias.api_current.invoke_arn
-
-  request_parameters = {
-    "integration.request.path.userId" = "method.request.path.userId"
-  }
-}
-
-# [OPTIONS] /users/:user_id/validate
-
-resource "aws_api_gateway_integration" "users_userid_validate_options" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_validate.id
-  http_method = aws_api_gateway_method.users_userid_validate_options.http_method
-
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = aws_lambda_alias.api_current.invoke_arn
-}
-
-# [POST] /users/:user_id/validate
-
-resource "aws_api_gateway_integration" "users_userid_validate_post" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_validate.id
-  http_method = aws_api_gateway_method.users_userid_validate_post.http_method
-
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = aws_lambda_alias.api_current.invoke_arn
-}
-
 resource "aws_api_gateway_vpc_link" "requests" {
   name        = "requests-lb-link-${terraform.workspace}"
   target_arns = [aws_lb.identity_api.arn]
@@ -168,10 +15,10 @@ locals {
 
 resource "aws_api_gateway_integration" "users_userid_item-requests_options" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_item-requests.id
-  http_method = aws_api_gateway_method.users_userid_item-requests_options.http_method
+  resource_id = module.userid_routes["/users/:user_id/item-requests"].id
+  http_method = "OPTIONS"
 
-  integration_http_method = aws_api_gateway_method.users_userid_item-requests_options.http_method
+  integration_http_method = "OPTIONS"
   type                    = "HTTP_PROXY"
   connection_type         = "VPC_LINK"
   connection_id           = aws_api_gateway_vpc_link.requests.id
@@ -183,10 +30,10 @@ resource "aws_api_gateway_integration" "users_userid_item-requests_options" {
 
 resource "aws_api_gateway_integration" "users_userid_item-requests_post" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_item-requests.id
-  http_method = aws_api_gateway_method.users_userid_item-requests_post.http_method
+  resource_id = module.userid_routes["/users/:user_id/item-requests"].id
+  http_method = "POST"
 
-  integration_http_method = aws_api_gateway_method.users_userid_item-requests_post.http_method
+  integration_http_method = "POST"
   type                    = "HTTP_PROXY"
   connection_type         = "VPC_LINK"
   connection_id           = aws_api_gateway_vpc_link.requests.id
@@ -205,10 +52,10 @@ resource "aws_api_gateway_integration" "users_userid_item-requests_post" {
 
 resource "aws_api_gateway_integration" "users_userid_item-requests_get" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_item-requests.id
-  http_method = aws_api_gateway_method.users_userid_item-requests_get.http_method
+  resource_id = module.userid_routes["/users/:user_id/item-requests"].id
+  http_method = "GET"
 
-  integration_http_method = aws_api_gateway_method.users_userid_item-requests_get.http_method
+  integration_http_method = "GET"
   type                    = "HTTP_PROXY"
   connection_type         = "VPC_LINK"
   connection_id           = aws_api_gateway_vpc_link.requests.id
