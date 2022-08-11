@@ -23,6 +23,11 @@ resource "aws_cloudwatch_metric_alarm" "alarm_5xx" {
   alarm_actions = [local.api_gateway_alerts_topic_arn]
 }
 
+locals {
+  get_method_response_codes   = ["401", "403", "404", "500"]
+  posts_method_response_codes = ["400", "401", "403", "404", "409", "500"]
+}
+
 # /users
 
 resource "aws_api_gateway_resource" "users" {
@@ -1009,10 +1014,6 @@ resource "aws_api_gateway_method_response" "users_userid_item-requests_post_200"
   }
 }
 
-locals {
-  posts_method_response_codes = ["400", "401", "403", "404", "409", "500"]
-}
-
 moved {
   from = aws_api_gateway_method_response.users_userid_item-requests_post_400
   to   = aws_api_gateway_method_response.users_userid_item-requests_post["400"]
@@ -1108,10 +1109,6 @@ moved {
 moved {
   from = aws_api_gateway_method_response.users_userid_get_item-requests_500
   to   = aws_api_gateway_method_response.users_userid_item-requests_get["500"]
-}
-
-locals {
-  get_method_response_codes = ["401", "403", "404", "500"]
 }
 
 resource "aws_api_gateway_method_response" "users_userid_item-requests_get" {
