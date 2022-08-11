@@ -169,7 +169,7 @@ resource "aws_api_gateway_method" "post" {
   authorizer_id        = var.authorizer_id
   api_key_required     = true
   request_validator_id = var.request_validator_id
-  
+
   request_parameters = {
     "method.request.path.userId" = true
   }
