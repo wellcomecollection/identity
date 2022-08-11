@@ -285,98 +285,58 @@ resource "aws_api_gateway_method_response" "users_userid_registration_put_200" {
   }
 }
 
-# 400 Bad Request
-
-resource "aws_api_gateway_method_response" "users_userid_registration_put_400" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_registration.id
-  http_method = aws_api_gateway_method.users_userid_registration_put.http_method
-  status_code = "400"
-
-  response_models = {
-    "application/json" = "Error"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
+moved {
+  from = aws_api_gateway_method_response.users_userid_registration_put_400
+  to   = aws_api_gateway_method_response.users_userid_registration_put["400"]
 }
 
-# 401 Unauthorized
-
-resource "aws_api_gateway_method_response" "users_userid_registration_put_401" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_registration.id
-  http_method = aws_api_gateway_method.users_userid_registration_put.http_method
-  status_code = "401"
-
-  response_models = {
-    "application/json" = "Error"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
+moved {
+  from = aws_api_gateway_method_response.users_userid_registration_put_401
+  to   = aws_api_gateway_method_response.users_userid_registration_put["401"]
 }
 
-# 403 Forbidden
-
-resource "aws_api_gateway_method_response" "users_userid_registration_put_403" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_registration.id
-  http_method = aws_api_gateway_method.users_userid_registration_put.http_method
-  status_code = "403"
-
-  response_models = {
-    "application/json" = "Error"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
+moved {
+  from = aws_api_gateway_method_response.users_userid_registration_put_403
+  to   = aws_api_gateway_method_response.users_userid_registration_put["403"]
 }
 
-# 404 Not Found
-
-resource "aws_api_gateway_method_response" "users_userid_registration_put_404" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_registration.id
-  http_method = aws_api_gateway_method.users_userid_registration_put.http_method
-  status_code = "404"
-
-  response_models = {
-    "application/json" = "Error"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
+moved {
+  from = aws_api_gateway_method_response.users_userid_registration_put_404
+  to   = aws_api_gateway_method_response.users_userid_registration_put["404"]
 }
 
-# 422 Unprocessable Entity
-
-resource "aws_api_gateway_method_response" "users_userid_registration_put_422" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_registration.id
-  http_method = aws_api_gateway_method.users_userid_registration_put.http_method
-  status_code = "422"
-
-  response_models = {
-    "application/json" = "Error"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
+moved {
+  from = aws_api_gateway_method_response.users_userid_registration_put_422
+  to   = aws_api_gateway_method_response.users_userid_registration_put["422"]
 }
 
-# 500 Internal Server Error
+moved {
+  from = aws_api_gateway_method_response.users_userid_registration_put_500
+  to   = aws_api_gateway_method_response.users_userid_registration_put["500"]
+}
 
-resource "aws_api_gateway_method_response" "users_userid_registration_put_500" {
+resource "aws_api_gateway_method_response" "users_userid_registration_put" {
+  # Note: I'm not sure why this endpoint has an HTTP 422 error but
+  # no HTTP 409.  This slight fudge was added as part of refactoring work
+  # to preserve the existing behaviour, but it's possible it should be
+  # made consistent with other PUT endpoints.
+  #
+  # See https://github.com/wellcomecollection/identity/pull/366
+  for_each = toset(
+    concat(
+      [
+        for code in local.put_method_response_codes :
+        code if code != "409"
+      ],
+      ["422"]
+    )
+  )
+
   rest_api_id = aws_api_gateway_rest_api.identity.id
   resource_id = aws_api_gateway_resource.users_userid_registration.id
   http_method = aws_api_gateway_method.users_userid_registration_put.http_method
-  status_code = "500"
+
+  status_code = each.key
 
   response_models = {
     "application/json" = "Error"
