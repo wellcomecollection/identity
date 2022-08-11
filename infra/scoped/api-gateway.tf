@@ -114,37 +114,32 @@ module "api_gw_resource_users_userid" {
 
 moved {
   from = aws_api_gateway_resource.users_userid_registration
-  to   = module.api_gw_resource_users_registration.aws_api_gateway_resource.resource
+  to   = module.api_gw_resource_users_userid_registration.aws_api_gateway_resource.resource
 }
 
 moved {
   from = aws_api_gateway_method.users_userid_registration_options
-  to   = module.api_gw_resource_users_registration.aws_api_gateway_method.options[0]
+  to   = module.api_gw_resource_users_userid_registration.aws_api_gateway_method.options[0]
 }
 
 moved {
   from = aws_api_gateway_method_response.users_userid_registration_options_204
-  to   = module.api_gw_resource_users_registration.aws_api_gateway_method_response.options["204"]
+  to   = module.api_gw_resource_users_userid_registration.aws_api_gateway_method_response.options["204"]
 }
 
 moved {
   from = aws_api_gateway_method.users_userid_registration_put
-  to   = module.api_gw_resource_users_registration.aws_api_gateway_method.put[0]
+  to   = module.api_gw_resource_users_userid_registration.aws_api_gateway_method.put[0]
 }
 
 moved {
   from = aws_api_gateway_method_response.users_userid_registration_put_200
-  to   = module.api_gw_resource_users_registration.aws_api_gateway_method_response.put_success["200"]
+  to   = module.api_gw_resource_users_userid_registration.aws_api_gateway_method_response.put_success["200"]
 }
 
 moved {
   from = aws_api_gateway_method_response.users_userid_registration_put
-  to   = module.api_gw_resource_users_registration.aws_api_gateway_method_response.put_errors
-}
-
-moved {
-  from = module.api_gw_resource_users_registration
-  to   = module.api_gw_resource_users_userid_registration
+  to   = module.api_gw_resource_users_userid_registration.aws_api_gateway_method_response.put_errors
 }
 
 module "api_gw_resource_users_userid_registration" {
