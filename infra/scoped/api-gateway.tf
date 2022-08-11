@@ -272,85 +272,52 @@ module "api_gw_resource_users_userid_deletion-request" {
 
 # /users/:user_id/validate
 
-resource "aws_api_gateway_resource" "users_userid_validate" {
+moved {
+  from = aws_api_gateway_resource.users_userid_validate
+  to   = module.api_gw_resource_users_userid_validate.aws_api_gateway_resource.resource
+}
+
+moved {
+  from = aws_api_gateway_method.users_userid_validate_options
+  to   = module.api_gw_resource_users_userid_validate.aws_api_gateway_method.options[0]
+}
+
+moved {
+  from = aws_api_gateway_method_response.users_userid_validate_options_204
+  to   = module.api_gw_resource_users_userid_validate.aws_api_gateway_method_response.options["204"]
+}
+
+moved {
+  from = aws_api_gateway_method.users_userid_validate_post
+  to   = module.api_gw_resource_users_userid_validate.aws_api_gateway_method.post[0]
+}
+
+moved {
+  from = aws_api_gateway_method_response.users_userid_validate_post_200
+  to   = module.api_gw_resource_users_userid_validate.aws_api_gateway_method_response.post_success["200"]
+}
+
+moved {
+  from = aws_api_gateway_method_response.users_userid_validate_post
+  to   = module.api_gw_resource_users_userid_validate.aws_api_gateway_method_response.post_errors
+}
+
+module "api_gw_resource_users_userid_validate" {
+  source = "../modules/api_gateway_resource"
+
+  label     = "/users/:user_id/validate"
+  path_part = "validate"
+
+  responses = {
+    OPTIONS = ["204"]
+    POST    = ["200", "401", "403", "404", "429", "500"]
+  }
+
+  authorizer_id        = aws_api_gateway_authorizer.token_authorizer.id
+  request_validator_id = aws_api_gateway_request_validator.full.id
+
   rest_api_id = aws_api_gateway_rest_api.identity.id
   parent_id   = module.api_gw_resource_users_userid.id
-  path_part   = "validate"
-}
-
-# [OPTIONS]
-
-resource "aws_api_gateway_method" "users_userid_validate_options" {
-  rest_api_id   = aws_api_gateway_rest_api.identity.id
-  resource_id   = aws_api_gateway_resource.users_userid_validate.id
-  http_method   = "OPTIONS"
-  authorization = "NONE"
-}
-
-# 204 No Content
-
-resource "aws_api_gateway_method_response" "users_userid_validate_options_204" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_validate.id
-  http_method = aws_api_gateway_method.users_userid_validate_options.http_method
-  status_code = "204"
-
-  response_models = {
-    "application/json" = "Empty"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers" = true,
-    "method.response.header.Access-Control-Allow-Methods" = true,
-    "method.response.header.Access-Control-Allow-Origin"  = true
-  }
-}
-
-# [POST]
-
-resource "aws_api_gateway_method" "users_userid_validate_post" {
-  rest_api_id          = aws_api_gateway_rest_api.identity.id
-  resource_id          = aws_api_gateway_resource.users_userid_validate.id
-  http_method          = "POST"
-  authorization        = "CUSTOM"
-  authorizer_id        = aws_api_gateway_authorizer.token_authorizer.id
-  api_key_required     = true
-  request_validator_id = aws_api_gateway_request_validator.full.id
-}
-
-# 200 OK
-
-resource "aws_api_gateway_method_response" "users_userid_validate_post_200" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_validate.id
-  http_method = aws_api_gateway_method.users_userid_validate_post.http_method
-  status_code = "200"
-
-  response_models = {
-    "application/json" = "Empty"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
-}
-
-resource "aws_api_gateway_method_response" "users_userid_validate_post" {
-  for_each = toset(["401", "403", "404", "429", "500"])
-
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_validate.id
-  http_method = aws_api_gateway_method.users_userid_validate_post.http_method
-
-  status_code = each.key
-
-  response_models = {
-    "application/json" = "Error"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
 }
 
 # /users/:user_id/item-requests
