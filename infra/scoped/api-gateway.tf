@@ -102,26 +102,6 @@ resource "aws_api_gateway_method_response" "users_userid_get_200" {
   }
 }
 
-moved {
-  from = aws_api_gateway_method_response.users_userid_get_401
-  to   = aws_api_gateway_method_response.users_userid_get["401"]
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_get_403
-  to   = aws_api_gateway_method_response.users_userid_get["403"]
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_get_404
-  to   = aws_api_gateway_method_response.users_userid_get["404"]
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_get_500
-  to   = aws_api_gateway_method_response.users_userid_get["500"]
-}
-
 resource "aws_api_gateway_method_response" "users_userid_get" {
   for_each = toset(local.get_method_response_codes)
 
@@ -167,36 +147,6 @@ resource "aws_api_gateway_method_response" "users_userid_put_200" {
   response_parameters = {
     "method.response.header.Access-Control-Allow-Origin" = true
   }
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_put_400
-  to   = aws_api_gateway_method_response.users_userid_put["400"]
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_put_401
-  to   = aws_api_gateway_method_response.users_userid_put["401"]
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_put_403
-  to   = aws_api_gateway_method_response.users_userid_put["403"]
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_put_404
-  to   = aws_api_gateway_method_response.users_userid_put["404"]
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_put_409
-  to   = aws_api_gateway_method_response.users_userid_put["409"]
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_put_500
-  to   = aws_api_gateway_method_response.users_userid_put["500"]
 }
 
 resource "aws_api_gateway_method_response" "users_userid_put" {
@@ -283,36 +233,6 @@ resource "aws_api_gateway_method_response" "users_userid_registration_put_200" {
   response_parameters = {
     "method.response.header.Access-Control-Allow-Origin" = true
   }
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_registration_put_400
-  to   = aws_api_gateway_method_response.users_userid_registration_put["400"]
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_registration_put_401
-  to   = aws_api_gateway_method_response.users_userid_registration_put["401"]
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_registration_put_403
-  to   = aws_api_gateway_method_response.users_userid_registration_put["403"]
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_registration_put_404
-  to   = aws_api_gateway_method_response.users_userid_registration_put["404"]
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_registration_put_422
-  to   = aws_api_gateway_method_response.users_userid_registration_put["422"]
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_registration_put_500
-  to   = aws_api_gateway_method_response.users_userid_registration_put["500"]
 }
 
 resource "aws_api_gateway_method_response" "users_userid_registration_put" {
@@ -414,36 +334,6 @@ resource "aws_api_gateway_method_response" "users_userid_password_put_200" {
   response_parameters = {
     "method.response.header.Access-Control-Allow-Origin" = true
   }
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_password_put_400
-  to   = aws_api_gateway_method_response.users_userid_password_put["400"]
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_password_put_401
-  to   = aws_api_gateway_method_response.users_userid_password_put["401"]
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_password_put_403
-  to   = aws_api_gateway_method_response.users_userid_password_put["403"]
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_password_put_404
-  to   = aws_api_gateway_method_response.users_userid_password_put["404"]
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_password_put_422
-  to   = aws_api_gateway_method_response.users_userid_password_put["422"]
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_password_put_500
-  to   = aws_api_gateway_method_response.users_userid_password_put["500"]
 }
 
 resource "aws_api_gateway_method_response" "users_userid_password_put" {
@@ -564,26 +454,6 @@ resource "aws_api_gateway_method_response" "users_userid_deletion-request_put_30
   }
 }
 
-moved {
-  from = aws_api_gateway_method_response.users_userid_deletion-request_put_401
-  to   = aws_api_gateway_method_response.users_userid_deletion-request_put["401"]
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_deletion-request_put_403
-  to   = aws_api_gateway_method_response.users_userid_deletion-request_put["403"]
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_deletion-request_put_404
-  to   = aws_api_gateway_method_response.users_userid_deletion-request_put["404"]
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_deletion-request_put_500
-  to   = aws_api_gateway_method_response.users_userid_deletion-request_put["500"]
-}
-
 resource "aws_api_gateway_method_response" "users_userid_deletion-request_put" {
   for_each = toset(["401", "403", "404", "500"])
 
@@ -665,31 +535,6 @@ resource "aws_api_gateway_method_response" "users_userid_validate_post_200" {
   response_parameters = {
     "method.response.header.Access-Control-Allow-Origin" = true
   }
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_validate_post_401
-  to   = aws_api_gateway_method_response.users_userid_validate_post["401"]
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_validate_post_403
-  to   = aws_api_gateway_method_response.users_userid_validate_post["403"]
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_validate_post_404
-  to   = aws_api_gateway_method_response.users_userid_validate_post["404"]
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_validate_post_429
-  to   = aws_api_gateway_method_response.users_userid_validate_post["429"]
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_validate_post_500
-  to   = aws_api_gateway_method_response.users_userid_validate_post["500"]
 }
 
 resource "aws_api_gateway_method_response" "users_userid_validate_post" {
@@ -779,36 +624,6 @@ resource "aws_api_gateway_method_response" "users_userid_item-requests_post_200"
   }
 }
 
-moved {
-  from = aws_api_gateway_method_response.users_userid_item-requests_post_400
-  to   = aws_api_gateway_method_response.users_userid_item-requests_post["400"]
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_item-requests_post_401
-  to   = aws_api_gateway_method_response.users_userid_item-requests_post["401"]
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_item-requests_post_403
-  to   = aws_api_gateway_method_response.users_userid_item-requests_post["403"]
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_item-requests_post_404
-  to   = aws_api_gateway_method_response.users_userid_item-requests_post["404"]
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_item-requests_post_409
-  to   = aws_api_gateway_method_response.users_userid_item-requests_post["409"]
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_item-requests_post_500
-  to   = aws_api_gateway_method_response.users_userid_item-requests_post["500"]
-}
-
 resource "aws_api_gateway_method_response" "users_userid_item-requests_post" {
   for_each = toset(local.post_method_response_codes)
 
@@ -854,26 +669,6 @@ resource "aws_api_gateway_method_response" "users_userid_item-requests_get_200" 
   response_parameters = {
     "method.response.header.Access-Control-Allow-Origin" = true
   }
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_item-requests_get_401
-  to   = aws_api_gateway_method_response.users_userid_item-requests_get["401"]
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_item-requests_get_403
-  to   = aws_api_gateway_method_response.users_userid_item-requests_get["403"]
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_item-requests_get_404
-  to   = aws_api_gateway_method_response.users_userid_item-requests_get["404"]
-}
-
-moved {
-  from = aws_api_gateway_method_response.users_userid_get_item-requests_500
-  to   = aws_api_gateway_method_response.users_userid_item-requests_get["500"]
 }
 
 resource "aws_api_gateway_method_response" "users_userid_item-requests_get" {
