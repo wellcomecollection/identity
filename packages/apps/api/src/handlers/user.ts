@@ -58,7 +58,7 @@ export function resendVerificationEmail(auth0Client: Auth0Client) {
       throw clientResponseToHttpError(auth0Response);
     }
 
-    response.status(200);
+    response.sendStatus(204);
   };
 }
 
