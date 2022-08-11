@@ -31,100 +31,76 @@ locals {
 
 # /users
 
-resource "aws_api_gateway_resource" "users" {
+moved {
+  from = aws_api_gateway_resource.users
+  to   = module.api_gw_resource_users.aws_api_gateway_resource.resource
+}
+
+module "api_gw_resource_users" {
+  source = "../modules/api_gateway_resource"
+
+  label     = "/users"
+  path_part = "users"
+
   rest_api_id = aws_api_gateway_rest_api.identity.id
   parent_id   = aws_api_gateway_rest_api.identity.root_resource_id
-  path_part   = "users"
 }
 
 # /users/:user_id
 
-resource "aws_api_gateway_resource" "users_userid" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  parent_id   = aws_api_gateway_resource.users.id
-  path_part   = "{userId}"
+moved {
+  from = aws_api_gateway_resource.users_userid
+  to   = module.api_gw_resource_users_userid.aws_api_gateway_resource.resource
 }
 
-# [OPTIONS]
-
-resource "aws_api_gateway_method" "users_userid_options" {
-  rest_api_id   = aws_api_gateway_rest_api.identity.id
-  resource_id   = aws_api_gateway_resource.users_userid.id
-  http_method   = "OPTIONS"
-  authorization = "NONE"
+moved {
+  from = aws_api_gateway_method.users_userid_options
+  to   = module.api_gw_resource_users_userid.aws_api_gateway_method.options[0]
 }
 
-# 204 No Content
+moved {
+  from = aws_api_gateway_method_response.users_userid_options_204
+  to   = module.api_gw_resource_users_userid.aws_api_gateway_method_response.options["204"]
+}
 
-resource "aws_api_gateway_method_response" "users_userid_options_204" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid.id
-  http_method = aws_api_gateway_method.users_userid_options.http_method
-  status_code = "204"
+moved {
+  from = aws_api_gateway_method.users_userid_get
+  to   = module.api_gw_resource_users_userid.aws_api_gateway_method.get[0]
+}
 
-  response_models = {
-    "application/json" = "Empty"
+moved {
+  from = aws_api_gateway_method_response.users_userid_get_200
+  to   = module.api_gw_resource_users_userid.aws_api_gateway_method_response.get_success["200"]
+}
+
+moved {
+  from = aws_api_gateway_method_response.users_userid_get
+  to   = module.api_gw_resource_users_userid.aws_api_gateway_method_response.get_errors
+}
+
+module "api_gw_resource_users_userid" {
+  source = "../modules/api_gateway_resource"
+
+  label     = "/users/:user_id"
+  path_part = "{userId}"
+
+  responses = {
+    OPTIONS = ["204"]
+    GET     = ["200", "401", "403", "404", "500"]
   }
 
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers" = true,
-    "method.response.header.Access-Control-Allow-Methods" = true,
-    "method.response.header.Access-Control-Allow-Origin"  = true
-  }
-}
-
-# [GET]
-
-resource "aws_api_gateway_method" "users_userid_get" {
-  rest_api_id          = aws_api_gateway_rest_api.identity.id
-  resource_id          = aws_api_gateway_resource.users_userid.id
-  http_method          = "GET"
-  authorization        = "CUSTOM"
   authorizer_id        = aws_api_gateway_authorizer.token_authorizer.id
-  api_key_required     = true
   request_validator_id = aws_api_gateway_request_validator.full.id
 
-  request_parameters = {
-    "method.request.path.userId" = true
-  }
-}
-
-# 200 OK
-
-resource "aws_api_gateway_method_response" "users_userid_get_200" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid.id
-  http_method = aws_api_gateway_method.users_userid_get.http_method
-  status_code = "200"
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
-}
-
-resource "aws_api_gateway_method_response" "users_userid_get" {
-  for_each = toset(local.get_method_response_codes)
-
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid.id
-  http_method = aws_api_gateway_method.users_userid_get.http_method
-
-  status_code = each.key
-
-  response_models = {
-    "application/json" = "Error"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
+  parent_id   = module.api_gw_resource_users.id
 }
 
 # [PUT]
 
 resource "aws_api_gateway_method" "users_userid_put" {
   rest_api_id          = aws_api_gateway_rest_api.identity.id
-  resource_id          = aws_api_gateway_resource.users_userid.id
+  resource_id          = module.api_gw_resource_users_userid.id
   http_method          = "PUT"
   authorization        = "CUSTOM"
   authorizer_id        = aws_api_gateway_authorizer.token_authorizer.id
@@ -140,7 +116,7 @@ resource "aws_api_gateway_method" "users_userid_put" {
 
 resource "aws_api_gateway_method_response" "users_userid_put_200" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid.id
+  resource_id = module.api_gw_resource_users_userid.id
   http_method = aws_api_gateway_method.users_userid_put.http_method
   status_code = "200"
 
@@ -153,7 +129,7 @@ resource "aws_api_gateway_method_response" "users_userid_put" {
   for_each = toset(local.put_method_response_codes)
 
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid.id
+  resource_id = module.api_gw_resource_users_userid.id
   http_method = aws_api_gateway_method.users_userid_put.http_method
 
   status_code = each.key
@@ -170,7 +146,7 @@ resource "aws_api_gateway_method_response" "users_userid_put" {
 # /users/:user_id/registration
 resource "aws_api_gateway_resource" "users_userid_registration" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  parent_id   = aws_api_gateway_resource.users_userid.id
+  parent_id   = module.api_gw_resource_users_userid.id
   path_part   = "registration"
 }
 
@@ -271,7 +247,7 @@ resource "aws_api_gateway_method_response" "users_userid_registration_put" {
 
 resource "aws_api_gateway_resource" "users_userid_password" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  parent_id   = aws_api_gateway_resource.users_userid.id
+  parent_id   = module.api_gw_resource_users_userid.id
   path_part   = "password"
 }
 
@@ -372,7 +348,7 @@ resource "aws_api_gateway_method_response" "users_userid_password_put" {
 
 resource "aws_api_gateway_resource" "users_userid_deletion-request" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  parent_id   = aws_api_gateway_resource.users_userid.id
+  parent_id   = module.api_gw_resource_users_userid.id
   path_part   = "deletion-request"
 }
 
@@ -476,7 +452,7 @@ resource "aws_api_gateway_method_response" "users_userid_deletion-request_put" {
 
 resource "aws_api_gateway_resource" "users_userid_validate" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  parent_id   = aws_api_gateway_resource.users_userid.id
+  parent_id   = module.api_gw_resource_users_userid.id
   path_part   = "validate"
 }
 
@@ -559,7 +535,7 @@ resource "aws_api_gateway_method_response" "users_userid_validate_post" {
 
 resource "aws_api_gateway_resource" "users_userid_item-requests" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  parent_id   = aws_api_gateway_resource.users_userid.id
+  parent_id   = module.api_gw_resource_users_userid.id
   path_part   = "item-requests"
 }
 
