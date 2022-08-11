@@ -6,16 +6,6 @@ resource "aws_api_gateway_rest_api" "identity" {
   }
 }
 
-moved {
-  from = module.api_gw_resource_users
-  to   = module.users_route
-}
-
-moved {
-  from = module.api_gw_resource_users_userid
-  to   = module.users_userid_route
-}
-
 module "users_route" {
   source = "../modules/route"
 
@@ -98,32 +88,6 @@ locals {
       }
     }
   }
-}
-
-moved {
-  from = module.api_gw_resource_users_userid_registration
-  to   = module.userid_routes["/users/:user_id/registration"]
-}
-
-
-moved {
-  from = module.api_gw_resource_users_userid_password
-  to   = module.userid_routes["/users/:user_id/password"]
-}
-
-moved {
-  from = module.api_gw_resource_users_userid_deletion-request
-  to   = module.userid_routes["/users/:user_id/deletion-request"]
-}
-
-moved {
-  from = module.api_gw_resource_users_userid_validate
-  to   = module.userid_routes["/users/:user_id/validate"]
-}
-
-moved {
-  from = module.api_gw_resource_users_userid_item-requests
-  to   = module.userid_routes["/users/:user_id/item-requests"]
 }
 
 module "userid_routes" {
