@@ -31,9 +31,9 @@ variable "parent_id" {
   type = string
 }
 
-variable "integration_methods" {
-  type    = list(string)
-  default = []
+variable "create_default_integrations" {
+  type    = bool
+  default = true
 }
 
 variable "lambda_invoke_uri" {

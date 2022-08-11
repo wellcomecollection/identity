@@ -7,34 +7,16 @@ moved {
 
 # [GET] /users/:user_id
 
-resource "aws_api_gateway_integration" "users_userid_get" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = local.route_ids["/users/:user_id"]
-  http_method = "GET"
-
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = aws_lambda_alias.api_current.invoke_arn
-
-  request_parameters = {
-    "integration.request.path.userId" = "method.request.path.userId"
-  }
+moved {
+  from = aws_api_gateway_integration.users_userid_get
+  to   = module.users_userid_route.aws_api_gateway_integration.get[0]
 }
 
 # [PUT] /users/:user_id
 
-resource "aws_api_gateway_integration" "users_userid_put" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = local.route_ids["/users/:user_id"]
-  http_method = "PUT"
-
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = aws_lambda_alias.api_current.invoke_arn
-
-  request_parameters = {
-    "integration.request.path.userId" = "method.request.path.userId"
-  }
+moved {
+  from = aws_api_gateway_integration.users_userid_put
+  to   = module.users_userid_route.aws_api_gateway_integration.put[0]
 }
 
 # [OPTIONS] /users/:user_id/password
