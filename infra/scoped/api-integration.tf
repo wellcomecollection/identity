@@ -1,13 +1,8 @@
 # [OPTIONS] /users/:user_id
 
-resource "aws_api_gateway_integration" "users_userid_options" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = local.route_ids["/users/:user_id"]
-  http_method = "OPTIONS"
-
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = aws_lambda_alias.api_current.invoke_arn
+moved {
+  from = aws_api_gateway_integration.users_userid_options
+  to   = module.users_userid_route.aws_api_gateway_integration.options[0]
 }
 
 # [GET] /users/:user_id

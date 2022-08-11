@@ -30,3 +30,13 @@ variable "rest_api_id" {
 variable "parent_id" {
   type = string
 }
+
+variable "integration_methods" {
+  type    = list(string)
+  default = []
+}
+
+variable "lambda_invoke_uri" {
+  type    = string
+  default = ""
+}

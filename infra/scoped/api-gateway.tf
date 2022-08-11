@@ -28,11 +28,14 @@ module "users_userid_route" {
     PUT     = ["200", "400", "401", "403", "404", "409", "500"]
   }
 
+  integration_methods = ["OPTIONS"]
+
   parent_id = module.users_route.id
 
   authorizer_id        = aws_api_gateway_authorizer.token_authorizer.id
   request_validator_id = aws_api_gateway_request_validator.full.id
   rest_api_id          = aws_api_gateway_rest_api.identity.id
+  lambda_invoke_uri    = aws_lambda_alias.api_current.invoke_arn
 }
 
 locals {
