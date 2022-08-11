@@ -167,207 +167,107 @@ module "api_gw_resource_users_userid_registration" {
 
 # /users/:user_id/password
 
-resource "aws_api_gateway_resource" "users_userid_password" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  parent_id   = module.api_gw_resource_users_userid.id
-  path_part   = "password"
+moved {
+  from = aws_api_gateway_resource.users_userid_password
+  to   = module.api_gw_resource_users_userid_password.aws_api_gateway_resource.resource
 }
 
-# [OPTIONS]
-
-resource "aws_api_gateway_method" "users_userid_password_options" {
-  rest_api_id   = aws_api_gateway_rest_api.identity.id
-  resource_id   = aws_api_gateway_resource.users_userid_password.id
-  http_method   = "OPTIONS"
-  authorization = "NONE"
+moved {
+  from = aws_api_gateway_method.users_userid_password_options
+  to   = module.api_gw_resource_users_userid_password.aws_api_gateway_method.options[0]
 }
 
-# 204 No Content
+moved {
+  from = aws_api_gateway_method_response.users_userid_password_options_204
+  to   = module.api_gw_resource_users_userid_password.aws_api_gateway_method_response.options["204"]
+}
 
-resource "aws_api_gateway_method_response" "users_userid_password_options_204" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_password.id
-  http_method = aws_api_gateway_method.users_userid_password_options.http_method
-  status_code = "204"
+moved {
+  from = aws_api_gateway_method.users_userid_password_put
+  to   = module.api_gw_resource_users_userid_password.aws_api_gateway_method.put[0]
+}
 
-  response_models = {
-    "application/json" = "Empty"
+moved {
+  from = aws_api_gateway_method_response.users_userid_password_put_200
+  to   = module.api_gw_resource_users_userid_password.aws_api_gateway_method_response.put_success["200"]
+}
+
+moved {
+  from = aws_api_gateway_method_response.users_userid_password_put
+  to   = module.api_gw_resource_users_userid_password.aws_api_gateway_method_response.put_errors
+}
+
+module "api_gw_resource_users_userid_password" {
+  source = "../modules/api_gateway_resource"
+
+  label     = "/users/:user_id/password"
+  path_part = "password"
+
+  responses = {
+    OPTIONS = ["204"]
+    PUT     = ["200", "400", "401", "403", "404", "422", "500"]
   }
 
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers" = true,
-    "method.response.header.Access-Control-Allow-Methods" = true,
-    "method.response.header.Access-Control-Allow-Origin"  = true
-  }
-}
-
-# [PUT]
-
-resource "aws_api_gateway_method" "users_userid_password_put" {
-  rest_api_id          = aws_api_gateway_rest_api.identity.id
-  resource_id          = aws_api_gateway_resource.users_userid_password.id
-  http_method          = "PUT"
-  authorization        = "CUSTOM"
   authorizer_id        = aws_api_gateway_authorizer.token_authorizer.id
-  api_key_required     = true
   request_validator_id = aws_api_gateway_request_validator.full.id
 
-  request_parameters = {
-    "method.request.path.userId" = true
-  }
-}
-
-# 200 OK
-
-resource "aws_api_gateway_method_response" "users_userid_password_put_200" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_password.id
-  http_method = aws_api_gateway_method.users_userid_password_put.http_method
-  status_code = "200"
-
-  response_models = {
-    "application/json" = "Empty"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
-}
-
-resource "aws_api_gateway_method_response" "users_userid_password_put" {
-  # Note: I'm not sure why this endpoint has an HTTP 422 error but
-  # no HTTP 409.  This slight fudge was added as part of refactoring work
-  # to preserve the existing behaviour, but it's possible it should be
-  # made consistent with other PUT endpoints.
-  #
-  # See https://github.com/wellcomecollection/identity/pull/366
-  for_each = toset(
-    concat(
-      [
-        for code in local.put_method_response_codes :
-        code if code != "409"
-      ],
-      ["422"]
-    )
-  )
-
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_password.id
-  http_method = aws_api_gateway_method.users_userid_password_put.http_method
-
-  status_code = each.key
-
-  response_models = {
-    "application/json" = "Error"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
+  parent_id   = module.api_gw_resource_users_userid.id
 }
 
 # /users/:user_id/deletion-request
 
-resource "aws_api_gateway_resource" "users_userid_deletion-request" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  parent_id   = module.api_gw_resource_users_userid.id
-  path_part   = "deletion-request"
+moved {
+  from = aws_api_gateway_resource.users_userid_deletion-request
+  to   = module.api_gw_resource_users_userid_deletion-request.aws_api_gateway_resource.resource
 }
 
-# [OPTIONS]
-
-resource "aws_api_gateway_method" "users_userid_deletion-request_options" {
-  rest_api_id   = aws_api_gateway_rest_api.identity.id
-  resource_id   = aws_api_gateway_resource.users_userid_deletion-request.id
-  http_method   = "OPTIONS"
-  authorization = "NONE"
+moved {
+  from = aws_api_gateway_method.users_userid_deletion-request_options
+  to   = module.api_gw_resource_users_userid_deletion-request.aws_api_gateway_method.options[0]
 }
 
-# 204 No Content
+moved {
+  from = aws_api_gateway_method_response.users_userid_deletion-request_options_204
+  to   = module.api_gw_resource_users_userid_deletion-request.aws_api_gateway_method_response.options["204"]
+}
 
-resource "aws_api_gateway_method_response" "users_userid_deletion-request_options_204" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_deletion-request.id
-  http_method = aws_api_gateway_method.users_userid_deletion-request_options.http_method
-  status_code = "204"
+moved {
+  from = aws_api_gateway_method.users_userid_deletion-request_put
+  to   = module.api_gw_resource_users_userid_deletion-request.aws_api_gateway_method.put[0]
+}
 
-  response_models = {
-    "application/json" = "Empty"
+moved {
+  from = aws_api_gateway_method_response.users_userid_deletion-request_put_200
+  to   = module.api_gw_resource_users_userid_deletion-request.aws_api_gateway_method_response.put_success["200"]
+}
+
+moved {
+  from = aws_api_gateway_method_response.users_userid_deletion-request_put_304
+  to   = module.api_gw_resource_users_userid_deletion-request.aws_api_gateway_method_response.put_success["304"]
+}
+
+moved {
+  from = aws_api_gateway_method_response.users_userid_deletion-request_put
+  to   = module.api_gw_resource_users_userid_deletion-request.aws_api_gateway_method_response.put_errors
+}
+
+module "api_gw_resource_users_userid_deletion-request" {
+  source = "../modules/api_gateway_resource"
+
+  label     = "/users/:user_id/deletion-request"
+  path_part = "deletion-request"
+
+  responses = {
+    OPTIONS = ["204"]
+    PUT     = ["200", "304", "401", "403", "404", "500"]
   }
 
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers" = true,
-    "method.response.header.Access-Control-Allow-Methods" = true,
-    "method.response.header.Access-Control-Allow-Origin"  = true
-  }
-}
-
-# [PUT]
-
-resource "aws_api_gateway_method" "users_userid_deletion-request_put" {
-  rest_api_id          = aws_api_gateway_rest_api.identity.id
-  resource_id          = aws_api_gateway_resource.users_userid_deletion-request.id
-  http_method          = "PUT"
-  authorization        = "CUSTOM"
   authorizer_id        = aws_api_gateway_authorizer.token_authorizer.id
-  api_key_required     = true
   request_validator_id = aws_api_gateway_request_validator.full.id
 
-  request_parameters = {
-    "method.request.path.userId" = true
-  }
-}
-
-# 200 OK
-
-resource "aws_api_gateway_method_response" "users_userid_deletion-request_put_200" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_deletion-request.id
-  http_method = aws_api_gateway_method.users_userid_deletion-request_put.http_method
-  status_code = "200"
-
-  response_models = {
-    "application/json" = "Empty"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
-}
-
-# 304 Not Modified
-
-resource "aws_api_gateway_method_response" "users_userid_deletion-request_put_304" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_deletion-request.id
-  http_method = aws_api_gateway_method.users_userid_deletion-request_put.http_method
-  status_code = "304"
-
-  response_models = {
-    "application/json" = "Empty"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
-}
-
-resource "aws_api_gateway_method_response" "users_userid_deletion-request_put" {
-  for_each = toset(["401", "403", "404", "500"])
-
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_deletion-request.id
-  http_method = aws_api_gateway_method.users_userid_deletion-request_put.http_method
-
-  status_code = each.key
-
-  response_models = {
-    "application/json" = "Error"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
+  parent_id   = module.api_gw_resource_users_userid.id
 }
 
 # /users/:user_id/validate
