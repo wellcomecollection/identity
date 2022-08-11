@@ -87,6 +87,10 @@ locals {
         POST    = ["202", "400", "401", "403", "404", "409", "500"]
         GET     = ["200", "401", "403", "404", "500"]
       }
+
+      # These integrations are defined in `api-integrations.tf`, because
+      # they look quite different to the other integrations.
+      create_default_integrations = false
     }
   }
 }
@@ -102,9 +106,8 @@ module "userid_routes" {
 
   parent_id = local.route_ids["/users/:user_id"]
 
-  create_default_integrations = lookup(each.value, "create_default_integrations", false)
-
   authorizer_id        = aws_api_gateway_authorizer.token_authorizer.id
   request_validator_id = aws_api_gateway_request_validator.full.id
   rest_api_id          = aws_api_gateway_rest_api.identity.id
+  lambda_invoke_uri    = aws_lambda_alias.api_current.invoke_arn
 }

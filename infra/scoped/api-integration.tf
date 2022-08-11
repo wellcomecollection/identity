@@ -21,111 +21,58 @@ moved {
 
 # [OPTIONS] /users/:user_id/password
 
-resource "aws_api_gateway_integration" "users_userid_password_options" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = module.userid_routes["/users/:user_id/password"].id
-  http_method = "OPTIONS"
-
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = aws_lambda_alias.api_current.invoke_arn
+moved {
+  from = aws_api_gateway_integration.users_userid_password_options
+  to   = module.userid_routes["/users/:user_id/password"].aws_api_gateway_integration.options[0]
 }
 
 # [PUT] /users/:user_id/password
 
-resource "aws_api_gateway_integration" "users_userid_password_put" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = module.userid_routes["/users/:user_id/password"].id
-  http_method = "PUT"
-
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = aws_lambda_alias.api_current.invoke_arn
-
-  request_parameters = {
-    "integration.request.path.userId" = "method.request.path.userId"
-  }
+moved {
+  from = aws_api_gateway_integration.users_userid_password_put
+  to   = module.userid_routes["/users/:user_id/password"].aws_api_gateway_integration.put[0]
 }
 
 # [OPTIONS] /users/:user_id/registration
 
-resource "aws_api_gateway_integration" "users_userid_registration_options" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = module.userid_routes["/users/:user_id/registration"].id
-  http_method = "OPTIONS"
-
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = aws_lambda_alias.api_current.invoke_arn
+moved {
+  from = aws_api_gateway_integration.users_userid_registration_options
+  to   = module.userid_routes["/users/:user_id/registration"].aws_api_gateway_integration.options[0]
 }
 
 # [PUT] /users/:user_id/registration
 
-resource "aws_api_gateway_integration" "users_userid_registration_put" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = module.userid_routes["/users/:user_id/registration"].id
-  http_method = "PUT"
-
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = aws_lambda_alias.api_current.invoke_arn
-
-  request_parameters = {
-    "integration.request.path.userId" = "method.request.path.userId"
-  }
+moved {
+  from = aws_api_gateway_integration.users_userid_registration_put
+  to   = module.userid_routes["/users/:user_id/registration"].aws_api_gateway_integration.put[0]
 }
-
 
 # [OPTIONS] /users/:user_id/deletion-request
 
-resource "aws_api_gateway_integration" "users_userid_deletion-request_options" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = module.userid_routes["/users/:user_id/deletion-request"].id
-  http_method = "OPTIONS"
-
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = aws_lambda_alias.api_current.invoke_arn
+moved {
+  from = aws_api_gateway_integration.users_userid_deletion-request_options
+  to   = module.userid_routes["/users/:user_id/deletion-request"].aws_api_gateway_integration.options[0]
 }
 
 # [PUT] /users/:user_id/deletion-request
 
-resource "aws_api_gateway_integration" "users_userid_deletion-request_put" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = module.userid_routes["/users/:user_id/deletion-request"].id
-  http_method = "PUT"
-
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = aws_lambda_alias.api_current.invoke_arn
-
-  request_parameters = {
-    "integration.request.path.userId" = "method.request.path.userId"
-  }
+moved {
+  from = aws_api_gateway_integration.users_userid_deletion-request_put
+  to   = module.userid_routes["/users/:user_id/deletion-request"].aws_api_gateway_integration.put[0]
 }
 
 # [OPTIONS] /users/:user_id/validate
 
-resource "aws_api_gateway_integration" "users_userid_validate_options" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = module.userid_routes["/users/:user_id/validate"].id
-  http_method = "OPTIONS"
-
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = aws_lambda_alias.api_current.invoke_arn
+moved {
+  from = aws_api_gateway_integration.users_userid_validate_options
+  to   = module.userid_routes["/users/:user_id/validate"].aws_api_gateway_integration.options[0]
 }
 
 # [POST] /users/:user_id/validate
 
-resource "aws_api_gateway_integration" "users_userid_validate_post" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = module.userid_routes["/users/:user_id/validate"].id
-  http_method = "POST"
-
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = aws_lambda_alias.api_current.invoke_arn
+moved {
+  from = aws_api_gateway_integration.users_userid_validate_post
+  to   = module.userid_routes["/users/:user_id/validate"].aws_api_gateway_integration.post[0]
 }
 
 resource "aws_api_gateway_vpc_link" "requests" {
