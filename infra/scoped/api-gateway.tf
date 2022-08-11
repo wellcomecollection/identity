@@ -78,6 +78,21 @@ moved {
   to   = module.api_gw_resource_users_userid.aws_api_gateway_method_response.get_errors
 }
 
+moved {
+  from = aws_api_gateway_method.users_userid_put
+  to   = module.api_gw_resource_users_userid.aws_api_gateway_method.put[0]
+}
+
+moved {
+  from = aws_api_gateway_method_response.users_userid_put_200
+  to   = module.api_gw_resource_users_userid.aws_api_gateway_method_response.put_success["200"]
+}
+
+moved {
+  from = aws_api_gateway_method_response.users_userid_put
+  to   = module.api_gw_resource_users_userid.aws_api_gateway_method_response.put_errors
+}
+
 module "api_gw_resource_users_userid" {
   source = "../modules/api_gateway_resource"
 
@@ -87,6 +102,7 @@ module "api_gw_resource_users_userid" {
   responses = {
     OPTIONS = ["204"]
     GET     = ["200", "401", "403", "404", "500"]
+    PUT     = ["200", "400", "401", "403", "404", "409", "500"]
   }
 
   authorizer_id        = aws_api_gateway_authorizer.token_authorizer.id
@@ -96,151 +112,57 @@ module "api_gw_resource_users_userid" {
   parent_id   = module.api_gw_resource_users.id
 }
 
-# [PUT]
+moved {
+  from = aws_api_gateway_resource.users_userid_registration
+  to   = module.api_gw_resource_users_registration.aws_api_gateway_resource.resource
+}
 
-resource "aws_api_gateway_method" "users_userid_put" {
-  rest_api_id          = aws_api_gateway_rest_api.identity.id
-  resource_id          = module.api_gw_resource_users_userid.id
-  http_method          = "PUT"
-  authorization        = "CUSTOM"
+moved {
+  from = aws_api_gateway_method.users_userid_registration_options
+  to   = module.api_gw_resource_users_registration.aws_api_gateway_method.options[0]
+}
+
+moved {
+  from = aws_api_gateway_method_response.users_userid_registration_options_204
+  to   = module.api_gw_resource_users_registration.aws_api_gateway_method_response.options["204"]
+}
+
+moved {
+  from = aws_api_gateway_method.users_userid_registration_put
+  to   = module.api_gw_resource_users_registration.aws_api_gateway_method.put[0]
+}
+
+moved {
+  from = aws_api_gateway_method_response.users_userid_registration_put_200
+  to   = module.api_gw_resource_users_registration.aws_api_gateway_method_response.put_success["200"]
+}
+
+moved {
+  from = aws_api_gateway_method_response.users_userid_registration_put
+  to   = module.api_gw_resource_users_registration.aws_api_gateway_method_response.put_errors
+}
+
+moved {
+  from = module.api_gw_resource_users_registration
+  to   = module.api_gw_resource_users_userid_registration
+}
+
+module "api_gw_resource_users_userid_registration" {
+  source = "../modules/api_gateway_resource"
+
+  label     = "/users/:user_id/registration"
+  path_part = "registration"
+
+  responses = {
+    OPTIONS = ["204"]
+    PUT     = ["200", "400", "401", "403", "404", "422", "500"]
+  }
+
   authorizer_id        = aws_api_gateway_authorizer.token_authorizer.id
-  api_key_required     = true
   request_validator_id = aws_api_gateway_request_validator.full.id
 
-  request_parameters = {
-    "method.request.path.userId" = true
-  }
-}
-
-# 200 OK
-
-resource "aws_api_gateway_method_response" "users_userid_put_200" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = module.api_gw_resource_users_userid.id
-  http_method = aws_api_gateway_method.users_userid_put.http_method
-  status_code = "200"
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
-}
-
-resource "aws_api_gateway_method_response" "users_userid_put" {
-  for_each = toset(local.put_method_response_codes)
-
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = module.api_gw_resource_users_userid.id
-  http_method = aws_api_gateway_method.users_userid_put.http_method
-
-  status_code = each.key
-
-  response_models = {
-    "application/json" = "Error"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
-}
-
-# /users/:user_id/registration
-resource "aws_api_gateway_resource" "users_userid_registration" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
   parent_id   = module.api_gw_resource_users_userid.id
-  path_part   = "registration"
-}
-
-# [OPTIONS]
-
-resource "aws_api_gateway_method" "users_userid_registration_options" {
-  rest_api_id   = aws_api_gateway_rest_api.identity.id
-  resource_id   = aws_api_gateway_resource.users_userid_registration.id
-  http_method   = "OPTIONS"
-  authorization = "NONE"
-}
-
-# 204 No Content
-
-resource "aws_api_gateway_method_response" "users_userid_registration_options_204" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_registration.id
-  http_method = aws_api_gateway_method.users_userid_registration_options.http_method
-  status_code = "204"
-
-  response_models = {
-    "application/json" = "Empty"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers" = true,
-    "method.response.header.Access-Control-Allow-Methods" = true,
-    "method.response.header.Access-Control-Allow-Origin"  = true
-  }
-}
-
-# [PUT]
-
-resource "aws_api_gateway_method" "users_userid_registration_put" {
-  rest_api_id          = aws_api_gateway_rest_api.identity.id
-  resource_id          = aws_api_gateway_resource.users_userid_registration.id
-  http_method          = "PUT"
-  authorization        = "CUSTOM"
-  authorizer_id        = aws_api_gateway_authorizer.token_authorizer.id
-  api_key_required     = true
-  request_validator_id = aws_api_gateway_request_validator.full.id
-
-  request_parameters = {
-    "method.request.path.userId" = true
-  }
-}
-
-# 200 OK
-
-resource "aws_api_gateway_method_response" "users_userid_registration_put_200" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_registration.id
-  http_method = aws_api_gateway_method.users_userid_registration_put.http_method
-  status_code = "200"
-
-  response_models = {
-    "application/json" = "Empty"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
-}
-
-resource "aws_api_gateway_method_response" "users_userid_registration_put" {
-  # Note: I'm not sure why this endpoint has an HTTP 422 error but
-  # no HTTP 409.  This slight fudge was added as part of refactoring work
-  # to preserve the existing behaviour, but it's possible it should be
-  # made consistent with other PUT endpoints.
-  #
-  # See https://github.com/wellcomecollection/identity/pull/366
-  for_each = toset(
-    concat(
-      [
-        for code in local.put_method_response_codes :
-        code if code != "409"
-      ],
-      ["422"]
-    )
-  )
-
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_registration.id
-  http_method = aws_api_gateway_method.users_userid_registration_put.http_method
-
-  status_code = each.key
-
-  response_models = {
-    "application/json" = "Error"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
 }
 
 # /users/:user_id/password

@@ -31,7 +31,7 @@ resource "aws_api_gateway_integration" "users_userid_get" {
 resource "aws_api_gateway_integration" "users_userid_put" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
   resource_id = module.api_gw_resource_users_userid.id
-  http_method = aws_api_gateway_method.users_userid_put.http_method
+  http_method = "PUT"
 
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
@@ -74,8 +74,8 @@ resource "aws_api_gateway_integration" "users_userid_password_put" {
 
 resource "aws_api_gateway_integration" "users_userid_registration_options" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_registration.id
-  http_method = aws_api_gateway_method.users_userid_registration_options.http_method
+  resource_id = module.api_gw_resource_users_userid_registration.id
+  http_method = "OPTIONS"
 
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
@@ -86,8 +86,8 @@ resource "aws_api_gateway_integration" "users_userid_registration_options" {
 
 resource "aws_api_gateway_integration" "users_userid_registration_put" {
   rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_registration.id
-  http_method = aws_api_gateway_method.users_userid_registration_put.http_method
+  resource_id = module.api_gw_resource_users_userid_registration.id
+  http_method = "PUT"
 
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
