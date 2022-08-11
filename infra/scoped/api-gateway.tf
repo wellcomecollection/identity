@@ -106,6 +106,8 @@ module "userid_routes" {
 
   parent_id = local.route_ids["/users/:user_id"]
 
+  create_default_integrations = lookup(each.value, "create_default_integrations", true)
+
   authorizer_id        = aws_api_gateway_authorizer.token_authorizer.id
   request_validator_id = aws_api_gateway_request_validator.full.id
   rest_api_id          = aws_api_gateway_rest_api.identity.id
