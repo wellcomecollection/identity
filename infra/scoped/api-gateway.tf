@@ -322,134 +322,66 @@ module "api_gw_resource_users_userid_validate" {
 
 # /users/:user_id/item-requests
 
-resource "aws_api_gateway_resource" "users_userid_item-requests" {
+moved {
+  from = aws_api_gateway_resource.users_userid_item-requests
+  to   = module.api_gw_resource_users_userid_item-requests.aws_api_gateway_resource.resource
+}
+
+moved {
+  from = aws_api_gateway_method.users_userid_item-requests_options
+  to   = module.api_gw_resource_users_userid_item-requests.aws_api_gateway_method.options[0]
+}
+
+moved {
+  from = aws_api_gateway_method_response.users_userid_item-requests_options_204
+  to   = module.api_gw_resource_users_userid_item-requests.aws_api_gateway_method_response.options["204"]
+}
+
+moved {
+  from = aws_api_gateway_method.users_userid_item-requests_post
+  to   = module.api_gw_resource_users_userid_item-requests.aws_api_gateway_method.post[0]
+}
+
+moved {
+  from = aws_api_gateway_method_response.users_userid_item-requests_post_200
+  to   = module.api_gw_resource_users_userid_item-requests.aws_api_gateway_method_response.post_success["202"]
+}
+
+moved {
+  from = aws_api_gateway_method_response.users_userid_item-requests_post
+  to   = module.api_gw_resource_users_userid_item-requests.aws_api_gateway_method_response.post_errors
+}
+
+moved {
+  from = aws_api_gateway_method.users_userid_item-requests_get
+  to   = module.api_gw_resource_users_userid_item-requests.aws_api_gateway_method.get[0]
+}
+
+moved {
+  from = aws_api_gateway_method_response.users_userid_item-requests_get_200
+  to   = module.api_gw_resource_users_userid_item-requests.aws_api_gateway_method_response.get_success["200"]
+}
+
+moved {
+  from = aws_api_gateway_method_response.users_userid_item-requests_get
+  to   = module.api_gw_resource_users_userid_item-requests.aws_api_gateway_method_response.get_errors
+}
+
+module "api_gw_resource_users_userid_item-requests" {
+  source = "../modules/api_gateway_resource"
+
+  label     = "/users/:user_id/item-requests"
+  path_part = "item-requests"
+
+  responses = {
+    OPTIONS = ["204"]
+    POST    = ["202", "400", "401", "403", "404", "409", "500"]
+    GET     = ["200", "401", "403", "404", "500"]
+  }
+
+  authorizer_id        = aws_api_gateway_authorizer.token_authorizer.id
+  request_validator_id = aws_api_gateway_request_validator.full.id
+
   rest_api_id = aws_api_gateway_rest_api.identity.id
   parent_id   = module.api_gw_resource_users_userid.id
-  path_part   = "item-requests"
-}
-
-# [OPTIONS]
-
-resource "aws_api_gateway_method" "users_userid_item-requests_options" {
-  rest_api_id   = aws_api_gateway_rest_api.identity.id
-  resource_id   = aws_api_gateway_resource.users_userid_item-requests.id
-  http_method   = "OPTIONS"
-  authorization = "NONE"
-}
-
-# 204 No Content
-
-resource "aws_api_gateway_method_response" "users_userid_item-requests_options_204" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_item-requests.id
-  http_method = aws_api_gateway_method.users_userid_item-requests_options.http_method
-  status_code = "204"
-
-  response_models = {
-    "application/json" = "Empty"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers" = true,
-    "method.response.header.Access-Control-Allow-Methods" = true,
-    "method.response.header.Access-Control-Allow-Origin"  = true
-  }
-}
-
-# [POST]
-
-resource "aws_api_gateway_method" "users_userid_item-requests_post" {
-  rest_api_id          = aws_api_gateway_rest_api.identity.id
-  resource_id          = aws_api_gateway_resource.users_userid_item-requests.id
-  http_method          = "POST"
-  authorization        = "CUSTOM"
-  authorizer_id        = aws_api_gateway_authorizer.token_authorizer.id
-  api_key_required     = true
-  request_validator_id = aws_api_gateway_request_validator.full.id
-
-  request_parameters = {
-    "method.request.path.userId" = true
-  }
-}
-
-# 202 Accepted
-
-resource "aws_api_gateway_method_response" "users_userid_item-requests_post_200" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_item-requests.id
-  http_method = aws_api_gateway_method.users_userid_item-requests_post.http_method
-  status_code = "202"
-
-  response_models = {
-    "application/json" = "Empty"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
-}
-
-resource "aws_api_gateway_method_response" "users_userid_item-requests_post" {
-  for_each = toset(local.post_method_response_codes)
-
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_item-requests.id
-  http_method = aws_api_gateway_method.users_userid_item-requests_post.http_method
-
-  status_code = each.key
-
-  response_models = {
-    "application/json" = "Error"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
-}
-
-# [GET]
-
-resource "aws_api_gateway_method" "users_userid_item-requests_get" {
-  rest_api_id          = aws_api_gateway_rest_api.identity.id
-  resource_id          = aws_api_gateway_resource.users_userid_item-requests.id
-  http_method          = "GET"
-  authorization        = "CUSTOM"
-  authorizer_id        = aws_api_gateway_authorizer.token_authorizer.id
-  api_key_required     = true
-  request_validator_id = aws_api_gateway_request_validator.full.id
-
-  request_parameters = {
-    "method.request.path.userId" = true
-  }
-}
-
-# 200 OK
-
-resource "aws_api_gateway_method_response" "users_userid_item-requests_get_200" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_item-requests.id
-  http_method = aws_api_gateway_method.users_userid_item-requests_get.http_method
-  status_code = "200"
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
-}
-
-resource "aws_api_gateway_method_response" "users_userid_item-requests_get" {
-  for_each = toset(local.get_method_response_codes)
-
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_item-requests.id
-  http_method = aws_api_gateway_method.users_userid_item-requests_get.http_method
-
-  status_code = each.key
-
-  response_models = {
-    "application/json" = "Error"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
 }
