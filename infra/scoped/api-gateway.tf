@@ -1140,64 +1140,38 @@ resource "aws_api_gateway_method_response" "users_userid_item-requests_get_200" 
   }
 }
 
-# 401 Unauthorized
-
-resource "aws_api_gateway_method_response" "users_userid_item-requests_get_401" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_item-requests.id
-  http_method = aws_api_gateway_method.users_userid_item-requests_get.http_method
-  status_code = "401"
-
-  response_models = {
-    "application/json" = "Error"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
+moved {
+  from = aws_api_gateway_method_response.users_userid_item-requests_get_401
+  to   = aws_api_gateway_method_response.users_userid_item-requests_get["401"]
 }
 
-# 403 Forbidden
-
-resource "aws_api_gateway_method_response" "users_userid_item-requests_get_403" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_item-requests.id
-  http_method = aws_api_gateway_method.users_userid_item-requests_get.http_method
-  status_code = "403"
-
-  response_models = {
-    "application/json" = "Error"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
+moved {
+  from = aws_api_gateway_method_response.users_userid_item-requests_get_403
+  to   = aws_api_gateway_method_response.users_userid_item-requests_get["403"]
 }
 
-# 404 Not Found
-
-resource "aws_api_gateway_method_response" "users_userid_item-requests_get_404" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_item-requests.id
-  http_method = aws_api_gateway_method.users_userid_item-requests_get.http_method
-  status_code = "404"
-
-  response_models = {
-    "application/json" = "Error"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
+moved {
+  from = aws_api_gateway_method_response.users_userid_item-requests_get_404
+  to   = aws_api_gateway_method_response.users_userid_item-requests_get["404"]
 }
 
-# 500 Internal Server Error
+moved {
+  from = aws_api_gateway_method_response.users_userid_get_item-requests_500
+  to   = aws_api_gateway_method_response.users_userid_item-requests_get["500"]
+}
 
-resource "aws_api_gateway_method_response" "users_userid_get_item-requests_500" {
+locals {
+  get_method_response_codes = ["401", "403", "404", "500"]
+}
+
+resource "aws_api_gateway_method_response" "users_userid_item-requests_get" {
+  for_each = toset(local.get_method_response_codes)
+
   rest_api_id = aws_api_gateway_rest_api.identity.id
   resource_id = aws_api_gateway_resource.users_userid_item-requests.id
   http_method = aws_api_gateway_method.users_userid_item-requests_get.http_method
-  status_code = "500"
+
+  status_code = each.key
 
   response_models = {
     "application/json" = "Error"
