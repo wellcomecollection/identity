@@ -667,81 +667,39 @@ resource "aws_api_gateway_method_response" "users_userid_validate_post_200" {
   }
 }
 
-# 401 Unauthorized
-
-resource "aws_api_gateway_method_response" "users_userid_validate_post_401" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_validate.id
-  http_method = aws_api_gateway_method.users_userid_validate_post.http_method
-  status_code = "401"
-
-  response_models = {
-    "application/json" = "Error"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
+moved {
+  from = aws_api_gateway_method_response.users_userid_validate_post_401
+  to   = aws_api_gateway_method_response.users_userid_validate_post["401"]
 }
 
-# 403 Forbidden
-
-resource "aws_api_gateway_method_response" "users_userid_validate_post_403" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_validate.id
-  http_method = aws_api_gateway_method.users_userid_validate_post.http_method
-  status_code = "403"
-
-  response_models = {
-    "application/json" = "Error"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
+moved {
+  from = aws_api_gateway_method_response.users_userid_validate_post_403
+  to   = aws_api_gateway_method_response.users_userid_validate_post["403"]
 }
 
-# 404 Not Found
-
-resource "aws_api_gateway_method_response" "users_userid_validate_post_404" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_validate.id
-  http_method = aws_api_gateway_method.users_userid_validate_post.http_method
-  status_code = "404"
-
-  response_models = {
-    "application/json" = "Error"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
+moved {
+  from = aws_api_gateway_method_response.users_userid_validate_post_404
+  to   = aws_api_gateway_method_response.users_userid_validate_post["404"]
 }
 
-# 429 Too Many Requests
-
-resource "aws_api_gateway_method_response" "users_userid_validate_post_429" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid_validate.id
-  http_method = aws_api_gateway_method.users_userid_validate_post.http_method
-  status_code = "429"
-
-  response_models = {
-    "application/json" = "Error"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
+moved {
+  from = aws_api_gateway_method_response.users_userid_validate_post_429
+  to   = aws_api_gateway_method_response.users_userid_validate_post["429"]
 }
 
-# 500 Internal Server Error
+moved {
+  from = aws_api_gateway_method_response.users_userid_validate_post_500
+  to   = aws_api_gateway_method_response.users_userid_validate_post["500"]
+}
 
-resource "aws_api_gateway_method_response" "users_userid_validate_post_500" {
+resource "aws_api_gateway_method_response" "users_userid_validate_post" {
+  for_each = toset(["401", "403", "404", "429", "500"])
+
   rest_api_id = aws_api_gateway_rest_api.identity.id
   resource_id = aws_api_gateway_resource.users_userid_validate.id
   http_method = aws_api_gateway_method.users_userid_validate_post.http_method
-  status_code = "500"
+
+  status_code = each.key
 
   response_models = {
     "application/json" = "Error"
