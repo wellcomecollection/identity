@@ -26,6 +26,7 @@ resource "aws_cloudwatch_metric_alarm" "alarm_5xx" {
 locals {
   get_method_response_codes  = ["401", "403", "404", "500"]
   post_method_response_codes = ["400", "401", "403", "404", "409", "500"]
+  put_method_response_codes  = ["400", "401", "403", "404", "409", "500"]
 }
 
 # /users
@@ -168,98 +169,44 @@ resource "aws_api_gateway_method_response" "users_userid_put_200" {
   }
 }
 
-# 400 Bad Request
-
-resource "aws_api_gateway_method_response" "users_userid_put_400" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid.id
-  http_method = aws_api_gateway_method.users_userid_put.http_method
-  status_code = "400"
-
-  response_models = {
-    "application/json" = "Error"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
+moved {
+  from = aws_api_gateway_method_response.users_userid_put_400
+  to   = aws_api_gateway_method_response.users_userid_put["400"]
 }
 
-# 401 Unauthorized
-
-resource "aws_api_gateway_method_response" "users_userid_put_401" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid.id
-  http_method = aws_api_gateway_method.users_userid_put.http_method
-  status_code = "401"
-
-  response_models = {
-    "application/json" = "Error"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
+moved {
+  from = aws_api_gateway_method_response.users_userid_put_401
+  to   = aws_api_gateway_method_response.users_userid_put["401"]
 }
 
-# 403 Forbidden
-
-resource "aws_api_gateway_method_response" "users_userid_put_403" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid.id
-  http_method = aws_api_gateway_method.users_userid_put.http_method
-  status_code = "403"
-
-  response_models = {
-    "application/json" = "Error"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
+moved {
+  from = aws_api_gateway_method_response.users_userid_put_403
+  to   = aws_api_gateway_method_response.users_userid_put["403"]
 }
 
-# 404 Not Found
-
-resource "aws_api_gateway_method_response" "users_userid_put_404" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid.id
-  http_method = aws_api_gateway_method.users_userid_put.http_method
-  status_code = "404"
-
-  response_models = {
-    "application/json" = "Error"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
+moved {
+  from = aws_api_gateway_method_response.users_userid_put_404
+  to   = aws_api_gateway_method_response.users_userid_put["404"]
 }
 
-# 409 Conflict
-
-resource "aws_api_gateway_method_response" "users_userid_put_409" {
-  rest_api_id = aws_api_gateway_rest_api.identity.id
-  resource_id = aws_api_gateway_resource.users_userid.id
-  http_method = aws_api_gateway_method.users_userid_put.http_method
-  status_code = "409"
-
-  response_models = {
-    "application/json" = "Error"
-  }
-
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin" = true
-  }
+moved {
+  from = aws_api_gateway_method_response.users_userid_put_409
+  to   = aws_api_gateway_method_response.users_userid_put["409"]
 }
 
-# 500 Internal Server Error
+moved {
+  from = aws_api_gateway_method_response.users_userid_put_500
+  to   = aws_api_gateway_method_response.users_userid_put["500"]
+}
 
-resource "aws_api_gateway_method_response" "users_userid_put_500" {
+resource "aws_api_gateway_method_response" "users_userid_put" {
+  for_each = toset(local.put_method_response_codes)
+
   rest_api_id = aws_api_gateway_rest_api.identity.id
   resource_id = aws_api_gateway_resource.users_userid.id
   http_method = aws_api_gateway_method.users_userid_put.http_method
-  status_code = "500"
+
+  status_code = each.key
 
   response_models = {
     "application/json" = "Error"
