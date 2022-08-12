@@ -252,8 +252,7 @@ export default class HttpAuth0Client implements Auth0Client {
         'jobs/verification-email',
         { user_id: userId },
         {
-          // If the user doesn't exist, the API will still return a 204
-          validateStatus: (status) => status === 204,
+          validateStatus: (status) => status === 201,
         }
       );
       return successResponse(undefined);
