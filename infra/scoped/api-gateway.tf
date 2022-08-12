@@ -70,6 +70,15 @@ locals {
       }
     }
 
+    "/users/:user_id/resend_verification_email" = {
+      path_part = "resend_verification_email"
+
+      responses = {
+        OPTIONS = ["204"]
+        POST    = ["204", "401", "403", "404", "429", "500"]
+      }
+    }
+
     "/users/:user_id/validate" = {
       path_part = "validate"
 

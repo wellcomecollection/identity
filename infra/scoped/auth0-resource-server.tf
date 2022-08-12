@@ -30,6 +30,11 @@ resource "auth0_resource_server" "identity_api" {
   }
 
   scopes {
+    value       = "resend:verification_email"
+    description = "Resend verification email"
+  }
+
+  scopes {
     value       = "update:email"
     description = "Update email"
   }

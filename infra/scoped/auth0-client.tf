@@ -233,6 +233,7 @@ resource "auth0_client_grant" "account_management_system" {
     "delete:patron",
     "read:user",
     "read:requests",
+    "resend:verification_email",
     "update:email",
     "update:password"
   ]
