@@ -243,6 +243,38 @@ export default class HttpAuth0Client implements Auth0Client {
     });
   }
 
+  async sendVerificationEmail(userId: number): Promise<APIResponse<void>> {
+    try {
+      const instance = await this.getMachineToMachineInstance();
+
+      // https://auth0.com/docs/api/management/v2#!/Jobs/post_verification_email
+      await instance.post(
+        '/jobs/verification-email',
+        { user_id: userId },
+        {
+          validateStatus: (status) => status === 201,
+        }
+      );
+      return successResponse(undefined);
+    } catch (error) {
+      if (error.response) {
+        switch (error.response.status) {
+          case 403:
+            return errorResponse(
+              'Client has insufficient scope to send verification emails',
+              ResponseStatus.InvalidCredentials
+            );
+          case 429:
+            return errorResponse(
+              'Resending verification email was rate limited',
+              ResponseStatus.RateLimited
+            );
+        }
+      }
+      return unhandledError(error);
+    }
+  }
+
   async setAppMetadata(
     userId: number,
     metadata: Record<string, any>

@@ -34,6 +34,9 @@ const validateRequest = resourceAuthorizationValidator({
   '/users/{userId}/deletion-request': {
     PUT: allOf(isSelf, hasScopes('delete:patron')),
   },
+  '/users/{userId}/send_verification': {
+    POST: allOf(isSelf, hasScopes('update:user')),
+  },
   '/users/{userId}/validate': {
     POST: isSelf,
   },

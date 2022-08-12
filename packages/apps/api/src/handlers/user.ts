@@ -49,6 +49,19 @@ export function getUser(auth0Client: Auth0Client) {
   };
 }
 
+export function sendVerificationEmail(auth0Client: Auth0Client) {
+  return async function (request: Request, response: Response): Promise<void> {
+    const userId: number = getTargetUserId(request);
+    const auth0Response: APIResponse<void> =
+      await auth0Client.sendVerificationEmail(userId);
+    if (auth0Response.status !== ResponseStatus.Success) {
+      throw clientResponseToHttpError(auth0Response);
+    }
+
+    response.sendStatus(204);
+  };
+}
+
 export function updateUserAfterRegistration(sierraClient: SierraClient) {
   return async function (request: Request, response: Response): Promise<void> {
     const userId: number = getTargetUserId(request);

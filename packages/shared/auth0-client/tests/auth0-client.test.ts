@@ -83,7 +83,7 @@ describe('HTTP Auth0 client', () => {
       const newEmail = 'new@email.com';
 
       const response = await client.updateUser({
-        userId: userId,
+        userId,
         email: newEmail,
       });
       expect(response.status).toBe(ResponseStatus.Success);
@@ -136,6 +136,26 @@ describe('HTTP Auth0 client', () => {
       );
 
       const response = await client.updateUser({ userId, email });
+      expect(response.status).toBe(ResponseStatus.UnknownError);
+    });
+  });
+
+  describe('send verification email', () => {
+    it('requests a new verification email', async () => {
+      const response: APIResponse<void> = await client.sendVerificationEmail(
+        userId
+      );
+      expect(response.status).toBe(ResponseStatus.Success);
+    });
+
+    it('returns an UnknownError if the Auth0 API returns a 500', async () => {
+      mockAuth0Server.use(
+        rest.post(routeUrls.verificationEmail, (req, res, ctx) =>
+          res(ctx.status(500))
+        )
+      );
+
+      const response = await client.sendVerificationEmail(userId);
       expect(response.status).toBe(ResponseStatus.UnknownError);
     });
   });
