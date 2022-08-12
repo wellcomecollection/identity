@@ -8,7 +8,7 @@ import {
   changePassword,
   getUser,
   requestDelete,
-  resendVerificationEmail,
+  sendVerificationEmail,
   updateUser,
   updateUserAfterRegistration,
   validatePassword,
@@ -36,7 +36,7 @@ export function createApplication(clients: Clients): Application {
     registerUsersUserIdPasswordResource,
     registerUsersUserIdDeletionRequestResource,
     registerUsersUserIdValidateResource,
-    registerUsersUserResendEmailVerificationResource,
+    registerUsersUserSendEmailVerificationResource,
   ].forEach((registerEndpoint) => registerEndpoint(clients, app));
 
   app.use(errorHandler);
@@ -130,7 +130,7 @@ function registerUsersUserIdValidateResource(
   );
 }
 
-function registerUsersUserResendEmailVerificationResource(
+function registerUsersUserSendEmailVerificationResource(
   clients: Clients,
   app: Application
 ): void {
@@ -139,10 +139,10 @@ function registerUsersUserResendEmailVerificationResource(
     methods: 'OPTIONS,POST',
     origin: process.env.API_ALLOWED_ORIGINS,
   });
-  app.options('/users/:user_id/resend_verification', corsOptions);
+  app.options('/users/:user_id/send_verification', corsOptions);
   app.post(
-    '/users/:user_id/resend_verification',
+    '/users/:user_id/send_verification',
     corsOptions,
-    asyncHandler(resendVerificationEmail(clients.auth0))
+    asyncHandler(sendVerificationEmail(clients.auth0))
   );
 }

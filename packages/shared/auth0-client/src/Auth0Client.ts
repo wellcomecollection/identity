@@ -25,7 +25,7 @@ export default interface Auth0Client {
 
   updateUser(userInput: Auth0UserInput): Promise<APIResponse<Auth0User>>;
 
-  resendVerificationEmail(userId: number): Promise<APIResponse<void>>;
+  sendVerificationEmail(userId: number): Promise<APIResponse<void>>;
 
   setAppMetadata(
     userId: number,

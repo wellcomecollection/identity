@@ -140,9 +140,9 @@ describe('HTTP Auth0 client', () => {
     });
   });
 
-  describe('resend verification email', () => {
+  describe('send verification email', () => {
     it('requests a new verification email', async () => {
-      const response: APIResponse<void> = await client.resendVerificationEmail(
+      const response: APIResponse<void> = await client.sendVerificationEmail(
         userId
       );
       expect(response.status).toBe(ResponseStatus.Success);
@@ -150,12 +150,12 @@ describe('HTTP Auth0 client', () => {
 
     it('returns an UnknownError if the Auth0 API returns a 500', async () => {
       mockAuth0Server.use(
-        rest.post(routeUrls.resendVerificationEmail, (req, res, ctx) =>
+        rest.post(routeUrls.verificationEmail, (req, res, ctx) =>
           res(ctx.status(500))
         )
       );
 
-      const response = await client.resendVerificationEmail(userId);
+      const response = await client.sendVerificationEmail(userId);
       expect(response.status).toBe(ResponseStatus.UnknownError);
     });
   });

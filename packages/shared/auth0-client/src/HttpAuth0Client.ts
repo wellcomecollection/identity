@@ -243,7 +243,7 @@ export default class HttpAuth0Client implements Auth0Client {
     });
   }
 
-  async resendVerificationEmail(userId: number): Promise<APIResponse<void>> {
+  async sendVerificationEmail(userId: number): Promise<APIResponse<void>> {
     try {
       const instance = await this.getMachineToMachineInstance();
 
@@ -261,7 +261,7 @@ export default class HttpAuth0Client implements Auth0Client {
         switch (error.response.status) {
           case 403:
             return errorResponse(
-              'Client has insufficient scope to resend verification emails',
+              'Client has insufficient scope to send verification emails',
               ResponseStatus.InvalidCredentials
             );
           case 429:

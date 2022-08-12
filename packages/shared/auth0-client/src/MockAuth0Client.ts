@@ -127,7 +127,7 @@ export default class MockAuth0Client implements Auth0Client {
     }
   });
 
-  resendVerificationEmail = jest.fn(async (userId: number) => {
+  sendVerificationEmail = jest.fn(async (userId: number) => {
     if (this.users.has(userId.toString())) {
       return successResponse(undefined);
     }

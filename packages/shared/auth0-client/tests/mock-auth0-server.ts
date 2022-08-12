@@ -31,7 +31,7 @@ export const apiRoot = 'http://auth0.test';
 export const routeUrls = {
   token: `${apiRoot}/oauth/token`,
   user: `${apiRoot}/api/v2/users/:userId`,
-  resendVerificationEmail: `${apiRoot}/api/v2/jobs/verification-email`,
+  verificationEmail: `${apiRoot}/api/v2/jobs/verification-email`,
 };
 
 const handlers = [
@@ -44,7 +44,7 @@ const handlers = [
   }),
   rest.get(routeUrls.user, resolveUser(testUser)),
   rest.delete(routeUrls.user, (req, res, ctx) => res(ctx.status(204))),
-  rest.post(routeUrls.resendVerificationEmail, (req, res, ctx) => {
+  rest.post(routeUrls.verificationEmail, (req, res, ctx) => {
     if (!hasCurrentToken(req)) {
       return res(ctx.status(401));
     }
