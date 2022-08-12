@@ -249,7 +249,7 @@ export default class HttpAuth0Client implements Auth0Client {
 
       // https://auth0.com/docs/api/management/v2#!/Jobs/post_verification_email
       await instance.post(
-        'jobs/verification-email',
+        '/jobs/verification-email',
         { user_id: userId },
         {
           validateStatus: (status) => status === 201,
