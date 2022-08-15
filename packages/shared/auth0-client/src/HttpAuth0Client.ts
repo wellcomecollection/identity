@@ -250,7 +250,8 @@ export default class HttpAuth0Client implements Auth0Client {
       // https://auth0.com/docs/api/management/v2#!/Jobs/post_verification_email
       await instance.post(
         '/jobs/verification-email',
-        { user_id: userId },
+        // Prepend the mandatory Auth0 prefix to the given user ID.
+        { user_id: SierraUserIdPrefix + userId },
         {
           validateStatus: (status) => status === 201,
         }
