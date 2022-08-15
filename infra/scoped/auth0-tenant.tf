@@ -42,6 +42,6 @@ resource "auth0_tenant" "tenant" {
   error_page {
     html          = "unset"
     show_log_link = false
-    url           = local.ams_error_uri
+    url           = local.front_end_error_uri
   }
 }

@@ -62,14 +62,14 @@ locals {
   }
   catalogue_api_public_root = "https://${local.catalogue_api_hostnames[terraform.workspace]}/catalogue/v2"
 
-  # Account Management System
-  ams_context_path         = "account"
-  ams_redirect_uri         = "${local.wellcome_collection_site_uri}/${local.ams_context_path}/api/auth/callback"
-  ams_login_uri            = "${local.wellcome_collection_site_uri}/${local.ams_context_path}/api/auth/login"
-  ams_error_uri            = "${local.wellcome_collection_site_uri}/${local.ams_context_path}/error"
-  ams_validate_uri         = "${local.wellcome_collection_site_uri}/${local.ams_context_path}/validated"
-  ams_delete_requested_uri = "${local.wellcome_collection_site_uri}/${local.ams_context_path}/delete-requested"
-  ams_registration_uri     = "${local.wellcome_collection_site_uri}/${local.ams_context_path}/registration"
+  # Front-end / identity web app
+  front_end_context_path         = "account"
+  front_end_redirect_uri         = "${local.wellcome_collection_site_uri}/${local.front_end_context_path}/api/auth/callback"
+  front_end_login_uri            = "${local.wellcome_collection_site_uri}/${local.front_end_context_path}/api/auth/login"
+  front_end_error_uri            = "${local.wellcome_collection_site_uri}/${local.front_end_context_path}/error"
+  front_end_validate_uri         = "${local.wellcome_collection_site_uri}/${local.front_end_context_path}/validated"
+  front_end_delete_requested_uri = "${local.wellcome_collection_site_uri}/${local.front_end_context_path}/delete-requested"
+  front_end_registration_uri     = "${local.wellcome_collection_site_uri}/${local.front_end_context_path}/registration"
 
   # Identity account VPC
   identity_account_state = data.terraform_remote_state.accounts_identity.outputs

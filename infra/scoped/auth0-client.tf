@@ -185,7 +185,7 @@ resource "auth0_client" "identity_web_app" {
   is_first_party       = true
   custom_login_page_on = true
   oidc_conformant      = true
-  initiate_login_uri   = local.ams_login_uri
+  initiate_login_uri   = local.front_end_login_uri
 
   jwt_configuration {
     alg = "RS256"
@@ -212,13 +212,13 @@ resource "auth0_client" "identity_web_app" {
   ]
 
   callbacks = [
-    local.ams_redirect_uri
+    local.front_end_redirect_uri
   ]
 
   allowed_logout_urls = [
     local.wellcome_collection_site_uri,
     "${local.wellcome_collection_site_uri}/account/success",
-    local.ams_delete_requested_uri
+    local.front_end_delete_requested_uri
   ]
 
   lifecycle {

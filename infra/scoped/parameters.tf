@@ -176,9 +176,9 @@ locals {
   ssm_parameters = {
     auth0_domain        = local.auth0_hostname
     auth0_client_id     = auth0_client.identity_web_app.id
-    auth0_callback_url  = local.ams_redirect_uri
+    auth0_callback_url  = local.front_end_redirect_uri
     api_base_url        = local.identity_v1_endpoint
-    context_path        = local.ams_context_path
+    context_path        = local.front_end_context_path
     logout_redirect_url = local.wellcome_collection_site_uri
   }
 }
