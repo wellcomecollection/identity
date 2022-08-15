@@ -169,13 +169,8 @@ resource "auth0_client_grant" "buildkite" {
   ]
 }
 
-# Account Management System
-# Lets the Account Management System component initialise and process OAuth 2.0 / OIDC login requests through Auth0
-
-moved {
-  from = auth0_client.account_management_system
-  to   = auth0_client.identity_web_app
-}
+# Identity web app
+# Lets the identity web app initialise and process OAuth 2.0 / OIDC login requests through Auth0
 
 resource "auth0_client" "identity_web_app" {
   name        = "Identity web app${local.environment_qualifier}"
@@ -226,11 +221,6 @@ resource "auth0_client" "identity_web_app" {
       custom_login_page
     ]
   }
-}
-
-moved {
-  from = auth0_client_grant.account_management_system
-  to   = auth0_client_grant.identity_web_app
 }
 
 resource "auth0_client_grant" "identity_web_app" {

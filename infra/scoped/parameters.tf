@@ -31,86 +31,6 @@ locals {
   ]
 }
 
-moved {
-  from = aws_ssm_parameter.hostname_prefix
-  to   = aws_ssm_parameter.external_parameters["hostname_prefix"]
-}
-
-moved {
-  from = aws_ssm_parameter.email_support_user
-  to   = aws_ssm_parameter.external_parameters["email_support_user"]
-}
-
-moved {
-  from = aws_ssm_parameter.email_noreply_user
-  to   = aws_ssm_parameter.external_parameters["email_noreply_user"]
-}
-
-moved {
-  from = aws_ssm_parameter.email_noreply_name
-  to   = aws_ssm_parameter.external_parameters["email_noreply_name"]
-}
-
-moved {
-  from = aws_ssm_parameter.sierra_api_hostname
-  to   = aws_ssm_parameter.external_parameters["sierra_api_hostname"]
-}
-
-moved {
-  from = aws_ssm_parameter.auth0_friendly_name
-  to   = aws_ssm_parameter.external_parameters["auth0_friendly_name"]
-}
-
-moved {
-  from = aws_ssm_parameter.auth0_universal_login_primary_colour
-  to   = aws_ssm_parameter.external_parameters["auth0_universal_login_primary_colour"]
-}
-
-moved {
-  from = aws_ssm_parameter.auth0_universal_login_background_colour
-  to   = aws_ssm_parameter.external_parameters["auth0_universal_login_background_colour"]
-}
-
-moved {
-  from = aws_ssm_parameter.auth0_domain
-  to   = aws_ssm_parameter.external_parameters["auth0_domain"]
-}
-
-moved {
-  from = aws_ssm_parameter.auth0_support_url
-  to   = aws_ssm_parameter.external_parameters["auth0_support_url"]
-}
-
-moved {
-  from = aws_ssm_parameter.auth0_verify_email_subject
-  to   = aws_ssm_parameter.external_parameters["auth0_verify_email_subject"]
-}
-
-moved {
-  from = aws_ssm_parameter.auth0_verify_email_url_ttl
-  to   = aws_ssm_parameter.external_parameters["auth0_verify_email_url_ttl"]
-}
-
-moved {
-  from = aws_ssm_parameter.auth0_reset_email_subject
-  to   = aws_ssm_parameter.external_parameters["auth0_reset_email_subject"]
-}
-
-moved {
-  from = aws_ssm_parameter.auth0_reset_email_url_ttl
-  to   = aws_ssm_parameter.external_parameters["auth0_reset_email_url_ttl"]
-}
-
-moved {
-  from = aws_ssm_parameter.auth0_welcome_email_subject
-  to   = aws_ssm_parameter.external_parameters["auth0_welcome_email_subject"]
-}
-
-moved {
-  from = aws_ssm_parameter.auth0_blocked_email_subject
-  to   = aws_ssm_parameter.external_parameters["auth0_blocked_email_subject"]
-}
-
 resource "aws_ssm_parameter" "external_parameters" {
   for_each = toset(local.external_ssm_parameters)
 
@@ -181,36 +101,6 @@ locals {
     context_path        = local.front_end_context_path
     logout_redirect_url = local.wellcome_collection_site_uri
   }
-}
-
-moved {
-  from = aws_ssm_parameter.account_management_system-auth0_domain
-  to   = aws_ssm_parameter.account_management_system["auth0_domain"]
-}
-
-moved {
-  from = aws_ssm_parameter.account_management_system-auth0_client_id
-  to   = aws_ssm_parameter.account_management_system["auth0_client_id"]
-}
-
-moved {
-  from = aws_ssm_parameter.account_management_system-auth0_callback_url
-  to   = aws_ssm_parameter.account_management_system["auth0_callback_url"]
-}
-
-moved {
-  from = aws_ssm_parameter.account_management_system-api_base_url
-  to   = aws_ssm_parameter.account_management_system["api_base_url"]
-}
-
-moved {
-  from = aws_ssm_parameter.account_management_system-context_path
-  to   = aws_ssm_parameter.account_management_system["context_path"]
-}
-
-moved {
-  from = aws_ssm_parameter.account_management_system-logout_redirect_url
-  to   = aws_ssm_parameter.account_management_system["logout_redirect_url"]
 }
 
 resource "aws_ssm_parameter" "account_management_system" {

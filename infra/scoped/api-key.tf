@@ -40,22 +40,12 @@ resource "aws_api_gateway_usage_plan_key" "dummy" {
 
 # Identity web app
 
-moved {
-  from = aws_api_gateway_api_key.account_management_system
-  to   = aws_api_gateway_api_key.identity_web_app
-}
-
 resource "aws_api_gateway_api_key" "identity_web_app" {
   name = "identity web app${local.environment_qualifier}"
 
   tags = {
     "Name" = "identity web app"
   }
-}
-
-moved {
-  from = aws_api_gateway_usage_plan_key.account_management_system
-  to   = aws_api_gateway_usage_plan_key.identity_web_app
 }
 
 resource "aws_api_gateway_usage_plan_key" "identity_web_app" {
