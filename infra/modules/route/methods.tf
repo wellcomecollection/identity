@@ -42,7 +42,17 @@ resource "aws_api_gateway_method_response" "options" {
 
   rest_api_id = var.rest_api_id
   resource_id = aws_api_gateway_resource.resource.id
-  http_method = "OPTIONS"
+
+  # Note: this has the side effect of ensuring the method resource
+  # is created before the method response resource.
+  #
+  # If you hard-code the method here, you may get an error:
+  #
+  #     Error creating API Gateway Integration: NotFoundException:
+  #     Invalid Method identifier specified
+  #
+  # I think ensuring the method is created first resolves it.
+  http_method = aws_api_gateway_method.options[0].http_method
 
   status_code = each.key
 
@@ -80,7 +90,17 @@ resource "aws_api_gateway_method_response" "get_success" {
 
   rest_api_id = var.rest_api_id
   resource_id = aws_api_gateway_resource.resource.id
-  http_method = "GET"
+
+  # Note: this has the side effect of ensuring the method resource
+  # is created before the method response resource.
+  #
+  # If you hard-code the method here, you may get an error:
+  #
+  #     Error creating API Gateway Integration: NotFoundException:
+  #     Invalid Method identifier specified
+  #
+  # I think ensuring the method is created first resolves it.
+  http_method = aws_api_gateway_method.get[0].http_method
 
   status_code = each.key
 
@@ -130,7 +150,17 @@ resource "aws_api_gateway_method_response" "put_success" {
 
   rest_api_id = var.rest_api_id
   resource_id = aws_api_gateway_resource.resource.id
-  http_method = "PUT"
+
+  # Note: this has the side effect of ensuring the method resource
+  # is created before the method response resource.
+  #
+  # If you hard-code the method here, you may get an error:
+  #
+  #     Error creating API Gateway Integration: NotFoundException:
+  #     Invalid Method identifier specified
+  #
+  # I think ensuring the method is created first resolves it.
+  http_method = aws_api_gateway_method.put[0].http_method
 
   status_code = each.key
 
@@ -181,7 +211,17 @@ resource "aws_api_gateway_method_response" "post_success" {
 
   rest_api_id = var.rest_api_id
   resource_id = aws_api_gateway_resource.resource.id
-  http_method = "POST"
+
+  # Note: this has the side effect of ensuring the method resource
+  # is created before the method response resource.
+  #
+  # If you hard-code the method here, you may get an error:
+  #
+  #     Error creating API Gateway Integration: NotFoundException:
+  #     Invalid Method identifier specified
+  #
+  # I think ensuring the method is created first resolves it.
+  http_method = aws_api_gateway_method.post[0].http_method
 
   status_code = each.key
 
