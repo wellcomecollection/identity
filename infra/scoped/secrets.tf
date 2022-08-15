@@ -85,7 +85,7 @@ module "secrets_experience" {
   source = "github.com/wellcomecollection/terraform-aws-secrets?ref=v1.3.0"
 
   key_value_map = {
-    "identity/${terraform.workspace}/account_management_system/auth0_client_secret" = auth0_client.account_management_system.client_secret
+    "identity/${terraform.workspace}/account_management_system/auth0_client_secret" = auth0_client.identity_web_app.client_secret
     "identity/${terraform.workspace}/account_management_system/api_key"             = aws_api_gateway_api_key.account_management_system.value
     "identity/${terraform.workspace}/redirect_action_secret"                        = data.aws_secretsmanager_secret_version.redirect_action_secret.secret_string
   }

@@ -277,7 +277,7 @@ resource "aws_ssm_parameter" "account_management_system-auth0_client_id" {
   provider = aws.experience
   name     = "/identity/${terraform.workspace}/account_management_system/auth0_client_id"
   type     = "String"
-  value    = auth0_client.account_management_system.id
+  value    = auth0_client.identity_web_app.id
 
   tags = {
     "Name" = "/identity/${terraform.workspace}/account_management_system/auth0_client_id"
