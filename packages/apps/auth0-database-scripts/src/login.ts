@@ -10,13 +10,8 @@ declare const configuration: {
   CLIENT_SECRET: string;
 };
 
-const notFoundPatronErrorMessage = 'We have not found the patron in Sierra';
-const otherFindingSierraPatronErrorMessage =
-  'There was some other error in finding the patron in Sierra';
-const sierraPatronValidationErrorMessage =
-  'We had an issue in running validation of the patron in Sierra';
-const markingPatronVerifiedErrorMessage =
-  'We encountered an error in marking the patron as verified in Sierra';
+const contactLibraryErrorMessage =
+  'There was an error. Please email us at library@wellcomecollection.org if this problem persists.';
 
 const hasImplicitlyVerifiedEmail = (patronRecord: PatronRecord): boolean => {
   // The old process for registering users using OPAC had an implicit step
@@ -41,11 +36,11 @@ async function login(email: string, password: string): Promise<Auth0User> {
 
   const patronRecordResponse = await sierraClient.getPatronRecordByEmail(email);
   if (patronRecordResponse.status === ResponseStatus.NotFound) {
-    throw new WrongUsernameOrPasswordError(email, notFoundPatronErrorMessage);
+    throw new WrongUsernameOrPasswordError(email, contactLibraryErrorMessage);
   }
   if (patronRecordResponse.status !== ResponseStatus.Success) {
     throw new Error(
-      patronRecordResponse.message + ' ' + otherFindingSierraPatronErrorMessage
+      patronRecordResponse.message + ' ' + contactLibraryErrorMessage
     );
   }
 
@@ -55,10 +50,7 @@ async function login(email: string, password: string): Promise<Auth0User> {
     password
   );
   if (validationResponse.status !== ResponseStatus.Success) {
-    throw new WrongUsernameOrPasswordError(
-      email,
-      sierraPatronValidationErrorMessage
-    );
+    throw new WrongUsernameOrPasswordError(email, contactLibraryErrorMessage);
   }
 
   if (hasImplicitlyVerifiedEmail(patronRecord)) {
@@ -69,7 +61,7 @@ async function login(email: string, password: string): Promise<Auth0User> {
     );
     if (updatedRecordResponse.status !== ResponseStatus.Success) {
       throw new Error(
-        updatedRecordResponse.message + ' ' + markingPatronVerifiedErrorMessage
+        updatedRecordResponse.message + ' ' + contactLibraryErrorMessage
       );
     }
     return patronRecordToUser(updatedRecordResponse.result);
