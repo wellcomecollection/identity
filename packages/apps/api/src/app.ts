@@ -139,9 +139,9 @@ function registerUsersUserSendEmailVerificationResource(
     methods: 'OPTIONS,POST',
     origin: process.env.API_ALLOWED_ORIGINS,
   });
-  app.options('/users/:user_id/send_verification', corsOptions);
+  app.options('/users/:user_id/send-verification-email', corsOptions);
   app.post(
-    '/users/:user_id/send_verification',
+    '/users/:user_id/send-verification-email',
     corsOptions,
     asyncHandler(sendVerificationEmail(clients.auth0))
   );

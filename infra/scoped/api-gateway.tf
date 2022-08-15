@@ -70,8 +70,8 @@ locals {
       }
     }
 
-    "/users/:user_id/send_verification_email" = {
-      path_part = "send_verification_email"
+    "/users/:user_id/send-verification-email" = {
+      path_part = "send-verification-email"
 
       responses = {
         OPTIONS = ["204"]
