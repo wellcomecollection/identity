@@ -228,7 +228,12 @@ resource "auth0_client" "identity_web_app" {
   }
 }
 
-resource "auth0_client_grant" "account_management_system" {
+moved {
+  from = auth0_client_grant.account_management_system
+  to   = auth0_client_grant.identity_web_app
+}
+
+resource "auth0_client_grant" "identity_web_app" {
   client_id = auth0_client.identity_web_app.client_id
   audience  = auth0_resource_server.identity_api.identifier
 

@@ -38,18 +38,28 @@ resource "aws_api_gateway_usage_plan_key" "dummy" {
   key_type      = "API_KEY"
 }
 
-# Account Management System
+# Identity web app
 
-resource "aws_api_gateway_api_key" "account_management_system" {
-  name = "account management system"
+moved {
+  from = aws_api_gateway_api_key.account_management_system
+  to   = aws_api_gateway_api_key.identity_web_app
+}
+
+resource "aws_api_gateway_api_key" "identity_web_app" {
+  name = "identity web app${local.environment_qualifier}"
 
   tags = {
-    "Name" = "account management system"
+    "Name" = "identity web app"
   }
 }
 
-resource "aws_api_gateway_usage_plan_key" "account_management_system" {
-  key_id        = aws_api_gateway_api_key.account_management_system.id
+moved {
+  from = aws_api_gateway_usage_plan_key.account_management_system
+  to   = aws_api_gateway_usage_plan_key.identity_web_app
+}
+
+resource "aws_api_gateway_usage_plan_key" "identity_web_app" {
+  key_id        = aws_api_gateway_api_key.identity_web_app.id
   usage_plan_id = aws_api_gateway_usage_plan.basic.id
   key_type      = "API_KEY"
 }
