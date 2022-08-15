@@ -260,72 +260,61 @@ resource "aws_ssm_parameter" "cloudwatch_retention" {
   }
 }
 
-# Account Management System
+# Account Management System / identity web app
 
-resource "aws_ssm_parameter" "account_management_system-auth0_domain" {
-  provider = aws.experience
-  name     = "/identity/${terraform.workspace}/account_management_system/auth0_domain"
-  type     = "String"
-  value    = local.auth0_hostname
-
-  tags = {
-    "Name" = "/identity/${terraform.workspace}/account_management_system/auth0_domain"
+locals {
+  ssm_parameters = {
+    auth0_domain        = local.auth0_hostname
+    auth0_client_id     = auth0_client.identity_web_app.id
+    auth0_callback_url  = local.ams_redirect_uri
+    api_base_url        = local.identity_v1_endpoint
+    context_path        = local.ams_context_path
+    logout_redirect_url = local.wellcome_collection_site_uri
   }
 }
 
-resource "aws_ssm_parameter" "account_management_system-auth0_client_id" {
-  provider = aws.experience
-  name     = "/identity/${terraform.workspace}/account_management_system/auth0_client_id"
-  type     = "String"
-  value    = auth0_client.identity_web_app.id
-
-  tags = {
-    "Name" = "/identity/${terraform.workspace}/account_management_system/auth0_client_id"
-  }
+moved {
+  from = aws_ssm_parameter.account_management_system-auth0_domain
+  to   = aws_ssm_parameter.account_management_system["auth0_domain"]
 }
 
-resource "aws_ssm_parameter" "account_management_system-auth0_callback_url" {
-  provider = aws.experience
-  name     = "/identity/${terraform.workspace}/account_management_system/auth0_callback_url"
-  type     = "String"
-  value    = local.ams_redirect_uri
-
-  tags = {
-    "Name" = "/identity/${terraform.workspace}/account_management_system/auth0_callback_url"
-  }
+moved {
+  from = aws_ssm_parameter.account_management_system-auth0_client_id
+  to   = aws_ssm_parameter.account_management_system["auth0_client_id"]
 }
 
-resource "aws_ssm_parameter" "account_management_system-api_base_url" {
-  provider = aws.experience
-  name     = "/identity/${terraform.workspace}/account_management_system/api_base_url"
-  type     = "String"
-  value    = local.identity_v1_endpoint
-
-  tags = {
-    "Name" = "/identity/${terraform.workspace}/account_management_system/api_base_url"
-  }
+moved {
+  from = aws_ssm_parameter.account_management_system-auth0_callback_url
+  to   = aws_ssm_parameter.account_management_system["auth0_callback_url"]
 }
 
-resource "aws_ssm_parameter" "account_management_system-context_path" {
-  provider = aws.experience
-  name     = "/identity/${terraform.workspace}/account_management_system/context_path"
-  type     = "String"
-  value    = local.ams_context_path
-
-  tags = {
-    "Name" = "/identity/${terraform.workspace}/account_management_system/context_path"
-  }
+moved {
+  from = aws_ssm_parameter.account_management_system-api_base_url
+  to   = aws_ssm_parameter.account_management_system["api_base_url"]
 }
 
-resource "aws_ssm_parameter" "account_management_system-logout_redirect_url" {
-  provider = aws.experience
-  name     = "/identity/${terraform.workspace}/account_management_system/logout_redirect_url"
-  type     = "String"
-  value    = local.wellcome_collection_site_uri
+moved {
+  from = aws_ssm_parameter.account_management_system-context_path
+  to   = aws_ssm_parameter.account_management_system["context_path"]
+}
+
+moved {
+  from = aws_ssm_parameter.account_management_system-logout_redirect_url
+  to   = aws_ssm_parameter.account_management_system["logout_redirect_url"]
+}
+
+resource "aws_ssm_parameter" "account_management_system" {
+  for_each = local.ssm_parameters
+
+  name  = "/identity/${terraform.workspace}/account_management_system/${each.key}"
+  value = each.value
+  type  = "String"
 
   tags = {
-    "Name" = "/identity/${terraform.workspace}/account_management_system/logout_redirect_url"
+    "Name" = "/identity/${terraform.workspace}/account_management_system/${each.key}"
   }
+
+  provider = aws.experience
 }
 
 # Email
