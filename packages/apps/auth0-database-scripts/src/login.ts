@@ -10,8 +10,13 @@ declare const configuration: {
   CLIENT_SECRET: string;
 };
 
-const contactLibraryErrorMessage =
-  'There was an error. Please email us at library@wellcomecollection.org if this problem persists.';
+const invalidCredentialsMessage =
+  "We don't recognise the email and/or password you entered. Please check your entry and try again.";
+
+const otherFindingSierraPatronErrorMessage =
+  'There was some other error in finding the patron in Sierra';
+const markingPatronVerifiedErrorMessage =
+  'We encountered an error in marking the patron as verified in Sierra';
 
 const hasImplicitlyVerifiedEmail = (patronRecord: PatronRecord): boolean => {
   // The old process for registering users using OPAC had an implicit step
@@ -36,11 +41,11 @@ async function login(email: string, password: string): Promise<Auth0User> {
 
   const patronRecordResponse = await sierraClient.getPatronRecordByEmail(email);
   if (patronRecordResponse.status === ResponseStatus.NotFound) {
-    throw new WrongUsernameOrPasswordError(email, contactLibraryErrorMessage);
+    throw new WrongUsernameOrPasswordError(email, invalidCredentialsMessage);
   }
   if (patronRecordResponse.status !== ResponseStatus.Success) {
     throw new Error(
-      patronRecordResponse.message + ' ' + contactLibraryErrorMessage
+      patronRecordResponse.message + ' ' + otherFindingSierraPatronErrorMessage
     );
   }
 
@@ -50,7 +55,7 @@ async function login(email: string, password: string): Promise<Auth0User> {
     password
   );
   if (validationResponse.status !== ResponseStatus.Success) {
-    throw new WrongUsernameOrPasswordError(email, contactLibraryErrorMessage);
+    throw new WrongUsernameOrPasswordError(email, invalidCredentialsMessage);
   }
 
   if (hasImplicitlyVerifiedEmail(patronRecord)) {
@@ -61,7 +66,7 @@ async function login(email: string, password: string): Promise<Auth0User> {
     );
     if (updatedRecordResponse.status !== ResponseStatus.Success) {
       throw new Error(
-        updatedRecordResponse.message + ' ' + contactLibraryErrorMessage
+        updatedRecordResponse.message + ' ' + markingPatronVerifiedErrorMessage
       );
     }
     return patronRecordToUser(updatedRecordResponse.result);
