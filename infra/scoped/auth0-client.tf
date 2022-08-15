@@ -42,7 +42,7 @@ resource "auth0_client_grant" "deletion_tracker" {
   client_id = auth0_client.deletion_tracker.id
 
   # Management API
-  audience = "https://${aws_ssm_parameter.auth0_domain.value}/api/v2/"
+  audience = "https://${local.auth0_domain}/api/v2/"
   scope = [
     "delete:users"
   ]
@@ -69,7 +69,7 @@ resource "auth0_client" "api_gateway_identity" {
 
 resource "auth0_client_grant" "api_gateway_identity" {
   client_id = auth0_client.api_gateway_identity.id
-  audience  = "https://${aws_ssm_parameter.auth0_domain.value}/api/v2/"
+  audience  = "https://${local.auth0_domain}/api/v2/"
   scope = [
     "read:users",
     "update:users",
@@ -92,7 +92,7 @@ resource "auth0_client" "buildkite" {
 
 resource "auth0_client_grant" "buildkite" {
   client_id = auth0_client.buildkite.id
-  audience  = "https://${aws_ssm_parameter.auth0_domain.value}/api/v2/"
+  audience  = "https://${local.auth0_domain}/api/v2/"
   scope = [ # https://github.com/auth0/auth0-deploy-cli#pre-requisites
     "read:client_grants",
     "create:client_grants",

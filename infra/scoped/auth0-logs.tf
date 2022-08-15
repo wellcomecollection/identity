@@ -11,7 +11,7 @@ resource "auth0_log_stream" "eventbridge" {
 
 locals {
   auth0_logs_event_source = auth0_log_stream.eventbridge.sink[0].aws_partner_event_source
-  tenant_name             = split(".", aws_ssm_parameter.auth0_domain.value)[0]
+  tenant_name             = split(".", local.auth0_domain)[0]
 }
 
 resource "aws_cloudwatch_event_bus" "auth0_logs" {

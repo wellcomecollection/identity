@@ -43,7 +43,7 @@ output "auth0_openathens_saml_idp_client_id" {
 
 output "ci_environment_variables" {
   value = [
-    "export AUTH0_DOMAIN=${aws_ssm_parameter.auth0_domain.value}",
+    "export AUTH0_DOMAIN=${local.auth0_domain}",
     "export AUTH0_CLIENT_ID=${auth0_client.buildkite.client_id}",
     "export AUTH0_CLIENT_SECRET=${auth0_client.buildkite.client_secret}",
     "export AUTH0_CONNECTION_NAME=${auth0_connection.sierra.name}",
