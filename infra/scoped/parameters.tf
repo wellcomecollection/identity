@@ -90,7 +90,7 @@ resource "aws_ssm_parameter" "cloudwatch_retention" {
   }
 }
 
-# Account Management System / identity web app
+# Identity web app
 
 locals {
   ssm_parameters = {
