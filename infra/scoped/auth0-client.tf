@@ -42,7 +42,7 @@ resource "auth0_client_grant" "deletion_tracker" {
   client_id = auth0_client.deletion_tracker.id
 
   # Management API
-  audience = "https://${aws_ssm_parameter.auth0_domain.value}/api/v2/"
+  audience = "https://${local.auth0_domain}/api/v2/"
   scope = [
     "delete:users"
   ]
@@ -69,7 +69,7 @@ resource "auth0_client" "api_gateway_identity" {
 
 resource "auth0_client_grant" "api_gateway_identity" {
   client_id = auth0_client.api_gateway_identity.id
-  audience  = "https://${aws_ssm_parameter.auth0_domain.value}/api/v2/"
+  audience  = "https://${local.auth0_domain}/api/v2/"
   scope = [
     "read:users",
     "update:users",
@@ -92,7 +92,7 @@ resource "auth0_client" "buildkite" {
 
 resource "auth0_client_grant" "buildkite" {
   client_id = auth0_client.buildkite.id
-  audience  = "https://${aws_ssm_parameter.auth0_domain.value}/api/v2/"
+  audience  = "https://${local.auth0_domain}/api/v2/"
   scope = [ # https://github.com/auth0/auth0-deploy-cli#pre-requisites
     "read:client_grants",
     "create:client_grants",
@@ -169,18 +169,18 @@ resource "auth0_client_grant" "buildkite" {
   ]
 }
 
-# Account Management System
-# Lets the Account Management System component initialise and process OAuth 2.0 / OIDC login requests through Auth0
+# Identity web app
+# Lets the identity web app initialise and process OAuth 2.0 / OIDC login requests through Auth0
 
-resource "auth0_client" "account_management_system" {
-  name        = "Account Management System${local.environment_qualifier}"
+resource "auth0_client" "identity_web_app" {
+  name        = "Identity web app${local.environment_qualifier}"
   description = "The identity web app, as defined in the wellcomecollection.org repo"
 
   app_type             = "regular_web"
   is_first_party       = true
   custom_login_page_on = true
   oidc_conformant      = true
-  initiate_login_uri   = local.ams_login_uri
+  initiate_login_uri   = local.front_end_login_uri
 
   jwt_configuration {
     alg = "RS256"
@@ -207,13 +207,13 @@ resource "auth0_client" "account_management_system" {
   ]
 
   callbacks = [
-    local.ams_redirect_uri
+    local.front_end_redirect_uri
   ]
 
   allowed_logout_urls = [
     local.wellcome_collection_site_uri,
     "${local.wellcome_collection_site_uri}/account/success",
-    local.ams_delete_requested_uri
+    local.front_end_delete_requested_uri
   ]
 
   lifecycle {
@@ -223,8 +223,8 @@ resource "auth0_client" "account_management_system" {
   }
 }
 
-resource "auth0_client_grant" "account_management_system" {
-  client_id = auth0_client.account_management_system.client_id
+resource "auth0_client_grant" "identity_web_app" {
+  client_id = auth0_client.identity_web_app.client_id
   audience  = auth0_resource_server.identity_api.identifier
 
   // Be explicit about these scopes so as not to accidentally give too many permissions

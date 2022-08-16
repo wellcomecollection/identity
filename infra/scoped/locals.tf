@@ -19,9 +19,9 @@ locals {
   environment_qualifier = terraform.workspace != "prod" ? " (${upper(terraform.workspace)})" : ""
 
   # Email
-  email_support_address          = "${aws_ssm_parameter.email_support_user.value}@${data.aws_ssm_parameter.email_domain.value}"
-  email_noreply_address          = "${aws_ssm_parameter.email_noreply_user.value}@${data.aws_ssm_parameter.email_domain.value}"
-  email_noreply_name_and_address = "${aws_ssm_parameter.email_noreply_name.value} <${local.email_noreply_address}>"
+  email_support_address          = "${local.email_support_user}@${data.aws_ssm_parameter.email_domain.value}"
+  email_noreply_address          = "${local.email_noreply_user}@${data.aws_ssm_parameter.email_domain.value}"
+  email_noreply_name_and_address = "${local.email_noreply_name} <${local.email_noreply_address}>"
 
   # Credentials exported from static stack in the format:
   # {
@@ -32,8 +32,10 @@ locals {
   # }
   email_credentials = jsondecode(data.aws_secretsmanager_secret_version.email_credentials_secret_version.secret_string)
 
+  hostname_prefix = trimspace(aws_ssm_parameter.external_parameters["hostname_prefix"].value)
+
   # API Gateway
-  api_hostname = nonsensitive("api.${trimspace(aws_ssm_parameter.hostname_prefix.value)}${data.aws_ssm_parameter.hostname.value}")
+  api_hostname = nonsensitive("api.${local.hostname_prefix}${data.aws_ssm_parameter.hostname.value}")
 
   # API Gateway V1
   identity_v1               = "v1"
@@ -43,7 +45,7 @@ locals {
   identity_v1_docs_endpoint = "https://${local.identity_v1_docs_hostname}"
 
   # Auth0
-  auth0_hostname = nonsensitive("${trimspace(aws_ssm_parameter.hostname_prefix.value)}${data.aws_ssm_parameter.hostname.value}")
+  auth0_hostname = nonsensitive("${local.hostname_prefix}${data.aws_ssm_parameter.hostname.value}")
   auth0_endpoint = "https://${local.auth0_hostname}"
 
   # Wellcome Collection Site
@@ -60,14 +62,14 @@ locals {
   }
   catalogue_api_public_root = "https://${local.catalogue_api_hostnames[terraform.workspace]}/catalogue/v2"
 
-  # Account Management System
-  ams_context_path         = "account"
-  ams_redirect_uri         = "${local.wellcome_collection_site_uri}/${local.ams_context_path}/api/auth/callback"
-  ams_login_uri            = "${local.wellcome_collection_site_uri}/${local.ams_context_path}/api/auth/login"
-  ams_error_uri            = "${local.wellcome_collection_site_uri}/${local.ams_context_path}/error"
-  ams_validate_uri         = "${local.wellcome_collection_site_uri}/${local.ams_context_path}/validated"
-  ams_delete_requested_uri = "${local.wellcome_collection_site_uri}/${local.ams_context_path}/delete-requested"
-  ams_registration_uri     = "${local.wellcome_collection_site_uri}/${local.ams_context_path}/registration"
+  # Front-end / identity web app
+  front_end_context_path         = "account"
+  front_end_redirect_uri         = "${local.wellcome_collection_site_uri}/${local.front_end_context_path}/api/auth/callback"
+  front_end_login_uri            = "${local.wellcome_collection_site_uri}/${local.front_end_context_path}/api/auth/login"
+  front_end_error_uri            = "${local.wellcome_collection_site_uri}/${local.front_end_context_path}/error"
+  front_end_validate_uri         = "${local.wellcome_collection_site_uri}/${local.front_end_context_path}/validated"
+  front_end_delete_requested_uri = "${local.wellcome_collection_site_uri}/${local.front_end_context_path}/delete-requested"
+  front_end_registration_uri     = "${local.wellcome_collection_site_uri}/${local.front_end_context_path}/registration"
 
   # Identity account VPC
   identity_account_state = data.terraform_remote_state.accounts_identity.outputs

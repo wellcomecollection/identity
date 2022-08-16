@@ -4,7 +4,7 @@ resource "auth0_connection" "sierra" {
 
   enabled_clients = concat([
     auth0_client.api_gateway_identity.id, # Required to allow the Lambda API client credentials to operate on the connection
-    auth0_client.account_management_system.id,
+    auth0_client.identity_web_app.id,
     auth0_client.openathens_saml_idp.id,
     auth0_client.smoke_test.id],
     terraform.workspace == "stage" ? local.stage_test_client_ids : [],
@@ -40,7 +40,7 @@ resource "auth0_connection" "sierra" {
 
     password_dictionary {
       enable     = true
-      dictionary = ["wellcome"]
+      dictionary = ["wellcome", "Wellcome"]
     }
 
     password_complexity_options {
@@ -60,8 +60,8 @@ resource "auth0_connection" "sierra" {
     }
 
     configuration = {
-      API_ROOT      = aws_ssm_parameter.sierra_api_hostname.value,
-      CLIENT_KEY    = local.sierra_api_credentials.client_key,
+      API_ROOT      = local.sierra_api_hostname
+      CLIENT_KEY    = local.sierra_api_credentials.client_key
       CLIENT_SECRET = local.sierra_api_credentials.client_secret
     }
   }

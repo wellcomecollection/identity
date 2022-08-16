@@ -101,9 +101,9 @@ resource "aws_lambda_function" "api" {
       EMAIL_SMTP_PASSWORD  = local.email_credentials["smtp_password"],
       EMAIL_FROM_ADDRESS   = local.email_noreply_name_and_address,
       EMAIL_ADMIN_ADDRESS  = aws_ssm_parameter.email_admin_address.value,
-      SUPPORT_URL          = aws_ssm_parameter.auth0_support_url.value,
-      SIERRA_API_ROOT      = aws_ssm_parameter.sierra_api_hostname.value,
-      SIERRA_CLIENT_KEY    = local.sierra_api_credentials.client_key,
+      SUPPORT_URL          = local.auth0_support_url
+      SIERRA_API_ROOT      = local.sierra_api_hostname
+      SIERRA_CLIENT_KEY    = local.sierra_api_credentials.client_key
       SIERRA_CLIENT_SECRET = local.sierra_api_credentials.client_secret
     }
   }
@@ -168,11 +168,11 @@ resource "aws_lambda_function" "patron_deletion_tracker" {
   environment {
     variables = {
       AUTH0_API_ROOT       = local.auth0_endpoint
-      AUTH0_API_AUDIENCE   = auth0_client_grant.deletion_tracker.audience,
-      AUTH0_CLIENT_ID      = auth0_client.deletion_tracker.client_id,
-      AUTH0_CLIENT_SECRET  = auth0_client.deletion_tracker.client_secret,
-      SIERRA_API_ROOT      = aws_ssm_parameter.sierra_api_hostname.value,
-      SIERRA_CLIENT_KEY    = local.sierra_api_credentials.client_key,
+      AUTH0_API_AUDIENCE   = auth0_client_grant.deletion_tracker.audience
+      AUTH0_CLIENT_ID      = auth0_client.deletion_tracker.client_id
+      AUTH0_CLIENT_SECRET  = auth0_client.deletion_tracker.client_secret
+      SIERRA_API_ROOT      = local.sierra_api_hostname
+      SIERRA_CLIENT_KEY    = local.sierra_api_credentials.client_key
       SIERRA_CLIENT_SECRET = local.sierra_api_credentials.client_secret
     }
   }
