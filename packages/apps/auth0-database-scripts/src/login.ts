@@ -10,11 +10,11 @@ declare const configuration: {
   CLIENT_SECRET: string;
 };
 
-const notFoundPatronErrorMessage = 'We have not found the patron in Sierra';
+const invalidCredentialsMessage =
+  "We don't recognise the email and/or password you entered. Please check your entry and try again.";
+
 const otherFindingSierraPatronErrorMessage =
   'There was some other error in finding the patron in Sierra';
-const sierraPatronValidationErrorMessage =
-  'We had an issue in running validation of the patron in Sierra';
 const markingPatronVerifiedErrorMessage =
   'We encountered an error in marking the patron as verified in Sierra';
 
@@ -41,7 +41,7 @@ async function login(email: string, password: string): Promise<Auth0User> {
 
   const patronRecordResponse = await sierraClient.getPatronRecordByEmail(email);
   if (patronRecordResponse.status === ResponseStatus.NotFound) {
-    throw new WrongUsernameOrPasswordError(email, notFoundPatronErrorMessage);
+    throw new WrongUsernameOrPasswordError(email, invalidCredentialsMessage);
   }
   if (patronRecordResponse.status !== ResponseStatus.Success) {
     throw new Error(
@@ -55,10 +55,7 @@ async function login(email: string, password: string): Promise<Auth0User> {
     password
   );
   if (validationResponse.status !== ResponseStatus.Success) {
-    throw new WrongUsernameOrPasswordError(
-      email,
-      sierraPatronValidationErrorMessage
-    );
+    throw new WrongUsernameOrPasswordError(email, invalidCredentialsMessage);
   }
 
   if (hasImplicitlyVerifiedEmail(patronRecord)) {
