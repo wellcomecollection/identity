@@ -16,13 +16,13 @@ module.exports = {
 
 const stageSecrets = {
   auth0Domain: 'stage.account.wellcomecollection.org',
-  apiKeySecretId: 'identity/stage/account_management_system/api_key',
+  apiKeySecretId: 'identity/stage/identity_web_app/api_key',
   credentialsSecretId: 'identity/stage/smoke_test/credentials',
 };
 
 const prodSecrets = {
   auth0Domain: 'account.wellcomecollection.org',
-  apiKeySecretId: 'identity/prod/account_management_system/api_key',
+  apiKeySecretId: 'identity/prod/identity_web_app/api_key',
   credentialsSecretId: 'identity/prod/smoke_test/credentials',
 };
 

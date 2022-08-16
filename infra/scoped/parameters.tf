@@ -90,7 +90,7 @@ resource "aws_ssm_parameter" "cloudwatch_retention" {
   }
 }
 
-# Account Management System / identity web app
+# Identity web app
 
 locals {
   ssm_parameters = {
@@ -103,15 +103,15 @@ locals {
   }
 }
 
-resource "aws_ssm_parameter" "account_management_system" {
+resource "aws_ssm_parameter" "identity_web_app" {
   for_each = local.ssm_parameters
 
-  name  = "/identity/${terraform.workspace}/account_management_system/${each.key}"
+  name  = "/identity/${terraform.workspace}/identity_web_app/${each.key}"
   value = each.value
   type  = "String"
 
   tags = {
-    "Name" = "/identity/${terraform.workspace}/account_management_system/${each.key}"
+    "Name" = "/identity/${terraform.workspace}/identity_web_app/${each.key}"
   }
 
   provider = aws.experience

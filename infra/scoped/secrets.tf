@@ -74,9 +74,9 @@ module "secrets" {
   source = "github.com/wellcomecollection/terraform-aws-secrets?ref=v1.3.0"
 
   key_value_map = {
-    "identity/${terraform.workspace}/account_management_system/api_key" = aws_api_gateway_api_key.identity_web_app.value
-    "identity/${terraform.workspace}/buildkite/credentials"             = jsonencode(local.buildkite_credentials)
-    "identity/${terraform.workspace}/smoke_test/credentials"            = jsonencode(local.smoke_test_credentials)
+    "identity/${terraform.workspace}/identity_web_app/api_key" = aws_api_gateway_api_key.identity_web_app.value
+    "identity/${terraform.workspace}/buildkite/credentials"    = jsonencode(local.buildkite_credentials)
+    "identity/${terraform.workspace}/smoke_test/credentials"   = jsonencode(local.smoke_test_credentials)
   }
 }
 
@@ -85,9 +85,9 @@ module "secrets_experience" {
   source = "github.com/wellcomecollection/terraform-aws-secrets?ref=v1.3.0"
 
   key_value_map = {
-    "identity/${terraform.workspace}/account_management_system/auth0_client_secret" = auth0_client.identity_web_app.client_secret
-    "identity/${terraform.workspace}/account_management_system/api_key"             = aws_api_gateway_api_key.identity_web_app.value
-    "identity/${terraform.workspace}/redirect_action_secret"                        = data.aws_secretsmanager_secret_version.redirect_action_secret.secret_string
+    "identity/${terraform.workspace}/identity_web_app/auth0_client_secret" = auth0_client.identity_web_app.client_secret
+    "identity/${terraform.workspace}/identity_web_app/api_key"             = aws_api_gateway_api_key.identity_web_app.value
+    "identity/${terraform.workspace}/redirect_action_secret"               = data.aws_secretsmanager_secret_version.redirect_action_secret.secret_string
   }
 
   providers = {
