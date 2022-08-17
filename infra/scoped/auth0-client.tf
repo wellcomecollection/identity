@@ -1,25 +1,33 @@
-# Dummy client
-# For local development / testing of the login flows and stuff ¯\_(ツ)_/¯
+# For local development / testing of the identity web app
 
-resource "auth0_client" "dummy_test" {
+moved {
+  from = auth0_client.dummy_test
+  to   = auth0_client.local_dev_client
+}
+
+resource "auth0_client" "local_dev_client" {
   # Only deploy the dummy client if it's a non-production environment...
   count = lower(terraform.workspace) != "prod" ? 1 : 0
 
-  name                 = "Dummy Test Client${local.environment_qualifier}"
+  name                 = "Local dev client${local.environment_qualifier}"
   app_type             = "regular_web"
   is_first_party       = true
   custom_login_page_on = true
 
-  grant_types = [
-    "authorization_code",
-    "password",
-    "http://auth0.com/oauth/grant-type/password-realm"
-  ]
+  jwt_configuration {
+    alg = "RS256"
+  }
+
+  grant_types = auth0_client.identity_web_app.grant_types
 
   callbacks = [
-    "https://${local.auth0_hostname}/login/callback",
-    "https://oauth.pstmn.io/v1/callback",
-    "https://oauth.pstmn.io/v1/browser-callback"
+    for url in auth0_client.identity_web_app.callbacks :
+    replace(url, local.wellcome_collection_site_uri, "http://localhost:3000")
+  ]
+
+  allowed_logout_urls = [
+    for url in auth0_client.identity_web_app.allowed_logout_urls :
+    replace(url, local.wellcome_collection_site_uri, "http://localhost:3000")
   ]
 
   lifecycle {

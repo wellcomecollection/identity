@@ -8,8 +8,7 @@ locals {
     TerraformConfigurationURL = "https://github.com/wellcomecollection/identity/tree/main/infra/scoped"
   }
 
-  stage_test_client_ids = compact([
-    length(auth0_client.dummy_test) > 0 ? auth0_client.dummy_test[0].client_id : "",
+  stage_test_client_ids = concat(auth0_client.local_dev_client.*.client_id, [
     # Developer client ids can be added here
     "SrigIHZ3yXKlskZcdxJeytBuHqUUw7gn", // "David McCormick – Local Dev"
     "NOx1lzM8ivV0ec0H3BMoxKGqXwJJF1em", // "Jamie Parkinson - Local Dev"

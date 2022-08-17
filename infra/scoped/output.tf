@@ -17,24 +17,6 @@ output "auth0_endpoint" {
 
 # Auth0 clients
 
-output "auth0_client_dummy_name" {
-  value = auth0_client.dummy_test.*.name
-}
-
-output "auth0_client_dummy_api_key" {
-  value     = aws_api_gateway_api_key.dummy.*.value
-  sensitive = true
-}
-
-output "auth0_client_dummy_client_id" {
-  value = auth0_client.dummy_test.*.client_id
-}
-
-output "auth0_client_dummy_client_secret" {
-  value     = auth0_client.dummy_test.*.client_secret
-  sensitive = true
-}
-
 output "auth0_openathens_saml_idp_client_id" {
   value = auth0_client.openathens_saml_idp.client_id
 }
