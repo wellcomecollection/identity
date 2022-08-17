@@ -81,10 +81,10 @@ module "secrets" {
   source = "github.com/wellcomecollection/terraform-aws-secrets?ref=v1.3.0"
 
   key_value_map = merge({
-    "identity/${terraform.workspace}/identity_web_app/api_key"     = aws_api_gateway_api_key.identity_web_app.value
-    "identity/${terraform.workspace}/buildkite/credentials"        = jsonencode(local.buildkite_credentials)
-    "identity/${terraform.workspace}/smoke_test/credentials"       = jsonencode(local.smoke_test_credentials)
-  },
+    "identity/${terraform.workspace}/identity_web_app/api_key" = aws_api_gateway_api_key.identity_web_app.value
+    "identity/${terraform.workspace}/buildkite/credentials"    = jsonencode(local.buildkite_credentials)
+    "identity/${terraform.workspace}/smoke_test/credentials"   = jsonencode(local.smoke_test_credentials)
+    },
     lower(terraform.workspace) != "prod" ? {
       "identity/${terraform.workspace}/local_dev_client/credentials" = jsonencode(local.local_dev_client_credentials)
     } : {}
