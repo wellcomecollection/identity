@@ -67,17 +67,28 @@ locals {
     clientId : auth0_client.buildkite.id
     clientSecret : auth0_client.buildkite.client_secret
   }
+
+  local_dev_client_credentials = lower(terraform.workspace) != "prod" ? {
+    client_name   = auth0_client.dummy_test[0].name
+    api_key       = aws_api_gateway_api_key.dummy[0].value
+    client_id     = auth0_client.dummy_test[0].client_id
+    client_secret = auth0_client.dummy_test[0].client_secret
+  } : {}
 }
 
 # Secrets that we set in the identity account
 module "secrets" {
   source = "github.com/wellcomecollection/terraform-aws-secrets?ref=v1.3.0"
 
-  key_value_map = {
-    "identity/${terraform.workspace}/identity_web_app/api_key" = aws_api_gateway_api_key.identity_web_app.value
-    "identity/${terraform.workspace}/buildkite/credentials"    = jsonencode(local.buildkite_credentials)
-    "identity/${terraform.workspace}/smoke_test/credentials"   = jsonencode(local.smoke_test_credentials)
-  }
+  key_value_map = merge({
+    "identity/${terraform.workspace}/identity_web_app/api_key"     = aws_api_gateway_api_key.identity_web_app.value
+    "identity/${terraform.workspace}/buildkite/credentials"        = jsonencode(local.buildkite_credentials)
+    "identity/${terraform.workspace}/smoke_test/credentials"       = jsonencode(local.smoke_test_credentials)
+  },
+    lower(terraform.workspace) != "prod" ? {
+      "identity/${terraform.workspace}/local_dev_client/credentials" = jsonencode(local.local_dev_client_credentials)
+    } : {}
+  )
 }
 
 # Secrets that need to be exported to the experience account
