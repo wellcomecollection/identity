@@ -1,10 +1,5 @@
 # For local development / testing of the identity web app
 
-moved {
-  from = auth0_client.dummy_test
-  to   = auth0_client.local_dev_client
-}
-
 resource "auth0_client" "local_dev_client" {
   # Only deploy the dummy client if it's a non-production environment...
   count = lower(terraform.workspace) != "prod" ? 1 : 0
