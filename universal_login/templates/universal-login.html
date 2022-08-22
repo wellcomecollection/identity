@@ -247,19 +247,16 @@
         }
       }
     </style>
-
-    {% if prompt.screen.texts.pageTitle == "Enroll in multi-factor authentication" %}
-      {% comment %}
-        This branch is working around a strange behaviour where
-        Auth0 shows the MFA enrollment message even though we don’t
-        allow users to configure MFA.  We don’t want to confuse them,
-        so we show them a different message.
-
-        See https://github.com/wellcomecollection/wellcomecollection.org/issues/8289
-      {% endcomment %}
-      <title>Please wait a few seconds while we complete your verification</title>
+    {% if prompt.screen.texts.pageTitle == "Enroll in multi-factor
+    authentication" %} {% comment %} This branch is working around a strange
+    behaviour where Auth0 shows the MFA enrollment message even though we don’t
+    allow users to configure MFA. We don’t want to confuse them, so we show them
+    a different message. See
+    https://github.com/wellcomecollection/wellcomecollection.org/issues/8289 {%
+    endcomment %}
+    <title>Please wait a few seconds while we complete your verification</title>
     {% else %}
-      <title>{{ prompt.screen.texts.pageTitle }}</title>
+    <title>{{ prompt.screen.texts.pageTitle }}</title>
     {% endif %}
   </head>
 
@@ -289,24 +286,22 @@
     <div class="container">
       <div class="container-inner">
         <!-- Here we need to show the description message -->
-        {% if prompt.screen.texts.pageTitle == "Enroll in multi-factor authentication" %}
-          {% comment %}
-            This branch is working around a strange behaviour where
-            Auth0 shows the MFA enrollment message even though we don’t
-            allow users to configure MFA.  We don’t want to confuse them,
-            so we show them a different message.
-
-            See https://github.com/wellcomecollection/wellcomecollection.org/issues/8289
-          {% endcomment %}
-          <h1>Please wait a few seconds while we complete your verification</h1>
-          <p>
-            If you aren&rsquo;t redirected within ten seconds, please
-            <a href="mailto:library@wellcomecollection.org"
-              >contact the library team</a
-            >.
-          </p>
+        {% if prompt.screen.texts.pageTitle == "Enroll in multi-factor
+        authentication" %} {% comment %} This branch is working around a strange
+        behaviour where Auth0 shows the MFA enrollment message even though we
+        don’t allow users to configure MFA. We don’t want to confuse them, so we
+        show them a different message. See
+        https://github.com/wellcomecollection/wellcomecollection.org/issues/8289
+        {% endcomment %}
+        <h1>Please wait a few seconds while we complete your verification</h1>
+        <p>
+          If you aren&rsquo;t redirected within ten seconds, please
+          <a href="mailto:library@wellcomecollection.org"
+            >contact the library team</a
+          >.
+        </p>
         {% else %}
-          <h1>{{ prompt.screen.texts.pageTitle }}</h1>
+        <h1>{{ prompt.screen.texts.pageTitle }}</h1>
         {% endif %}
 
         <!-- Text that appears before the login/sign-up form fields -->
