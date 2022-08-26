@@ -13,6 +13,26 @@ resource "auth0_tenant" "tenant" {
   flags {
     enable_custom_domain_in_emails = true
     universal_login                = true # Enables the 'new' Universal Login experience
+
+    # This is the Auth0 dashboard setting "Use a generic response in public
+    # signup API error message"
+    #
+    # If somebody tries to sign up with an existing email address:
+    #
+    #     Before: Something went wrong, please try again later
+    #     After:  The user already exists.
+    #
+    # Auth0 disables this by default, to prevent attackers deducing the
+    # existence of an account by trying to sign up with the email address.
+    # This is a sensible default, because some of their customers are in areas
+    # where merely revealing the existence of a user account is a risk,
+    # e.g. anything financial or medical-related.
+    #
+    # For us, we prefer convenience over security: knowing that somebody
+    # has a library account isn't especially sensitive, and the more specific
+    # error message means users can reset their existing account password
+    # without emailing the library first.
+    enable_public_signup_user_exists_error = true
   }
 
   universal_login {
