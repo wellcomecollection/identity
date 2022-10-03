@@ -38,9 +38,32 @@ async function create(user: Auth0UserWithPassword) {
     console.log('CREATE PATRON IN SIERRA ERRORS - USER ALREADY EXISTS');
     throw new ValidationError(user.email, userAlreadyExistsMessage);
   }
+
   if (createPatronResponse.status !== ResponseStatus.Success) {
-    console.log('CREATE PATRON IN SIERRA ERRORS');
-    throw new Error(createPatronResponse.message);
+    // This is to handle cases where we get an error from Sierra because it
+    // applies its own password complexity rules.
+    //
+    // This error message is shown directly to users -- it gives them a more
+    // helpful error than 'Something went wrong, please try again later'.
+    if (
+      createPatronResponse.message ===
+      'Malformed or invalid Patron creation request ' +
+        '(cause: [{"code":136,"specificCode":6,"httpStatus":400,"name":"PIN is not valid","description":"PIN is not valid : PIN is trivial"}])'
+    ) {
+      throw new ValidationError(
+        user.email,
+        'Please use a more complex password.'
+      );
+    } else if (
+      createPatronResponse.message ===
+      'Malformed or invalid Patron creation request ' +
+        '(cause: [{“code”:136,“specificCode”:3,“httpStatus”:400,“name”:“PIN is not valid”,“description”:“PIN is not valid : PIN too long”}])'
+    ) {
+      throw new ValidationError(user.email, 'Please use a shorter password.');
+    } else {
+      console.log('CREATE PATRON IN SIERRA ERRORS');
+      throw new Error(createPatronResponse.message);
+    }
   }
 
   // We now need to find the patron we created and eventually update their barcode
