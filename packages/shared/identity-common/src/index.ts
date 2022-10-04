@@ -24,6 +24,7 @@ export function errorResponse(
     | ResponseStatus.NotFound
     | ResponseStatus.InvalidCredentials
     | ResponseStatus.UserAlreadyExists
+    | ResponseStatus.DuplicateUsers
     | ResponseStatus.MalformedRequest
     | ResponseStatus.PasswordTooWeak
     | ResponseStatus.QueryTimeout
@@ -75,6 +76,7 @@ export type ErrorResponse = {
     | ResponseStatus.NotFound
     | ResponseStatus.InvalidCredentials
     | ResponseStatus.UserAlreadyExists
+    | ResponseStatus.DuplicateUsers
     | ResponseStatus.MalformedRequest
     | ResponseStatus.PasswordTooWeak
     | ResponseStatus.QueryTimeout
@@ -87,6 +89,7 @@ export enum ResponseStatus {
   NotFound,
   InvalidCredentials,
   UserAlreadyExists,
+  DuplicateUsers,
   MalformedRequest,
   PasswordTooWeak,
   QueryTimeout,

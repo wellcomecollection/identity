@@ -290,6 +290,47 @@ describe('HTTP sierra client', () => {
       expect(response.status).toBe(ResponseStatus.NotFound);
     });
 
+    it('returns DuplicateUsers when Sierra returns a 409', async () => {
+      mockSierraServer.use(
+        rest.get(routeUrls.find, (req, res, ctx) =>
+          res(
+            ctx.json({
+              code: 133,
+              description:
+                'Duplicate patrons found for the specified varFieldTag[z].',
+              httpStatus: 409,
+              name: 'Internal server error',
+              specificCode: 0,
+            }),
+            ctx.status(409)
+          )
+        )
+      );
+
+      const response = await client.getPatronRecordByEmail(email);
+      expect(response.status).toBe(ResponseStatus.DuplicateUsers);
+    });
+
+    it('returns UnknownError when Sierra returns an unrecognised 409', async () => {
+      mockSierraServer.use(
+        rest.get(routeUrls.find, (req, res, ctx) =>
+          res(
+            ctx.json({
+              code: 133,
+              description: 'Something else happened.',
+              httpStatus: 409,
+              name: 'Internal server error',
+              specificCode: 0,
+            }),
+            ctx.status(409)
+          )
+        )
+      );
+
+      const response = await client.getPatronRecordByEmail(email);
+      expect(response.status).toBe(ResponseStatus.UnknownError);
+    });
+
     it('returns an UnknownError when the api returns a 500', async () => {
       mockSierraServer.use(
         rest.get(routeUrls.find, (req, res, ctx) => res(ctx.status(500)))

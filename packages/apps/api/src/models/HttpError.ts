@@ -21,6 +21,8 @@ export const clientResponseToHttpError = (response: ErrorResponse): HttpError =>
           return 401;
         case ResponseStatus.UserAlreadyExists:
           return 409;
+        case ResponseStatus.DuplicateUsers:
+          return 409;
         case ResponseStatus.MalformedRequest:
           return 400;
         case ResponseStatus.PasswordTooWeak:
