@@ -62,7 +62,7 @@ async function create(user: Auth0UserWithPassword) {
     } else if (
       createPatronResponse.message ===
       'Malformed or invalid Patron creation request ' +
-        '(cause: [{“code”:136,“specificCode”:3,“httpStatus”:400,“name”:“PIN is not valid”,“description”:“PIN is not valid : PIN too long”}])'
+        '(cause: [{"code":136,"specificCode":3,"httpStatus":400,"name":"PIN is not valid","description":"PIN is not valid : PIN too long"}])'
     ) {
       throw new ValidationError(user.email, 'Please use a shorter password.');
     } else {
