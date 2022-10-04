@@ -11,6 +11,7 @@ declare const configuration: {
 };
 
 async function getUser(email: string): Promise<Auth0User | undefined> {
+  console.log(`Entering getUser(${email})`);
   const apiRoot = configuration.API_ROOT;
   const clientKey = configuration.CLIENT_KEY;
   const clientSecret = configuration.CLIENT_SECRET;
@@ -24,6 +25,11 @@ async function getUser(email: string): Promise<Auth0User | undefined> {
     return patronRecordToUser(patronRecord);
   } else if (patronRecordResponse.status === ResponseStatus.NotFound) {
     return undefined;
+  } else if (patronRecordResponse.status === ResponseStatus.DuplicateUsers) {
+    throw new ValidationError(
+      email,
+      'There is an issue with this library account. To resolve this, please contact Library Enquiries (library@wellcomecollection.org)'
+    );
   } else {
     throw new Error(patronRecordResponse.message);
   }
