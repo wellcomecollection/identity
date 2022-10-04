@@ -34,6 +34,11 @@ async function create(user: Auth0UserWithPassword) {
     user.email,
     user.password
   );
+
+  console.log(
+    `Received create patron response = ${JSON.stringify(createPatronResponse)}`
+  );
+
   if (createPatronResponse.status === ResponseStatus.UserAlreadyExists) {
     console.log('CREATE PATRON IN SIERRA ERRORS - USER ALREADY EXISTS');
     throw new ValidationError(user.email, userAlreadyExistsMessage);
