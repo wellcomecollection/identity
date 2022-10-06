@@ -265,6 +265,29 @@ export default class HttpSierraClient implements SierraClient {
                   ResponseStatus.NotFound,
                   error
                 );
+
+              // The /find endpoint is meant to return a single user, but if Sierra
+              // finds multiple users it returns an error:
+              //
+              //    {
+              //      "code": 133,
+              //      "specificCode": 0,
+              //      "httpStatus": 409,
+              //      "name": "Internal server error",
+              //      "description": "Duplicate patrons found for the specified varFieldTag[z]."
+              //    }
+              //
+              case 409:
+                if (
+                  error.response.data.description ===
+                  'Duplicate patrons found for the specified varFieldTag[z].'
+                ) {
+                  return errorResponse(
+                    `There are duplicate patron records with email address [${email}]`,
+                    ResponseStatus.DuplicateUsers,
+                    error
+                  );
+                }
             }
           }
           return unhandledError(error);
