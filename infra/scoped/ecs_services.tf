@@ -15,13 +15,11 @@ locals {
 module "requests" {
   source = "../modules/ecs_service"
 
-  service_name            = "requests-${terraform.workspace}"
-  deployment_service_name = "requests"
+  service_name = "requests-${terraform.workspace}"
 
-  container_image        = "${local.requests_repository}:env.${terraform.workspace}"
-  container_port         = local.requests_container_port
-  deployment_service_env = terraform.workspace
-  desired_task_count     = local.desired_task_count
+  container_image    = "${local.requests_repository}:env.${terraform.workspace}"
+  container_port     = local.requests_container_port
+  desired_task_count = local.desired_task_count
 
   app_cpu    = 1024
   app_memory = 2048
