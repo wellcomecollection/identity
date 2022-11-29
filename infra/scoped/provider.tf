@@ -5,11 +5,6 @@ provider "aws" {
     role_arn = var.provider_role_arn
   }
 
-  # Ignore deployment tags on services
-  ignore_tags {
-    keys = ["deployment:label"]
-  }
-
   default_tags {
     tags = local.common_tags
   }
