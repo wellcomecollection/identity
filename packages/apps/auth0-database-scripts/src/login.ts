@@ -55,7 +55,10 @@ async function login(email: string, password: string): Promise<Auth0User> {
     password
   );
   if (validationResponse.status !== ResponseStatus.Success) {
-    throw new WrongUsernameOrPasswordError(email, invalidCredentialsMessage);
+    throw new WrongUsernameOrPasswordError(
+      `p${patronRecord.recordNumber}`,
+      invalidCredentialsMessage
+    );
   }
 
   if (hasImplicitlyVerifiedEmail(patronRecord)) {
