@@ -7,7 +7,7 @@ steps:
           role: "arn:aws:iam::770700576653:role/identity-ci"
       - ecr#v2.2.0:
           login: true
-      - docker-compose#v3.7.0:
+      - docker-compose#v4.9.0:
           run: app
           config: .buildkite/docker-compose.yml
 
@@ -23,7 +23,7 @@ steps:
           role: "arn:aws:iam::770700576653:role/identity-ci"
       - ecr#v2.2.0:
           login: true
-      - docker-compose#v3.7.0:
+      - docker-compose#v4.9.0:
           run: app
           config: .buildkite/docker-compose.yml
           env:
@@ -45,7 +45,7 @@ steps:
           role: "arn:aws:iam::770700576653:role/identity-ci"
       - ecr#v2.2.0:
           login: true
-      - docker-compose#v3.7.0:
+      - docker-compose#v4.9.0:
           run: app
           config: .buildkite/docker-compose.yml
 
@@ -63,7 +63,7 @@ steps:
           role: "arn:aws:iam::770700576653:role/identity-ci"
       - ecr#v2.2.0:
           login: true
-      - docker-compose#v3.7.0:
+      - docker-compose#v4.9.0:
           run: app
           mount-ssh-agent: true # For Terraform to fetch modules
           config: .buildkite/docker-compose.yml
