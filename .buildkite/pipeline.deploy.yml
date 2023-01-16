@@ -18,6 +18,7 @@ steps:
           run: app
           config: .buildkite/docker-compose.yml
           mount-buildkite-agent: true
+          mount-ssh-agent: true # For Terraform to fetch modules
           env:
             - BUILDKITE_BRANCH
             - BUILDKITE_SOURCE
@@ -61,6 +62,7 @@ steps:
           run: app
           config: .buildkite/docker-compose.yml
           mount-buildkite-agent: true
+          mount-ssh-agent: true # For Terraform to fetch modules
           env:
             - BUILDKITE_BRANCH
             - BUILDKITE_SOURCE

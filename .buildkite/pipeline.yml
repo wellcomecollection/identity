@@ -65,6 +65,7 @@ steps:
           login: true
       - docker-compose#v3.7.0:
           run: app
+          mount-ssh-agent: true # For Terraform to fetch modules
           config: .buildkite/docker-compose.yml
           env:
             - BUILDKITE_BRANCH
