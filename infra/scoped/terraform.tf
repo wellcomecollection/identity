@@ -13,7 +13,7 @@ terraform {
     }
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 3.41.0"
+      version = "~> 4.44.0"
     }
     template = {
       source  = "hashicorp/template"

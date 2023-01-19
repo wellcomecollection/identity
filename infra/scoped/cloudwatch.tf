@@ -18,35 +18,6 @@ resource "aws_cloudwatch_log_group" "identity_api_gateway_v1_execution_log" {
   }
 }
 
-# Lambda
-
-resource "aws_cloudwatch_log_group" "lambda_authorizer" {
-  name              = "/aws/lambda/identity-authorizer-${terraform.workspace}"
-  retention_in_days = aws_ssm_parameter.cloudwatch_retention.value
-
-  tags = {
-    "Name" = "/aws/lambda/identity-authorizer-${terraform.workspace}"
-  }
-}
-
-resource "aws_cloudwatch_log_group" "lambda_api" {
-  name              = "/aws/lambda/identity-api-${terraform.workspace}"
-  retention_in_days = aws_ssm_parameter.cloudwatch_retention.value
-
-  tags = {
-    "Name" = "/aws/lambda/identity-api-${terraform.workspace}"
-  }
-}
-
-resource "aws_cloudwatch_log_group" "lambda_patron_deletion_tracker" {
-  name              = "/aws/lambda/patron-deletion-tracker-${terraform.workspace}"
-  retention_in_days = aws_ssm_parameter.cloudwatch_retention.value
-
-  tags = {
-    "Name" = "/aws/lambda/patron-deletion-tracker-${terraform.workspace}"
-  }
-}
-
 # Events
 
 resource "aws_cloudwatch_event_rule" "patron_deletion_tracker" {
@@ -59,7 +30,7 @@ resource "aws_cloudwatch_event_rule" "patron_deletion_tracker" {
 resource "aws_cloudwatch_event_target" "patron_deletion_tracker" {
   rule      = aws_cloudwatch_event_rule.patron_deletion_tracker.name
   target_id = "patron-deletion-tracker-${terraform.workspace}"
-  arn       = aws_lambda_function.patron_deletion_tracker.arn
+  arn       = module.patron_deletion_tracker_lambda.lambda.arn
   input = jsonencode({
     window = {
       durationDays = local.deletion_tracking_window_days
@@ -78,7 +49,7 @@ resource "aws_cloudwatch_metric_alarm" "lambda_alarm" {
   threshold           = "1"
 
   dimensions = {
-    FunctionName = aws_lambda_function.patron_deletion_tracker.function_name
+    FunctionName = module.patron_deletion_tracker_lambda.lambda.function_name
   }
 
   alarm_description = "This metric monitors lambda errors for the patron deletion tracker"
