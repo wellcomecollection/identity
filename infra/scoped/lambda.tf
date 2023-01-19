@@ -6,7 +6,7 @@ module "authorizer_lambda" {
   name = "identity-authorizer-${terraform.workspace}"
 
   handler = "index.lambdaHandler"
-  runtime = "nodejs12.x"
+  runtime = "nodejs18.x"
 
   // This creates an empty function on the first apply, as it will be managed by
   // the deployment scripts and ignored by TF (see lifecycle block)
