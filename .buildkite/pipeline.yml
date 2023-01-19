@@ -11,8 +11,6 @@ steps:
           run: app
           config: .buildkite/docker-compose.yml
 
-  - wait
-
   - name: "Run tests"
     command:
       - "yarn install --frozen-lockfile"
@@ -31,8 +29,6 @@ steps:
             - AWS_ACCESS_KEY_ID
             - AWS_SECRET_ACCESS_KEY
             - AWS_SESSION_TOKEN
-
-  - wait
 
   # Build the Auth0 scripts (just to check for successful compilation)
   - name: "Build Auth0 scripts"
