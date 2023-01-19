@@ -4,7 +4,7 @@ SHELL ["/bin/bash", "-ox", "pipefail", "-c"]
 
 ARG A0DEPLOY_VERSION=7.12.2
 RUN apt-get update && \
-    apt-get install -y unzip findutils python3 python3-pip jq moreutils && \
+    apt-get install -y zip findutils python3 python3-pip jq moreutils && \
     rm -rf /var/lib/apt/lists/* && \
     pip3 install awscli && \
     yarn global add auth0-deploy-cli@${A0DEPLOY_VERSION}
