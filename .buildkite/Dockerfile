@@ -1,9 +1,10 @@
-FROM public.ecr.aws/docker/library/fedora:33
+FROM public.ecr.aws/docker/library/fedora:37
 
 SHELL ["/bin/bash", "-ox", "pipefail", "-c"]
 
 ARG A0DEPLOY_VERSION=7.12.2
-RUN dnf -y install git zip unzip findutils python3 python3-pip npm jq tar xz which moreutils \
+RUN dnf -y install git zip unzip findutils python3 python3-pip jq tar xz which moreutils \
+    && dnf -y module install nodejs:18/common \
     && dnf clean all \
     && rm -rf /var/cache/yum \
     && pip3 install awscli \
