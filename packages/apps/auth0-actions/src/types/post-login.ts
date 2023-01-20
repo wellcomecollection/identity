@@ -15,7 +15,6 @@ export type Event<UserType extends User = User> = {
   transaction?: EventTransaction;
   user: UserType;
   secrets: EventSecrets;
-  terms_and_conditions_accepted: boolean;
 };
 
 export type AuthenticationMethodName =

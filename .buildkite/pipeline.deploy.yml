@@ -63,6 +63,7 @@ steps:
           config: .buildkite/docker-compose.yml
           mount-buildkite-agent: true
           mount-ssh-agent: true # For Terraform to fetch modules
+          shell: ["/bin/bash", "-e", "-c"] # So bash scripts can be sourced
           env:
             - BUILDKITE_BRANCH
             - BUILDKITE_SOURCE
