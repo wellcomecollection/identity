@@ -37,8 +37,8 @@ resource "auth0_tenant" "tenant" {
 
   universal_login {
     colors {
-      primary         = local.auth0_universal_login_primary_colour
-      page_background = local.auth0_universal_login_background_colour
+      primary         = "#4f7d68" // accent.green
+      page_background = "#d9d8d0" // warmNeutral.400
     }
   }
 
