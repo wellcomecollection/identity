@@ -18,8 +18,6 @@ locals {
 
     # Auth0
     "auth0_friendly_name",
-    "auth0_universal_login_primary_colour",
-    "auth0_universal_login_background_colour",
     "auth0_domain",
     "auth0_support_url",
     "auth0_verify_email_subject",
@@ -51,9 +49,6 @@ locals {
   auth0_domain        = aws_ssm_parameter.external_parameters["auth0_domain"].value
   auth0_support_url   = aws_ssm_parameter.external_parameters["auth0_support_url"].value
   auth0_friendly_name = aws_ssm_parameter.external_parameters["auth0_friendly_name"].value
-
-  auth0_universal_login_primary_colour    = aws_ssm_parameter.external_parameters["auth0_universal_login_primary_colour"].value
-  auth0_universal_login_background_colour = aws_ssm_parameter.external_parameters["auth0_universal_login_background_colour"].value
 
   sierra_api_hostname = aws_ssm_parameter.external_parameters["sierra_api_hostname"].value
 
