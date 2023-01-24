@@ -5,7 +5,7 @@ terraform {
   required_providers {
     archive = {
       source  = "hashicorp/archive"
-      version = "~> 2.0.0"
+      version = ">= 2.0.0"
     }
     auth0 = {
       source  = "auth0/auth0"
@@ -15,17 +15,13 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 4.44.0"
     }
-    template = {
-      source  = "hashicorp/template"
-      version = "~> 2.2.0"
-    }
     external = {
       source  = "hashicorp/external"
-      version = "~> 2.0.0"
+      version = ">= 2.0.0"
     }
     random = {
       source  = "hashicorp/random"
-      version = "~> 3.0.0"
+      version = ">= 3.0.0"
     }
   }
 }
