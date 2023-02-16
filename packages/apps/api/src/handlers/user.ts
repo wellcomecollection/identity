@@ -57,8 +57,9 @@ export function getUser(auth0Client: Auth0Client) {
 export function sendVerificationEmail(auth0Client: Auth0Client) {
   return async function (request: Request, response: Response): Promise<void> {
     const userId: number = getTargetUserId(request);
-    const auth0Response: APIResponse<void> =
-      await auth0Client.sendVerificationEmail(userId);
+    const auth0Response: APIResponse<void> = await auth0Client.sendVerificationEmail(
+      userId
+    );
     if (auth0Response.status !== ResponseStatus.Success) {
       throw clientResponseToHttpError(auth0Response);
     }
@@ -154,8 +155,9 @@ export function updateUser(auth0Client: Auth0Client) {
     const userId: number = getTargetUserId(request);
     const password: string | undefined = request.body.password;
 
-    const auth0UserIdGet: APIResponse<Auth0User> =
-      await auth0Client.getUserByUserId(userId);
+    const auth0UserIdGet: APIResponse<Auth0User> = await auth0Client.getUserByUserId(
+      userId
+    );
     if (auth0UserIdGet.status !== ResponseStatus.Success) {
       throw clientResponseToHttpError(auth0UserIdGet);
     }
@@ -215,8 +217,10 @@ export function changePassword(auth0Client: Auth0Client) {
       extractSourceIp(request)
     );
 
-    const auth0Update: APIResponse<Auth0User> =
-      await auth0Client.updatePassword(userId, newPassword);
+    const auth0Update: APIResponse<Auth0User> = await auth0Client.updatePassword(
+      userId,
+      newPassword
+    );
     if (auth0Update.status !== ResponseStatus.Success) {
       throw clientResponseToHttpError(auth0Update);
     }
@@ -260,8 +264,9 @@ export function requestDelete(
       return;
     }
 
-    const emailDeleteAdmin: APIResponse<{}> =
-      await emailClient.sendDeleteRequestAdmin(auth0Get.result);
+    const emailDeleteAdmin: APIResponse<{}> = await emailClient.sendDeleteRequestAdmin(
+      auth0Get.result
+    );
     if (emailDeleteAdmin.status !== ResponseStatus.Success) {
       throw clientResponseToHttpError(emailDeleteAdmin);
     }
@@ -287,8 +292,9 @@ export function requestDelete(
       );
     }
 
-    const emailDeleteUser: APIResponse<{}> =
-      await emailClient.sendDeleteRequestUser(auth0Get.result);
+    const emailDeleteUser: APIResponse<{}> = await emailClient.sendDeleteRequestUser(
+      auth0Get.result
+    );
     if (emailDeleteUser.status !== ResponseStatus.Success) {
       console.error(
         `An error occurred notifying Auth0 user [${userId}] of the deletion request: [${emailDeleteUser}]`

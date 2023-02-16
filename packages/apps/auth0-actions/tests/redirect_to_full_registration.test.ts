@@ -44,8 +44,9 @@ describe('redirect_to_full_registration', () => {
 
     const sendUserQuery: SendUserObject = {
       query: {
-        session_token:
-          mockPostLoginApi.redirect.encodeToken(encodeTokenPayload),
+        session_token: mockPostLoginApi.redirect.encodeToken(
+          encodeTokenPayload
+        ),
       },
     };
 

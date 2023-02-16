@@ -71,7 +71,7 @@ describe('HTTP sierra client', () => {
 
       expect(response.status).toBe(ResponseStatus.Success);
       expect(
-        (response as unknown as SuccessResponse<PatronCreateResponse>).result
+        ((response as unknown) as SuccessResponse<PatronCreateResponse>).result
           .recordNumber
       ).toBe(1234567);
     });
