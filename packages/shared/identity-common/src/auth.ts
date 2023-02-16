@@ -39,7 +39,10 @@ export const authenticatedInstanceFactory = (
         retries: 3,
         retryDelay: axiosRetry.exponentialDelay,
         onRetry: (_, error) => {
-          console.warn('Error occurred during request, retrying', error);
+          console.warn(
+            'Error occurred during request, retrying',
+            error.message
+          );
         },
       });
     }

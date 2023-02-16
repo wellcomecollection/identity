@@ -146,7 +146,6 @@ export default class MockSierraClient implements SierraClient {
 
   createPatron = jest.fn(
     async (lastName: string, email: string, firstName: string) => {
-      const createPatronResultLink = 'http://sierra/patrons/123456';
       const newPatronRecord = (
         firstName: string,
         lastName: string,
@@ -161,8 +160,9 @@ export default class MockSierraClient implements SierraClient {
         createdDate: new Date(),
       });
 
-      this.addPatron(newPatronRecord('Ravi', 'Ravioli', 'SelfRegistered'));
-      return successResponse({ link: createPatronResultLink });
+      const patron = newPatronRecord('Ravi', 'Ravioli', 'SelfRegistered');
+      this.addPatron(patron);
+      return successResponse({ recordNumber: patron.recordNumber });
     }
   );
 
