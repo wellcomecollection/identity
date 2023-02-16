@@ -9,7 +9,7 @@ describe('/users/{userId}/registration', () => {
       const firstName = 'Jane';
       const lastName = 'Smith';
       const testUser = randomExistingUser({
-        firstName: 'Auth0_Registration_undefined',
+        firstName: 'Auth0_Registration_tempFirstName',
         lastName: 'Auth0_Registration_tempLastName',
       });
       const { api, clients } = mockedApi([testUser]);
