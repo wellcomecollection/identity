@@ -1,4 +1,5 @@
 import { Auth0User } from '@weco/auth0-client';
+import { hasTempName } from '@weco/identity-common';
 import { Event, API } from './types/post-login';
 
 export const onExecutePostLogin = async (
@@ -11,11 +12,10 @@ export const onExecutePostLogin = async (
   // Using Auth0_Registration_tempLastName is a better coverall, so we check against this
   // TODO: It would be good to improve this further by checking for app_metadata.terms_and_conditions_accepted here
 
-  if (
-    Boolean(event.user.given_name) &&
-    Boolean(event.user.family_name) &&
-    Boolean(event.user.family_name !== 'Auth0_Registration_tempLastName')
-  ) {
+  const givenName = event.user.given_name;
+  const familyName = event.user.family_name;
+  const hasName = Boolean(givenName) && Boolean(familyName);
+  if (hasName && !hasTempName(givenName!, familyName!)) {
     return;
   }
 

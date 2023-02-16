@@ -1,5 +1,8 @@
 import { callbackify } from 'util';
-import { ResponseStatus } from '@weco/identity-common';
+import {
+  ResponseStatus,
+  REGISTRATION_NAME_PREFIX,
+} from '@weco/identity-common';
 import { HttpSierraClient } from '@weco/sierra-client';
 import { Auth0UserWithPassword } from '@weco/auth0-client/src/auth0';
 
@@ -11,6 +14,9 @@ declare const configuration: {
 
 const userAlreadyExistsMessage =
   'A user with this email address already exists.';
+
+const tempFirstName = `${REGISTRATION_NAME_PREFIX}_tempFirstName`;
+const tempLastName = `${REGISTRATION_NAME_PREFIX}_tempLastName`;
 
 async function create(user: Auth0UserWithPassword) {
   // We need to create the patron in sierra, we will update the patron info with firstName, lastName etc

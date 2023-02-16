@@ -38,3 +38,9 @@ export const authenticatedInstanceFactory = (
     return instance;
   };
 };
+
+export const REGISTRATION_NAME_PREFIX = 'Auth0_Registration';
+
+export const hasTempName = (firstName: string, lastName: string): boolean =>
+  firstName.startsWith(REGISTRATION_NAME_PREFIX) ||
+  lastName.startsWith(REGISTRATION_NAME_PREFIX);

@@ -1,5 +1,10 @@
 import { Auth0Client, Auth0User } from '@weco/auth0-client';
-import { APIResponse, isNonBlank, ResponseStatus } from '@weco/identity-common';
+import {
+  APIResponse,
+  hasTempName,
+  isNonBlank,
+  ResponseStatus,
+} from '@weco/identity-common';
 import { Request, Response } from 'express';
 import { toMessage } from '../models/common';
 import { clientResponseToHttpError, HttpError } from '../models/HttpError';
@@ -105,8 +110,10 @@ export function updateUserAfterRegistration(sierraClient: SierraClient) {
     // If somebody comes through this flow and the name in Sierra isn't our placeholder,
     // then shenanigans might be occurring. Throw an error; a human needs to look at this.
     if (
-      getPatronResponse.result.firstName !== 'Auth0_Registration_undefined' ||
-      getPatronResponse.result.lastName !== 'Auth0_Registration_tempLastName'
+      !hasTempName(
+        getPatronResponse.result.firstName,
+        getPatronResponse.result.lastName
+      )
     ) {
       throw new HttpError({
         status: 409,
