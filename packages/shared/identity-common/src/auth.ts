@@ -35,6 +35,9 @@ export const authenticatedInstanceFactory = (
         },
         ...getInstanceConfig(),
       });
+
+      // This is here as an attempt to address intermittent 'socket hang up' errors
+      // If we keep seeing them, we might consider removing it.
       axiosRetry(instance, {
         retries: 3,
         retryDelay: axiosRetry.exponentialDelay,

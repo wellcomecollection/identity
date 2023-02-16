@@ -35,8 +35,10 @@ async function create(user: Auth0UserWithPassword) {
     user.email,
     user.password
   );
+  console.log('Created patron, response was: ', createPatronResponse);
 
   if (createPatronResponse.status === ResponseStatus.UserAlreadyExists) {
+    console.log('Patron already exists, throwing ValidationError');
     // https://auth0.com/docs/authenticate/database-connections/custom-db/templates/create#return-error-that-user-already-exists
     throw new ValidationError('user_exists', userAlreadyExistsMessage);
   }
@@ -52,6 +54,7 @@ async function create(user: Auth0UserWithPassword) {
       'Malformed or invalid Patron creation request ' +
         '(cause: [{"code":136,"specificCode":6,"httpStatus":400,"name":"PIN is not valid","description":"PIN is not valid : PIN is trivial"}])'
     ) {
+      console.log('Patron password was too simple');
       throw new ValidationError(
         user.email,
         'Please use a more complex password.'
@@ -61,8 +64,10 @@ async function create(user: Auth0UserWithPassword) {
       'Malformed or invalid Patron creation request ' +
         '(cause: [{"code":136,"specificCode":3,"httpStatus":400,"name":"PIN is not valid","description":"PIN is not valid : PIN too long"}])'
     ) {
+      console.log('Patron password was too long');
       throw new ValidationError(user.email, 'Please use a shorter password.');
     } else {
+      console.log('Unexpected error creating patron');
       throw new Error(createPatronResponse.message);
     }
   }
@@ -75,6 +80,10 @@ async function create(user: Auth0UserWithPassword) {
     { barcodes: [recordNumber.toString()] }
   );
   if (updatePatronBarcodeResponse.status !== ResponseStatus.Success) {
+    console.log(
+      'Unexpected error when updating patron barcode',
+      updatePatronBarcodeResponse
+    );
     throw new Error(updatePatronBarcodeResponse.message);
   }
 }
