@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
+import axiosRetry from 'axios-retry';
 
 type Token = {
   accessToken: string;
@@ -33,6 +34,13 @@ export const authenticatedInstanceFactory = (
           Authorization: `Bearer ${accessToken}`,
         },
         ...getInstanceConfig(),
+      });
+      axiosRetry(instance, {
+        retries: 3,
+        retryDelay: axiosRetry.exponentialDelay,
+        onRetry: (_, error) => {
+          console.warn('Error occurred during request, retrying', error);
+        },
       });
     }
     return instance;
