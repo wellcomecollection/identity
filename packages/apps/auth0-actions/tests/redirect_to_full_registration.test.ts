@@ -24,23 +24,6 @@ describe('redirect_to_full_registration', () => {
     jest.clearAllMocks();
   });
 
-  // This was passing due to an error being swallowed - there is no check for T&Cs, and it
-  // is not clear that the flag is ever being stored. Needs further investigation.
-  it.skip('will not redirect the user if terms_and_conditions_accepted is false', () => {
-    const user: Auth0User = {
-      app_metadata: {},
-    } as Auth0User;
-    const createEvent = (user: Auth0User): Event<Auth0User> =>
-      ({
-        user,
-        secrets: testSecrets,
-        request: testRequest,
-      } as Event<Auth0User>);
-
-    onExecutePostLogin(createEvent(user), mockPostLoginApi);
-    expect(mockPostLoginApi.redirect.sendUserTo).not.toBeCalled();
-  });
-
   it('redirects if the user firstname, surname is not present', () => {
     const newUser: Auth0User = {
       user_id: 'p|12345',
