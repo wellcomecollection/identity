@@ -58,7 +58,9 @@ describe('HTTP sierra client', () => {
       mockSierraServer.use(
         rest.post(routeUrls.patrons, (req, res, ctx) =>
           res(
-            ctx.json({ link: `${apiRoot}/patrons/${recordNumber.toString()}` })
+            ctx.json({
+              link: `${apiRoot}/v6/patrons/${recordNumber.toString()}`,
+            })
           )
         )
       );
@@ -71,7 +73,7 @@ describe('HTTP sierra client', () => {
 
       expect(response.status).toBe(ResponseStatus.Success);
       expect(
-        ((response as unknown) as SuccessResponse<PatronCreateResponse>).result
+        (response as unknown as SuccessResponse<PatronCreateResponse>).result
           .recordNumber
       ).toBe(1234567);
     });

@@ -142,10 +142,11 @@ export default class HttpSierraClient implements SierraClient {
         );
         // A successful patron creation POST results in a url link to patron
         const link = response.data.link;
-        const prefix = `${this.apiRoot}/patrons/`;
-        if (link.startsWith(prefix)) {
+        const patronLinkRegex = /\/patrons\/(?<patronId>\d+)$/;
+        const match = link.match(patronLinkRegex);
+        if (match) {
           return successResponse({
-            recordNumber: Number(link.slice(prefix.length)),
+            recordNumber: Number(match.groups.patronId),
           });
         } else {
           return errorResponse(
