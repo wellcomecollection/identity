@@ -62,7 +62,7 @@ export type PatronRecord = {
 };
 
 export type PatronCreateResponse = {
-  link: string;
+  recordNumber: number;
 };
 
 export type PatronResponse = {

@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
+import axiosRetry from 'axios-retry';
 
 type Token = {
   accessToken: string;
@@ -34,7 +35,26 @@ export const authenticatedInstanceFactory = (
         },
         ...getInstanceConfig(),
       });
+
+      // This is here as an attempt to address intermittent 'socket hang up' errors
+      // If we keep seeing them, we might consider removing it.
+      axiosRetry(instance, {
+        retries: 3,
+        retryDelay: axiosRetry.exponentialDelay,
+        onRetry: (_, error) => {
+          console.warn(
+            'Error occurred during request, retrying',
+            error.message
+          );
+        },
+      });
     }
     return instance;
   };
 };
+
+export const REGISTRATION_NAME_PREFIX = 'Auth0_Registration';
+
+export const hasTempName = (firstName: string, lastName: string): boolean =>
+  firstName.startsWith(REGISTRATION_NAME_PREFIX) ||
+  lastName.startsWith(REGISTRATION_NAME_PREFIX);

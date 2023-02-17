@@ -1,5 +1,6 @@
 import { ResponseStatus, SuccessResponse } from '@weco/identity-common';
 import { PatronRecord, HttpSierraClient } from '../src';
+import { PatronCreateResponse } from '../src/patron';
 import mockSierraServer, { apiRoot, routeUrls } from './mock-sierra-server';
 import {
   barcode,
@@ -52,17 +53,15 @@ describe('HTTP sierra client', () => {
   });
 
   describe('create a patron', () => {
-    const newPatron = {
-      lastName: 'Ravioli',
-      firstName: 'Ravi',
-      email: 'raviravioli@pastatimestest.com',
-      password: '12345abcdefg',
-    };
-    mockSierraServer.use(
-      rest.post(routeUrls.patron, (req, res, ctx) => res(ctx.json(newPatron)))
-    );
-
-    it('returns a link on successful creation of patron record', async () => {
+    it('returns the record number on successful creation of patron record', async () => {
+      const recordNumber = 1234567;
+      mockSierraServer.use(
+        rest.post(routeUrls.patrons, (req, res, ctx) =>
+          res(
+            ctx.json({ link: `${apiRoot}/patrons/${recordNumber.toString()}` })
+          )
+        )
+      );
       const response = await client.createPatron(
         'Ravioli',
         'Ravi',
@@ -71,6 +70,10 @@ describe('HTTP sierra client', () => {
       );
 
       expect(response.status).toBe(ResponseStatus.Success);
+      expect(
+        ((response as unknown) as SuccessResponse<PatronCreateResponse>).result
+          .recordNumber
+      ).toBe(1234567);
     });
   });
 

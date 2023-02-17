@@ -154,8 +154,6 @@ export type APIRedirect<UserType extends User = User> = {
 
 export type EncodedTokenPayloadObject = {
   email: string;
-  iss: string;
-  sub: string;
 };
 
 export type SendUserObject = {

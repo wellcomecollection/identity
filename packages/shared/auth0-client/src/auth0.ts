@@ -25,12 +25,14 @@ export type AppMetadata = {
 // Makes the keys K of T required
 type WithRequiredFields<T, K extends keyof T> = T & Required<Pick<T, K>>;
 
-// In the create script we want to be able to get the password from the user object
-export type Auth0UserWithPassword = Auth0User & {
-  password: string;
-};
-
 export type Auth0User = WithRequiredFields<
   User<AppMetadata, UserMetadata>,
-  'user_id' | 'email' // These fields are always present
+  'user_id' | 'email' // These fields are always present once the user is created
 >;
+
+// In the create script we want to be able to get the password from the user object
+// Before creation the user has no ID
+// https://auth0.com/docs/authenticate/database-connections/custom-db/templates/create#user-object-parameter
+export type Auth0UserWithPassword = Omit<Auth0User, 'user_id'> & {
+  password: string;
+};

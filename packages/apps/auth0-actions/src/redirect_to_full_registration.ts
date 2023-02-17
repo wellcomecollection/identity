@@ -1,4 +1,5 @@
 import { Auth0User } from '@weco/auth0-client';
+import { hasTempName } from '@weco/identity-common';
 import { Event, API } from './types/post-login';
 
 export const onExecutePostLogin = async (
@@ -6,34 +7,27 @@ export const onExecutePostLogin = async (
   api: API<Auth0User>
 ) => {
   const REGISTRATION_FORM_URL: string = `${event.secrets.IDENTITY_APP_BASEURL}/registration`;
-  // We now temporarily set the user firstName and lastName in the create script
-  // We need the below conditional to bail out of the redirect only if this is not a temporary name
-  // Using Auth0_Registration_tempLastName is a better coverall, so we check against this
-  // TODO: It would be good to improve this further by checking for app_metadata.terms_and_conditions_accepted here
 
-  if (
-    Boolean(event.user.given_name) &&
-    Boolean(event.user.family_name) &&
-    Boolean(event.user.family_name !== 'Auth0_Registration_tempLastName')
-  ) {
+  // - User first and last name are set to defaults starting `Auth0_Registration` in the `create` script
+  // - If the user has their name set to something other than these defaults, we don't need to redirect them to registration
+  const givenName = event.user.given_name;
+  const familyName = event.user.family_name;
+  const hasName = Boolean(givenName) && Boolean(familyName);
+  if (hasName && !hasTempName(givenName!, familyName!)) {
     return;
   }
 
-  // We send the user straight to the full registration form after they first register email and password
-  // Full registration form has three fields aka formData: firstname, lastname and terms_and_conditions_accepted
-  // In Identity App (Weco) we post the formData to updateUserAfterRegistration endpoint on Identity API
-  // updateUserAfterRegistration updates auth0 user with formData firstname and lastname
-  // updateUserAfterRegistration calls sierra http client and creates a patron with firstname and lastname
-  // updateUserAfterRegistration encodes formData and sends back to this auth0 action
-  // auth0 action we update terms_and_conditions_accepted boolean
-  // auth0 action will then redirect to success page
+  // Send the user to the registration form in which they can provide their first/last name and
+  // also accept terms and conditions. Pass their email to this form using a session token.
+  //
+  // The form action uses the Identity API to update first/last name in Sierra, after confirming
+  // that T&Cs were accepted. After this, it redirects the user to the /continue endpoint, completing
+  // the login flow
 
   const sessionToken = api.redirect.encodeToken({
     // this token must match the one used in Identity API
     secret: event.secrets.AUTH0_PAYLOAD_SECRET,
     payload: {
-      iss: `https://${event.request.hostname}/`,
-      sub: event.user.user_id,
       email: event.user.email,
     },
   });
@@ -42,7 +36,6 @@ export const onExecutePostLogin = async (
     api.redirect.sendUserTo(REGISTRATION_FORM_URL, {
       query: {
         session_token: sessionToken,
-        redirect_uri: `https://${event.request.hostname}/continue`,
       },
     });
   } catch (error) {
@@ -50,24 +43,10 @@ export const onExecutePostLogin = async (
   }
 };
 
-// Handler that will be invoked when this action is resuming after an external redirect. If your
-// onExecutePostLogin function does not perform a redirect, this function can be safely ignored.
-
+// We don't need to do anything here, but Auth0 requires us to export a function with
+// this signature in order to support the login flow continuation
+// https://auth0.com/docs/customize/actions/flows-and-triggers/login-flow/redirect-with-actions#resume-the-authentication-flow
 export const onContinuePostLogin = async (
   event: Event<Auth0User>,
   api: API<Auth0User>
-) => {
-  try {
-    const payload = api.redirect.validateToken({
-      secret: event.secrets.AUTH0_PAYLOAD_SECRET,
-      tokenParameterName: 'token',
-    });
-
-    api.user.setAppMetadata(
-      'terms_and_conditions_accepted',
-      Boolean(payload.terms_and_conditions_accepted)
-    );
-  } catch (error) {
-    console.error(error, 'Validation of redirect token failed');
-  }
-};
+) => {};

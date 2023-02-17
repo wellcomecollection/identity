@@ -8,6 +8,6 @@ declare global {
   }
 
   class ValidationError extends Error {
-    constructor(emailOrId?: string, message?: string);
+    constructor(errorCode?: string, message?: string);
   }
 }

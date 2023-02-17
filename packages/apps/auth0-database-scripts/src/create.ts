@@ -1,5 +1,8 @@
 import { callbackify } from 'util';
-import { ResponseStatus } from '@weco/identity-common';
+import {
+  ResponseStatus,
+  REGISTRATION_NAME_PREFIX,
+} from '@weco/identity-common';
 import { HttpSierraClient } from '@weco/sierra-client';
 import { Auth0UserWithPassword } from '@weco/auth0-client/src/auth0';
 
@@ -12,17 +15,15 @@ declare const configuration: {
 const userAlreadyExistsMessage =
   'A user with this email address already exists.';
 
+const tempFirstName = `${REGISTRATION_NAME_PREFIX}_tempFirstName`;
+const tempLastName = `${REGISTRATION_NAME_PREFIX}_tempLastName`;
+
 async function create(user: Auth0UserWithPassword) {
   // We need to create the patron in sierra, we will update the patron info with firstName, lastName etc
   // when we get this information from the full registration form
-  console.log('CREATE FUNCTION BEGINS');
-
   const apiRoot = configuration.API_ROOT;
   const clientKey = configuration.CLIENT_KEY;
   const clientSecret = configuration.CLIENT_SECRET;
-
-  const tempFirstName = `Auth0_Registration_${user.user_id}`;
-  const tempLastName = 'Auth0_Registration_tempLastName';
 
   const sierraClient = new HttpSierraClient(apiRoot, clientKey, clientSecret);
 
@@ -34,14 +35,12 @@ async function create(user: Auth0UserWithPassword) {
     user.email,
     user.password
   );
-
-  console.log(
-    `Received create patron response = ${JSON.stringify(createPatronResponse)}`
-  );
+  console.log('Created patron, response was: ', createPatronResponse);
 
   if (createPatronResponse.status === ResponseStatus.UserAlreadyExists) {
-    console.log('CREATE PATRON IN SIERRA ERRORS - USER ALREADY EXISTS');
-    throw new ValidationError(user.email, userAlreadyExistsMessage);
+    console.log('Patron already exists, throwing ValidationError');
+    // https://auth0.com/docs/authenticate/database-connections/custom-db/templates/create#return-error-that-user-already-exists
+    throw new ValidationError('user_exists', userAlreadyExistsMessage);
   }
 
   if (createPatronResponse.status !== ResponseStatus.Success) {
@@ -55,6 +54,7 @@ async function create(user: Auth0UserWithPassword) {
       'Malformed or invalid Patron creation request ' +
         '(cause: [{"code":136,"specificCode":6,"httpStatus":400,"name":"PIN is not valid","description":"PIN is not valid : PIN is trivial"}])'
     ) {
+      console.log('Patron password was too simple');
       throw new ValidationError(
         user.email,
         'Please use a more complex password.'
@@ -64,31 +64,26 @@ async function create(user: Auth0UserWithPassword) {
       'Malformed or invalid Patron creation request ' +
         '(cause: [{"code":136,"specificCode":3,"httpStatus":400,"name":"PIN is not valid","description":"PIN is not valid : PIN too long"}])'
     ) {
+      console.log('Patron password was too long');
       throw new ValidationError(user.email, 'Please use a shorter password.');
     } else {
-      console.log('CREATE PATRON IN SIERRA ERRORS');
+      console.log('Unexpected error creating patron');
       throw new Error(createPatronResponse.message);
     }
   }
 
-  // We now need to find the patron we created and eventually update their barcode
-  const findPatronResponse = await sierraClient.getPatronRecordByEmail(
-    user.email
-  );
-  if (findPatronResponse.status !== ResponseStatus.Success) {
-    console.log('FIND PATRON BARCODE - NOT SUCCESSFUL');
-    throw new Error(findPatronResponse.message);
-  }
-  const { recordNumber } = findPatronResponse.result;
-
   // Now we update the patron record with a barcode based on the recordNumber
   // We make the recordNumber (patron id) the barcode, sierra expects barcode to be a string
+  const recordNumber = createPatronResponse.result.recordNumber;
   const updatePatronBarcodeResponse = await sierraClient.updatePatron(
     recordNumber,
     { barcodes: [recordNumber.toString()] }
   );
   if (updatePatronBarcodeResponse.status !== ResponseStatus.Success) {
-    console.log('UPDATE PATRON BARCODE NOT SUCCESSFUL');
+    console.log(
+      'Unexpected error when updating patron barcode',
+      updatePatronBarcodeResponse
+    );
     throw new Error(updatePatronBarcodeResponse.message);
   }
 }

@@ -8,17 +8,17 @@ import {
   unhandledError,
 } from '@weco/identity-common';
 import {
+  PatronCreateResponse,
   PatronRecord,
   PatronResponse,
-  PatronCreateResponse,
   toPatronRecord,
   UpdateOptions,
 } from './patron';
 import { varFieldTags } from './marc/fields';
 import SierraClient from './SierraClient';
 import {
-  updateVerificationNote,
   NoteOptions,
+  updateVerificationNote,
 } from './email-verification-notes';
 import { paginatedSierraResults } from './pagination';
 import { createNameVarField } from './marc';
@@ -141,7 +141,18 @@ export default class HttpSierraClient implements SierraClient {
           { validateStatus: (status: number) => status === 200 }
         );
         // A successful patron creation POST results in a url link to patron
-        return successResponse(response.data);
+        const link = response.data.link;
+        const prefix = `${this.apiRoot}/patrons/`;
+        if (link.startsWith(prefix)) {
+          return successResponse({
+            recordNumber: Number(link.slice(prefix.length)),
+          });
+        } else {
+          return errorResponse(
+            `Patron creation response was malformed: ${link}`,
+            ResponseStatus.UnknownError
+          );
+        }
       } catch (error) {
         if (error.response) {
           switch (error.response.status) {
