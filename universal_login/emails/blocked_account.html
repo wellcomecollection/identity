@@ -26,7 +26,7 @@
                 margin: 20px 0;
               "
             ></div>
-            {% if user.given_name contains 'Auth0_Registration' %}
+            {% unless user.given_name contains 'Auth0_Registration' %}
             <p
               style="
                 margin-bottom: 1.3em;
@@ -38,7 +38,7 @@
             >
               Hi {{user.given_name}},
             </p>
-            {% endif %}
+            {% endunless %}
             <p
               style="
                 margin-bottom: 1.3em;
