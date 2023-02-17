@@ -25,6 +25,6 @@ data "aws_iam_policy_document" "identity_ci" {
       "ssm:GetParameter",
     ]
 
-    resources = [aws_ssm_parameter.identity_web_app["auth0_domain"].arn]
+    resources = [aws_ssm_parameter.external_parameters["auth0_domain"].arn]
   }
 }
