@@ -1,6 +1,13 @@
-import { Auth0User } from '@weco/auth0-client';
-import { hasTempName } from '@weco/identity-common';
+import type { Auth0User } from '@weco/auth0-client';
 import { Event, API } from './types/post-login';
+
+// These are copied and pasted from identity-common, because compiling them
+// into an action is non-trivial
+// TODO: work out how to use Webpack to do this, like with the database scripts
+const REGISTRATION_NAME_PREFIX = 'Auth0_Registration';
+const hasTempName = (firstName: string, lastName: string): boolean =>
+  firstName.startsWith(REGISTRATION_NAME_PREFIX) ||
+  lastName.startsWith(REGISTRATION_NAME_PREFIX);
 
 export const onExecutePostLogin = async (
   event: Event<Auth0User>,

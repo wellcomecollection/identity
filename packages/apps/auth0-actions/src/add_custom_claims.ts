@@ -1,4 +1,4 @@
-import { Auth0User } from '@weco/auth0-client';
+import type { Auth0User } from '@weco/auth0-client';
 import { Event, API } from './types/post-login';
 
 // Custom claims MUST be namespaced with a URL as per the OIDC spec
