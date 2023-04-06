@@ -2,14 +2,18 @@
 
 resource "aws_s3_bucket" "assets" {
   bucket = "identity-public-assets-${terraform.workspace}"
-  acl    = "private"
 
   tags = {
     "Name" = "identity-public-assets-${terraform.workspace}"
   }
 }
 
-resource "aws_s3_bucket_object" "assets_images_wellcomecollections-150x50-png" {
+resource "aws_s3_bucket_acl" "assets" {
+  bucket = aws_s3_bucket.assets.id
+  acl    = "private"
+}
+
+resource "aws_s3_object" "assets_images_wellcomecollections-150x50-png" {
   bucket = aws_s3_bucket.assets.bucket
   key    = "images/wellcomecollections-150x50.png"
   source = "${path.module}/assets/images/wellcomecollections-150x50.png"

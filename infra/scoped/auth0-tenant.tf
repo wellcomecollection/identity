@@ -1,6 +1,6 @@
 resource "auth0_tenant" "tenant" {
   friendly_name = "${local.auth0_friendly_name}${local.environment_qualifier}"
-  picture_url   = "https://${aws_s3_bucket.assets.bucket_regional_domain_name}/${aws_s3_bucket_object.assets_images_wellcomecollections-150x50-png.key}"
+  picture_url   = "https://${aws_s3_bucket.assets.bucket_regional_domain_name}/${aws_s3_object.assets_images_wellcomecollections-150x50-png.key}"
   support_email = local.email_support_address
   support_url   = local.auth0_support_url
 
