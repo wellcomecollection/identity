@@ -2,7 +2,7 @@ provider "aws" {
   region = "eu-west-1"
 
   assume_role {
-    role_arn = var.provider_role_arn
+    role_arn = "arn:aws:iam::770700576653:role/identity-developer"
   }
 
   default_tags {
@@ -15,7 +15,7 @@ provider "aws" {
   region = "us-east-1"
 
   assume_role {
-    role_arn = var.provider_role_arn
+    role_arn = "arn:aws:iam::770700576653:role/identity-developer"
   }
 
   default_tags {

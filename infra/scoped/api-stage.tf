@@ -46,7 +46,7 @@ resource "aws_api_gateway_method_settings" "identity_v1" {
 }
 
 resource "aws_api_gateway_domain_name" "identity_v1" {
-  certificate_arn = aws_acm_certificate_validation.identity_api_v1.certificate_arn
+  certificate_arn = module.cert.arn
   domain_name     = local.identity_v1_hostname
 
   tags = {

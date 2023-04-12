@@ -1,27 +1,18 @@
-# Identity API
+module "cert" {
+  source = "github.com/wellcomecollection/terraform-aws-acm-certificate?ref=v1.0.0"
 
-resource "aws_acm_certificate" "identity_api_v1" {
-  domain_name       = local.identity_v1_hostname
-  validation_method = "DNS"
+  domain_name = local.identity_v1_hostname
 
-  lifecycle {
-    create_before_destroy = true
-  }
+  zone_id = data.aws_route53_zone.root.id
 
-  # This certificate attaches to the API Gateway's CloudFront distribution,
-  # and a result must be in 'us-east-1'.
-  provider = aws.aws_us-east-1
-
-  tags = {
-    "Name" = local.identity_v1_hostname
+  providers = {
+    aws     = aws.aws_us-east-1
+    aws.dns = aws.dns
   }
 }
 
-resource "aws_acm_certificate_validation" "identity_api_v1" {
-  certificate_arn         = aws_acm_certificate.identity_api_v1.arn
-  validation_record_fqdns = [for record in aws_route53_record.identity_api_v1_validation : record.fqdn]
+data "aws_route53_zone" "zone" {
+  provider = aws.dns
 
-  # This certificate attaches to the API Gateway's CloudFront distribution,
-  # and a result must be in 'us-east-1'.
-  provider = aws.aws_us-east-1
+  name = "wellcomecollection.org."
 }
