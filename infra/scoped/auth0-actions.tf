@@ -20,7 +20,7 @@ resource "auth0_action" "redirect_to_full_registration" {
 
   supported_triggers {
     id      = "post-login"
-    version = "v2"
+    version = "v3"
   }
 
   lifecycle {
