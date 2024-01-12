@@ -68,7 +68,7 @@ module "api_lambda" {
 
   name     = "identity-api-${terraform.workspace}"
   handler  = "server-lambda.lambdaHandler"
-  runtime  = "nodejs12.x"
+  runtime  = "nodejs18.x"
   filename = "data/empty.zip"
   timeout  = 10
 
@@ -134,7 +134,7 @@ module "patron_deletion_tracker_lambda" {
 
   name    = "patron-deletion-tracker-${terraform.workspace}"
   handler = "lambda.handler"
-  runtime = "nodejs14.x"
+  runtime = "nodejs18.x"
   timeout = 15 * local.one_minute_s // This is the maximum
 
   // This creates an empty function on the first apply, as it will be managed by
