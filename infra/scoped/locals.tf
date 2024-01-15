@@ -68,7 +68,7 @@ locals {
   front_end_error_uri            = "${local.wellcome_collection_site_uri}/${local.front_end_context_path}/error"
   front_end_validate_uri         = "${local.wellcome_collection_site_uri}/${local.front_end_context_path}/validated"
   front_end_delete_requested_uri = "${local.wellcome_collection_site_uri}/${local.front_end_context_path}/delete-requested"
-  front_end_registration_uri     = "${local.wellcome_collection_site_uri}/${local.front_end_context_path}/registration"
+  front_end_base_uri             = "${local.wellcome_collection_site_uri}/${local.front_end_context_path}"
 
   # Identity account VPC
   identity_account_state = data.terraform_remote_state.accounts_identity.outputs
