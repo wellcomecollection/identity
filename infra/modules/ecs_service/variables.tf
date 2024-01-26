@@ -63,3 +63,8 @@ variable "load_balancer_arn" {
 variable "load_balancer_listener_port" {
   type = number
 }
+
+variable "healthcheck_path" {
+  type    = string
+  default = "/management/healthcheck"
+}
