@@ -76,17 +76,62 @@ sequenceDiagram
             A0_TENANT->>A0_TENANT: Add custom claims to tokens
         end
         A0_TENANT->>ID_APP: ID, access, and refresh tokens
-        ID_APP->>ID_APP: Tokens stored in session cookie (HttpOnly)
+        ID_APP->>ID_APP: Tokens stored in session cookie<br />(HttpOnly, Secure, symmetrically encrypted)
     end
 
     User->>ID_APP: Request to /account/api/*
     ID_APP->>ID_AUTH: Proxied request with access token added from session cookie
-    ID_AUTH->>ID_AUTH: Verify token is valid and signed by Auth0
+    ID_AUTH->>ID_AUTH: Verify token is valid and signed by our Auth0 Tenant
     ID_AUTH->>RESOURCE_APIS: Authorized request
     RESOURCE_APIS->>Sierra: Modify user or create hold request
     Sierra->>RESOURCE_APIS: Sierra response
     RESOURCE_APIS->>User: API response
 ```
+
+### Registration flow
+See the [Auth0 docs](https://auth0.com/docs/customize/actions/flows-and-triggers/login-flow/redirect-with-actions#overview) for details on the redirect flow used here.
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant ID_APP as Identity Webapp
+    participant A0_LOGIN as Auth0 Universal Login Screen
+    participant A0_TENANT as Auth0 Tenant
+    participant Sierra
+    participant ID_API as Identity API
+
+
+    User->>A0_LOGIN: Sign up with email/password
+    A0_LOGIN->>A0_TENANT: Request to create user
+    rect rgb(240, 240, 240)
+        note over A0_TENANT, Sierra: Custom DB scripts
+        A0_TENANT->>Sierra: Create user
+        Sierra->>Sierra: User is created with <br />Self-registered patron type
+        Sierra->>A0_TENANT: New user
+    end
+
+   
+    A0_TENANT->>ID_APP: Authorization code
+    ID_APP->>A0_TENANT: Code and application credentials
+    rect rgb(230, 230, 230)
+        note right of A0_TENANT: Auth0 Actions
+        A0_TENANT->>A0_TENANT: Check whether user profile is filled
+        A0_TENANT->>User: Redirect to registration screen
+    end
+
+    User->>ID_APP: Fill in name and other details
+    ID_APP->>ID_API: Update user details
+    ID_API->>Sierra: Modify user in Sierra
+    Sierra->ID_API: Response
+    ID_API->>ID_APP: Response
+    ID_APP->>User: 302 Redirect back to tenant
+    User->>A0_TENANT: Continue login flow
+    A0_TENANT->>ID_APP: ID, access, and refresh tokens
+    ID_APP->>ID_APP: Tokens stored in session cookie
+
+
+```
+
 
 ## Developing
 
