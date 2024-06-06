@@ -159,6 +159,7 @@ describe('toPatronRecord', () => {
   test.each([
     { patronType: 7, role: 'Reader' },
     { patronType: 8, role: 'Staff' },
+    { patronType: 9, role: 'StaffWithRestricted' },
     { patronType: 29, role: 'SelfRegistered' },
     { patronType: 6, role: 'Excluded' },
   ])('maps patronType $patronType to role $role', ({ patronType, role }) => {
