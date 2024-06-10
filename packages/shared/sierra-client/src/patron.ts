@@ -22,7 +22,12 @@ export function toPatronRecord(response: PatronResponse): PatronRecord {
   };
 }
 
-export type Role = 'Reader' | 'Staff' | 'SelfRegistered' | 'Excluded';
+export type Role =
+  | 'Reader'
+  | 'Staff'
+  | 'SelfRegistered'
+  | 'Excluded'
+  | 'StaffWithRestricted';
 
 // You can find an up-to-date list of patronType codes and descriptions
 // in the Sierra API at: /v5/patrons/metadata
@@ -41,6 +46,8 @@ const patronTypeToRole = (patronType: number): Role => {
     case 19: // Exhibitions & Events
     case 22: // Conservation
       return 'Staff';
+    case 9: // Wellcome Collection Staff - including access to restricted items
+      return 'StaffWithRestricted';
     case 29: // Self Registered
       return 'SelfRegistered';
     case 6: // Excluded
