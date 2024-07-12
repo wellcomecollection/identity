@@ -303,6 +303,24 @@ resource "auth0_client" "smoke_test" {
   callbacks = []
 }
 
+resource "auth0_client" "iiif_image_api" {
+  name           = "IIIF Image API${local.environment_qualifier}"
+  app_type       = "regular_web"
+  is_first_party = true
+
+  # The password grant is used here as we consider this client running in CI
+  # secure enough to allow that.
+  grant_types = [
+    "authorization_code",
+    "refresh_token",
+    "implicit",
+    "client_credentials",
+  ]
+
+  allowed_logout_urls = local.iiif_image_api_config[terraform.workspace].allowed_logout_urls
+  callbacks           = local.iiif_image_api_config[terraform.workspace].callbacks
+}
+
 resource "auth0_client_grant" "smoke_test" {
   client_id = auth0_client.smoke_test.client_id
   audience  = auth0_resource_server.identity_api.identifier
