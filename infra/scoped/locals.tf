@@ -11,7 +11,6 @@ locals {
   stage_test_client_ids = concat(auth0_client.local_dev_client.*.client_id, [
     # Developer client ids can be added here
     "SrigIHZ3yXKlskZcdxJeytBuHqUUw7gn", // "David McCormick – Local Dev"
-    "NOx1lzM8ivV0ec0H3BMoxKGqXwJJF1em", // "Jamie Parkinson - Local Dev"
   ])
 
   # Terraform
@@ -42,6 +41,30 @@ locals {
   identity_v1_endpoint      = "https://${local.identity_v1_hostname}"
   identity_v1_docs_hostname = "docs.${local.identity_v1_hostname}"
   identity_v1_docs_endpoint = "https://${local.identity_v1_docs_hostname}"
+
+  # IIIF Image API client
+  iiif_image_api_config = {
+    "stage" = {
+      allowed_logout_urls = [
+        "https://localhost:5001/",
+        "https://auth-test.wellcomecollection.digirati.io/",
+        "https://iiif-test.wellcomecollection.org/auth/v2/access/2/eden/logout",
+      ],
+      callbacks = [
+        "https://localhost:5001/callback",
+        "https://auth-test.wellcomecollection.digirati.io/callback",
+        "https://iiif-test.wellcomecollection.org/auth/v2/access/eden/oauth2/callback",
+      ]
+    }
+    "prod" = {
+      allowed_logout_urls = [
+        "https://iiif.wellcomecollection.org/auth/v2/access/2/eden/logout",
+      ],
+      callbacks = [
+        "https://iiif.wellcomecollection.org/auth/v2/access/eden/oauth2/callback",
+      ]
+    }
+  }
 
   # Auth0
   auth0_hostname = nonsensitive("${local.hostname_prefix}${data.aws_ssm_parameter.hostname.value}")

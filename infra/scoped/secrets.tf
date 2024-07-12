@@ -105,3 +105,19 @@ module "secrets_experience" {
     aws = aws.experience
   }
 }
+
+
+module "secrets_iiif_image_api" {
+  source = "github.com/wellcomecollection/terraform-aws-secrets?ref=v1.3.0"
+
+  # prefixed with wellcome as this account is controlled by digirati
+  # so namespacing to distinguish from any internal identity secrets
+  key_value_map = {
+    "wellcome/identity/${terraform.workspace}/iiif_image_api/auth0_client_id"     = auth0_client.iiif_image_api.client_id
+    "wellcome/identity/${terraform.workspace}/iiif_image_api/auth0_client_secret" = auth0_client.iiif_image_api.client_secret
+  }
+
+  providers = {
+    aws = aws.digirati
+  }
+}

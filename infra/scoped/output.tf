@@ -21,6 +21,10 @@ output "auth0_openathens_saml_idp_client_id" {
   value = auth0_client.openathens_saml_idp.client_id
 }
 
+output "auth0_iiif_image_api_client_id" {
+  value = auth0_client.iiif_image_api.client_id
+}
+
 # Environment variables (for CI / CD)
 
 output "ci_environment_variables" {
