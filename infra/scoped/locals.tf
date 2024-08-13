@@ -49,19 +49,23 @@ locals {
         "https://localhost:5001/",
         "https://auth-test.wellcomecollection.digirati.io/",
         "https://iiif-test.wellcomecollection.org/auth/v2/access/2/eden/logout",
+        "https://iiif-test.wellcomecollection.org/auth/v2/access/2/restrictedlogin/logout",
       ],
       callbacks = [
         "https://localhost:5001/callback",
         "https://auth-test.wellcomecollection.digirati.io/callback",
         "https://iiif-test.wellcomecollection.org/auth/v2/access/eden/oauth2/callback",
+        "https://iiif-test.wellcomecollection.org/auth/v2/access/restrictedlogin/oauth2/callback",
       ]
     }
     "prod" = {
       allowed_logout_urls = [
         "https://iiif.wellcomecollection.org/auth/v2/access/2/eden/logout",
+        "https://iiif.wellcomecollection.org/auth/v2/access/2/restrictedlogin/logout",
       ],
       callbacks = [
         "https://iiif.wellcomecollection.org/auth/v2/access/eden/oauth2/callback",
+        "https://iiif.wellcomecollection.org/auth/v2/access/restrictedlogin/oauth2/callback",
       ]
     }
   }
