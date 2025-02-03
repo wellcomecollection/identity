@@ -11,6 +11,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@types/node": "20",
     "@weco/auth0-client": "*",
     "@weco/sierra-client": "*",
     "date-fns": "^2.28.0",

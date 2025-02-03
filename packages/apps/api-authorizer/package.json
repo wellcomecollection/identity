@@ -11,6 +11,7 @@
     "clean": "rimraf ./lib tsconfig.build.tsbuildinfo"
   },
   "dependencies": {
+    "@types/node": "20",
     "@weco/auth0-client": "*",
     "jsonwebtoken": "^8.5.1",
     "jwks-rsa": "^2.0.5"

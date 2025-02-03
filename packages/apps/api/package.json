@@ -12,6 +12,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@types/node": "20",
     "@weco/auth0-client": "*",
     "@weco/identity-common": "*",
     "@weco/sierra-client": "*",

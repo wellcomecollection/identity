@@ -6,7 +6,7 @@ module "authorizer_lambda" {
   name = "identity-authorizer-${terraform.workspace}"
 
   handler = "index.lambdaHandler"
-  runtime = "nodejs18.x"
+  runtime = "nodejs20.x"
 
   // This creates an empty function on the first apply, as it will be managed by
   // the deployment scripts and ignored by TF (see lifecycle block)
@@ -68,7 +68,7 @@ module "api_lambda" {
 
   name     = "identity-api-${terraform.workspace}"
   handler  = "server-lambda.lambdaHandler"
-  runtime  = "nodejs18.x"
+  runtime  = "nodejs20.x"
   filename = "data/empty.zip"
   timeout  = 10
 
@@ -134,7 +134,7 @@ module "patron_deletion_tracker_lambda" {
 
   name    = "patron-deletion-tracker-${terraform.workspace}"
   handler = "lambda.handler"
-  runtime = "nodejs18.x"
+  runtime = "nodejs20.x"
   timeout = 15 * local.one_minute_s // This is the maximum
 
   // This creates an empty function on the first apply, as it will be managed by
