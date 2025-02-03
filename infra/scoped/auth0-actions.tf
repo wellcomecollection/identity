@@ -5,7 +5,7 @@ resource "auth0_action" "add_custom_claims" {
 
   supported_triggers {
     id      = "post-login"
-    version = "v2"
+    version = "v3"
   }
 
   lifecycle {

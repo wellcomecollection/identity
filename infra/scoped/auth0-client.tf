@@ -169,6 +169,8 @@ resource "auth0_client_grant" "buildkite" {
     "read:log_streams",
     "update:log_streams",
     "delete:log_streams",
+    "read:connections_options", # https://auth0.com/docs/troubleshoot/product-lifecycle/deprecations-and-migrations EOL April 24, 2025
+    "update:connections_options"
   ]
 }
 
@@ -304,9 +306,10 @@ resource "auth0_client" "smoke_test" {
 }
 
 resource "auth0_client" "iiif_image_api" {
-  name           = "IIIF Image API${local.environment_qualifier}"
-  app_type       = "regular_web"
-  is_first_party = true
+  name                          = "IIIF Image API${local.environment_qualifier}"
+  app_type                      = "regular_web"
+  is_first_party                = true
+  organization_require_behavior = "no_prompt"
 
   # The password grant is used here as we consider this client running in CI
   # secure enough to allow that.

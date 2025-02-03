@@ -24,7 +24,7 @@ resource "aws_cloudwatch_event_bus" "auth0_logs" {
 resource "aws_cloudwatch_event_rule" "auth0_logs" {
   name        = "capture-auth0-errors-${terraform.workspace}"
   description = "Capture Auth0 errors that indicate unexpected behaviour"
-  is_enabled  = true
+  state       = "ENABLED"
 
   event_bus_name = aws_cloudwatch_event_bus.auth0_logs.name
 
