@@ -15,15 +15,27 @@ resource "auth0_client" "local_dev_client" {
 
   grant_types = auth0_client.identity_web_app.grant_types
 
-  callbacks = [
-    for url in auth0_client.identity_web_app.callbacks :
-    replace(url, local.wellcome_collection_site_uri, "http://localhost:3003")
-  ]
+  callbacks = concat(
+    [
+      for url in auth0_client.identity_web_app.callbacks :
+      replace(url, local.wellcome_collection_site_uri, "http://localhost:3003")
+    ],
+    [
+      for url in auth0_client.identity_web_app.callbacks :
+      replace(url, local.wellcome_collection_site_uri, "https://www-dev.wellcomecollection.org")
+    ]
+  )
 
-  allowed_logout_urls = [
-    for url in auth0_client.identity_web_app.allowed_logout_urls :
-    replace(url, local.wellcome_collection_site_uri, "http://localhost:3000")
-  ]
+  allowed_logout_urls = concat(
+    [
+      for url in auth0_client.identity_web_app.allowed_logout_urls :
+      replace(url, local.wellcome_collection_site_uri, "http://localhost:3000")
+    ],
+    [
+      for url in auth0_client.identity_web_app.allowed_logout_urls :
+      replace(url, local.wellcome_collection_site_uri, "https://www-dev.wellcomecollection.org")
+    ]
+  )
 
   lifecycle {
     ignore_changes = [
