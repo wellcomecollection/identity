@@ -24,7 +24,7 @@ resource "aws_cloudwatch_event_rule" "patron_deletion_tracker" {
   name                = "patron-deletion-tracker-${terraform.workspace}"
   description         = "Triggers the Patron deletion tracker lambda"
   schedule_expression = "rate(1 day)"
-  is_enabled          = true
+  state               = "ENABLED"
 }
 
 resource "aws_cloudwatch_event_target" "patron_deletion_tracker" {

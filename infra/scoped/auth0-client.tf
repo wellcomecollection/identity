@@ -15,15 +15,27 @@ resource "auth0_client" "local_dev_client" {
 
   grant_types = auth0_client.identity_web_app.grant_types
 
-  callbacks = [
-    for url in auth0_client.identity_web_app.callbacks :
-    replace(url, local.wellcome_collection_site_uri, "http://localhost:3000")
-  ]
+  callbacks = concat(
+    [
+      for url in auth0_client.identity_web_app.callbacks :
+      replace(url, local.wellcome_collection_site_uri, "http://localhost:3003")
+    ],
+    [
+      for url in auth0_client.identity_web_app.callbacks :
+      replace(url, local.wellcome_collection_site_uri, "https://www-dev.wellcomecollection.org")
+    ]
+  )
 
-  allowed_logout_urls = [
-    for url in auth0_client.identity_web_app.allowed_logout_urls :
-    replace(url, local.wellcome_collection_site_uri, "http://localhost:3000")
-  ]
+  allowed_logout_urls = concat(
+    [
+      for url in auth0_client.identity_web_app.allowed_logout_urls :
+      replace(url, local.wellcome_collection_site_uri, "http://localhost:3000")
+    ],
+    [
+      for url in auth0_client.identity_web_app.allowed_logout_urls :
+      replace(url, local.wellcome_collection_site_uri, "https://www-dev.wellcomecollection.org")
+    ]
+  )
 
   lifecycle {
     ignore_changes = [
@@ -169,6 +181,8 @@ resource "auth0_client_grant" "buildkite" {
     "read:log_streams",
     "update:log_streams",
     "delete:log_streams",
+    "read:connections_options", # https://auth0.com/docs/troubleshoot/product-lifecycle/deprecations-and-migrations EOL April 24, 2025
+    "update:connections_options"
   ]
 }
 
@@ -304,9 +318,10 @@ resource "auth0_client" "smoke_test" {
 }
 
 resource "auth0_client" "iiif_image_api" {
-  name           = "IIIF Image API${local.environment_qualifier}"
-  app_type       = "regular_web"
-  is_first_party = true
+  name                          = "IIIF Image API${local.environment_qualifier}"
+  app_type                      = "regular_web"
+  is_first_party                = true
+  organization_require_behavior = "no_prompt"
 
   # The password grant is used here as we consider this client running in CI
   # secure enough to allow that.

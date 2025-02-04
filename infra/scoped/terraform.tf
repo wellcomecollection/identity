@@ -30,7 +30,9 @@ data "terraform_remote_state" "identity_static" {
   backend = "s3"
 
   config = {
-    role_arn = "arn:aws:iam::770700576653:role/identity-developer"
+    assume_role = {
+      role_arn = "arn:aws:iam::770700576653:role/identity-developer"
+    }
 
     bucket = "identity-static-remote-state"
     key    = "terraform.tfstate"
@@ -42,7 +44,9 @@ data "terraform_remote_state" "infra_critical" {
   backend = "s3"
 
   config = {
-    role_arn = "arn:aws:iam::760097843905:role/platform-read_only"
+    assume_role = {
+      role_arn = "arn:aws:iam::760097843905:role/platform-read_only"
+    }
 
     bucket = "wellcomecollection-platform-infra"
     key    = "terraform/platform-infrastructure/shared.tfstate"
@@ -54,7 +58,9 @@ data "terraform_remote_state" "catalogue_api_shared" {
   backend = "s3"
 
   config = {
-    role_arn = "arn:aws:iam::756629837203:role/catalogue-read_only"
+    assume_role = {
+      role_arn = "arn:aws:iam::756629837203:role/catalogue-read_only"
+    }
 
     bucket = "wellcomecollection-catalogue-infra-delta"
     key    = "terraform/catalogue/api/shared.tfstate"
@@ -66,7 +72,9 @@ data "terraform_remote_state" "accounts_identity" {
   backend = "s3"
 
   config = {
-    role_arn = "arn:aws:iam::760097843905:role/platform-read_only"
+    assume_role = {
+      role_arn = "arn:aws:iam::760097843905:role/platform-read_only"
+    }
 
     bucket = "wellcomecollection-platform-infra"
     key    = "terraform/aws-account-infrastructure/identity.tfstate"
@@ -78,9 +86,11 @@ data "terraform_remote_state" "monitoring" {
   backend = "s3"
 
   config = {
-    role_arn = "arn:aws:iam::760097843905:role/platform-read_only"
-    bucket   = "wellcomecollection-platform-infra"
-    key      = "terraform/monitoring.tfstate"
-    region   = "eu-west-1"
+    assume_role = {
+      role_arn = "arn:aws:iam::760097843905:role/platform-read_only"
+    }
+    bucket = "wellcomecollection-platform-infra"
+    key    = "terraform/monitoring.tfstate"
+    region = "eu-west-1"
   }
 }
