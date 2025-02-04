@@ -17,12 +17,12 @@ resource "auth0_client" "local_dev_client" {
 
   callbacks = [
     for url in auth0_client.identity_web_app.callbacks :
-    replace(url, local.wellcome_collection_site_uri, "http://localhost:3000")
+    replace(url, local.wellcome_collection_site_uri, "http://localhost:3003")
   ]
 
   allowed_logout_urls = [
     for url in auth0_client.identity_web_app.allowed_logout_urls :
-    replace(url, local.wellcome_collection_site_uri, "http://localhost:3000")
+    replace(url, local.wellcome_collection_site_uri, "http://localhost:3003")
   ]
 
   lifecycle {
