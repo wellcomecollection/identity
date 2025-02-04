@@ -28,6 +28,7 @@ export function createApplication(clients: Clients): Application {
 
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
+  //@ts-ignore - aws-serverless-express is old and doesn't have the correct types
   app.use(awsServerlessExpressMiddleware.eventContext());
 
   [
