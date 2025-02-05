@@ -8,7 +8,7 @@ set -o errexit
 
 TF_BACKEND_ROLE_ARN="arn:aws:iam::770700576653:role/identity-ci"
 
-function __process_environment_variables {
+function __process_environment_variables() {
   export AWS_DEFAULT_REGION=eu-west-1
   export TF_VAR_provider_role_arn=${TF_BACKEND_ROLE_ARN}
   export NORMALIZED_BRANCH_NAME="${BUILDKITE_BRANCH/\//-}"
@@ -16,7 +16,7 @@ function __process_environment_variables {
   export DEPLOY_API_GATEWAY_STAGE=${DEPLOY_API_GATEWAY_STAGE:=v1}
 }
 
-function __init_terraform_env_vars {
+function __init_terraform_env_vars() {
   cd /app/infra/scoped && \
     terraform init -backend-config="assume_role.role_arn=${TF_BACKEND_ROLE_ARN}" && \
     terraform workspace select "${DEPLOY_ENVIRONMENT}"
