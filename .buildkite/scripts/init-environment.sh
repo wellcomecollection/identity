@@ -26,6 +26,8 @@ function __init_terraform_env_vars() {
   chmod +x /app/.buildkite/build/env.sh && source /app/.buildkite/build/env.sh && rm /app/.buildkite/build/env.sh
 }
 
+# add safe.directory to git config to account for 
+# https://github.blog/open-source/git/git-security-vulnerability-announced/
 git config --global --add safe.directory /app
 
 __process_environment_variables
