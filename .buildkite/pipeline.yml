@@ -1,7 +1,7 @@
 steps:
   - name: "Run linting"
     command:
-      - ". /app/.buildkite/scripts/init-environment.sh"
+      - "source /app/.buildkite/scripts/init-environment.sh"
       - "/app/.buildkite/scripts/linting.sh"
     plugins:
       - wellcomecollection/aws-assume-role#v0.2.2:
@@ -14,7 +14,7 @@ steps:
 
   - name: "Run tests"
     command:
-      - ". /app/.buildkite/scripts/init-environment.sh"
+      - "source /app/.buildkite/scripts/init-environment.sh"
       - "yarn install --frozen-lockfile"
       - "yarn build"
       - "yarn test"
@@ -35,7 +35,7 @@ steps:
   # Build the Auth0 scripts (just to check for successful compilation)
   - name: "Build Auth0 scripts"
     command:
-      - ". /app/.buildkite/scripts/init-environment.sh"
+      - "source /app/.buildkite/scripts/init-environment.sh"
       - "yarn --frozen-lockfile"
       - "yarn build-auth0-database-scripts"
       - "yarn build-auth0-actions"
@@ -52,7 +52,7 @@ steps:
 
   - name: "Package the AWS Lambda functions"
     command:
-      - ". /app/.buildkite/scripts/init-environment.sh"
+      - "source /app/.buildkite/scripts/init-environment.sh"
       - "yarn install --frozen-lockfile"
       - "yarn build"
       - "yarn package-api-templates"
