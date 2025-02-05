@@ -1,7 +1,7 @@
 # packages/apps/api-authorizer
 
 module "authorizer_lambda" {
-  source = "git@github.com:wellcomecollection/terraform-aws-lambda.git?ref=v1.1.1"
+  source = "git::https://github.com/wellcomecollection/terraform-aws-lambda.git?ref=v1.1.1"
 
   name = "identity-authorizer-${terraform.workspace}"
 
@@ -64,7 +64,7 @@ resource "aws_lambda_permission" "authorizer" {
 # packages/apps/api
 
 module "api_lambda" {
-  source = "git@github.com:wellcomecollection/terraform-aws-lambda.git?ref=v1.1.1"
+  source = "git::https://github.com/wellcomecollection/terraform-aws-lambda.git?ref=v1.1.1"
 
   name     = "identity-api-${terraform.workspace}"
   handler  = "server-lambda.lambdaHandler"
@@ -130,7 +130,7 @@ resource "aws_lambda_permission" "api" {
 # packages/apps/patron-deletion-tracker
 
 module "patron_deletion_tracker_lambda" {
-  source = "git@github.com:wellcomecollection/terraform-aws-lambda.git?ref=v1.1.1"
+  source = "git::https://github.com/wellcomecollection/terraform-aws-lambda.git?ref=v1.1.1"
 
   name    = "patron-deletion-tracker-${terraform.workspace}"
   handler = "lambda.handler"

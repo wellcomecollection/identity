@@ -1,6 +1,7 @@
 steps:
   - name: "Run linting"
     command:
+      - ". /app/.buildkite/scripts/init-environment.sh"
       - "/app/.buildkite/scripts/linting.sh"
     plugins:
       - wellcomecollection/aws-assume-role#v0.2.2:
@@ -10,9 +11,12 @@ steps:
       - docker-compose#v4.9.0:
           run: app
           config: .buildkite/docker-compose.yml
+          shell: ["/bin/bash", "-e", "-c"] # So bash scripts can be sourced
+
 
   - name: "Run tests"
     command:
+      - ". /app/.buildkite/scripts/init-environment.sh"
       - "yarn install --frozen-lockfile"
       - "yarn build"
       - "yarn test"
@@ -24,6 +28,7 @@ steps:
       - docker-compose#v4.9.0:
           run: app
           config: .buildkite/docker-compose.yml
+          shell: ["/bin/bash", "-e", "-c"] # So bash scripts can be sourced
           env:
             - BUILDKITE_BRANCH
             - AWS_ACCESS_KEY_ID
@@ -33,6 +38,7 @@ steps:
   # Build the Auth0 scripts (just to check for successful compilation)
   - name: "Build Auth0 scripts"
     command:
+      - ". /app/.buildkite/scripts/init-environment.sh"
       - "yarn --frozen-lockfile"
       - "yarn build-auth0-database-scripts"
       - "yarn build-auth0-actions"
@@ -44,12 +50,14 @@ steps:
       - docker-compose#v4.9.0:
           run: app
           config: .buildkite/docker-compose.yml
+          shell: ["/bin/bash", "-e", "-c"] # So bash scripts can be sourced
+
 
   - wait
 
   - name: "Package the AWS Lambda functions"
     command:
-      - ". /app/.buildkite/scripts/init-environment.sh"
+      - ". /app/.buildkite/scripts/init-environment.sh --init-terraform"
       - "yarn install --frozen-lockfile"
       - "yarn build"
       - "yarn package-api-templates"
