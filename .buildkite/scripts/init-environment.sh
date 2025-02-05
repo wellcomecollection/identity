@@ -7,6 +7,7 @@
 set -o errexit
 
 TF_BACKEND_ROLE_ARN="arn:aws:iam::770700576653:role/identity-ci"
+ENV_SOURCE_FILE="/app/.buildkite/build/env.sh"
 
 function __process_environment_variables() {
   export AWS_DEFAULT_REGION=eu-west-1
@@ -22,9 +23,8 @@ function __init_terraform_env_vars() {( set -e
     -backend-config "assume_role={role_arn=\"${TF_BACKEND_ROLE_ARN}\"}" && \
     terraform workspace select "${DEPLOY_ENVIRONMENT}"
   mkdir -p /app/.buildkite/build
-  terraform output -json -no-color | jq -r .ci_environment_variables.value[] >/app/.buildkite/build/env.sh
+  terraform output -json -no-color | jq -r .ci_environment_variables.value[] >${ENV_SOURCE_FILE}
   terraform output -json -no-color | jq -r .auth0_actions.value >/app/.buildkite/build/auth0-actions.json
-  chmod +x /app/.buildkite/build/env.sh && source /app/.buildkite/build/env.sh && rm /app/.buildkite/build/env.sh
 )}
 
 # add safe.directory to git config to account for 
@@ -36,4 +36,9 @@ __process_environment_variables
 # get --init-terraform flag, if present, to initialise terraform
 if [[ $* == *--init-terraform* ]]; then
   __init_terraform_env_vars
+
+  # source the env file to make the variables available
+  chmod +x ${ENV_SOURCE_FILE} && \
+  source ${ENV_SOURCE_FILE} && \
+  rm ${ENV_SOURCE_FILE}
 fi
