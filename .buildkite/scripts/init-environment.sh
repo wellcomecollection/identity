@@ -19,7 +19,7 @@ function __process_environment_variables() {
 function __init_terraform_env_vars() {( set -e
   cd /app/infra/scoped && \
     terraform init \
-    -backend-config "assume_role={\"role_arn\": \"${TF_BACKEND_ROLE_ARN}\"}" && \
+    -backend-config "assume_role={role_arn=\"${TF_BACKEND_ROLE_ARN}\"}" && \
     terraform workspace select "${DEPLOY_ENVIRONMENT}"
   mkdir -p /app/.buildkite/build
   terraform output -json -no-color | jq -r .ci_environment_variables.value[] >/app/.buildkite/build/env.sh

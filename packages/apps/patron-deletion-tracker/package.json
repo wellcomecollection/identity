@@ -21,7 +21,7 @@
     "@aws-sdk/client-lambda": "^3.54.0",
     "@sinonjs/fake-timers": "^9.1.0",
     "@types/aws-lambda": "^8.10.92",
-    "@types/node": "^18.11.18",
+    "@types/node": "20",
     "@types/sinonjs__fake-timers": "^8.1.1",
     "@weco/ts-aws": "^1.0.1",
     "jest": "^27.5.1",

@@ -1,8 +1,7 @@
-version: '3'
 
 services:
   app:
-    image: 770700576653.dkr.ecr.eu-west-1.amazonaws.com/uk.ac.wellcome/identity-build:2023-01-19
+    image: 770700576653.dkr.ecr.eu-west-1.amazonaws.com/uk.ac.wellcome/identity-build:2025-02-03
     volumes:
       - ../:/app
       - /var/run/docker.sock:/var/run/docker.sock
