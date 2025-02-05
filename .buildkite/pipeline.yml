@@ -57,7 +57,7 @@ steps:
 
   - name: "Package the AWS Lambda functions"
     command:
-      - ". /app/.buildkite/scripts/init-environment.sh"
+      - ". /app/.buildkite/scripts/init-environment.sh --init-terraform"
       - "yarn install --frozen-lockfile"
       - "yarn build"
       - "yarn package-api-templates"

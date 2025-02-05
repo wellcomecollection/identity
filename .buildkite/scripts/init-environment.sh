@@ -32,4 +32,8 @@ function __init_terraform_env_vars() {( set -e
 git config --global --add safe.directory /app
 
 __process_environment_variables
-__init_terraform_env_vars
+
+# get --init-terraform flag, if present, to initialise terraform
+if [[ $* == *--init-terraform* ]]; then
+  __init_terraform_env_vars
+fi
