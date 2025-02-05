@@ -26,5 +26,7 @@ function __init_terraform_env_vars() {
   chmod +x /app/.buildkite/build/env.sh && source /app/.buildkite/build/env.sh && rm /app/.buildkite/build/env.sh
 }
 
+git config --global --add safe.directory /app
+
 __process_environment_variables
 __init_terraform_env_vars
