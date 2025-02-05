@@ -4,7 +4,7 @@ steps:
     concurrency: 1
     concurrency_group: "identity-deployment/auth0"
     command:
-      - ". /app/.buildkite/scripts/init-environment.sh"
+      - ". /app/.buildkite/scripts/init-environment.sh --init-terraform"
       - "yarn --frozen-lockfile"
       - "yarn build-auth0-database-scripts"
       - "yarn build-auth0-actions"
