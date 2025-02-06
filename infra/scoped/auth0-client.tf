@@ -18,6 +18,10 @@ resource "auth0_client" "local_dev_client" {
   callbacks = concat(
     [
       for url in auth0_client.identity_web_app.callbacks :
+      replace(url, local.wellcome_collection_site_uri, "http://localhost:3000")
+    ],
+    [
+      for url in auth0_client.identity_web_app.callbacks :
       replace(url, local.wellcome_collection_site_uri, "http://localhost:3003")
     ],
     [
@@ -30,6 +34,10 @@ resource "auth0_client" "local_dev_client" {
     [
       for url in auth0_client.identity_web_app.allowed_logout_urls :
       replace(url, local.wellcome_collection_site_uri, "http://localhost:3000")
+    ],
+    [
+      for url in auth0_client.identity_web_app.allowed_logout_urls :
+      replace(url, local.wellcome_collection_site_uri, "http://localhost:3003")
     ],
     [
       for url in auth0_client.identity_web_app.allowed_logout_urls :
