@@ -2,7 +2,7 @@ FROM public.ecr.aws/docker/library/node:20
 
 SHELL ["/bin/bash", "-ox", "pipefail", "-c"]
 
-ARG A0DEPLOY_VERSION=7.12.2
+ARG A0DEPLOY_VERSION=8.6.2
 RUN apt-get update && \
     apt-get install -y git zip findutils python3 python3-pip jq moreutils && \
     rm -rf /var/lib/apt/lists/* && \
