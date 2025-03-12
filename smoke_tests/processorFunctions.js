@@ -6,8 +6,10 @@ The functions in this file are available as hooks in the http request cycle, all
 headers required for authentication to be inserted.
  */
 
-const AWS = require('aws-sdk');
-const request = require('request');
+const {
+  GetSecretValueCommand,
+  SecretsManagerClient,
+} = require('@aws-sdk/client-secrets-manager');
 
 // These functions are available to use in the .yaml steps
 module.exports = {
@@ -26,18 +28,23 @@ const prodSecrets = {
   credentialsSecretId: 'identity/prod/smoke_test/credentials',
 };
 
-const secretsManager = new AWS.SecretsManager();
+const secretsManager = new SecretsManagerClient({
+  region: 'eu-west-1',
+});
 
 // Convienience function for getting values from AWS SecretsManager
 function getSecret(secretId, callback) {
-  secretsManager.getSecretValue({ SecretId: secretId }, function (error, data) {
-    if (error) {
-      console.log(error, error.stack);
-      process.exit(1);
-    } else {
-      callback(data['SecretString']);
+  secretsManager.send(
+    new GetSecretValueCommand({ SecretId: secretId }),
+    function (error, data) {
+      if (error) {
+        console.log(error, error.stack);
+        process.exit(1);
+      } else {
+        callback(data['SecretString']);
+      }
     }
-  });
+  );
 }
 
 // Implements the resource owner password OAuth flow via Auth0
@@ -72,7 +79,7 @@ function getAuthToken(secretId, auth0Domain, requestParams, callback) {
       },
     };
 
-    request(options, function (error, response, body) {
+    fetch(options, function (error, response, body) {
       if (error) {
         console.log(error, err.stack);
         process.exit(1);
