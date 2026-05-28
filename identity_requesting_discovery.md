@@ -30,7 +30,11 @@ Registration currently happens in two stages:
    - The webapp redirects back to Auth0's `/continue` endpoint to complete the login flow
    - Auth0 issues tokens and the user is logged in
 
-This two-stage approach exists because Auth0's Custom DB `create` script is the only hook during signup in a Custom DB connection — Auth0 won't consider the signup successful unless it completes. The full registration details (name, T&Cs) are collected separately afterward.
+It's not entirely clear why it was designed this way. Suspicion is that:
+- we have to create the Sierra patron record at the point where we have their password,
+- we can't/couldn't at the time pass `user_metadata` (with first/last name, T&C agreement) through the custom DB script,
+- but the `create` script needs to complete for Auth0 to consider the sign up done,
+- so we gather the additional data in a separate form 
 
 Consequences of this design:
 - Abandoned signups leave orphaned Sierra patrons with temp names (require periodic cleanup)
