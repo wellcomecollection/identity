@@ -1077,9 +1077,9 @@ lodash.isplainobject@^4.0.6:
   integrity sha1-fFJqUtibRcRcxpC4gWO+BJf1UMs=
 
 lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.15, lodash@^4.17.21:
-  version "4.17.21"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
-  integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
+  version "4.18.1"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.18.1.tgz#ff2b66c1f6326d59513de2407bf881439812771c"
+  integrity sha512-dMInicTPVE8d1e5otfwmmjlxkZoUpiVLwyeTdUsi/Caj/gfzzblBcCE5sRHV/AsjuCmxWrte2TNGSYuCeCq+0Q==
 
 log-symbols@^2.1.0:
   version "2.2.0"
@@ -1540,9 +1540,9 @@ socket.io-client@^2.1.0:
     to-array "0.1.4"
 
 socket.io-parser@~3.3.0:
-  version "3.3.4"
-  resolved "https://registry.yarnpkg.com/socket.io-parser/-/socket.io-parser-3.3.4.tgz#ab84236b6d06eaf1fb68b179b3a7501195886cc3"
-  integrity sha512-z/pFQB3x+EZldRRzORYW1vwVO8m/3ILkswtnpoeU6Ve3cbMWkmHEWDAVJn4QJtchiiFTo5j7UG2QvwxvaA9vow==
+  version "3.3.5"
+  resolved "https://registry.yarnpkg.com/socket.io-parser/-/socket.io-parser-3.3.5.tgz#f07ca7a170de80837464aee39972acac6189ee9f"
+  integrity sha512-pn+xG/oVnofxqteOawycpHw9QKclpNRa+Z7RW0vZmrIpkgZOVSVzBvY1YGR+p9kIEZXkeAjpHa21wRNLCZ6UAA==
   dependencies:
     component-emitter "~1.3.0"
     debug "~3.1.0"
